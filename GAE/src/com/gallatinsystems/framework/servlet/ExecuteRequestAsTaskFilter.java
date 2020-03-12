@@ -19,6 +19,7 @@ package com.gallatinsystems.framework.servlet;
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.task.domain.Task;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -29,6 +30,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -47,19 +49,10 @@ public class ExecuteRequestAsTaskFilter implements Filter {
     private static Logger log = Logger.getLogger(ExecuteRequestAsTaskFilter.class
             .getName());
 
-    public static final String REST_PRIVATE_KEY_PROP = "restPrivateKey";
-
-    private String privateKey;
-
     private static final String RUN_AS_TASK = "1";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        if (filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP) != null) {
-            privateKey = filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP);
-        } else {
-            privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
-        }
     }
 
     /*
@@ -69,8 +62,7 @@ public class ExecuteRequestAsTaskFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         if (isTaskRequest(request)) {
-            executeRequestAsTask(
-                    new RequestToTaskMapper(servletRequest, privateKey));
+            executeRequestAsTask(new RequestToTaskMapper(request));
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
@@ -86,33 +78,8 @@ public class ExecuteRequestAsTaskFilter implements Filter {
     }
 
     private void executeRequestAsTask(final RequestToTaskMapper requestToTaskMapper) {
-
-        final TaskOptions options = withDefaults();
-        options.url(requestToTaskMapper.getUrl())
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .method(TaskOptions.Method.POST)
-                .retryOptions(withTaskRetryLimit(5)
-                        .minBackoffSeconds(5)
-                        .maxBackoffSeconds(120) // requests become invalid after 10mins due to the
-                        // ts parameter. So the total time to complete
-                        // wait and reschedule should be under 10 mins
-                        // from the first request
-                        // see RestAuthFilter.isTimeStampValid()
-                        .maxDoublings(5));
-
-        for (Map.Entry<String, String[]> entry : requestToTaskMapper.getTaskRequestParams().entrySet()) {
-            String key = entry.getKey();
-            String[] paramValues = entry.getValue();
-
-            for (int i = 0; i < paramValues.length; i++) {
-                options.param(key, paramValues[i]);
-            }
-        }
-
-        log.log(Level.FINE, "Query params: " + options.getStringParams());
-
         final Queue defaultQueue = QueueFactory.getDefaultQueue();
-        defaultQueue.add(options);
+        defaultQueue.add(requestToTaskMapper.getTaskOptions());
     }
 
     /*
@@ -123,61 +90,44 @@ public class ExecuteRequestAsTaskFilter implements Filter {
 
         private HttpServletRequest request;
 
-        private String privateHashKey;
+        private TaskOptions taskOptions;
 
-        private SortedMap<String, String[]> taskRequestParams;
-
-        public RequestToTaskMapper(ServletRequest servletRequest, String privateKey) {
-            this.privateHashKey = privateKey;
-            this.request = (HttpServletRequest) servletRequest;
-            this.taskRequestParams = generateTaskParameters(this.request.getParameterMap());
+        public RequestToTaskMapper(HttpServletRequest req) {
+            this.request = req;
+            this.taskOptions = mapRequestToTaskOptions(this.request);
         }
 
-        private SortedMap<String, String[]> generateTaskParameters(Map<String, String[]> parameterMap) {
-            SortedMap<String, String[]> taskParams = new TreeMap<>();
-            for (String paramKey : parameterMap.keySet()) {
-                if (parameterShouldBeStripped(paramKey)) continue;
-                taskParams.put(paramKey, parameterMap.get(paramKey));
-            }
-            taskParams.put(RestRequest.HASH_PARAM,
-                    new String[] { generateParameterHash(taskParams) });
-            return taskParams;
-        }
+        private TaskOptions mapRequestToTaskOptions(HttpServletRequest request) {
+            final TaskOptions options = withDefaults();
+            options.url(request.getRequestURI())
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .method(TaskOptions.Method.POST)
+                    .retryOptions(withTaskRetryLimit(5)
+                            .minBackoffSeconds(5)
+                            .maxBackoffSeconds(120) // requests become invalid after 10mins due to the
+                            // ts parameter. So the total time to complete
+                            // wait and reschedule should be under 10 mins
+                            // from the first request
+                            // see RestAuthFilter.isTimeStampValid()
+                            .maxDoublings(5));
 
-        private String generateParameterHash(final Map<String, String[]> paramMap) {
-            SortedMap<String, String[]> sortedTaskParams = new TreeMap(paramMap);
+            Map paramMap = request.getParameterMap();
+            for (Object k : paramMap.keySet()) {
+                String key = (String) k;
+                String[] paramValues = (String[]) paramMap.get(key);
 
-            final StringBuilder queryString = new StringBuilder();
-            for (Map.Entry<String, String[]> entry : sortedTaskParams.entrySet()) {
-                String paramKey = entry.getKey();
-                String[] values = entry.getValue();
-
-                for (int i = 0; i < values.length; i++) {
-                    try {
-                        String encodedParam = URLEncoder.encode(values[i], "UTF-8");
-                        queryString.append(paramKey).append("=").append(encodedParam).append("&");
-                    } catch (UnsupportedEncodingException e) {
-                        log.warning("Failed to encode parameter: " + paramKey + "=" + values[i]);
-                    }
+                for (int i = 0; i < paramValues.length; i++) {
+                    options.param(key, paramValues[i]);
                 }
             }
-            queryString.deleteCharAt(queryString.lastIndexOf("&"));
-            String hash = MD5Util.generateHMAC(queryString.toString(), privateHashKey);
 
-            return hash;
+            log.log(Level.FINE, "Query params: " + options.getStringParams());
+
+            return options;
         }
 
-        private boolean parameterShouldBeStripped(String param) {
-            return RestRequest.RUN_AS_TASK_PARAM.equalsIgnoreCase(param) ||
-                    RestRequest.HASH_PARAM.equalsIgnoreCase(param);
-        }
-
-        public String getUrl() {
-            return request.getRequestURI();
-        }
-
-        public SortedMap<String, String[]> getTaskRequestParams() {
-            return taskRequestParams;
+        public TaskOptions getTaskOptions() {
+            return taskOptions;
         }
     }
 }

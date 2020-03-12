@@ -17,7 +17,6 @@
 
 package com.gallatinsystems.framework.servlet;
 
-import com.gallatinsystems.framework.rest.RestRequest;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
@@ -34,9 +33,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import static com.gallatinsystems.framework.servlet.ExecuteRequestAsTaskFilter.REST_PRIVATE_KEY_PROP;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -77,28 +76,24 @@ class ExecuteRequestAsTaskFilterTests {
     @Test
     void testRequestToTaskMapping() {
         ExecuteRequestAsTaskFilter filter = new ExecuteRequestAsTaskFilter();
-        ExecuteRequestAsTaskFilter.RequestToTaskMapper requestToTaskMapper = filter.new RequestToTaskMapper(this.httpRequest, testPrivateKey);
+        ExecuteRequestAsTaskFilter.RequestToTaskMapper requestToTaskMapper = filter.new RequestToTaskMapper(this.httpRequest);
 
         assertTrue(filter.isTaskRequest(this.httpRequest), "The *original* request MUST have a runAsTask parameter whose value is == 1");
 
-        Map<String, String[]> taskRequestParams = requestToTaskMapper.getTaskRequestParams();
-        assertEquals(13, taskRequestParams.size(), "Unexpected number of params for the request");
-        assertEquals("/testservletapi", requestToTaskMapper.getUrl());
-        assertEquals("saveSurveyInstance", taskRequestParams.get("action")[0]);
-        assertEquals("2020/03/03 15:05:14", taskRequestParams.get("ts")[0]);
-        assertEquals("30-03-2017+10%3A05%3A57+CEST", taskRequestParams.get("collectionDate")[0]);
-        assertEquals("41", taskRequestParams.get("duration")[0]);
-        assertEquals("CmuehPsWW6//5Q4i8O1P5AjS/8Y=", taskRequestParams.get("h")[0]);
+        Map<String, List<String>> taskRequestParams = requestToTaskMapper.getTaskOptions().getStringParams();
+        assertEquals(10, taskRequestParams.size(), "Unexpected number of params for the request");
+        assertEquals("/testservletapi", requestToTaskMapper.getTaskOptions().getUrl());
+        assertEquals("saveSurveyInstance", taskRequestParams.get("action").get(0));
+        assertEquals("2020/03/03 15:05:14", taskRequestParams.get("ts").get(0));
+        assertEquals("30-03-2017+10%3A05%3A57+CEST", taskRequestParams.get("collectionDate").get(0));
+        assertEquals("41", taskRequestParams.get("duration").get(0));
+        assertEquals("CmuehPsWW6//5Q4i8O1P5AjS/8Y=", taskRequestParams.get("h").get(0));
     }
 
     @Test
     void testExecuteRequestAsTaskFilter() throws IOException, ServletException {
 
-        FilterConfig mockConfig = mock(FilterConfig.class);
-        when(mockConfig.getInitParameter(REST_PRIVATE_KEY_PROP)).thenReturn(testPrivateKey);
-
         ExecuteRequestAsTaskFilter filter = new ExecuteRequestAsTaskFilter();
-        filter.init(mockConfig);
         filter.doFilter(this.httpRequest, new MockHttpServletResponse(), new MockFilterChain());
 
         LocalTaskQueue localTaskQueue = LocalTaskQueueTestConfig.getLocalTaskQueue();
