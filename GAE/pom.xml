@@ -221,7 +221,14 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- datastore unit tests -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
+    </dependency>
+
+      <!-- datastore unit tests -->
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-testing</artifactId>

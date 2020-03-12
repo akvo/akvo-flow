@@ -9,7 +9,7 @@ export default class DatePicker extends React.Component {
   componentDidMount() {
     this.picker = datepicker(this.inputRef.current, {
       onSelect: this.onChange,
-      dateSelected: this.props.value ? new Date(this.props.value) : new Date(),
+      dateSelected: this.props.value ? new Date(this.props.value) : null,
     });
   }
 
@@ -26,8 +26,12 @@ export default class DatePicker extends React.Component {
   }
 }
 
+DatePicker.defaultProps = {
+  value: null,
+};
+
 DatePicker.propTypes = {
   id: PropTypes.string.isRequired,
-  value: PropTypes.any.isRequired,
+  value: PropTypes.any,
   onChange: PropTypes.func.isRequired,
 };
