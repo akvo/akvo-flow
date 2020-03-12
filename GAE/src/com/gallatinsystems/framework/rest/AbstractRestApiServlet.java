@@ -94,12 +94,6 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
      * @param resp
      */
     private void executeRequest(HttpServletRequest req, HttpServletResponse resp) {
-        // redirect the request to a task
-        if(req.getParameter(RestRequest.RUN_AS_TASK_PARAM) != null) {
-            executeRequestAsTask(req);
-            return;
-        }
-
         try {
             checkThreadLocal();
             resp.setCharacterEncoding("UTF-8");
@@ -128,85 +122,6 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
             requests.set(null);
             responses.set(null);
         }
-    }
-
-    /*
-    * Execute the HttpRequest as a task
-     */
-    private void executeRequestAsTask(final HttpServletRequest req) {
-        final Map<String, String[]> parameterMap = stripIncomingParameterList(req.getParameterMap());
-        final Map<String, String[]> paramMapWithTimestamp = addTimeStampParam(parameterMap);
-
-        final TaskOptions options = withDefaults();
-        options.url(req.getRequestURI())
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .method(TaskOptions.Method.POST)
-                .retryOptions(withTaskRetryLimit(5)
-                .minBackoffSeconds(5)
-                .maxBackoffSeconds(120)
-                .maxDoublings(5));
-
-        for (String paramKey : paramMapWithTimestamp.keySet()) {
-            String[] paramValues = paramMapWithTimestamp.get(paramKey);
-            for (int i = 0; i < paramValues.length; i++) {
-                options.param(paramKey, paramValues[i]);
-            }
-        }
-
-        final String parametersHash = generateParameterHash(paramMapWithTimestamp, API_PRIVATE_KEY);
-        options.param(RestRequest.HASH_PARAM, parametersHash);
-
-        log.log(Level.FINE, "Query params: " + options.getStringParams());
-
-        final Queue defaultQueue = QueueFactory.getDefaultQueue();
-        defaultQueue.add(options);
-    }
-
-    private Map<String, String[]> stripIncomingParameterList(Map<String, String[]> parameterMap) {
-        Map<String, String[]> strippedParamList = new HashMap<>();
-        for (String param : parameterMap.keySet()) {
-            if (parameterShouldBeSkipped(param)) continue;
-            strippedParamList.put(param, parameterMap.get(param));
-        }
-        return strippedParamList;
-    }
-
-    private Map<String, String[]> addTimeStampParam(Map<String, String[]> parameterMap) {
-        Map<String, String[]> paramMapWithTs = new HashMap<>(parameterMap);
-
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        paramMapWithTs.put(RestRequest.TIMESTAMP_PARAM, new String[]{ df.format(new Date()) });
-
-        return paramMapWithTs;
-    }
-
-    private String generateParameterHash(final Map<String, String[]> paramMapWithTimestamp, String apiKey) {
-        List<String> paramKeys = new ArrayList(paramMapWithTimestamp.keySet());
-        Collections.sort(paramKeys);
-
-        final StringBuilder queryString = new StringBuilder();
-        for (String paramKey : paramKeys) {
-            String[] values = paramMapWithTimestamp.get(paramKey);
-            for (int i = 0; i < values.length; i++) {
-                try {
-                    String encodedParam = URLEncoder.encode(values[i], "UTF-8");
-                    queryString.append(paramKey).append("=").append(encodedParam).append("&");
-                } catch (UnsupportedEncodingException e) {
-                    log.warning("Failed to encode parameter: " + paramKey + "=" + values[i]);
-                }
-            }
-        }
-        queryString.deleteCharAt(queryString.lastIndexOf("&"));
-
-        return MD5Util.generateHMAC(queryString.toString(), apiKey);
-    }
-
-    private boolean parameterShouldBeSkipped(String param) {
-        return RestRequest.RUN_AS_TASK_PARAM.equalsIgnoreCase(param) ||
-                RestRequest.TIMESTAMP_PARAM.equalsIgnoreCase(param) ||
-                RestRequest.HASH_PARAM.equalsIgnoreCase(param);
     }
 
     /**
