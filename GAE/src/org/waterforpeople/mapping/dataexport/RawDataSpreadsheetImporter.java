@@ -868,7 +868,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 + surveyId + "&");
 
         // run the survey instance import as a task
-        sb.append(RawDataImportRequest.RUN_AS_TASK_PARAM).append("=1");
+        sb.append(RawDataImportRequest.RUN_AS_TASK_PARAM).append("=1&");
 
         // Instance id
         if (dto.getKeyId() != null) {
