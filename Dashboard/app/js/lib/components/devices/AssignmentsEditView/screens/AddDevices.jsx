@@ -19,10 +19,9 @@ export default class AddDevice extends React.Component {
     const unSelectedDevices = devices.filter(device => !selectedDeviceIds.includes(device.id));
 
     // sort device groups
-    return _groupBy(
-      _sortBy(unSelectedDevices, device => device.deviceGroup.name),
-      device => device.deviceGroup.id
-    );
+    return _sortBy(_groupBy(unSelectedDevices, device => device.deviceGroup.id), [
+      item => item[0].deviceGroup.name,
+    ]);
   }
 
   onSelectDevice = (id, checked) => {
