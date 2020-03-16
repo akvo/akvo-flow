@@ -62,8 +62,8 @@ export default class DeviceAccordion extends React.Component {
       <div className="accordion-container">
         <div className={accordionClass}>
           <Checkbox
-            id={parseInt(id, 10)}
-            name={parseInt(id, 10)}
+            id={id}
+            name={id}
             checked={this.allDevicesSelected()}
             onChange={this.selectAllDevice}
             label=""
@@ -103,7 +103,7 @@ DeviceAccordion.defaultProps = {
 };
 
 DeviceAccordion.propTypes = {
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   deviceGroupIsActive: PropTypes.bool,
   name: PropTypes.string.isRequired,
   devices: PropTypes.array.isRequired,
