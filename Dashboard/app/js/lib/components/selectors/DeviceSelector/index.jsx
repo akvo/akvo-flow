@@ -13,12 +13,12 @@ export default class DeviceSelector extends React.Component {
 
     return (
       <div>
-        {Object.keys(deviceGroups).map(dgId => (
+        {deviceGroups.map(devices => (
           <DeviceAccordion
-            key={dgId}
-            id={dgId}
-            name={deviceGroups[dgId][0].deviceGroup.name}
-            devices={deviceGroups[dgId]}
+            key={devices[0].deviceGroup.id}
+            id={devices[0].deviceGroup.id}
+            name={devices[0].deviceGroup.name}
+            devices={devices}
             handleSelectDevice={handleSelectDevice}
             handleSelectAllDevices={handleSelectAllDevices}
             selectedDevices={selectedDevices}
@@ -30,7 +30,7 @@ export default class DeviceSelector extends React.Component {
 }
 
 DeviceSelector.propTypes = {
-  deviceGroups: PropTypes.object.isRequired,
+  deviceGroups: PropTypes.array.isRequired,
   handleSelectDevice: PropTypes.func.isRequired,
   handleSelectAllDevices: PropTypes.func.isRequired,
   selectedDevices: PropTypes.array.isRequired,
