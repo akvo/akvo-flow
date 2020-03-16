@@ -58,6 +58,9 @@ export default class AddDevice extends React.Component {
 
     // empty selected devices
     this.setState({ selectedDevicesIds: [] });
+
+    // go to the first device in the assignment to add datapoints
+    this.props.changeTab('ASSIGN_DATAPOINTS', selectedDevicesIds[0]);
   };
 
   render() {
