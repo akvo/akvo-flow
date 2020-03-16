@@ -6,7 +6,7 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]] && [[ -z "${TRAVIS_TAG}" ]]; then
+if [[ "${TRAVIS_BRANCH}" != "master" ]] && [[ -z "${TRAVIS_TAG}" ]]; then
   exit 0
 fi
 
@@ -19,7 +19,7 @@ release_project_id="${RELEASE_PROJECT_ID:=akvoflow-uat1}"
 
 project_id="${develop_project_id}"
 
-if [[ "${TRAVIS_BRANCH:0:8}" == "release/" ]] || [[ ! -z "${TRAVIS_TAG}" ]]; then
+if [[ -n "${TRAVIS_TAG}" ]]; then
     project_id="${release_project_id}"
 fi
 
