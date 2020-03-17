@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -135,10 +135,13 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
             Long who = 0L;
-            final Object credentials = SecurityContextHolder.getContext()
-                    .getAuthentication().getCredentials();
-            if (credentials instanceof Long) {
-                who = (Long) credentials;
+            if (SecurityContextHolder.getContext() != null
+                    && SecurityContextHolder.getContext().getAuthentication() != null ) {
+                final Object credentials = SecurityContextHolder.getContext()
+                        .getAuthentication().getCredentials();
+                if (credentials instanceof Long) {
+                    who = (Long) credentials;
+                }
             }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
