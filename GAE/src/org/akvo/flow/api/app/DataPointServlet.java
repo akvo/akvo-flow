@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,23 +23,25 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.akvo.flow.api.app.DataPointServlet;
 import org.akvo.flow.dao.DataPointAssignmentDao;
+import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 /**
@@ -48,9 +50,9 @@ import java.util.logging.Logger;
 @SuppressWarnings("serial")
 public class DataPointServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
+    private static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
-    private static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
 
     public DataPointServlet() {
         setMode(JSON_MODE);
@@ -74,7 +76,6 @@ public class DataPointServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataPointRequest dpReq = (DataPointRequest) req;
-        List<SurveyedLocale> dpList;
         RestResponse res = new RestResponse();
         if (dpReq.getSurveyId() != null) {
             //Find the device (if any)
@@ -83,22 +84,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
             if (device != null) {
                 log.info("Found device id: " + device.getKey().getId());
                 log.fine("Found device: " + device);
-                //Find which assignments we are part of
-                List<DataPointAssignment> assList =
-                        dataPointAssignmentDao.listByDeviceAndSurvey(device.getKey().getId(), dpReq.getSurveyId());
-                //Combine their point lists
-                Set<Long> pointSet = new HashSet<>();
-                for (DataPointAssignment ass : assList) {
-                    pointSet.addAll(ass.getDataPointIds());
-                }
-                //Fetch the data points
-                if (ALL_DATAPOINTS.equals(pointSet)) {
-                    dpList = surveyedLocaleDao.listLocalesBySurveyGroupId(dpReq.getSurveyId());
-                } else {
-                    List<Long> pointList = new ArrayList<>();
-                    pointList.addAll(pointSet);
-                    dpList = surveyedLocaleDao.listByKeys(pointList);
-                }
+                List<SurveyedLocale> dpList = getDataPointList(device.getKey().getId(), dpReq.getSurveyId());
                 res = convertToResponse(dpList, dpReq.getSurveyId());
                 return res;
             }
@@ -109,6 +95,39 @@ public class DataPointServlet extends AbstractRestApiServlet {
             res.setMessage("Invalid Survey");
         }
         return res;
+    }
+
+    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId) {
+        List<DataPointAssignment> assList =
+                dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
+
+
+        if (assList.isEmpty()) {
+            // Mimic old behavior
+            SurveyAssignmentDao saDao = new SurveyAssignmentDao();
+
+            List<SurveyAssignment> allAssigmentsToDevice = saDao.listAllContainingDevice(deviceId);
+            List<SurveyAssignment> filteredAssignments = allAssigmentsToDevice.stream().filter(assignment ->
+                    assignment.getSurveyId().equals(surveyId)).collect(Collectors.toList());
+
+            if (filteredAssignments.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+        }
+
+        Set<Long> pointSet = new HashSet<>();
+        for (DataPointAssignment ass : assList) {
+            pointSet.addAll(ass.getDataPointIds());
+        }
+
+        if (ALL_DATAPOINTS.equals(pointSet)) {
+            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+        }
+
+        List<Long> pointList = new ArrayList<>(pointSet);
+        return surveyedLocaleDao.listByKeys(pointList);
     }
 
     /**
