@@ -36,10 +36,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -85,6 +85,11 @@ public class DataPointServlet extends AbstractRestApiServlet {
                 log.info("Found device id: " + device.getKey().getId());
                 log.fine("Found device: " + device);
                 List<SurveyedLocale> dpList = getDataPointList(device.getKey().getId(), dpReq.getSurveyId());
+                if (dpList == null) {
+                    res.setCode(String.valueOf(HttpServletResponse.SC_BAD_REQUEST));
+                    res.setMessage("No assignment was found");
+                    return res;
+                }
                 res = convertToResponse(dpList, dpReq.getSurveyId());
                 return res;
             }
@@ -111,7 +116,8 @@ public class DataPointServlet extends AbstractRestApiServlet {
                     assignment.getSurveyId().equals(surveyId)).collect(Collectors.toList());
 
             if (filteredAssignments.isEmpty()) {
-                return Collections.emptyList();
+                log.log(Level.SEVERE, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+                return null;
             }
 
             return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);

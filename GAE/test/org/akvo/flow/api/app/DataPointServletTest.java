@@ -38,6 +38,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataPointServletTest {
@@ -201,5 +202,13 @@ public class DataPointServletTest {
         final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
 
         assertEquals(allDataPointIds, foundDataPointIds);
+    }
+
+    @Test
+    public void noAssignmentTest() {
+        final Long surveyId = 400L;
+        final DataPointServlet servlet = new DataPointServlet();
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, 8L);
+        assertNull(foundDataPoints);
     }
 }
