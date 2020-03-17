@@ -326,13 +326,13 @@
             <stage.enableJarSplitting>true</stage.enableJarSplitting>
             <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
             <deploy.bucket>gs://akvoflowsandbox-deployment</deploy.bucket>
-            <devserver.version>1</devserver.version>
             <devserver.port>8888</devserver.port>
             <devserver.host>0.0.0.0</devserver.host>
             <devserver.startSuccessTimeout>300</devserver.startSuccessTimeout>
             <devserver.jvmFlags>
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
-                <devserver.jvmFlag>-Dappengine.fullscan.seconds=${GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
+                <!--suppress UnresolvedMavenProperty -->
+                <devserver.jvmFlag>-Dappengine.fullscan.seconds=${env.GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
                 <devserver.jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</devserver.jvmFlag>
                 <devserver.jvmFlag>-Djava.util.logging.SimpleFormatter.format=[%1$tT] %4$s: %2$s - %5$s %6$s%n</devserver.jvmFlag>
             </devserver.jvmFlags>
