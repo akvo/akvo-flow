@@ -149,9 +149,6 @@ public class DataPointServletTest {
         final Long surveyId = randomId();
         final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 10);
 
-        final SurveyedLocale dataPoint = dataPoints.get(7);
-        assertEquals("7", dataPoint.getIdentifier());
-
         final List<Long> selectedDataPointIds = dataPoints.stream()
                 .filter(surveyedLocale -> surveyedLocale.getKey().getId() % 2 == 0)
                 .map(surveyedLocale -> surveyedLocale.getKey().getId())
