@@ -67,7 +67,7 @@ public class DataPointServletTest {
         return dao.save(dpa);
     }
 
-    private SurveyAssignment createAssingment(Long surveyId, List<Long> deviceIds, List<Long> formIds) {
+    private SurveyAssignment createAssignment(Long surveyId, List<Long> deviceIds, List<Long> formIds) {
         final SurveyAssignment sa = new SurveyAssignment();
         final SurveyAssignmentDao dao = new SurveyAssignmentDao();
 
@@ -113,24 +113,24 @@ public class DataPointServletTest {
         assertFalse(dataPointAssignments.isEmpty());
 
         final DataPointAssignment assignment = dataPointAssignments.get(0);
-        assertEquals(assignment.getDataPointIds(), dataPointIds);
-        assertEquals(assignment.getDeviceId(), deviceId);
-        assertEquals(assignment.getSurveyId(), surveyId);
+        assertEquals(dataPointIds, assignment.getDataPointIds());
+        assertEquals(deviceId, assignment.getDeviceId());
+        assertEquals(surveyId, assignment.getSurveyId());
 
 
         final List<Long> deviceIds = Arrays.asList(1L, 2L);
         final List<Long> formIds = Arrays.asList(100L, 200L);
 
-        createAssingment(surveyId, deviceIds, formIds);
+        createAssignment(surveyId, deviceIds, formIds);
 
         final SurveyAssignmentDao saDao = new SurveyAssignmentDao();
         final List<SurveyAssignment> surveyAssignments = saDao.listAllContainingDevice(2L);
         assertFalse(surveyAssignments.isEmpty());
 
         final SurveyAssignment sa = surveyAssignments.get(0);
-        assertEquals(sa.getSurveyId(), surveyId);
+        assertEquals(surveyId, sa.getSurveyId());
         assertTrue(sa.getDeviceIds().contains(2L));
-        assertEquals(sa.getFormIds(), formIds);
+        assertEquals(formIds, sa.getFormIds());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class DataPointServletTest {
         final List<Long> deviceIds = Arrays.asList(5L, 6L);
         final List<Long> formIds = Arrays.asList(10L, 11L);
 
-        final SurveyAssignment sa = createAssingment(surveyId, deviceIds, formIds);
+        final SurveyAssignment sa = createAssignment(surveyId, deviceIds, formIds);
 
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, 6L);
