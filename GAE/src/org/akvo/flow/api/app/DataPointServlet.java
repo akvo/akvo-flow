@@ -84,7 +84,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
             if (device != null) {
                 log.info("Found device id: " + device.getKey().getId());
                 log.fine("Found device: " + device);
-                List<SurveyedLocale> dpList = getDataPointList(device.getKey().getId(), dpReq.getSurveyId());
+                List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId());
                 if (dpList == null) {
                     res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
                     res.setMessage("No assignment was found");
