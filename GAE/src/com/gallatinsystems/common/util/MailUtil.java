@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,12 @@
 
 package com.gallatinsystems.common.util;
 
+import org.simplejavamail.api.email.Email;
+import org.simplejavamail.api.mailer.Mailer;
+import org.simplejavamail.api.mailer.config.TransportStrategy;
+import org.simplejavamail.email.EmailBuilder;
+import org.simplejavamail.mailer.MailerBuilder;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +37,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
+
 
 /**
  * utility class for using the Google email service to send system-generated emails
@@ -137,22 +142,22 @@ public class MailUtil {
             String subject, String body, byte[] attachmentBytes,
             String attachmentName, String mimeType) {
 
-        MailService mailService = MailServiceFactory.getMailService();
-        MailService.Message message = new MailService.Message();
-        message.setSender(fromAddr);
-        message.setSubject(subject);
-        message.setTo(toAddressList);
+        Email email = EmailBuilder.startingBlank()
+                .from(fromAddr)
+                .toMultiple(toAddressList)
+                .withSubject(subject)
+                .appendTextHTML(body)
+                .withAttachment(attachmentName, attachmentBytes, mimeType)
+                .buildEmail();
 
-        message.setHtmlBody("<HTML>" + body + "</HTML>");
-        if (attachmentName == null) {
-            attachmentName = "Report.txt";
-        }
-        MailService.Attachment attachment = new MailService.Attachment(
-                attachmentName, attachmentBytes);
-        message.setAttachments(attachment);
+        Mailer mailer = MailerBuilder
+                .withSMTPServer("host", 465, "user", "password") //FIXME
+                .withTransportStrategy(TransportStrategy.SMTP_TLS)
+                .buildMailer();
+
         try {
-            mailService.send(message);
-        } catch (IOException e) {
+            mailer.sendMail(email);
+        } catch (Exception e) {
             log.log(Level.SEVERE, "Could not send email with attachment", e);
             return false;
         }

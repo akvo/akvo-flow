@@ -3,7 +3,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <packaging>war</packaging>
-  <version>1</version>
+  <version>20200320-135343</version>
 
   <groupId>org.akvo.flow</groupId>
   <artifactId>akvo-flow</artifactId>
@@ -204,6 +204,11 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>2.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.simplejavamail</groupId>
+        <artifactId>simple-java-mail</artifactId>
+        <version>6.0.3</version>
     </dependency>
 
     <!-- test dependencies -->

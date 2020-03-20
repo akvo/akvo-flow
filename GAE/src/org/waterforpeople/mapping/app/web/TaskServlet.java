@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2018, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,18 +19,10 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -45,14 +37,12 @@ import org.apache.commons.io.IOUtils;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.SurveyEventHelper;
 import org.waterforpeople.mapping.serialization.SurveyInstanceHandler;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.exceptions.SignedDataException;
@@ -72,14 +62,11 @@ public class TaskServlet extends AbstractRestApiServlet {
     private static final String TSV_FILENAME = "data.txt";
     private static final String JSON_FILENAME = "data.json";
     private static String DEVICE_FILE_PATH;
-    private static String FROM_ADDRESS;
     private static String BUCKET_NAME;
     private static final long serialVersionUID = -2607990749512391457L;
     private static final Logger log = Logger.getLogger(TaskServlet.class
             .getName());
     private SurveyInstanceDAO siDao;
-    private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
-    private TreeMap<String, String> recepientList = null;
     private static final String OBJECTKEY_PREFIX = "devicezip/";
     
     private static final Object LOCK = new Object();
@@ -87,11 +74,8 @@ public class TaskServlet extends AbstractRestApiServlet {
     public TaskServlet() {
         DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
                 .getProperty("deviceZipPath");
-        FROM_ADDRESS = com.gallatinsystems.common.util.PropertyUtil
-                .getProperty(EMAIL_FROM_ADDRESS_KEY);
         BUCKET_NAME = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
         siDao = new SurveyInstanceDAO();
-        recepientList = MailUtil.loadRecipientList();
     }
 
     /**
@@ -119,7 +103,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         BufferedInputStream deviceZipFileInputStream = null;
         ZipInputStream deviceFilesStream = null;
         Map<String, String> files = null;
-        final ArrayList<SurveyInstance> emptyList = new ArrayList<SurveyInstance>();
+
 
         try {
             conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
@@ -129,12 +113,10 @@ public class TaskServlet extends AbstractRestApiServlet {
         } catch (Exception e) {
             // catchall
             int retry = fileProcessTaskRequest.getRetry();
+
             if (++retry > Constants.MAX_TASK_RETRIES) {
-                String message = String.format("Failed to process file (%s) after (%s) retries.",
-                        url, Constants.MAX_TASK_RETRIES);
-                sendMail(fileProcessTaskRequest, message);
-                log.severe(message + "\n\n" + e.getMessage());
-                return emptyList;
+                // TODO: capture error in Sentry
+                return Collections.emptyList();
             }
 
             // retry processing
@@ -142,7 +124,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             rescheduleTask(fileProcessTaskRequest);
             log.log(Level.WARNING,
                     "Failed to process zip file: Rescheduling... " + url + " : " + e.getMessage());
-            return emptyList;
+            return Collections.emptyList();
         } finally {
             IOUtils.closeQuietly(deviceFilesStream);
         }
@@ -192,7 +174,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             log.log(Level.SEVERE, message);
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
             deviceFile.addProcessingMessage(message);
-            sendMail(fileProcessTaskRequest, message);
+            // TODO: log error in Sentry
         } else {
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
             for (SurveyInstance si : surveyInstances) {
@@ -304,16 +286,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         defaultQueue.add(options);
     }
 
-    /**
-     * Send an email regarding file processing status/outcome
-     */
-    private void sendMail(TaskRequest fileProcessingRequest, String body) {
-        String fileName = fileProcessingRequest.getFileName();
-        String subject = "Device File Processing Error: " + fileName;
-        String messageBody = DEVICE_FILE_PATH + fileName + "\n" + body;
-
-        MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList, subject, messageBody);
-    }
 
     private String getNowDateTimeFormatted() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
@@ -357,18 +329,11 @@ public class TaskServlet extends AbstractRestApiServlet {
     private void ingestFile(TaskRequest req) {
         if (req.getFileName() != null) {
             log.info("	Task->processFile");
-            List<SurveyInstance> surveyInstances = null;
+            List<SurveyInstance> surveyInstances = new ArrayList<>();;
             try {
                 surveyInstances = processFile(req);
             } catch (Exception e) {
-                String message = "Failed to process zip file:" + req.getFileName() + " : "
-                        + e.getMessage();
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                message += "\n" + sw.toString();
-                log.severe(message);
-                sendMail(req, message);
-                surveyInstances = new ArrayList<SurveyInstance>();
+                // TODO: Log error in Sentry
             }
             Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
             SurveyDAO surveyDao = new SurveyDAO();
