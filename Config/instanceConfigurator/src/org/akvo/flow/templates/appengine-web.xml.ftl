@@ -58,6 +58,9 @@
         <property name="eventNotification" value="${eventNotification}" />
         <property name="hereMapsAppId" value="${hereMapsAppId}" />
         <property name="hereMapsAppCode" value="${hereMapsAppCode}" />
+        <property name="oidcDomain" value="${oidcDomain}" />
+        <property name="oidcClientId" value="${oidcClientId}" />
+        <property name="oidcClientSecret" value="${oidcClientSecret}" />
         <property name="emailHost" value="${emailHost}" />
         <property name="emailPort" value="${emailPort}" />
         <property name="emailUser" value="${emailUser}" />

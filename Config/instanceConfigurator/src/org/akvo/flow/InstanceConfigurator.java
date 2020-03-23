@@ -90,11 +90,15 @@ public class InstanceConfigurator {
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
         String signingKey = cli.getOptionValue("sk");
+        String oidcDomain = cli.getOptionValue("oidcDomain");
+        String oidcClientId = cli.getOptionValue("oidcClientId");
+        String oidcClientSecret = cli.getOptionValue("oidcClientSecret");
         String emailHost = cli.getOptionValue("emailHost");
         String emailPort = cli.getOptionValue("emailPort");
         String emailUser = cli.getOptionValue("emailUser");
         String emailPassword = cli.getOptionValue("emailPassword");
         String sentryDSN = cli.getOptionValue("sentryDSN");
+
 
         File configFileHome = new File(outFolder);
 
@@ -243,11 +247,15 @@ public class InstanceConfigurator {
         webData.put("emailTo", emailTo);
         webData.put("organization", orgName);
         webData.put("signingKey", signingKey);
+        webData.put("oidcDomain", oidcDomain);
+        webData.put("oidcClientId", oidcClientId);
+        webData.put("oidcClientSecret", oidcClientSecret);
         webData.put("emailHost", emailHost);
         webData.put("emailPort", emailPort);
         webData.put("emailUser", emailUser);
         webData.put("emailPassword", emailPassword);
         webData.put("sentryDSN", sentryDSN);
+
 
         Template t5 = cfg.getTemplate("appengine-web.xml.ftl");
         t5.process(webData, new FileWriter(new File(configFileHome, "/appengine-web.xml")));
@@ -372,6 +380,18 @@ public class InstanceConfigurator {
         signingKey.setArgs(1);
         signingKey.setRequired(true);
 
+        Option oidcDomain = new Option("oidcDomain", "ODIC IdP domain");
+        oidcDomain.setArgs(1);
+        oidcDomain.setRequired(true);
+
+        Option oidcClientId = new Option("oidcClientId", "OIDC Client ID");
+        oidcClientId.setArgs(1);
+        oidcClientId.setRequired(true);
+
+        Option oidcClientSecret = new Option("oidcClientSecret", "OIDC Client Secret");
+        oidcClientSecret.setArgs(1);
+        oidcClientSecret.setRequired(true);
+
         options.addOption(orgName);
         options.addOption(awsId);
         options.addOption(awsSecret);
@@ -392,6 +412,9 @@ public class InstanceConfigurator {
         options.addOption(hereMapsAppCode);
         options.addOption(alias);
         options.addOption(signingKey);
+        options.addOption(oidcDomain);
+        options.addOption(oidcClientId);
+        options.addOption(oidcClientSecret);
 
         return options;
     }
