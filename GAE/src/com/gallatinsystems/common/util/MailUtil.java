@@ -17,12 +17,16 @@
 package com.gallatinsystems.common.util;
 
 import org.simplejavamail.api.email.Email;
+import org.simplejavamail.api.email.Recipient;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.api.mailer.config.TransportStrategy;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
 
-import java.io.IOException;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -30,12 +34,6 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 
 
@@ -46,6 +44,11 @@ public class MailUtil {
     private static final String RECIPIENT_LIST_STRING = "recipientListString";
     private static final Logger log = Logger
             .getLogger(MailUtil.class.getName());
+
+    public static final String EMAIL_HOST = "emailHost";
+    public static final String EMAIL_PORT = "emailPort";
+    public static final String EMAIL_USER = "emailUser";
+    public static final String EMAIL_PASSWORD = "emailPassword";
 
     /**
      * conviencence method for sending email to a single recipient. In this case, the email address
@@ -75,27 +78,36 @@ public class MailUtil {
      * @param messageBody
      * @return
      */
-    public static Boolean sendMail(String fromAddress, String fromName,
-            TreeMap<String, String> recipientList, String subject,
-            String messageBody) {
+    public static Boolean sendMail(String fromAddress, String fromName, Map<String, String> recipientList,
+                                   String subject, String messageBody) {
 
         try {
-            Message msg = createMessage();
-            msg.setFrom(new InternetAddress(fromAddress, fromName));
-            for (Map.Entry<String, String> recipientMap : recipientList
-                    .entrySet()) {
-                msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-                        recipientMap.getKey(), recipientMap.getValue()));
-            }
-            msg.setSubject(subject);
-            if (messageBody != null) {
-                msg.setText(messageBody);
-            } else {
-                msg.setText("");
-            }
-            Transport.send(msg);
-            return true;
+            List<Recipient> recipients = new ArrayList<>();
 
+            for (Map.Entry<String, String> recipientMap : recipientList.entrySet()) {
+                recipients.add(new Recipient(recipientMap.getKey(), recipientMap.getValue(), Message.RecipientType.BCC));
+            }
+
+            Email email = EmailBuilder.startingBlank()
+                    .from(fromName, fromAddress)
+                    .withSubject(subject)
+                    .withPlainText(messageBody)
+                    .withRecipients(recipients)
+                    .buildEmail();
+
+            String host = PropertyUtil.getProperty(EMAIL_HOST);
+            Integer port = Integer.valueOf(PropertyUtil.getProperty(EMAIL_PORT));
+            String username = PropertyUtil.getProperty(EMAIL_USER);
+            String password = PropertyUtil.getProperty(EMAIL_PASSWORD);
+
+            Mailer mailer = MailerBuilder
+                    .withSMTPServer(host, port, username, password)
+                    .withTransportStrategy(TransportStrategy.SMTP_TLS)
+                    .buildMailer();
+
+            mailer.sendMail(email);
+
+            return true;
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not send mail subj:" + subject + "\n" + messageBody,
                     e);
