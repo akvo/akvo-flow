@@ -36,24 +36,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-
 /**
  * utility class for using the Google email service to send system-generated emails
  */
 public class MailUtil {
-    private static final String RECIPIENT_LIST_STRING = "recipientListString";
-    private static final Logger log = Logger
-            .getLogger(MailUtil.class.getName());
-
     public static final String EMAIL_HOST = "emailHost";
     public static final String EMAIL_PORT = "emailPort";
     public static final String EMAIL_USER = "emailUser";
     public static final String EMAIL_PASSWORD = "emailPassword";
+    private static final String RECIPIENT_LIST_STRING = "recipientListString";
+    private static final Logger log = Logger
+            .getLogger(MailUtil.class.getName());
 
     /**
      * conviencence method for sending email to a single recipient. In this case, the email address
      * is used as the recipient name
-     * 
+     *
      * @param fromAddress
      * @param fromName
      * @param recipient
@@ -62,7 +60,7 @@ public class MailUtil {
      * @return
      */
     public static Boolean sendMail(String fromAddress, String fromName,
-            String recipient, String subject, String messageBody) {
+                                   String recipient, String subject, String messageBody) {
         TreeMap<String, String> recip = new TreeMap<String, String>();
         recip.put(recipient, recipient);
         return sendMail(fromAddress, fromName, recip, subject, messageBody);
@@ -70,7 +68,7 @@ public class MailUtil {
 
     /**
      * sends an email to a list of recipients
-     * 
+     *
      * @param fromAddress
      * @param fromName
      * @param recipientList
@@ -117,7 +115,7 @@ public class MailUtil {
 
     /**
      * loads the recipient list configured in the application properties (appengine-web.xml)
-     * 
+     *
      * @return
      */
     public static TreeMap<String, String> loadRecipientList() {
@@ -140,7 +138,7 @@ public class MailUtil {
 
     /**
      * sends an html email to 1 or more recipients with an optional attachment
-     * 
+     *
      * @param fromAddr
      * @param toAddressList
      * @param subject
@@ -151,8 +149,8 @@ public class MailUtil {
      * @return
      */
     public static Boolean sendMail(String fromAddr, List<String> toAddressList,
-            String subject, String body, byte[] attachmentBytes,
-            String attachmentName, String mimeType) {
+                                   String subject, String body, byte[] attachmentBytes,
+                                   String attachmentName, String mimeType) {
 
         Email email = EmailBuilder.startingBlank()
                 .from(fromAddr)
@@ -162,8 +160,13 @@ public class MailUtil {
                 .withAttachment(attachmentName, attachmentBytes, mimeType)
                 .buildEmail();
 
+        String host = PropertyUtil.getProperty(EMAIL_HOST);
+        Integer port = Integer.valueOf(PropertyUtil.getProperty(EMAIL_PORT));
+        String username = PropertyUtil.getProperty(EMAIL_USER);
+        String password = PropertyUtil.getProperty(EMAIL_PASSWORD);
+
         Mailer mailer = MailerBuilder
-                .withSMTPServer("host", 465, "user", "password") //FIXME
+                .withSMTPServer(host, port, username, password)
                 .withTransportStrategy(TransportStrategy.SMTP_TLS)
                 .buildMailer();
 
