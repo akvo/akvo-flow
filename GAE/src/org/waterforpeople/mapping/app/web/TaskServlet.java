@@ -31,6 +31,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.sentry.Sentry;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
 import org.apache.commons.io.IOUtils;
@@ -68,7 +69,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             .getName());
     private SurveyInstanceDAO siDao;
     private static final String OBJECTKEY_PREFIX = "devicezip/";
-    
+
     private static final Object LOCK = new Object();
 
     public TaskServlet() {
@@ -76,6 +77,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                 .getProperty("deviceZipPath");
         BUCKET_NAME = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
         siDao = new SurveyInstanceDAO();
+        Sentry.init();
     }
 
     /**
@@ -115,7 +117,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             int retry = fileProcessTaskRequest.getRetry();
 
             if (++retry > Constants.MAX_TASK_RETRIES) {
-                // TODO: capture error in Sentry
+                Sentry.capture("Device file processing error: " +  BUCKET_NAME + "/"  + url);
                 return Collections.emptyList();
             }
 
@@ -149,7 +151,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setImei(imei);
         deviceFile.setChecksum(checksum);
         deviceFile.setUploadDateTime(new Date());
-        
+
         final List<SurveyInstance> surveyInstances = new ArrayList<>();
         if (files.containsKey(JSON_FILENAME)) {
             // Process JSON-formatted response.
@@ -167,14 +169,14 @@ public class TaskServlet extends AbstractRestApiServlet {
                 }
             }
         }
-        
+
         if (surveyInstances.isEmpty()) {
             // No data
             String message = "Error empty file: " + deviceFile.getURI();
             log.log(Level.SEVERE, message);
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
             deviceFile.addProcessingMessage(message);
-            // TODO: log error in Sentry
+            Sentry.capture(message);
         } else {
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
             for (SurveyInstance si : surveyInstances) {
@@ -188,7 +190,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                         si.getSurveyId(), si.getKey().getId());
             }
         }
-        
+
         dfDao.save(deviceFile);
         if (dfList != null) {
             for (DeviceFiles dfitem : dfList) {
@@ -199,8 +201,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 
         return surveyInstances;
     }
-    
-    public static Map<String, String> extract(ZipInputStream deviceZipFileInputStream) 
+
+    public static Map<String, String> extract(ZipInputStream deviceZipFileInputStream)
             throws ZipException, IOException, SignedDataException {
         Map<String, String> files = new HashMap<>();
         ZipEntry entry;
@@ -213,7 +215,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             while ((size = deviceZipFileInputStream.read(buffer, 0, buffer.length)) != -1) {
                 out.write(buffer, 0, size);
             }
-            
+
             // Skip empty files
             if (out.size() > 0) {
                 files.put(name, out.toString("UTF-8"));
@@ -221,7 +223,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         }
         return files;
     }
-    
+
     /**
      * Group lines by survey instance.
      * @param content
@@ -235,7 +237,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             if (parts.length < 5) {
                 parts = line.split(",");
             }
-            
+
             String id = parts.length >= 2 ? parts[1] : null;
             if (id != null) {
                 List<String> lines = instances.get(id);
@@ -246,7 +248,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                 instances.put(id, lines);
             }
         }
-            
+
         return instances;
     }
 
@@ -333,7 +335,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             try {
                 surveyInstances = processFile(req);
             } catch (Exception e) {
-                // TODO: Log error in Sentry
+                Sentry.capture(e);
             }
             Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
             SurveyDAO surveyDao = new SurveyDAO();

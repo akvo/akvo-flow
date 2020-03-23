@@ -210,6 +210,11 @@
         <artifactId>simple-java-mail</artifactId>
         <version>6.0.3</version>
     </dependency>
+    <dependency>
+        <groupId>io.sentry</groupId>
+        <artifactId>sentry</artifactId>
+        <version>1.7.30</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
