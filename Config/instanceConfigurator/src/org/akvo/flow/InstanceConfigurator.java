@@ -90,6 +90,11 @@ public class InstanceConfigurator {
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
         String signingKey = cli.getOptionValue("sk");
+        String emailHost = cli.getOptionValue("emailHost");
+        String emailPort = cli.getOptionValue("emailPort");
+        String emailUser = cli.getOptionValue("emailUser");
+        String emailPassword = cli.getOptionValue("emailPassword");
+        String sentryDSN = cli.getOptionValue("sentryDSN");
 
         File configFileHome = new File(outFolder);
 
@@ -209,7 +214,7 @@ public class InstanceConfigurator {
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
         apkData.put("awsSecretKey", accessKeys.get(apkUser).getSecretAccessKey());
         apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
-	apkData.put("instanceUrl", "https://" + alias);
+        apkData.put("instanceUrl", "https://" + alias);
         apkData.put("restApiKey", apiKey);
 
         Template t3 = cfg.getTemplate("survey.properties.ftl");
@@ -238,6 +243,11 @@ public class InstanceConfigurator {
         webData.put("emailTo", emailTo);
         webData.put("organization", orgName);
         webData.put("signingKey", signingKey);
+        webData.put("emailHost", emailHost);
+        webData.put("emailPort", emailPort);
+        webData.put("emailUser", emailUser);
+        webData.put("emailPassword", emailPassword);
+        webData.put("sentryDSN", sentryDSN);
 
         Template t5 = cfg.getTemplate("appengine-web.xml.ftl");
         t5.process(webData, new FileWriter(new File(configFileHome, "/appengine-web.xml")));
