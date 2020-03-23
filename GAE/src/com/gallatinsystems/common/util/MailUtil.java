@@ -24,13 +24,10 @@ import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
 
 import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,9 +41,7 @@ public class MailUtil {
     public static final String EMAIL_PORT = "emailPort";
     public static final String EMAIL_USER = "emailUser";
     public static final String EMAIL_PASSWORD = "emailPassword";
-    private static final String RECIPIENT_LIST_STRING = "recipientListString";
-    private static final Logger log = Logger
-            .getLogger(MailUtil.class.getName());
+    private static final Logger log = Logger.getLogger(MailUtil.class.getName());
 
     /**
      * conviencence method for sending email to a single recipient. In this case, the email address
@@ -61,7 +56,7 @@ public class MailUtil {
      */
     public static Boolean sendMail(String fromAddress, String fromName,
                                    String recipient, String subject, String messageBody) {
-        TreeMap<String, String> recip = new TreeMap<String, String>();
+        TreeMap<String, String> recip = new TreeMap<>();
         recip.put(recipient, recipient);
         return sendMail(fromAddress, fromName, recip, subject, messageBody);
     }
@@ -111,29 +106,6 @@ public class MailUtil {
                     e);
             return false;
         }
-    }
-
-    /**
-     * loads the recipient list configured in the application properties (appengine-web.xml)
-     *
-     * @return
-     */
-    public static TreeMap<String, String> loadRecipientList() {
-        TreeMap<String, String> recipientList = new TreeMap<String, String>();
-        String recipientListString = com.gallatinsystems.common.util.PropertyUtil
-                .getProperty(RECIPIENT_LIST_STRING);
-        StringTokenizer st = new StringTokenizer(recipientListString, "|");
-        while (st.hasMoreTokens()) {
-            String[] emailParts = st.nextToken().split(";");
-            recipientList.put(emailParts[0], emailParts[1]);
-        }
-        return recipientList;
-    }
-
-    private static Message createMessage() {
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-        return new MimeMessage(session);
     }
 
     /**
