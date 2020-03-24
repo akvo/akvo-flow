@@ -156,7 +156,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
             body += "\n\n" + S3Util.getBrowserLink(bucketName, objectKey);
         }
         MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY),
-                "FLOW", req.getEmail(), EMAIL_SUB, body);
+                "Akvo Flow", req.getEmail(), EMAIL_SUB, body);
     }
 
     /**

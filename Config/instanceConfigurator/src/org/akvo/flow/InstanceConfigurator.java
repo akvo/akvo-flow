@@ -392,6 +392,22 @@ public class InstanceConfigurator {
         oidcClientSecret.setArgs(1);
         oidcClientSecret.setRequired(true);
 
+        Option emailHost = new Option("emailHost", "SMTP server host");
+        emailHost.setArgs(1);
+        emailHost.setRequired(true);
+
+        Option emailPort = new Option("emailPort", "SMTP server port");
+        emailPort.setArgs(1);
+        emailPort.setRequired(true);
+
+        Option emailUser = new Option("emailUser", "SMTP username");
+        emailUser.setArgs(1);
+        emailUser.setRequired(true);
+
+        Option emailPassword = new Option("emailPassword", "SMTP password");
+        emailPassword.setArgs(1);
+        emailPassword.setRequired(true);
+
         options.addOption(orgName);
         options.addOption(awsId);
         options.addOption(awsSecret);
@@ -415,6 +431,10 @@ public class InstanceConfigurator {
         options.addOption(oidcDomain);
         options.addOption(oidcClientId);
         options.addOption(oidcClientSecret);
+        options.addOption(emailHost);
+        options.addOption(emailPort);
+        options.addOption(emailUser);
+        options.addOption(emailPassword);
 
         return options;
     }
