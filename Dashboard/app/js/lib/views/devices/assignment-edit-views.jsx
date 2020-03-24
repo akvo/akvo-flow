@@ -574,6 +574,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return false;
       }
 
+      if (parseInt(parentId, 10) === 0) {
+        this.set('selectedSurveyGroupId', null);
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+      }
+
       // empty forms when a new folder is picked
       this.forms = {};
 
