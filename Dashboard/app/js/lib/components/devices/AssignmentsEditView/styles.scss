@@ -88,6 +88,7 @@
         background: #e8e8e8;
         padding: 5px 0px;
         height: 470px;
+        overflow: auto;
 
         li {
           display: flex;
@@ -161,6 +162,7 @@
         flex: 4;
         color: #444;
         height: 470px;
+        overflow: auto;
 
         .settings {
           padding: 15px 25px;
