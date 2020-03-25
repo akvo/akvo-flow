@@ -21,7 +21,8 @@ log Staging app
 
 mvn appengine:stage
 
-log Deploying version 1
+version=$(git describe)
+log Deploying version "${version}"
 
 (
     cd "./target/appengine-staging"
@@ -29,15 +30,15 @@ log Deploying version 1
 	   WEB-INF/appengine-generated/queue.yaml \
 	   WEB-INF/appengine-generated/index.yaml \
 	   WEB-INF/appengine-generated/cron.yaml \
-	   --promote --quiet --version=1 --project="${PROJECT_ID}"
+	   --promote --quiet --version="${version}" \
+	   --project="${PROJECT_ID}"
 )
 
-version=$(git describe)
 archive_name="${version}.zip"
 (
     cd target
     rm -rf appengine-staging/WEB-INF/appengine-web.xml
-    zip "${archive_name}" -r appengine-staging/*
+    zip "${archive_name}" -q -r appengine-staging/*
 )
 
 gsutil cp "target/${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
