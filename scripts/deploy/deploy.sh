@@ -9,7 +9,7 @@ green='\033[0;32m'
 nc='\033[0m'
 
 if [[ "$#" -lt 2 ]]; then
-    echo "Usage: ./scripts/deploy/run.sh <version> <instance-id-1> [<instance-id-2> ... <instance-id-n>]"
+    echo "Usage: ./scripts/deploy/run.sh <version> [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"
     exit 1
 fi
 
@@ -20,70 +20,93 @@ deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
 
 mkdir -p "${tmp}"
-mkdir -p "${tmp}/parallel"
 
 # Move to tmp folder and work there
 cd "${tmp}"
 
-export config_repo="${CONFIG_REPO:=${tmp}/akvo-flow-server-config}"
-export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
-
 gh_user="${GH_USER:=unknown}"
 gh_token="${GH_TOKEN:=unknown}"
-
-# Force login
-gcloud auth login --brief --activate --force
-
-akvo_org_account=$( (gcloud auth list --filter="active" 2>&1 | grep -E '^\*.*akvo\.org$') || echo "")
-
-if [[ -z "${akvo_org_account}" ]]; then
-    echo >&2 "Unable to detect an akvo.org account for gcloud"
-    exit 1
-fi
 
 echo "Cloning akvo-flow-server-config..."
 
 if [[ "${gh_user}" != "unknown" ]] && [[ "${gh_token}" != "unknown" ]]; then
     git clone --depth=50 --branch=master \
-	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
+	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" > /dev/null
 else
     echo -e "${yellow}WARNING:${nc} If you have 2FA enabled in GitHub, make sure you have a
              ${green}personal access token${nc} available and use it as password"
     echo "Visit for more info: https://blog.github.com/2013-09-03-two-factor-authentication/#how-does-it-work-for-command-line-git"
     git clone --depth=50 --branch=master \
-	"https://github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
+	"https://github.com/akvo/akvo-flow-server-config.git" > /dev/null
 fi
 
-gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
-unzip "${version}.zip"
+config="akvo-flow-server-config"
+export config
 
-if [[ ! -d "appengine-staging" ]]; then
-    echo "Staging folder is not present"
-    exit 1
+gcloud auth activate-service-account --key-file="${config}/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
+
+if [[ "${1}" == "all" ]]; then
+
+    find "${config}" -name 'appengine-web.xml' | awk -F'/' '{print $2}' > instances.txt
+    find "${config}" -name '.skip-deployment' | awk -F'/' '{print $2}' > skip.txt
+
+    cat < skip.txt |  while IFS= read -r line
+    do
+	sed -i "/$line/d" instances.txt
+    done
+else
+    echo "$@" > instances.tmp
+    tr ' ' '\n' < instances.tmp > instances.txt
 fi
+
+access_token=$(gcloud auth print-access-token)
+export access_token
+
+# Get version definition
+api_root="https://appengine.googleapis.com/v1"
+export api_root
+
+curl -s \
+     -H "Authorization: Bearer ${access_token}" \
+     -o uat1.full.json \
+     "${api_root}/apps/akvoflow-uat1/services/default/versions/${version}?view=FULL"
+
+# Cleanup
+jq -M '. | {id, instanceClass, runtime, env, threadsafe, handlers, deployment}' uat1.full.json > uat1.tmp
+
+jq -M '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' uat1.tmp > uat1.final.json
+
+uat1_sha1sum=$(jq -M -r '.deployment.files["WEB-INF/appengine-web.xml"].sha1Sum' uat1.final.json)
+export uat1_sha1sum
 
 function deploy_instance {
     instance_id="${1}"
-    staging_dir="appengine-staging-${1}"
+    instance_sha1sum=$(sha1sum "${config}/${instance_id}/appengine-web.xml" | awk '{print $1}')
+    instance_file="${instance_id}.final.json"
 
-    echo "Copying staging dir to ${staging_dir}"
-    cp -r appengine-staging "${staging_dir}"
+    cp uat1.final.json "${instance_file}"
 
-    echo "Deploying ${instance_id} from ${staging_dir}"
+    sed -i \
+	-e "s|staging.akvoflow-uat1.appspot.com/${uat1_sha1sum}|staging.${instance_id}.appspot.com/${uat1_sha1sum}|" \
+	-e "s|${uat1_sha1sum}|${instance_sha1sum}|g" \
+	"${instance_file}"
 
-    cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
-
-    gcloud app deploy "${staging_dir}/app.yaml" \
-	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
-	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
-	   "${staging_dir}/WEB-INF/appengine-generated/cron.yaml" \
-	   --promote --quiet --version=1 --project="${instance_id}"
+    curl -s \
+     -X POST \
+     -T "${instance_file}" \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer ${access_token}" \
+     -o "${instance_id}-operation.json" \
+     "${api_root}/apps/${instance_id}/services/default/versions"
 }
 
 export -f deploy_instance
 
-echo "Deploying instances... $*"
+echo "Deploying instances..."
 
-parallel --results "${tmp}/parallel" --retries 3 --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+cat < instances.txt |  while IFS= read -r instance
+do
+    deploy_instance "${instance}"
+done
 
 echo "Done"
