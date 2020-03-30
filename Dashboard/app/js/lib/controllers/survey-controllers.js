@@ -421,6 +421,22 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.createNewProject(false);
   },
 
+  copyFromLibrary() {
+    const currentFolder = this.get('currentProject');
+    const folderName = (currentFolder && currentFolder.get('name')) || '';
+
+    const style = 'position:relative;top:auto;left:auto;margin:0 auto;width:80%;';
+
+    FLOW.dialogControl.set('elementStyle', style);
+    FLOW.dialogControl.set('showDialog', true);
+    FLOW.dialogControl.set('header', 'Copy from Library');
+    FLOW.dialogControl.set('customHtml', '<div>Testing</div>');
+    FLOW.dialogControl.set(
+      'message',
+      `Please select one of the surveys you want to copy into: ${folderName}`
+    );
+  },
+
   createNewProject(folder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;

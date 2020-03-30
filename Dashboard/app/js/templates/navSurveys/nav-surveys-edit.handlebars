@@ -28,14 +28,14 @@
             <a {{action "doManageNotifications" target="this" }} class="btnOutline"><span>+</span>{{t _manage_notifications}}</a>
         </li>
     </ul>
-  
+
     <ul class="newSurveyInfoUl" id="">
         <li>
             <h3>{{t _survey_summary}}</h3>
         </li>
-        <li>{{t _number_of_question_groups}}: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span> 
+        <li>{{t _number_of_question_groups}}: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span>
         </li>
-        <li>{{t _number_of_questions}}: <span id="numberQuestion">{{view.numberQuestions}}</span> 
+        <li>{{t _number_of_questions}}: <span id="numberQuestion">{{view.numberQuestions}}</span>
         </li>
         <li>{{t _status}}: {{#if view.isPublished}} <span class="surveyPublished">
       {{t _published}}</span> {{else}} <span class="surveyNotPublished">

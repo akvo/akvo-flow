@@ -112,6 +112,8 @@ FLOW.dialogControl = Ember.Object.create({
   activeAction: null,
   showOK: true,
   showCANCEL: true,
+  elementStyle: '',
+  customHtml: '',
 
   confirm(event) {
     this.set('activeView', event.view);
@@ -250,5 +252,7 @@ FLOW.dialogControl = Ember.Object.create({
 
   doCANCEL() {
     this.set('showDialog', false);
+    this.set('elementStyle', '');
+    this.set('customHtml', '');
   },
 });
