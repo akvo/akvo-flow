@@ -14,6 +14,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 15px;
 
       .title {
         font-weight: bold;
@@ -163,18 +164,17 @@
         height: 470px;
 
         .settings {
-          padding: 15px 25px;
+          padding: 25px 25px;
           width: 45%;
 
           .assignment-date {
-            margin-top: 15px;
             margin-bottom: 2em;
 
             .date-picker {
               display: flex;
               width: 85%;
               justify-content: space-between;
-              padding: 15px 0px 3px;
+              padding-bottom: 3px;
 
               i.fa {
                 margin-right: 5px;
@@ -201,12 +201,8 @@
             }
           }
 
-          .assignment-survery-folder {
-            margin-bottom: 1.5em;
-          }
-
-          .assignment-form-selector {
-            margin-top: 2.3em;
+          .assignment-survey-selector {
+            margin-bottom: 2em;
 
             .folder-selector {
               select {
@@ -228,6 +224,9 @@
                 background-position: 125px center;
               }
             }
+          }
+
+          .assignment-form-selector {
 
             .form-selector {
               .form {
@@ -613,7 +612,8 @@
       justify-content: space-between;
       align-items: center;
 
-      .back-action, .section-list {
+      .back-action,
+      .section-list {
         flex: 1;
       }
 

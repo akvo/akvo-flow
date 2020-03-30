@@ -38,6 +38,21 @@ export default class FormSection extends React.Component {
           </div>
         </div>
 
+        <div className="assignment-survey-selector">
+          <p className="heading">
+            <span className="title">Survey</span>
+          </p>
+
+          <div className="folder-selector">
+            <FolderSurveySelectorView
+              initialSurveyGroup={data.initialSurveyGroup}
+              surveyGroups={data.surveyGroups}
+              onSelectSurvey={actions.handleSurveySelect}
+              strings={strings}
+            />
+          </div>
+        </div>
+
         <div className="assignment-form-selector">
           <p className="heading">
             <span className="title">{strings.forms}</span>
@@ -47,18 +62,6 @@ export default class FormSection extends React.Component {
           </p>
 
           <div className="form-selector">
-            <br />
-
-            <div className="folder-selector">
-              <FolderSurveySelectorView
-                initialSurveyGroup={data.initialSurveyGroup}
-                surveyGroups={data.surveyGroups}
-                onSelectSurvey={actions.handleSurveySelect}
-                strings={strings}
-              />
-            </div>
-            <br />
-
             {Object.keys(data.forms).length ? (
               <FormSelectorView forms={data.forms} onCheck={actions.handleFormCheck} />
             ) : (
