@@ -1,0 +1,16 @@
+blocks:
+  - name: "Setting things up"
+    task:
+      jobs:
+        - name: Compile
+          commands:
+            - checkout
+            - echo "Linting code"
+            - echo "Compiling code"
+  - name: "Unit tests"
+    task:
+      jobs:
+        - name: Unit
+          commands:
+            - checkout
+            - echo "Running unit tests"
