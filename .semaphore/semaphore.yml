@@ -4,18 +4,10 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: "Setting things up"
+  - name: "Build and test"
     task:
       jobs:
-        - name: Compile
+        - name: Build and test
           commands:
             - checkout
-            - echo "Linting code"
-            - echo "Compiling code"
-  - name: "Unit tests"
-    task:
-      jobs:
-        - name: Unit
-          commands:
-            - checkout
-            - echo "Running unit tests"
+            - ./ci/bootstrap-build.sh /app/src/ci/build.sh
