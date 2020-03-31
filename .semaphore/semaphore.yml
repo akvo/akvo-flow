@@ -11,3 +11,4 @@ blocks:
           commands:
             - checkout
             - ./ci/bootstrap-build.sh /app/src/ci/build.sh
+            - cache store "m2-$(checksum GAE/pom.xml)" "$HOME/.m2"
