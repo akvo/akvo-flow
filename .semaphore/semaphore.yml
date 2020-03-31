@@ -6,9 +6,15 @@ agent:
 blocks:
   - name: "Build and test"
     task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "m2-$(checksum GAE/pom.xml)"
+      epilogue:
+        commands:
+          - cache store "m2-$(checksum GAE/pom.xml)" "$HOME/.m2"
       jobs:
         - name: Build and test
           commands:
             - checkout
             - ./ci/bootstrap-build.sh /app/src/ci/build.sh
-            - cache store "m2-$(checksum GAE/pom.xml)" "$HOME/.m2"
