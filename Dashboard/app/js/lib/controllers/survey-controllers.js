@@ -437,6 +437,18 @@ FLOW.projectControl = Ember.ArrayController.create({
     );
   },
 
+  publishToLibrary() {
+    const currentProject = this.get('currentProject');
+    const projectName = (currentProject && currentProject.get('name')) || '';
+
+    const style = 'position:relative;top:auto;left:auto;margin:0 auto;width:80%;';
+
+    FLOW.dialogControl.set('elementStyle', style);
+    FLOW.dialogControl.set('showDialog', true);
+    FLOW.dialogControl.set('header', `Publish ${projectName} to Library`);
+    FLOW.dialogControl.set('customHtml', '<div>Testing</div>');
+  },
+
   createNewProject(folder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;

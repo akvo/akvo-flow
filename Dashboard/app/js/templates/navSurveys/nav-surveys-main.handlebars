@@ -69,7 +69,7 @@
               <li><a class="saveProject noChanges">Publish to Library</a></li>
               <li><a class="saveProject" {{action 'saveProject' target="FLOW.projectControl"}}>{{t _save}}</a></li>
             {{else}}
-              <li><a class="saveProject {{action 'publishProject' target="FLOW.projectControl"}}">Publish to Libray</a></li>
+              <li><a class="saveProject" {{action 'publishToLibrary' target="FLOW.projectControl"}}>Publish to Libray</a></li>
               <li><a class="saveProject noChanges">{{t _save}}</a></li>
             {{/if}}
           </ul>
