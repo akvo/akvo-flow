@@ -19,7 +19,7 @@ docker run --rm \
        --volume "$(pwd):/akvo-flow:delegated" \
        --volume "$(pwd)/tmp:/tmp:delegated" \
        --workdir "/akvo-flow" \
-       --env GH_USER \
-       --env GH_TOKEN \
+       --env FLOW_GH_TOKEN \
+       --env FLOW_CONFIG_REPO \
        "google/cloud-sdk:${CLOUD_SDK_VERSION}-alpine" \
        "/akvo-flow/scripts/deploy/bootstrap-deploy.sh" "$@"
