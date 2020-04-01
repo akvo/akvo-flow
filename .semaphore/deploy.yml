@@ -7,7 +7,7 @@ blocks:
   - name: Deploy
     task:
       secrets:
-        - akvo-flow-secrets
+        - name: akvo-flow-secrets
       jobs:
         - name: UAT deployment
           commands:
