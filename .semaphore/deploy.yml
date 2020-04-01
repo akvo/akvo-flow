@@ -4,7 +4,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: Deploy
+  - name: UAT deployment
     task:
       prologue:
         commands:
@@ -15,10 +15,19 @@ blocks:
       secrets:
         - name: akvo-flow-secrets
       jobs:
-        - name: UAT deployment
+        - name: UAT deploy
           commands:
             - ci/deploy.sh
-        - name: Dark deployment
-          dependencies: ["UAT deployment"]
+  - name: Dark deployment
+    dependencies: ["UAT deployment"]
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "m2-$(checksum GAE/pom.xml)"
+          - sudo chown -R "$USER:$USER" "$HOME/.m2"
+          - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+      jobs:
+        - name: Dark deploy
           commands:
             - scripts/deploy/run.sh 20200325-143651 all
