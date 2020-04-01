@@ -14,7 +14,7 @@ blocks:
       epilogue:
         commands:
           - cache store "m2-$(checksum GAE/pom.xml)" "$HOME/.m2"
-          - cache store "npm-$(checksum Dashboard/package.json)" "$HOME/.cache"
+          - cache store "npm-$(checksum Dashboard/package.json)" "$HOME/.npm"
       jobs:
         - name: Build and test
           commands:
