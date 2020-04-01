@@ -18,6 +18,8 @@ curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
      --header "Authorization: token ${FLOW_GH_TOKEN}" \
      "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
 
+[[ ! -f "./target/akvo-flow/WEB-INF/appengine-web.xml" ]] && { echo "Required appengine-web.xml not found"; exit 1; }
+
 log Staging app
 
 mvn appengine:stage
