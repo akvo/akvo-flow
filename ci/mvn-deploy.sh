@@ -15,7 +15,7 @@ gcloud config set compute/zone europe-west1-d
 log Requesting "${PROJECT_ID}" config
 
 curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
-     -h "Authorization: token ${FLOW_GH_TOKEN}" \
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
      "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
 
 log Staging app

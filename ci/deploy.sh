@@ -28,7 +28,7 @@ if [[ -n "${CI_TAG}" ]]; then
 fi
 
 curl --location --silent --output ./ci/akvoflow-uat1.json \
-     -h "Authorization: token ${FLOW_GH_TOKEN}" \
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
      "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
 docker run \
