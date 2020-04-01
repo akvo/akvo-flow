@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017-2019 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2020 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -16,7 +16,7 @@
 #  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 #
 
-set -e
+set -eu
 
 SRC_DIR="/app/src"
 
@@ -35,7 +35,7 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-if [[ "${TRAVIS_BRANCH}" != "master" ]] && [[ -z "$TRAVIS_TAG" ]]; then
+if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "$CI_TAG" ]]; then
   exit 0
 fi
 

@@ -8,14 +8,15 @@ function log {
 
 cd /app/src/GAE
 
-gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=/app/src/ci/akvoflow-uat1.p12
+gcloud auth activate-service-account --key-file=/app/src/ci/akvoflow-uat1.json
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
 
 log Requesting "${PROJECT_ID}" config
 
 curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
-     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
+     "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
 
 log Staging app
 
