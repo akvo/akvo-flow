@@ -11,10 +11,12 @@ blocks:
           - checkout
           - cache restore "m2-$(checksum GAE/pom.xml)"
           - cache restore "npm-$(checksum Dashboard/package.json)"
+          - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
       epilogue:
         commands:
           - cache store "m2-$(checksum GAE/pom.xml)" "$HOME/.m2"
           - cache store "npm-$(checksum Dashboard/package.json)" "$HOME/.npm"
+          - cache store "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH" "$HOME/.cache"
       jobs:
         - name: Build and test
           commands:

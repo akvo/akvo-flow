@@ -12,6 +12,7 @@ blocks:
           - cache restore "m2-$(checksum GAE/pom.xml)"
           - sudo chown -R "$USER:$USER" "$HOME/.m2"
           - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+          - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
       secrets:
         - name: akvo-flow-secrets
       jobs:
@@ -26,6 +27,7 @@ blocks:
           - cache restore "m2-$(checksum GAE/pom.xml)"
           - sudo chown -R "$USER:$USER" "$HOME/.m2"
           - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+          - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
       secrets:
         - name: akvo-flow-secrets
       jobs:
