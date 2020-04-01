@@ -18,3 +18,7 @@ blocks:
         - name: UAT deployment
           commands:
             - ci/deploy.sh
+        - name: Dark deployment
+          dependencies: ["UAT deployment"]
+          commands:
+            - scripts/deploy/run.sh 20200325-143651 all
