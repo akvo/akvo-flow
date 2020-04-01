@@ -6,6 +6,10 @@ agent:
 blocks:
   - name: Deploy
     task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
       secrets:
         - name: akvo-flow-secrets
       jobs:
