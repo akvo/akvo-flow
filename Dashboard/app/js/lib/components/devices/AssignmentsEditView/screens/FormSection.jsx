@@ -38,7 +38,7 @@ export default class FormSection extends React.Component {
           </div>
         </div>
 
-        <div className="assignment-survey-selector">
+        <div id="folder-selector" className="assignment-survey-selector">
           <p className="heading">
             <span className="title">Survey</span>
           </p>
@@ -53,7 +53,7 @@ export default class FormSection extends React.Component {
           </div>
         </div>
 
-        <div className="assignment-form-selector">
+        <div id="form-selector" className="assignment-form-selector">
           <p className="heading">
             <span className="title">{strings.forms}</span>
             <span className="info">

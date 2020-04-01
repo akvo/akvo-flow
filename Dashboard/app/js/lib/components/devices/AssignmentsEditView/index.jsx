@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-import OnboardingModal from './__partials/OnboardingModal';
 import MainBody from './MainBody';
 
 import AssignmentContext from './assignment-context';
@@ -9,21 +8,11 @@ import './styles.scss';
 
 export default class AssignmentsEdit extends React.Component {
   state = {
-    modalIsOpen: false,
     data: {
       assignmentName: this.props.inputValues.assignmentName,
       startDate: this.props.inputValues.startDate,
       endDate: this.props.inputValues.toDate,
     },
-  };
-
-  componentDidMount() {
-    this.toggleModal();
-  }
-
-  toggleModal = () => {
-    const { modalIsOpen } = this.state;
-    this.setState({ modalIsOpen: !modalIsOpen });
   };
 
   // event handlers
@@ -101,14 +90,6 @@ export default class AssignmentsEdit extends React.Component {
         <AssignmentContext.Provider value={contextData}>
           <MainBody />
         </AssignmentContext.Provider>
-
-        {/* render modal */}
-        <OnboardingModal
-          isOpen={this.state.modalIsOpen}
-          toggleModal={this.toggleModal}
-          strings={this.props.strings}
-          id="onboardingModal"
-        />
       </div>
     );
   }
