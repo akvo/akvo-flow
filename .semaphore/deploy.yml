@@ -1,0 +1,14 @@
+version: v1.0
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Deploy
+    task:
+      secrets:
+        - akvo-flow-secrets
+      jobs:
+        - name: UAT deployment
+          commands:
+            - ci/deploy.sh

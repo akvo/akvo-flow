@@ -10,9 +10,9 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "${CI_TAG}" ]]; then
-  exit 0
-fi
+# if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "${CI_TAG}" ]]; then
+#   exit 0
+# fi
 
 if [[ -n "${CI_PULL_REQUEST}" ]]; then
     exit 0

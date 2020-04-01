@@ -18,3 +18,8 @@ blocks:
           commands:
             - checkout
             - ./ci/bootstrap-build.sh /app/src/ci/build.sh
+promotions:
+  - name: Deployments
+    pipeline_file: deploy.yml
+    auto_promote:
+      when: "result = 'passed'"
