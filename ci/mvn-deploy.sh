@@ -8,7 +8,7 @@ function log {
 
 cd /app/src/GAE
 
-gcloud auth activate-service-account --key-file=/app/src/ci/akvoflow-uat1-.json
+gcloud auth activate-service-account --key-file=/app/src/ci/akvoflow-uat1.json
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
 
