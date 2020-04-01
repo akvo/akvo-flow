@@ -2,15 +2,19 @@
 
 set -euo pipefail
 
+CI_BRANCH="${SEMAPHORE_GIT_BRANCH:=}"
+CI_TAG="${SEMAPHORE_GIT_TAG_NAME:=}"
+CI_PULL_REQUEST="${SEMAPHORE_GIT_PR_NAME:=}"
+
 function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-if [[ "${TRAVIS_BRANCH}" != "master" ]] && [[ -z "${TRAVIS_TAG}" ]]; then
-  exit 0
+if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "${CI_TAG}" ]]; then
+   exit 0
 fi
 
-if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
+if [[ -n "${CI_PULL_REQUEST}" ]]; then
     exit 0
 fi
 
@@ -19,15 +23,15 @@ release_project_id="${RELEASE_PROJECT_ID:=akvoflow-uat1}"
 
 project_id="${develop_project_id}"
 
-if [[ -n "${TRAVIS_TAG}" ]]; then
+if [[ -n "${CI_TAG}" ]]; then
     project_id="${release_project_id}"
 fi
 
-curl --location --silent --output ./ci/akvoflow-uat1.p12 \
-     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1.p12"
+curl --location --silent --output ci/akvoflow-uat1.json \
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
+     "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
-curl --location --silent --output ./ci/akvoflow-uat1.json \
-     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
+[[ ! -f "ci/akvoflow-uat1.json" ]] && { echo "Credentials file [ci/akvoflow-uat1.json] doesn't exist"; exit 1;}
 
 docker run \
     --rm \
@@ -36,10 +40,8 @@ docker run \
     --volume "${HOME}/.cache:/home/root/.cache:delegated"\
     --volume "${HOME}/.cache:/home/akvo/.cache:delegated" \
     --volume "$(pwd):/app/src:delegated" \
-    --env GH_USER \
-    --env GH_TOKEN \
-    --env CONFIG_REPO \
-    --env SERVICE_ACCOUNT_ID \
+    --env FLOW_GH_TOKEN \
+    --env FLOW_CONFIG_REPO \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
     akvo/akvo-flow-builder:20200115.154607.012ea0b /app/src/ci/mvn-deploy.sh

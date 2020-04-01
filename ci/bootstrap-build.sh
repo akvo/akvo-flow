@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017-2019 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2020 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -30,13 +30,16 @@ if [[ ! -d "$NPM_CACHE" ]]; then
 fi
 
 FLOW_GIT_VERSION=$(git describe)
+CI_BRANCH="${SEMAPHORE_GIT_BRANCH:=}"
+CI_TAG="${SEMAPHORE_GIT_TAG_NAME:=}"
 
 docker run \
        --rm \
-       -e CLOJARS_PASSWORD="${CLOJARS_PASSWORD}" -e FLOW_GIT_VERSION="${FLOW_GIT_VERSION}" \
-       -e CLOJARS_GPG_PASSWORD="${CLOJARS_GPG_PASSWORD}" \
-       -e TRAVIS_BRANCH="${TRAVIS_BRANCH}" \
-       -e TRAVIS_TAG="${TRAVIS_TAG}" \
+       -e CLOJARS_PASSWORD="${CLOJARS_PASSWORD:=}" \
+       -e FLOW_GIT_VERSION="${FLOW_GIT_VERSION}" \
+       -e CLOJARS_GPG_PASSWORD="${CLOJARS_GPG_PASSWORD:=}" \
+       -e CI_BRANCH="${CI_BRANCH}" \
+       -e CI_TAG="${CI_TAG}" \
        --volume "${MAVEN_REPO}:/root/.m2:delegated" \
        --volume "${MAVEN_REPO}:/home/akvo/.m2:delegated" \
        --volume "${NPM_CACHE}:/root/.npm:delegated" \
