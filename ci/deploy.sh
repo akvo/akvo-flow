@@ -27,9 +27,11 @@ if [[ -n "${CI_TAG}" ]]; then
     project_id="${release_project_id}"
 fi
 
-curl --location --silent --output ./ci/akvoflow-uat1.json \
+curl --location --silent --output ci/akvoflow-uat1.json \
      --header "Authorization: token ${FLOW_GH_TOKEN}" \
      "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
+
+[[ ! -f "ci/akvoflow-uat1.json" ]] && { echo "Credentials file [ci/akvoflow-uat1.json] doesn't exist"; exit 1;}
 
 docker run \
     --rm \
