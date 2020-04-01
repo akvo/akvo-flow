@@ -35,7 +35,9 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "$CI_TAG" ]]; then
+# Temporary disable publishing to clojars
+#if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "$CI_TAG" ]]; then
+if [[ -z "$CI_TAG" ]]; then
   exit 0
 fi
 
