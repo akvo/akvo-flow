@@ -19,7 +19,6 @@ blocks:
           commands:
             - ci/deploy.sh
   - name: Dark deployment
-    dependencies: ["UAT deployment"]
     task:
       prologue:
         commands:
