@@ -18,7 +18,6 @@ blocks:
       jobs:
         - name: Build and test
           commands:
-            - checkout
             - ./ci/bootstrap-build.sh /app/src/ci/build.sh
             - cache store "gae-target-$SEMAPHORE_GIT_SHA" "GAE/target"
 promotions:
