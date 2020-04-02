@@ -7,6 +7,8 @@ if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "$CI_TAG" ]]; then
   exit 0
 fi
 
+cd "/app/src/GAE"
+
 echo "Setting project version to $FLOW_GIT_VERSION"
 mvn versions:set -DnewVersion="${FLOW_GIT_VERSION}"
 
