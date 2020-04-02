@@ -33,4 +33,4 @@ blocks:
       jobs:
         - name: Dark deploy
           commands:
-            - scripts/deploy/run.sh "$(git describe)" all
+            - scripts/deploy/run.sh "$(git describe)" akvoflow-beta1 akvoflow-beta2
