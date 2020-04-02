@@ -46,16 +46,6 @@ log Authenticating
 
 gcloud auth activate-service-account --key-file="${config}/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
-log Obtaining version archive
-
-gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
-unzip -q "${version}.zip"
-
-if [[ ! -d "appengine-staging" ]]; then
-    log Staging folder is not present
-    exit 1
-fi
-
 if [[ "${1}" == "all" ]]; then
 
     find "${config}" -name 'appengine-web.xml' | awk -F'/' '{print $2}' > instances.txt
@@ -69,7 +59,7 @@ else
     printf "%s\n" "$@" > instances.txt
 fi
 
-function deploy_instance {
+deploy_instance() {
     instance_id="${1}"
     staging_dir="appengine-staging-${1}"
 
@@ -91,16 +81,37 @@ function deploy_instance {
 	   --version="${version}" \
 	   --project="${instance_id}"
 }
-
 export -f deploy_instance
 
-log "Deploying instances... $*"
+migrate_traffic() {
+    gcloud app services set-traffic default \
+	   --splits "${version:8}"=1 \
+	   --project="${1}"
+}
+export -f migrate_traffic
+
+if [[ "${version:0:8}" == "promote-" ]]; then
+    deploy_fn="migrate_traffic"
+else
+    deploy_fn="deploy_instance"
+
+    log Obtaining version archive
+    gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
+    unzip -q "${version}.zip"
+
+    if [[ ! -d "appengine-staging" ]]; then
+	log Staging folder is not present
+	exit 1
+    fi
+fi
+
+log "Deploying instances: $*"
 
 parallel --results "${tmp}/parallel" \
 	 --retries 3 \
 	 --jobs 10 \
 	 --joblog "${deploy_id}.log" \
-	 deploy_instance :::: instances.txt
+	 "${deploy_fn}" :::: instances.txt
 
 log Deploy results
 
