@@ -65,12 +65,8 @@ if [[ "${1}" == "all" ]]; then
     do
 	sed -i "/$line/d" instances.txt
     done
-
-    # Reading instances into an array works, but exists with 1
-    # https://unix.stackexchange.com/a/80055
-    IFS=$'\n' read -d '' -r -a to_deploy < instances.txt || true
 else
-    to_deploy=( "$@" )
+    printf "%s\n" "$@" > instances.txt
 fi
 
 function deploy_instance {
@@ -100,7 +96,11 @@ export -f deploy_instance
 
 log "Deploying instances... $*"
 
-parallel --results "${tmp}/parallel" --retries 3 --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "${to_deploy[@]}"
+parallel --results "${tmp}/parallel" \
+	 --retries 3 \
+	 --jobs 10 \
+	 --joblog "${deploy_id}.log" \
+	 deploy_instance :::: instances.txt
 
 log Deploy results
 
