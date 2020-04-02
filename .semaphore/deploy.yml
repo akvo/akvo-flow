@@ -20,6 +20,8 @@ blocks:
             - ci/deploy.sh
   - name: Dark deployment
     task:
+      skip:
+        when: "tag !~ '.*'"
       prologue:
         commands:
           - checkout
