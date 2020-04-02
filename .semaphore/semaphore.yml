@@ -29,3 +29,7 @@ promotions:
     pipeline_file: deploy.yml
     auto_promote:
       when: "result = 'passed' and branch = 'master'"
+  - name: Clojars deploy
+    pipeline_file: clojars.yml
+    auto_promote:
+      when: "result = 'passed'"

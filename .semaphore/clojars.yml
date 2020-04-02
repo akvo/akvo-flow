@@ -1,0 +1,19 @@
+version: v1.0
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Clojars deployment
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "m2-$(checksum GAE/pom.xml)"
+          - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+      secrets:
+        - name: akvo-flow-secrets
+      jobs:
+        - name: Clojars deploy
+          commands:
+            - ./ci/bootstrap-build.sh /app/src/ci/clojars-deploy.sh
