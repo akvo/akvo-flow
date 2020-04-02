@@ -18,6 +18,11 @@ if [[ -n "${CI_PULL_REQUEST}" ]]; then
     exit 0
 fi
 
+if [[ "${CI_TAG:0:8}" == "promote-" ]]; then
+    echo "Skipping deployment"
+    exit 0
+fi
+
 develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-uat2}"
 release_project_id="${RELEASE_PROJECT_ID:=akvoflow-uat1}"
 

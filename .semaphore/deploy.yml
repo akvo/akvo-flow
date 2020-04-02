@@ -18,7 +18,7 @@ blocks:
         - name: UAT deploy
           commands:
             - ci/deploy.sh
-  - name: Dark deployment
+  - name: Deployments
     skip:
       when: "tag !~ '.*'"
     task:
@@ -31,6 +31,6 @@ blocks:
       secrets:
         - name: akvo-flow-secrets
       jobs:
-        - name: Dark deploy
+        - name: Instances deploy
           commands:
             - scripts/deploy/run.sh "$(git describe)" akvoflow-beta1 akvoflow-beta2
