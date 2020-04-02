@@ -14,8 +14,6 @@ if [[ ! -d "tmp" ]]; then
 fi
 
 docker run --rm \
-       --interactive \
-       --tty \
        --volume "$(pwd):/akvo-flow:delegated" \
        --volume "$(pwd)/tmp:/tmp:delegated" \
        --workdir "/akvo-flow" \

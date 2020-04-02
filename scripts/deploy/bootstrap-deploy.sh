@@ -8,7 +8,10 @@ apk add --no-cache \
     jq~=1.6 \
     parallel \
     shadow~=4.6 \
-    su-exec~=0.2
+    su-exec~=0.2 \
+    unzip~=6.0 \
+    zip~=3.0 \
+
 
 adduser -D -h /home/akvo -s /bin/bash akvo akvo
 

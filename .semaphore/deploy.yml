@@ -31,4 +31,4 @@ blocks:
       jobs:
         - name: Dark deploy
           commands:
-            - scripts/deploy/run.sh 20200325-143651 all
+            - scripts/deploy/run.sh "$(git describe)" all
