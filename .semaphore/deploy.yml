@@ -19,9 +19,9 @@ blocks:
           commands:
             - ci/deploy.sh
   - name: Dark deployment
+    skip:
+      when: "tag !~ '.*'"
     task:
-      skip:
-        when: "tag !~ '.*'"
       prologue:
         commands:
           - checkout
