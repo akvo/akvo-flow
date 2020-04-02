@@ -70,9 +70,6 @@ deploy_instance() {
 
     cp "${config}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    # Temporary disable deployments
-    return 0
-
     gcloud app deploy "${staging_dir}/app.yaml" \
 	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
 	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
