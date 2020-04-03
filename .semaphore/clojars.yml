@@ -5,6 +5,8 @@ agent:
     os_image: ubuntu1804
 blocks:
   - name: Clojars deployment
+    skip:
+      when: "tag =~ '^promote-.*'"
     task:
       prologue:
         commands:
