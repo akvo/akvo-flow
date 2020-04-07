@@ -14,6 +14,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 15px;
 
       .title {
         font-weight: bold;
@@ -165,18 +166,17 @@
         overflow: auto;
 
         .settings {
-          padding: 15px 25px;
+          padding: 25px 25px;
           width: 45%;
 
           .assignment-date {
-            margin-top: 15px;
             margin-bottom: 2em;
 
             .date-picker {
               display: flex;
               width: 85%;
               justify-content: space-between;
-              padding: 15px 0px 3px;
+              padding-bottom: 3px;
 
               i.fa {
                 margin-right: 5px;
@@ -203,12 +203,8 @@
             }
           }
 
-          .assignment-survery-folder {
-            margin-bottom: 1.5em;
-          }
-
-          .assignment-form-selector {
-            margin-top: 2.3em;
+          .assignment-survey-selector {
+            margin-bottom: 2em;
 
             .folder-selector {
               select {
@@ -230,6 +226,9 @@
                 background-position: 125px center;
               }
             }
+          }
+
+          .assignment-form-selector {
 
             .form-selector {
               .form {
@@ -546,6 +545,104 @@
                 font-size: 14px;
               }
             }
+          }
+        }
+      }
+    }
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0px;
+  z-index: 10000;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: rgba(0, 0, 0, 0.7);
+
+  .modal-container {
+    position: absolute;
+    top: 25%;
+    left: 32.5%;
+    width: 35%;
+    height: 50%;
+    background: rgb(255, 255, 255);
+    border-radius: 5px;
+    overflow: auto;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      padding: 1.3em 1.5em;
+      padding-left: 1.8em;
+
+      h2 {
+        text-transform: capitalize;
+        font-weight: bold;
+        color: #464646;
+      }
+
+      .close-icon {
+        font-size: 1.4em;
+        cursor: pointer;
+      }
+    }
+
+    .modal-body {
+      padding: 0.5em 1.5em;
+      padding-left: 1.8em;
+      flex-grow: 1;
+
+      .section-header {
+        font-weight: bold;
+        padding-bottom: 12px;
+      }
+    }
+
+    .modal-footer {
+      padding: 0.5em 1.5em;
+      padding-left: 1.8em;
+      margin-bottom: 2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .back-action,
+      .section-list {
+        flex: 1;
+      }
+
+      button {
+        outline: none;
+        border: none;
+        font-size: 15px;
+        color: #59acc5;
+        font-weight: 500;
+      }
+
+      .section-list ul {
+        display: flex;
+
+        li {
+          margin-right: 13px;
+
+          &.active .dot {
+            background-color: #464646;
+          }
+
+          .dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            border: 1px solid #464646;
+            display: inline-block;
           }
         }
       }

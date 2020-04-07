@@ -129,6 +129,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         unassign: Ember.String.loc('_unassign'),
         unassignNote: Ember.String.loc('_unassign_all_datapoints_to_assign_by_other_options'),
         allDatapointsAssigned: Ember.String.loc('_all_datapoints_assigned'),
+        announcingChangesInAssignments: Ember.String.loc('_announcing_changes_in_assignments'),
+        back: Ember.String.loc('_back'),
+        next: Ember.String.loc('_next'),
+        okay: Ember.String.loc('_okay'),
+        datapointAssignment: Ember.String.loc('_datapoint_assignment'),
+        datapointAssignmentInfo: Ember.String.loc('_datapoint_assignment_info'),
+        formSelection: Ember.String.loc('_form_selection'),
+        formSelectionInfo: Ember.String.loc('_form_selection_info'),
       };
 
       const inputValues = {
