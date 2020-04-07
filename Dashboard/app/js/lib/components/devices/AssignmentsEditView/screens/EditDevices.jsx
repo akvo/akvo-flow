@@ -19,10 +19,9 @@ export default class EditDevices extends React.Component {
     const selectedDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
     // sort device groups
-    return _groupBy(
-      _sortBy(selectedDevices, device => device.deviceGroup.name),
-      device => device.deviceGroup.id
-    );
+    return _sortBy(_groupBy(selectedDevices, device => device.deviceGroup.id), [
+      item => item[0].deviceGroup.name,
+    ]);
   }
 
   onSelectDevice = (id, checked) => {

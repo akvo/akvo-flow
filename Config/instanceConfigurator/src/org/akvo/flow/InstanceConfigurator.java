@@ -90,6 +90,15 @@ public class InstanceConfigurator {
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
         String signingKey = cli.getOptionValue("sk");
+        String oidcDomain = cli.getOptionValue("oidcDomain");
+        String oidcClientId = cli.getOptionValue("oidcClientId");
+        String oidcClientSecret = cli.getOptionValue("oidcClientSecret");
+        String emailHost = cli.getOptionValue("emailHost");
+        String emailPort = cli.getOptionValue("emailPort");
+        String emailUser = cli.getOptionValue("emailUser");
+        String emailPassword = cli.getOptionValue("emailPassword");
+        String sentryDSN = cli.getOptionValue("sentryDSN");
+
 
         File configFileHome = new File(outFolder);
 
@@ -209,7 +218,7 @@ public class InstanceConfigurator {
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
         apkData.put("awsSecretKey", accessKeys.get(apkUser).getSecretAccessKey());
         apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
-	apkData.put("instanceUrl", "https://" + alias);
+        apkData.put("instanceUrl", "https://" + alias);
         apkData.put("restApiKey", apiKey);
 
         Template t3 = cfg.getTemplate("survey.properties.ftl");
@@ -238,6 +247,15 @@ public class InstanceConfigurator {
         webData.put("emailTo", emailTo);
         webData.put("organization", orgName);
         webData.put("signingKey", signingKey);
+        webData.put("oidcDomain", oidcDomain);
+        webData.put("oidcClientId", oidcClientId);
+        webData.put("oidcClientSecret", oidcClientSecret);
+        webData.put("emailHost", emailHost);
+        webData.put("emailPort", emailPort);
+        webData.put("emailUser", emailUser);
+        webData.put("emailPassword", emailPassword);
+        webData.put("sentryDSN", sentryDSN);
+
 
         Template t5 = cfg.getTemplate("appengine-web.xml.ftl");
         t5.process(webData, new FileWriter(new File(configFileHome, "/appengine-web.xml")));
@@ -362,6 +380,34 @@ public class InstanceConfigurator {
         signingKey.setArgs(1);
         signingKey.setRequired(true);
 
+        Option oidcDomain = new Option("oidcDomain", "ODIC IdP domain");
+        oidcDomain.setArgs(1);
+        oidcDomain.setRequired(true);
+
+        Option oidcClientId = new Option("oidcClientId", "OIDC Client ID");
+        oidcClientId.setArgs(1);
+        oidcClientId.setRequired(true);
+
+        Option oidcClientSecret = new Option("oidcClientSecret", "OIDC Client Secret");
+        oidcClientSecret.setArgs(1);
+        oidcClientSecret.setRequired(true);
+
+        Option emailHost = new Option("emailHost", "SMTP server host");
+        emailHost.setArgs(1);
+        emailHost.setRequired(true);
+
+        Option emailPort = new Option("emailPort", "SMTP server port");
+        emailPort.setArgs(1);
+        emailPort.setRequired(true);
+
+        Option emailUser = new Option("emailUser", "SMTP username");
+        emailUser.setArgs(1);
+        emailUser.setRequired(true);
+
+        Option emailPassword = new Option("emailPassword", "SMTP password");
+        emailPassword.setArgs(1);
+        emailPassword.setRequired(true);
+
         options.addOption(orgName);
         options.addOption(awsId);
         options.addOption(awsSecret);
@@ -382,6 +428,13 @@ public class InstanceConfigurator {
         options.addOption(hereMapsAppCode);
         options.addOption(alias);
         options.addOption(signingKey);
+        options.addOption(oidcDomain);
+        options.addOption(oidcClientId);
+        options.addOption(oidcClientSecret);
+        options.addOption(emailHost);
+        options.addOption(emailPort);
+        options.addOption(emailUser);
+        options.addOption(emailPassword);
 
         return options;
     }

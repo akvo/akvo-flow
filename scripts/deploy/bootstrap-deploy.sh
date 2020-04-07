@@ -6,16 +6,12 @@ apk add --no-cache \
     bash~=5.0 \
     git~=2 \
     jq~=1.6 \
-    unzip~=6 \
-    openjdk8~=8 \
     parallel \
     shadow~=4.6 \
     su-exec~=0.2 \
-    nss~=3.44 \
+    unzip~=6.0 \
+    zip~=3.0 \
 
-gcloud components install app-engine-java --quiet
-rm -rf /google-cloud-sdk/.install/.backup
-rm -rf /google-cloud-sdk/.install/.download
 
 adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
@@ -24,9 +20,6 @@ NEW_GID=$(stat -c '%g' /akvo-flow)
 
 groupmod -g "$NEW_GID" -o akvo >/dev/null 2>&1
 usermod -u "$NEW_UID" -o akvo >/dev/null 2>&1
-
-mkdir /akvo-flow-server-config
-chown akvo:akvo /akvo-flow-server-config
 
 # Disable annoying citation warning
 mkdir -p /home/akvo/.parallel

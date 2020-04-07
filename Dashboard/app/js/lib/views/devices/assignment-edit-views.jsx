@@ -121,7 +121,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
         selectAMonitoringSurveyMessage: Ember.String.loc('_please_select_a_monitoring_survey'),
         assignDatapoints: Ember.String.loc('_assign_datapoints'),
-        assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        assignDatapointByNameOrId: Ember.String.loc('_by_datapoint_name_or_id'),
         assignAllDatapoint: Ember.String.loc('_assign_all_datapoints'),
         searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
@@ -580,6 +580,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
 
         return false;
+      }
+
+      if (parseInt(parentId, 10) === 0) {
+        this.set('selectedSurveyGroupId', null);
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
       }
 
       // empty forms when a new folder is picked

@@ -8,20 +8,24 @@ function log {
 
 cd /app/src/GAE
 
-gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=/app/src/ci/akvoflow-uat1.p12
+gcloud auth activate-service-account --key-file=/app/src/ci/akvoflow-uat1.json
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
 
 log Requesting "${PROJECT_ID}" config
 
 curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
-     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
+     "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
+
+[[ ! -f "./target/akvo-flow/WEB-INF/appengine-web.xml" ]] && { echo "Required appengine-web.xml not found"; exit 1; }
 
 log Staging app
 
 mvn appengine:stage
 
-log Deploying version 1
+version=$(git describe)
+log Deploying version "${version}"
 
 (
     cd "./target/appengine-staging"
@@ -29,15 +33,15 @@ log Deploying version 1
 	   WEB-INF/appengine-generated/queue.yaml \
 	   WEB-INF/appengine-generated/index.yaml \
 	   WEB-INF/appengine-generated/cron.yaml \
-	   --promote --quiet --version=1 --project="${PROJECT_ID}"
+	   --promote --quiet --version="${version}" \
+	   --project="${PROJECT_ID}"
 )
 
-version=$(git describe)
 archive_name="${version}.zip"
 (
     cd target
     rm -rf appengine-staging/WEB-INF/appengine-web.xml
-    zip "${archive_name}" -r appengine-staging/*
+    zip "${archive_name}" -q -r appengine-staging/*
 )
 
 gsutil cp "target/${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
