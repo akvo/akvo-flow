@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015, 2016, 2019, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -47,7 +47,7 @@ public class RemoteAPI {
             System.err
                     .println("Usage: "
                             + RemoteAPI.class.getName()
-                            + "<class> <appid> [serviceAccount] [serviceAccountPrivatekey path] [args ...]\n"
+                            + " <class> <appid> [serviceAccount] [serviceAccountPrivatekey path] [args ...]\n"
                             + "<class> can be a fully qualified class or just a class name."
                             + " Defaults to package org.akvo.gae.remoteapi");
             System.exit(1);
