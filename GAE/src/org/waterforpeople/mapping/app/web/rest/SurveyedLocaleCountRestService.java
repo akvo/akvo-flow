@@ -21,39 +21,40 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/surveyed_locale_count")
+@RequestMapping("/surveyed_locale_counts")
 public class SurveyedLocaleCountRestService {
     private SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     private SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, value = "/{surveyGroupId}")
     @ResponseBody
-    public Map<String, Object> getCount(@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId) {
+    public Map<String, Object> getCount(@PathVariable String surveyGroupId) {
 
-        SurveyGroup surveyGroup = new SurveyGroupDAO().getByKey(surveyGroupId);
+        long id = Long.parseLong(surveyGroupId);
+        SurveyGroup surveyGroup = surveyGroupDAO.getByKey(id);
 
         if (surveyGroup == null) {
             throw new HttpMessageNotReadableException("SurveyGroup with ID " + surveyGroupId + " doesn't exist");
         }
 
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
 
-        RestStatusDto statusDto = new RestStatusDto();
+        Long count = surveyedLocaleDao.countBySurveyGroupId(id);
 
-        Long count = surveyedLocaleDao.countBySurveyGroupId(surveyGroupId);
+        Map<String, Object> surveyedLocaleCount = new HashMap<>();
+        surveyedLocaleCount.put("keyId", surveyGroupId);
+        surveyedLocaleCount.put("count", count);
 
-        response.put("meta", statusDto);
-        response.put("surveyedLocaleCount", count);
+        response.put("surveyed_locale_count", surveyedLocaleCount);
         return response;
     }
 }
