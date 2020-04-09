@@ -76,7 +76,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // global object variables
       this.searchedDatapoints = null;
       this.datapointsEnabled = null;
-      this.allDataPointsAssigned = false;
       this.deviceInView = null;
     },
 
@@ -167,7 +166,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         selectedDeviceIds: this.selectedDevices,
         datapointsEnabled: this.datapointsEnabled,
         datapointAssignments: this.datapointAssignments,
-        allDataPointsAssigned: this.allDataPointsAssigned,
       };
 
       return {
