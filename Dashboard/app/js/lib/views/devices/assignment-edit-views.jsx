@@ -33,10 +33,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
       this.handleSurveySelect = this.handleSurveySelect.bind(this);
       this.setupDevices = this.setupDevices.bind(this);
-      this.deviceInAssignment = this.deviceInAssignment.bind(this);
-      this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
-      this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
-      this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
       this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(this);
 
@@ -63,8 +59,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.forms = {};
       this.surveyGroups = [];
       this.devices = [];
-      this.deviceGroups = {};
-      this.deviceGroupNames = {};
       this.datapointsResults = [];
 
       // selected attributes
@@ -137,13 +131,21 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       };
 
       const actions = {
+        // global actions
         cancelEditSurveyAssignment: this.cancelEditSurveyAssignment,
-        handleFormCheck: this.handleFormCheck,
         onSubmit: this.saveSurveyAssignment,
+
+        // form actions
+        handleFormCheck: this.handleFormCheck,
+
+        // survey actions
         handleSurveySelect: this.handleSurveySelect,
-        handleDeviceCheck: this.handleDeviceCheck,
+
+        // devices actions
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
+
+        // datapoints actions
         findDatapoints: this.findDatapoints,
         clearSearchedDatapoints: this.clearSearchedDatapoints,
         getDeviceDatapoints: this.getDeviceDatapoints,
@@ -155,15 +157,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const data = {
         forms: this.forms,
-        devices: this.devices,
-        datapointsResults: this.datapointsResults,
-        surveyGroups: this.surveyGroups,
-        deviceGroups: this.deviceGroups,
-        deviceGroupNames: this.deviceGroupNames,
-        activeDeviceGroups: this.activeDeviceGroups,
-        initialSurveyGroup: this.selectedSurveyGroupId,
         numberOfForms: this.selectedFormIds.length,
+
+        surveyGroups: this.surveyGroups,
+        initialSurveyGroup: this.selectedSurveyGroupId,
+
+        devices: this.devices,
         selectedDeviceIds: this.selectedDevices,
+
+        datapointsResults: this.datapointsResults,
         datapointsEnabled: this.datapointsEnabled,
         datapointAssignments: this.datapointAssignments,
       };
@@ -372,89 +374,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       return true;
-    },
-
-    deviceInAssignment(deviceId) {
-      const devicesInAssignment = this.selectedDevices.map(item => item.get('keyId'));
-
-      return devicesInAssignment ? devicesInAssignment.indexOf(deviceId) > -1 : false;
-    },
-
-    addDevicesCheckedOption() {
-      // check if all items in device group is selected
-      Object.keys(this.deviceGroups).forEach(dgId => {
-        const deviceGroupKeys = Object.keys(this.deviceGroups[dgId]).filter(
-          deviceId => deviceId != 0
-        );
-
-        // get length of all devices in this group
-        const numberOfDevices = deviceGroupKeys.length;
-
-        // get length of all selected devices in this group
-        const numberOfSelectedDevices = deviceGroupKeys.filter(
-          deviceId => this.deviceGroups[dgId][deviceId].checked
-        ).length;
-
-        // add select all device option
-        this.deviceGroups[dgId] = {
-          ...this.deviceGroups[dgId],
-          0: {
-            name: Ember.String.loc('_select_all_devices'),
-            checked: numberOfDevices !== 0 && numberOfDevices === numberOfSelectedDevices,
-          },
-        };
-      });
-    },
-
-    // handlers
-    handleDeviceCheck(deviceId, checked, deviceGroupId) {
-      // if it's the select all option
-      if (deviceId == 0) {
-        return this.handleSelectAllDevice(deviceGroupId, checked);
-      }
-
-      const device = FLOW.Device.find(deviceId);
-      if (checked) {
-        // push device to selectedDevices
-        this.selectedDevices.push(FLOW.Device.find(deviceId));
-      } else {
-        // remove device to selectedDevices
-        this.selectedDevices.pop(FLOW.Device.find(deviceId));
-      }
-
-      // check devices
-      this.deviceGroups[device.get('deviceGroup') || '1'][device.get('keyId')] = {
-        name: device.get('deviceIdentifier'),
-        checked,
-      };
-
-      // check if all items in device group is selected
-      this.addDevicesCheckedOption();
-
-      return this.renderReactSide();
-    },
-
-    handleSelectAllDevice(deviceGroupId, checked) {
-      const deviceGroup = this.deviceGroups[deviceGroupId];
-      const allDevices = Object.keys(deviceGroup)
-        .filter(deviceId => deviceId != 0)
-        .map(deviceId => FLOW.Device.find(deviceId));
-
-      allDevices.forEach(device => {
-        this.selectedDevices[checked ? 'push' : 'pop'](device);
-
-        // check devices
-        this.deviceGroups[device.get('deviceGroup') || '1'][device.get('keyId')] = {
-          name: device.get('deviceIdentifier'),
-          checked,
-        };
-      });
-
-      // mark device group as selected
-      this.deviceGroups[deviceGroupId][0].checked = checked;
-
-      // rerender react side
-      return this.renderReactSide();
     },
 
     // handle forms functionality
