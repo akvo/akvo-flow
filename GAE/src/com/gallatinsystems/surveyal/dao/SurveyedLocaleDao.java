@@ -389,4 +389,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             SurveyUtils.notifyReportService(ids, "invalidate");
         }
     }
+
+    public long countBySurveyGroupId(long surveyGroupId) {
+        return countFilteredByProperty("surveyGroupId", surveyGroupId);
+    }
 }
