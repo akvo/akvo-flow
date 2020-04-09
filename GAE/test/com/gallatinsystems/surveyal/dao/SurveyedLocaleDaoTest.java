@@ -66,7 +66,9 @@ public class SurveyedLocaleDaoTest {
 
         long surveyId = randomLong(1000);
         long count = randomLong(500);
+
         generateData(count, surveyId);
+        generateData(count, surveyId + 1);
 
         SurveyedLocaleDao dao = new SurveyedLocaleDao();
         long actual = dao.countBySurveyGroupId(surveyId);

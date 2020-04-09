@@ -844,7 +844,9 @@ public class BaseDAO<T extends BaseDomain> {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query query = new Query(concreteClass.getSimpleName()).setKeysOnly();
         Query.FilterPredicate filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
+        query.setFilter(filter);
         PreparedQuery preparedQuery = datastore.prepare(query);
-        return preparedQuery.asList(FetchOptions.Builder.withDefaults()).size();
+        FetchOptions options = FetchOptions.Builder.withDefaults().prefetchSize(1000).chunkSize(1000);
+        return preparedQuery.asList(options).size();
     }
 }
