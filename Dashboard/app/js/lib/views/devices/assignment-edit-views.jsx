@@ -286,11 +286,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       FLOW.store.commit();
-
-      // wait half a second before transitioning back to the assignments list
-      setTimeout(() => {
-        FLOW.router.transitionTo('navDevices.assignSurveysOverview');
-      }, 500);
     },
 
     // setups
