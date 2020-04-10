@@ -44,7 +44,7 @@ export default class AssignDatapoints extends React.Component {
   };
 
   renderHeader = (deviceData, datapointsData, allDPAssigned) => {
-    const { strings, data, actions } = this.context;
+    const { strings, actions } = this.context;
     const datapointsCount = datapointsData.length;
     const allAssignedLabel = strings.allDatapointsAssigned.replace(/{}/, '');
 
@@ -75,7 +75,7 @@ export default class AssignDatapoints extends React.Component {
           </p>
         </div>
 
-        <Dropdown disabled={data.allDataPointsAssigned} title={strings.assignDatapoints}>
+        <Dropdown disabled={allDPAssigned} title={strings.assignDatapoints}>
           {closeMenu => (
             <React.Fragment>
               <DropdownItem
