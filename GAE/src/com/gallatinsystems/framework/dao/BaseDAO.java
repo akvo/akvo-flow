@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
+import com.google.appengine.api.datastore.*;
 import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
@@ -48,11 +49,6 @@ import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
@@ -842,5 +838,15 @@ public class BaseDAO<T extends BaseDomain> {
         @SuppressWarnings("unchecked")
         List<T> results = (List<T>) query.execute(idsList);
         return results;
+    }
+
+    public long countFilteredByProperty(String property, Object value) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query query = new Query(concreteClass.getSimpleName()).setKeysOnly();
+        Query.FilterPredicate filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
+        query.setFilter(filter);
+        PreparedQuery preparedQuery = datastore.prepare(query);
+        FetchOptions options = FetchOptions.Builder.withDefaults().prefetchSize(1000).chunkSize(1000);
+        return preparedQuery.asList(options).size();
     }
 }
