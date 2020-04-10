@@ -203,12 +203,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const deviceIds = this.selectedDevices;
       const formIds = this.selectedFormIds;
 
-      // validate data before continuing
-      const isValid = this.validateAssignment({ ...data, deviceIds, formIds });
-      if (!isValid) {
-        return false;
-      }
-
       // set Ember Data
       FLOW.dateControl.set('fromDate', formatDate(new Date(data.startDate)));
       FLOW.dateControl.set('toDate', formatDate(new Date(data.endDate)));
@@ -311,69 +305,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
       FLOW.dateControl.set('fromDate', formatDate(startDate));
       FLOW.dateControl.set('toDate', formatDate(endDate));
-    },
-
-    // helpers
-    showPopup(header, message) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', header);
-      FLOW.dialogControl.set('message', message);
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-    },
-
-    validateAssignment(data) {
-      const { assignmentName, startDate, endDate, deviceIds, formIds } = data;
-
-      // validate assignment name
-      if (!assignmentName || assignmentName == '') {
-        this.showPopup(
-          Ember.String.loc('_assignment_name_not_set'),
-          Ember.String.loc('_assignment_name_not_set_text')
-        );
-
-        return false;
-      }
-
-      if (assignmentName.length > 100) {
-        this.showPopup(
-          Ember.String.loc('_assignment_name_error'),
-          Ember.String.loc('_assignment_name_over_100_chars')
-        );
-
-        return false;
-      }
-
-      // validate dates ==== start date
-      if (!startDate) {
-        this.showPopup(Ember.String.loc('_date_not_set'), Ember.String.loc('_date_not_set_text'));
-
-        return false;
-      }
-
-      // validate date ==== expire date
-      if (!endDate) {
-        this.showPopup(Ember.String.loc('_date_not_set'), Ember.String.loc('_date_not_set_text'));
-
-        return false;
-      }
-
-      if (!deviceIds || !deviceIds.length) {
-        this.showPopup(
-          Ember.String.loc('_device_not_set'),
-          Ember.String.loc('_device_not_set_text')
-        );
-
-        return false;
-      }
-
-      if (!formIds || !formIds.length) {
-        this.showPopup(Ember.String.loc('_form_not_set'), Ember.String.loc('_form_not_set_text'));
-
-        return false;
-      }
-
-      return true;
     },
 
     // handle forms functionality
