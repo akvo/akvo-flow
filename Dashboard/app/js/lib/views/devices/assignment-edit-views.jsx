@@ -158,6 +158,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         forms: this.forms,
         devices: this.devices,
         datapointsResults: this.datapointsResults,
+        datapointsCount: this.datapointsCount,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
@@ -570,6 +571,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
         // using this to trigger an onserver which will load forms and rerender react
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+        this.set('datapointsCount', FLOW.SurveyedLocaleCount.find(selectedSG.get('keyId')));
 
         return false;
       }
