@@ -46,6 +46,7 @@ export default class AssignDatapoints extends React.Component {
   renderHeader = (deviceData, datapointsData, allDPAssigned) => {
     const { strings, actions } = this.context;
     const datapointsCount = datapointsData.length;
+    const allAssignedLabel = strings.allDatapointsAssigned.replace(/{}/, '');
 
     return (
       <div className="header">
@@ -53,9 +54,7 @@ export default class AssignDatapoints extends React.Component {
           <p>{deviceData.name}</p>
           <p>
             <span>
-              {allDPAssigned
-                ? strings.allDatapointsAssigned
-                : `${datapointsCount} ${strings.datapointAssigned}`}
+              {allDPAssigned ? allAssignedLabel : `${datapointsCount} ${strings.datapointAssigned}`}
             </span>
             {!allDPAssigned && (
               <>
