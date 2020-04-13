@@ -27,7 +27,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       this.renderReactSide = this.renderReactSide.bind(this);
 
-      this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
 
       this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
