@@ -4,19 +4,21 @@ set -euo pipefail
 
 export SHELL=/bin/bash
 
-yellow='\033[1;33m'
-green='\033[0;32m'
-nc='\033[0m'
-
 if [[ "$#" -lt 2 ]]; then
     echo "Usage: ./scripts/deploy/run.sh <version> [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"
     exit 1
 fi
 
-export version="${1}"         # <version> as $1
+function log {
+   echo "$(date +"%T") - INFO - $*"
+}
+
+version="${1}"                # <version> as $1
+export version
+
 shift 1                       # $@ rest of instances
 
-deploy_id="$(date +%s)"
+deploy_id="${version}-$(date +%s)"
 tmp="/tmp/${deploy_id}"
 
 mkdir -p "${tmp}"
@@ -24,24 +26,23 @@ mkdir -p "${tmp}"
 # Move to tmp folder and work there
 cd "${tmp}"
 
-gh_user="${GH_USER:=unknown}"
-gh_token="${GH_TOKEN:=unknown}"
+deploy_bucket_name="akvoflowsandbox-deployment"
+export deploy_bucket_name
 
-echo "Cloning akvo-flow-server-config..."
+log Obtaining instances config folder ...
 
-if [[ "${gh_user}" != "unknown" ]] && [[ "${gh_token}" != "unknown" ]]; then
-    git clone --depth=50 --branch=master \
-	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" > /dev/null
-else
-    echo -e "${yellow}WARNING:${nc} If you have 2FA enabled in GitHub, make sure you have a
-             ${green}personal access token${nc} available and use it as password"
-    echo "Visit for more info: https://blog.github.com/2013-09-03-two-factor-authentication/#how-does-it-work-for-command-line-git"
-    git clone --depth=50 --branch=master \
-	"https://github.com/akvo/akvo-flow-server-config.git" > /dev/null
-fi
+curl --silent --location \
+     --header "Accept: application/json" \
+     --header "Authorization: token ${FLOW_GH_TOKEN}" \
+     --output afsc.tar.gz \
+     "https://api.github.com/repos/akvo/${FLOW_CONFIG_REPO}/tarball/"
 
-config="akvo-flow-server-config"
+config="flow-config"
+mkdir "${config}"
+tar xfz afsc.tar.gz --strip-components=1 --directory="${config}"
 export config
+
+log Authenticating
 
 gcloud auth activate-service-account --key-file="${config}/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
@@ -55,58 +56,68 @@ if [[ "${1}" == "all" ]]; then
 	sed -i "/$line/d" instances.txt
     done
 else
-    echo "$@" > instances.tmp
-    tr ' ' '\n' < instances.tmp > instances.txt
+    printf "%s\n" "$@" > instances.txt
 fi
 
-access_token=$(gcloud auth print-access-token)
-export access_token
-
-# Get version definition
-api_root="https://appengine.googleapis.com/v1"
-export api_root
-
-curl -s \
-     -H "Authorization: Bearer ${access_token}" \
-     -o uat1.full.json \
-     "${api_root}/apps/akvoflow-uat1/services/default/versions/${version}?view=FULL"
-
-# Cleanup
-jq -M '. | {id, instanceClass, runtime, env, threadsafe, handlers, deployment}' uat1.full.json > uat1.tmp
-
-jq -M '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' uat1.tmp > uat1.final.json
-
-uat1_sha1sum=$(jq -M -r '.deployment.files["WEB-INF/appengine-web.xml"].sha1Sum' uat1.final.json)
-export uat1_sha1sum
-
-function deploy_instance {
+deploy_instance() {
     instance_id="${1}"
-    instance_sha1sum=$(sha1sum "${config}/${instance_id}/appengine-web.xml" | awk '{print $1}')
-    instance_file="${instance_id}.final.json"
+    staging_dir="appengine-staging-${1}"
 
-    cp uat1.final.json "${instance_file}"
+    echo "Copying staging dir to ${staging_dir}"
+    cp -r appengine-staging "${staging_dir}"
 
-    sed -i \
-	-e "s|staging.akvoflow-uat1.appspot.com/${uat1_sha1sum}|staging.${instance_id}.appspot.com/${uat1_sha1sum}|" \
-	-e "s|${uat1_sha1sum}|${instance_sha1sum}|g" \
-	"${instance_file}"
+    echo "Deploying ${instance_id} from ${staging_dir}"
 
-    curl -s \
-     -X POST \
-     -T "${instance_file}" \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer ${access_token}" \
-     -o "${instance_id}-operation.json" \
-     "${api_root}/apps/${instance_id}/services/default/versions"
+    cp "${config}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
+
+    gcloud app deploy "${staging_dir}/app.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/cron.yaml" \
+	   --no-promote --quiet \
+	   --version="${version}" \
+	   --project="${instance_id}"
 }
-
 export -f deploy_instance
 
-echo "Deploying instances..."
+migrate_traffic() {
+    gcloud app services set-traffic default \
+	   --splits "${version:8}"=1 \
+	   --project="${1}"
+}
+export -f migrate_traffic
 
-cat < instances.txt |  while IFS= read -r instance
-do
-    deploy_instance "${instance}"
-done
+if [[ "${version:0:8}" == "promote-" ]]; then
+    deploy_fn="migrate_traffic"
+else
+    deploy_fn="deploy_instance"
 
-echo "Done"
+    log Obtaining version archive
+    gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
+    unzip -q "${version}.zip"
+
+    if [[ ! -d "appengine-staging" ]]; then
+	log Staging folder is not present
+	exit 1
+    fi
+fi
+
+log "Deploying instances: $*"
+
+parallel --results "${tmp}/parallel" \
+	 --retries 3 \
+	 --jobs 10 \
+	 --joblog "${deploy_id}.log" \
+	 "${deploy_fn}" :::: instances.txt
+
+log Deploy results
+
+cat "${tmp}/${deploy_id}.log"
+
+log Uploading results
+
+results_archive="${deploy_id}.zip"
+zip -q -r "${results_archive}" "${tmp}/${deploy_id}.log" "${tmp}/parallel"
+gsutil cp "${results_archive}" "gs://${deploy_bucket_name}/${results_archive}"
+
+log Done

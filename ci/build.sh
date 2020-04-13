@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017-2019 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2020 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -16,7 +16,12 @@
 #  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 #
 
-set -e
+set -eu
+
+if [[ "${CI_TAG:0:8}" == "promote-" ]]; then
+    echo "Skipping build"
+    exit 0
+fi
 
 SRC_DIR="/app/src"
 
@@ -34,19 +39,3 @@ lein build
 cd "${SRC_DIR}/GAE"
 
 mvn package
-
-if [[ "${TRAVIS_BRANCH}" != "master" ]] && [[ -z "$TRAVIS_TAG" ]]; then
-  exit 0
-fi
-
-echo "Setting project version to $FLOW_GIT_VERSION"
-mvn versions:set -DnewVersion="${FLOW_GIT_VERSION}"
-
-mvn deploy:deploy-file -s "${SRC_DIR}/maven-ci-settings.xml" \
-                       -Dgpg.passphrase="${CLOJARS_GPG_PASSWORD}" \
-                       -Durl="https://clojars.org/repo" \
-                       -DrepositoryId=clojars \
-                       -Dfile=target/akvo-flow-classes.jar \
-                       -DpomFile=pom.xml \
-                       -Dpackaging=jar \
-                       -Dclassifier=classes

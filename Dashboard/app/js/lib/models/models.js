@@ -339,6 +339,12 @@ FLOW.SurveyedLocale = DS.Model.extend({
   primaryKey: 'keyId',
 });
 
+FLOW.SurveyedLocaleCount = DS.Model.extend({
+  keyId: DS.attr('number'),
+  count: DS.attr('number'),
+  primaryKey: 'keyId',
+});
+
 FLOW.DataPointAssignment = FLOW.BaseModel.extend({
   surveyAssignmentId: DS.attr('number'),
   surveyId: DS.attr('number'),
