@@ -574,6 +574,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             ...datapointAssignment,
             datapoints: this.map(dp => ({
               name: dp.get('displayName'),
+              identifier: dp.get('identifier'),
               id: dp.get('keyId'),
             })),
           };
@@ -603,6 +604,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           ...selectedDp,
           datapoints: datapoints.map(dp => ({
             name: dp.get('displayName'),
+            identifier: dp.get('identifier'),
             id: dp.get('keyId'),
           })),
         };
@@ -621,6 +623,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.datapointsResults = this.searchedDatapoints.map(datapoint => {
         return {
           name: datapoint.get('displayName'),
+          identifier: datapoint.get('identifier'),
           id: datapoint.get('keyId'),
         };
       });
