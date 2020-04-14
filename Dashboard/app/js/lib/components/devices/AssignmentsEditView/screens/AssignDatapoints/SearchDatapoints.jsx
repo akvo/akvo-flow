@@ -90,7 +90,7 @@ export default class SearchDatapoints extends React.Component {
 
                 <label htmlFor={dp.id}>
                   <p>{dp.name}</p>
-                  <span>{dp.id}</span>
+                  <span>{dp.identifier}</span>
                 </label>
               </div>
             ))}
