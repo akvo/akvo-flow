@@ -5,7 +5,7 @@ import Checkbox from 'akvo-flow/components/reusable/Checkbox';
 
 export default class DeviceAccordion extends React.Component {
   state = {
-    isAccordionOpen: this.props.deviceGroupIsActive || true,
+    isAccordionOpen: false,
   };
 
   onAccordionClick = () => {
@@ -98,13 +98,8 @@ export default class DeviceAccordion extends React.Component {
   }
 }
 
-DeviceAccordion.defaultProps = {
-  deviceGroupIsActive: true,
-};
-
 DeviceAccordion.propTypes = {
   id: PropTypes.number.isRequired,
-  deviceGroupIsActive: PropTypes.bool,
   name: PropTypes.string.isRequired,
   devices: PropTypes.array.isRequired,
   handleSelectDevice: PropTypes.func.isRequired,
