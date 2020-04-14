@@ -41,9 +41,50 @@ export default class AssignmentsEdit extends React.Component {
     });
   };
 
+  // validation
+  canSubmitAssignment = () => {
+    const { assignmentName, startDate, endDate } = this.state.data;
+    const { selectedDeviceIds, numberOfForms } = this.props.data;
+
+    // validate assignment name
+    if (!assignmentName || assignmentName == '') {
+      return false;
+    }
+
+    if (assignmentName.length > 100) {
+      return false;
+    }
+
+    // validate dates [start date]
+    if (!startDate) {
+      return false;
+    }
+
+    // validate date [expire date]
+    if (!endDate) {
+      return false;
+    }
+
+    if (!selectedDeviceIds.length) {
+      return false;
+    }
+
+    if (!numberOfForms) {
+      return false;
+    }
+
+    return true;
+  };
+
   // renders
   renderTopBar() {
     const { strings, actions } = this.props;
+    const canSubmitAssignment = this.canSubmitAssignment();
+    const submitBtnProps = {
+      onClick: this.onSubmit,
+      className: `${canSubmitAssignment ? '' : 'disabled'} standardBtn`,
+      disabled: !canSubmitAssignment,
+    };
 
     return (
       <div className="assignment-topbar">
@@ -63,7 +104,7 @@ export default class AssignmentsEdit extends React.Component {
           </h3>
         </div>
 
-        <button onClick={this.onSubmit} type="button" className="standardBtn">
+        <button type="button" {...submitBtnProps}>
           {strings.saveAssignment}
         </button>
       </div>
