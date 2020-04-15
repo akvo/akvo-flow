@@ -12,12 +12,15 @@ export default class AllDatapoints extends React.Component {
       <div className="all-dp-assigned">
         <div className="dp-info">
           <p>{label}</p>
-          <p className="info">{strings.unassignNote}</p>
         </div>
 
-        <div className="unassign-dp">
-          <button onClick={() => actions.unassignAllDatapointsToDevice(deviceId)} type="button">
-            {strings.unassign}
+        <div className="undo-dp">
+          <button
+            className="link-button"
+            onClick={() => actions.unassignAllDatapointsToDevice(deviceId)}
+            type="button"
+          >
+            {strings.undo}
           </button>
         </div>
       </div>

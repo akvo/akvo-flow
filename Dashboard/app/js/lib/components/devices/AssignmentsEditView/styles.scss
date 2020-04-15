@@ -438,6 +438,23 @@
             .dp-info {
               margin-right: auto;
             }
+
+            .undo-dp {
+              button {
+                font-size: inherit;
+                border: none;
+                outline: none;
+                padding: 0;
+                cursor: pointer;
+                color: #4ab1cf;
+                background-color: transparent;
+
+                &:focus {
+                  border: none;
+                  outline: none;
+                }
+              }
+            }
           }
 
           .search-datapoints {
