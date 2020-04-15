@@ -7,7 +7,7 @@ export default function DatapointList({ datapointsData }) {
       {datapointsData.map(dp => (
         <div key={dp.id} className="datapoint">
           <p>{dp.name}</p>
-          <span>{dp.id}</span>
+          <span>{dp.identifier}</span>
         </div>
       ))}
     </React.Fragment>
