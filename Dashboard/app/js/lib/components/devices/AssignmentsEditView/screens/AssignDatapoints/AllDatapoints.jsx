@@ -14,7 +14,7 @@ export default class AllDatapoints extends React.Component {
           <p>{label}</p>
         </div>
 
-        <div className="unassign-dp">
+        <div className="undo-dp">
           <button
             className="link-button"
             onClick={() => actions.unassignAllDatapointsToDevice(deviceId)}
