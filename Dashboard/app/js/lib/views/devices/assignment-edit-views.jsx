@@ -118,8 +118,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
         editDatapoints: Ember.String.loc('_edit_datapoints'),
-        unassign: Ember.String.loc('_unassign'),
-        unassignNote: Ember.String.loc('_unassign_all_datapoints_to_assign_by_other_options'),
+        undo: Ember.String.loc('_undo'),
         allDatapointsAssigned: Ember.String.loc('_all_datapoints_assigned'),
       };
 
