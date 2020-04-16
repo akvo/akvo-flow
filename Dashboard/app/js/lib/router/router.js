@@ -20,6 +20,7 @@ FLOW.Router = Ember.Router.extend({
     FLOW.selectedControl.set('selectedCascadeResource', null);
     FLOW.selectedControl.set('cascadeImportNumLevels', null);
     FLOW.selectedControl.set('cascadeImportIncludeCodes', null);
+    FLOW.selectedControl.set('surveyAssignmentTransaction', null);
     FLOW.surveyControl.set('content', null);
     FLOW.questionControl.set('OPTIONcontent', null);
     FLOW.metaControl.set('since', null);

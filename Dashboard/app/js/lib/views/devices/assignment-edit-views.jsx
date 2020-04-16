@@ -239,7 +239,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('formIds', formIds);
       sa.set('deviceIds', deviceIds);
 
-      FLOW.store.commit();
+      const transaction = FLOW.selectedControl.get('surveyAssignmentTransaction');
+      if (transaction) {
+        transaction.commit();
+        FLOW.selectedControl.set('surveyAssignmentTransaction', null);
+      } else {
+        FLOW.store.commit();
+      }
 
       return true;
     },
