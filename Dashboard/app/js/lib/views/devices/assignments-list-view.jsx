@@ -64,10 +64,12 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
   assignmentEdit(action, assignmentId) {
     switch (action) {
       case 'new': {
-        const newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment, {
+        const transaction = FLOW.store.transaction();
+        const newAssignment = transaction.createRecord(FLOW.SurveyAssignment, {
           name: Ember.String.loc('_new_assignment_change_name'),
         });
         FLOW.selectedControl.set('selectedSurveyAssignment', newAssignment);
+        FLOW.selectedControl.set('surveyAssignmentTransaction', transaction);
         break;
       }
       default: {
