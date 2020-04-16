@@ -41,39 +41,48 @@ export default class AssignmentMain extends React.Component {
     const { strings, data } = this.context;
     const deviceGroups = this.getDeviceGroups();
     const deviceIsSelected = data.selectedDeviceIds.length > 0;
+    const { currentTab } = this.state;
 
     return (
       <div className="assignment-sidebar">
         <ul>
-          <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
+          <li className={currentTab === 'FORMS' ? 'active' : undefined}>
             <a href="#" onClick={() => this.changeTab('FORMS')}>
               {strings.forms}
             </a>
           </li>
 
-          <li className={this.state.currentTab !== 'FORMS' ? 'active' : ''}>
+          <li className={currentTab !== 'FORMS' ? 'active' : undefined}>
             <a
-              className={deviceIsSelected ? 'disabled' : undefined}
+              className="disabled"
               href="#"
               onClick={deviceIsSelected ? undefined : () => this.changeTab('DEVICES')}
             >
-              {strings.devices}
+              {`${data.selectedDeviceIds.length} ${strings.devices}`}
             </a>
 
             {deviceIsSelected && (
-              <a href="#" className="sub-action" onClick={() => this.changeTab('EDIT_DEVICE')}>
+              <a
+                href="#"
+                className={`sub-action ${currentTab === 'EDIT_DEVICE' ? 'active' : undefined}`}
+                onClick={() => this.changeTab('EDIT_DEVICE')}
+              >
                 {strings.edit}
               </a>
             )}
 
-            <a href="#" className="sub-action" onClick={() => this.changeTab('ADD_DEVICE')}>
+            <a
+              href="#"
+              className={`sub-action ${currentTab === 'ADD_DEVICE' ? 'active' : undefined}`}
+              onClick={() => this.changeTab('ADD_DEVICE')}
+            >
               {strings.add}
             </a>
           </li>
 
           <li
             className={`sidebar-dropdown-container ${
-              this.state.currentTab !== 'FORMS' ? 'active' : ''
+              currentTab !== 'FORMS' ? 'active' : undefined
             }`}
           >
             {Object.keys(deviceGroups).map(dgId => (

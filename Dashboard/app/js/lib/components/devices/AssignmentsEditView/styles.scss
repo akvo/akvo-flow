@@ -25,6 +25,10 @@
       }
     }
 
+    .active::after {
+      content: none;
+    }
+
     .assignment-topbar {
       display: flex;
       padding: 12px 15px;
@@ -92,22 +96,23 @@
 
         li {
           display: flex;
+          color: #4ab1cf;
 
           &.active {
             background: #4ab1cf1a;
 
-            &::after {
-              content: unset;
+            a {
+              color: #444;
             }
 
-            button {
-              color: #4f4f4f;
+            &::after {
+              content: unset;
             }
           }
 
           a {
             padding: 15px 25px;
-            color: #4ab1cf;
+            color: inherit;
             border: none;
             background: none;
             outline: none;
@@ -121,6 +126,10 @@
               color: #4ab1cf;
               padding-left: 10px;
               padding-right: 10px;
+
+              &.active {
+                color: #444;
+              }
             }
 
             &.disabled {
@@ -133,17 +142,22 @@
           display: block;
 
           .sidebar-dropdown {
-            font-size: 15px;
+            font-size: 14px;
             padding: 15px 25px;
             display: block;
-            padding-bottom: 15px;
+            padding-bottom: 0px;
+
+            &:last-child {
+              padding-bottom: 15px;
+            }
 
             .dd-header {
               display: flex;
               justify-content: space-between;
-              padding-bottom: 10px;
+              padding-bottom: 5px;
               cursor: pointer;
               align-items: center;
+              color: #444;
             }
 
             .sidebar-panel {
@@ -152,6 +166,11 @@
               a {
                 display: block;
                 padding: 4px 0px;
+                color: #4ab1cf;
+
+                &.active {
+                  color: #444;
+                }
               }
             }
           }
