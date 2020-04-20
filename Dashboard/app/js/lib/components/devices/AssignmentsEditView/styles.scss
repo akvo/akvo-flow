@@ -185,11 +185,12 @@
 
         .settings {
           padding: 15px 25px;
-          width: 45%;
+          width: 90%;
 
           .assignment-date {
             margin-top: 15px;
             margin-bottom: 2em;
+            width: 50%;
 
             .date-picker {
               display: flex;
@@ -222,14 +223,16 @@
             }
           }
 
-          .assignment-survery-folder {
-            margin-bottom: 1.5em;
-          }
-
           .assignment-form-selector {
             margin-top: 2.3em;
 
+            .heading {
+              width: 45%;
+            }
+
             .folder-selector {
+              width: 90%;
+              
               select {
                 width: 150px;
                 height: 38px;
@@ -251,6 +254,8 @@
             }
 
             .form-selector {
+              width: 50%;
+
               .form {
                 width: 100%;
                 display: flex;

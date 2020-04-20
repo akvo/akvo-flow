@@ -46,7 +46,7 @@ export default class FormSection extends React.Component {
             </span>
           </p>
 
-          <div className="form-selector">
+          <div>
             <br />
 
             <div className="folder-selector">
