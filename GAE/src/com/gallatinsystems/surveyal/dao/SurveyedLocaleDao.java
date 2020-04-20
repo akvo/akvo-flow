@@ -292,7 +292,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
 
-        if (cursor != null && cursor != "")
+        if (cursor != null && !"".equals(cursor))
             prepareCursor(cursor, query);
 
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
