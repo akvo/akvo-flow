@@ -618,7 +618,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             .getCell(columnIndex + 1));
                     String elevation = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 2));
-                    if (latitude != "" && longitude != "") { //We want both else ignore
+                    if (!"".equals(latitude) && !"".equals(longitude)) { //We want both else ignore
                         val = latitude + "|" + longitude + "|" + elevation;
                     }
                     break;

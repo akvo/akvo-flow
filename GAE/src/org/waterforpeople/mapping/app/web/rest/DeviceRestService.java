@@ -97,7 +97,7 @@ public class DeviceRestService {
             deviceDto.setLastPositionDate(d.getLastLocationBeaconTime());
 
             // add device group name
-            if (d.getDeviceGroup() != null && d.getDeviceGroup() != "") {
+            if (d.getDeviceGroup() != null && !"".equals(d.getDeviceGroup())) {
                 DeviceGroup dg = deviceGroupDao.getByKey(Long.parseLong(d.getDeviceGroup()));
                 if (dg != null) {
                     deviceDto.setDeviceGroupName(dg.getCode());
@@ -143,7 +143,7 @@ public class DeviceRestService {
                     DtoMarshaller.copyToDto(d, dto);
 
                     // add device group name
-                    if (d.getDeviceGroup() != null && d.getDeviceGroup() != "") {
+                    if (d.getDeviceGroup() != null && !"".equals(d.getDeviceGroup())) {
                         DeviceGroup dg = deviceGroupDao
                                 .getByKey(Long.parseLong(d.getDeviceGroup()));
                         if (dg != null) {
