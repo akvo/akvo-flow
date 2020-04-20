@@ -8,7 +8,7 @@ export default class FormSelector extends React.Component {
     const { forms, onCheck } = this.props;
 
     return (
-      <div>
+      <div className="form-selector">
         {Object.keys(forms).map(formId => (
           <div className="form" key={formId}>
             <label htmlFor={formId}>
