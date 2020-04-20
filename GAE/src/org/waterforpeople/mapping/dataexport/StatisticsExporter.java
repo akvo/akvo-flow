@@ -108,11 +108,11 @@ public class StatisticsExporter implements DataExporter {
             log.debug("Surveys: " + formMap.size());
             log.debug("Instance Counts: " + instanceCounts.size());
             String title = "Form submissions";
-            if (from != null && from.trim() != "") {
+            if (from != null && !"".equals(from.trim())) {
                 Date fromDate = idf.parse(from);  //Removes any ISO8601 "time" part
                 title += " from " + odf.format(fromDate);
             }
-            if (to != null && to.trim() != "") {
+            if (to != null && !"".equals(to.trim())) {
                 Date toDate = idf.parse(to);
                 title += " to " + odf.format(toDate);
             }

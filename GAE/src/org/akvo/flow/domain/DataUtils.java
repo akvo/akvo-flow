@@ -44,7 +44,7 @@ public class DataUtils {
             responseArray = new String[optionNodes.size()];
             for (int i = 0; i < responseArray.length; i++) {
                 String text = optionNodes.get(i).get("text");
-                if (text != null && text.trim() != "") {
+                if (text != null && !"".equals(text.trim())) {
                     responseArray[i] = text.trim();
                 }
             }
@@ -67,7 +67,7 @@ public class DataUtils {
             values = new String[nodes.size()];
             for (int i = 0; i < values.length; i++) {
                 String text = nodes.get(i).get("name");
-                if (text != null && text.trim() != "") {
+                if (text != null && !"".equals(text.trim())) {
                     values[i] = text.trim();
                 }
             }
