@@ -230,6 +230,19 @@ pre {
   @include btnOutline($flowAnchorLink);
 }
 
+.centre {
+  text-align: center;
+}
+
+.btnLink {
+  background: transparent;
+  border: 0;
+  color: $flowAnchorLink;
+  &:hover {
+    color: $flowAnchorLink;
+  }
+}
+
 a.btn {
   display: block;
   padding: 1px 0 7px 21px;
