@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -30,17 +31,13 @@ import java.util.List;
 public class UnifyDataPointAssignment implements Process {
 
     private Entity getDataPointAssignment(DatastoreService ds, long deviceId, long surveyAssignmentId, long surveyId) {
-        try {
-            Query.Filter f1 = new FilterPredicate("deviceId", FilterOperator.EQUAL, deviceId);
-            Query.Filter f2 = new FilterPredicate("surveyAssignmentId", FilterOperator.EQUAL, surveyAssignmentId);
-            Query.Filter f3 = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
-            Query q = new Query("DataPointAssignment");
-            q.setFilter(Query.CompositeFilterOperator.and(f1, f2, f3));
-            PreparedQuery pq = ds.prepare(q);
-            return pq.asSingleEntity();
-        } catch (Exception e) {
-            throw new Error("Error DataPointAssignment duplicated! deviceId: " + deviceId + " surveyAssignmentId: " + surveyAssignmentId + " surveyId: " + surveyId);
-        }
+        Query.Filter f1 = new FilterPredicate("deviceId", FilterOperator.EQUAL, deviceId);
+        Query.Filter f2 = new FilterPredicate("surveyAssignmentId", FilterOperator.EQUAL, surveyAssignmentId);
+        Query.Filter f3 = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
+        Query q = new Query("DataPointAssignment");
+        q.setFilter(Query.CompositeFilterOperator.and(f1, f2, f3));
+        PreparedQuery pq = ds.prepare(q);
+        return pq.asSingleEntity();
     }
 
     private void assignEntityProp(Entity origin, Entity target, String prop) {
@@ -64,40 +61,44 @@ public class UnifyDataPointAssignment implements Process {
                 continue;
             }
             for (Long deviceId : deviceIds) {
-                final Entity dataPointAssignement = getDataPointAssignment(ds, deviceId, surveyAssignmentId, surveyId);
-                if (dataPointAssignement == null) {
+                try {
+                    final Entity dataPointAssignement = getDataPointAssignment(ds, deviceId, surveyAssignmentId, surveyId);
+                    if (dataPointAssignement == null) {
 
-                    Entity newDataPointAssignment = new Entity("DataPointAssignment");
+                        Entity newDataPointAssignment = new Entity("DataPointAssignment");
 
-                    List<Long> dataPointIds = new ArrayList<Long>();
-                    dataPointIds.add(new Long(0));
-                    newDataPointAssignment.setProperty("dataPointIds", dataPointIds);
+                        newDataPointAssignment.setProperty("dataPointIds", Collections.singletonList(0L));
 
-                    newDataPointAssignment.setProperty("deviceId", deviceId);
-                    newDataPointAssignment.setProperty("surveyId", surveyId);
-                    newDataPointAssignment.setProperty("surveyAssignmentId", surveyAssignmentId);
+                        newDataPointAssignment.setProperty("deviceId", deviceId);
+                        newDataPointAssignment.setProperty("surveyId", surveyId);
+                        newDataPointAssignment.setProperty("surveyAssignmentId", surveyAssignmentId);
 
-                    assignEntityProp(sl, newDataPointAssignment, "createUserId");
-                    assignEntityProp(sl, newDataPointAssignment, "lastUpdateUserId");
+                        assignEntityProp(sl, newDataPointAssignment, "createUserId");
+                        assignEntityProp(sl, newDataPointAssignment, "lastUpdateUserId");
 
-                    newDataPointAssignment.setProperty("ancestorIds", null);
+                        newDataPointAssignment.setProperty("ancestorIds", null);
 
-                    final Date date = new Date();
-                    newDataPointAssignment.setProperty("createdDateTime", date);
-                    newDataPointAssignment.setProperty("lastUpdateDateTime", date);
+                        final Date date = new Date();
+                        newDataPointAssignment.setProperty("createdDateTime", date);
+                        newDataPointAssignment.setProperty("lastUpdateDateTime", date);
 
-                    newDataPointAssignment.setProperty("lastUpdateUserId", 0);
-                    newDataPointAssignment.setProperty("createUserId", 0);
+                        newDataPointAssignment.setProperty("lastUpdateUserId", 0);
+                        newDataPointAssignment.setProperty("createUserId", 0);
 
-                    System.out.println("DataPointAssignment to be created: " + newDataPointAssignment);
+                        System.out.println("DataPointAssignment to be created: " + newDataPointAssignment);
 
-                    toBeCreated.add(newDataPointAssignment);
+                        toBeCreated.add(newDataPointAssignment);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error trying to process following values, deviceId: " + deviceId + " surveyAssignmentId: " + surveyAssignmentId + " surveyId: " + surveyId);
+                    System.out.println(e.getMessage());
                 }
             }
         }
-        System.out.println("DataPointAssignment that should be create: " + toBeCreated.size());
+        System.out.println("DataPointAssignment that should be created: " + toBeCreated.size());
         if (toBeCreated.size() > 0) {
             ds.put(toBeCreated);
         }
     }
 }
+
