@@ -48,10 +48,40 @@ export default class SearchDatapoints extends React.Component {
     this.setState({ selectedDatapointsIds: [] });
   };
 
+  selectAllFound = () => {
+    const { datapointsResults } = this.context.data;
+    const newSelection = datapointsResults.map(dp => dp.id);
+    this.setState({ selectedDatapointsIds: newSelection });
+  };
+
+  undoSelectAll = () => {
+    this.setState({ selectedDatapointsIds: [] });
+  };
+
   render() {
     const { datapointsResults } = this.context.data;
     const { strings } = this.context;
     const { selectedDatapointsIds } = this.state;
+
+    const emptyResult = datapointsResults.length === 0;
+    const allSelected = !emptyResult && selectedDatapointsIds.length === datapointsResults.length;
+
+    const selectAllButton =
+      emptyResult || allSelected ? (
+        <span />
+      ) : (
+        <button type="button" onClick={this.selectAllFound} className="btnLink">
+          {strings.selectAll}
+        </button>
+      );
+
+    const undoAllButton = allSelected ? (
+      <button type="button" onClick={this.undoSelectAll} className="btnLink">
+        {strings.undoSelection}
+      </button>
+    ) : (
+      <span />
+    );
 
     return (
       <div className="search-datapoints">
@@ -77,6 +107,10 @@ export default class SearchDatapoints extends React.Component {
           </form>
 
           <div className="search-results">
+            <div className="centre">
+              {undoAllButton}
+              {selectAllButton}
+            </div>
             {datapointsResults.map(dp => (
               <div key={dp.id} className="search-result">
                 <Checkbox
@@ -100,9 +134,11 @@ export default class SearchDatapoints extends React.Component {
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>{selectedDatapointsIds.length} selected</p>
+              <p>
+                {selectedDatapointsIds.length} {strings.selected} | {datapointsResults.length}{' '}
+                {strings.found}
+              </p>
             </div>
-
             <button type="button" onClick={this.addToAssignment} className="btnOutline">
               Assign
             </button>

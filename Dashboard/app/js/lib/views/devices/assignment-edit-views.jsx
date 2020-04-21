@@ -104,6 +104,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         devices: Ember.String.loc('_devices'),
         device: Ember.String.loc('_device'),
         selected: Ember.String.loc('_selected'),
+        selectAll: Ember.String.loc('_select_all'),
+        undoSelection: Ember.String.loc('_undo_selection'),
+        found: Ember.String.loc('_found'),
         edit: Ember.String.loc('_edit'),
         add: Ember.String.loc('_add'),
         addDevicesToAssignment: Ember.String.loc('_add_devices_to_assignment'),
@@ -632,7 +635,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           id: datapoint.get('keyId'),
         };
       });
-
       this.renderReactSide();
     },
 
