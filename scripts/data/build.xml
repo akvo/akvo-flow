@@ -1,4 +1,4 @@
-<project default="compile">
+<project default="info">
 	<property name="lib" value="lib" />
 	<property name="build" value="bin" />
 	<property name="gae" value="../../GAE" />
@@ -19,10 +19,18 @@
 		<javac source="1.8" target="1.8" encoding="UTF8" srcdir="src" destdir="${build}"
 			classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
+	<target name="info" depends="compile">
+		<echo message="example calling remoteAPI: ant remoteAPI -DappId=akvoflowsandbox -Dservice=UnifyDataPointAssignment -Dp12=../path/to/repos/akvo-flow-server-config/appId/appId.p12 -Dargs=&quot;arg1 arg2&quot; "/>
+	</target>
 
-	<target name="remoteAPI">
+	<target name="remoteAPI" depends="compile">
+		<property name="appId" value="default-module" />
+		<property name="serviceAccount" value="sa-${appId}@${appId}.iam.gserviceaccount.com" />
+		<property name="service" value="" />
+		<property name="args" value="" />
+    <property name="akvoFlowServerConfigPath" value="../../../akvo-flow-server-config" />
 		<java classname="org.akvo.gae.remoteapi.RemoteAPI" classpathref="project.classpath" failonerror="true">
-			<arg line="${args}" />
+			<arg line="${service} ${appId} ${serviceAccount} ${akvoFlowServerConfigPath}/${appId}/${appId}.p12 ${args}" />
 		</java>
 	</target>
 </project>
