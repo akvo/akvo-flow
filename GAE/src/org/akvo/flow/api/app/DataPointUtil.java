@@ -125,7 +125,7 @@ public class DataPointUtil {
      * Fetches SurveyInstances using the surveyedLocalesIds and puts them in a map:
      * key: SurveyedLocalesId, value: list of SurveyInstances
      */
-    public Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds, Long surveyId, Device device) {
+    private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds, Long surveyId, Device device) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
 
         boolean shouldFilter = device != null;

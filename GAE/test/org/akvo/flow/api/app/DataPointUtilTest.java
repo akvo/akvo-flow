@@ -18,7 +18,6 @@ package org.akvo.flow.api.app;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
@@ -31,16 +30,12 @@ import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -92,7 +87,7 @@ public class DataPointUtilTest {
         return (List<SurveyInstance>) dao.save(newInstances);
     }
 
-    private List<SurveyInstance> createFormInstances(SurveyedLocale dataPoint, int howMany, Survey... forms) {
+    private List<SurveyInstance> createFormInstances(SurveyedLocale dataPoint, Survey... forms) {
         List<SurveyInstance> allFormInstances = new ArrayList<>();
         for (Survey form : forms) {
             allFormInstances.addAll(createFormInstances(form, dataPoint, randomInt()));
@@ -133,9 +128,19 @@ public class DataPointUtilTest {
         return dao.save(assignment);
     }
 
-    private Set<Long> getIds(List<? extends BaseDomain> entities) {
-        return entities.stream()
-                .map(surveyInstance -> surveyInstance.getKey().getId())
+    private Set<String> uuidsFromDataPoints(List<SurveyedLocaleDto> datapointList) {
+        Set<String> uuids = new HashSet<>();
+        for (SurveyedLocaleDto dp : datapointList) {
+            uuids.addAll(dp.getSurveyInstances()
+                    .stream().map(SurveyInstanceDto::getUuid)
+                    .collect(Collectors.toList()));
+        }
+        return uuids;
+    }
+
+    private Set<String> uuidsFromFormInstances(List<SurveyInstance> formInstances) {
+        return formInstances.stream()
+                .map(SurveyInstance::getUuid)
                 .collect(Collectors.toSet());
     }
 
@@ -148,25 +153,26 @@ public class DataPointUtilTest {
         Device device = createDevice();
 
         SurveyedLocale dataPoint = createDataPoint();
-        List<Long> dataPointIds = Arrays.asList(dataPoint.getKey().getId());
-        List<SurveyInstance> allFormInstances = createFormInstances(dataPoint, randomInt(), form1, form2);
+        List<SurveyInstance> allFormInstances = createFormInstances(dataPoint, form1, form2);
 
-        List<SurveyInstance> form1Instances = allFormInstances.stream()
-                .filter(surveyInstance -> surveyInstance.getSurveyId().equals(form1.getKey().getId()))
-                .collect(Collectors.toList());
+        List<SurveyInstance> form1Instances = new ArrayList<>();
+        for (SurveyInstance surveyInstance : allFormInstances) {
+            if (surveyInstance.getSurveyId().equals(form1.getKey().getId())) {
+                form1Instances.add(surveyInstance);
+            }
+        }
 
         // Assignment only contains Id for form1
-        SurveyAssignment assignment = createAssignment(dataPoint.getSurveyGroupId(),
-                Arrays.asList(device.getKey().getId()), Arrays.asList(form1.getKey().getId()));
+        createAssignment(dataPoint.getSurveyGroupId(), Collections.singletonList(device.getKey().getId()), Collections.singletonList(form1.getKey().getId()));
 
         DataPointUtil dpu = new DataPointUtil();
-        Map<Long, List<SurveyInstance>> foundInstances = dpu.getSurveyInstances(dataPointIds, dataPoint.getSurveyGroupId(), device);
+        List<SurveyedLocaleDto> datapointList = dpu.getSurveyedLocaleDtosList(Collections.singletonList(dataPoint),
+                dataPoint.getSurveyGroupId(), device);
 
-        Set<Long> expectedIds = getIds(form1Instances);
+        Set<String> expected = uuidsFromFormInstances(form1Instances);
+        Set<String> actual = uuidsFromDataPoints(datapointList);
 
-        Set<Long> resultIds = getIds(foundInstances.get(dataPoint.getKey().getId()));
-
-        assertEquals(expectedIds, resultIds);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -175,16 +181,15 @@ public class DataPointUtilTest {
         Survey form2 = createForm();
 
         SurveyedLocale dataPoint = createDataPoint();
-        List<Long> dataPointIds = Arrays.asList(dataPoint.getKey().getId());
-        List<SurveyInstance> allFormInstances = createFormInstances(dataPoint, randomInt(), form1, form2);
+        List<SurveyInstance> allFormInstances = createFormInstances(dataPoint, form1, form2);
 
         DataPointUtil dpu = new DataPointUtil();
-        Map<Long, List<SurveyInstance>> foundInstances = dpu.getSurveyInstances(dataPointIds, dataPoint.getSurveyGroupId(), null);
+        List<SurveyedLocaleDto> datapointList = dpu.getSurveyedLocaleDtosList(Collections.singletonList(dataPoint),
+                dataPoint.getSurveyGroupId(), null);
 
-        Set<Long> expectedIds = getIds(allFormInstances);
+        Set<String> expected = uuidsFromFormInstances(allFormInstances);
+        Set<String> actual = uuidsFromDataPoints(datapointList);
 
-        Set<Long> resultIds = getIds(foundInstances.get(dataPoint.getKey().getId()));
-
-        assertEquals(expectedIds, resultIds);
+        assertEquals(expected, actual);
     }
 }
