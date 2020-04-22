@@ -5,7 +5,7 @@ import AssignmentsContext from '../assignment-context';
 
 export default class SidebarDropdown extends React.Component {
   state = {
-    isOpen: true,
+    isOpen: false,
   };
 
   toggleDropdown = () => {
