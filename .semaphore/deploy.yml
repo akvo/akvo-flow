@@ -35,4 +35,4 @@ blocks:
       jobs:
         - name: Instances deploy
           commands:
-            - scripts/deploy/run.sh "$(git describe)" akvoflow-beta1 akvoflow-beta2
+            - scripts/deploy/run.sh "$(git describe)" all
