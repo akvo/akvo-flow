@@ -90,7 +90,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
                     res.setMessage("No assignment was found");
                     return res;
                 }
-                res = convertToResponse(dpList, dpReq.getSurveyId(), device);
+                res = convertToResponse(dpList, dpReq.getSurveyId());
                 return res;
             }
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
@@ -139,7 +139,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
     /**
      * converts the domain objects to dtos and then installs them in a DataPointResponse object
      */
-    private DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId, Device device) {
+    private DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId) {
         DataPointResponse resp = new DataPointResponse();
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -151,7 +151,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         resp.setResultCount(slList.size());
 
         DataPointUtil dpu = new DataPointUtil();
-        List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId, device);
+        List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId);
 
         resp.setDataPointData(dtoList);
         return resp;

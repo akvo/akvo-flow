@@ -16,13 +16,14 @@
 
 package org.akvo.flow.api.app;
 
-import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.akvo.flow.dao.SurveyAssignmentDao;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.akvo.flow.domain.DataUtils;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -31,20 +32,20 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.api.server.spi.config.Nullable;
 
 public class DataPointUtil {
 
-    public List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId, Device device) {
+    public List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
         QuestionDao questionDao = new QuestionDao();
 
         List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
-        Map<Long, List<SurveyInstance>> surveyInstancesMap = getSurveyInstances(surveyedLocalesIds, surveyId, device);
+        Map<Long, List<SurveyInstance>> surveyInstancesMap = getSurveyInstances(surveyedLocalesIds);
         Map<Long, List<QuestionAnswerStore>> questionAnswerStore = getQuestionAnswerStoreMap(
                 surveyInstancesMap);
 
@@ -59,9 +60,9 @@ public class DataPointUtil {
     }
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
-                                                      HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
-                                                      Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap,
-                                                      @Nullable List<SurveyInstance> surveyInstances) {
+            HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
+            Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap,
+            @Nullable List<SurveyInstance> surveyInstances) {
         SurveyedLocaleDto dto = new SurveyedLocaleDto();
         dto.setId(surveyedLocale.getIdentifier());
         dto.setSurveyGroupId(surveyGroupId);
@@ -114,7 +115,7 @@ public class DataPointUtil {
         List<Long> surveyInstancesIds = new ArrayList<>();
         Collection<List<SurveyInstance>> values = surveyInstanceMap.values();
         for (List<SurveyInstance> surveyInstances : values) {
-            for (SurveyInstance surveyInstance : surveyInstances) {
+            for (SurveyInstance surveyInstance: surveyInstances) {
                 surveyInstancesIds.add(surveyInstance.getObjectId());
             }
         }
@@ -125,37 +126,20 @@ public class DataPointUtil {
      * Fetches SurveyInstances using the surveyedLocalesIds and puts them in a map:
      * key: SurveyedLocalesId, value: list of SurveyInstances
      */
-    public Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds, Long surveyId, Device device) {
+    private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
-
-        boolean shouldFilter = device != null;
-        Set<Long> allowedFormIds = new HashSet<>();
-
-        if (shouldFilter) {
-            SurveyAssignmentDao assignmentDao = new SurveyAssignmentDao();
-            List<SurveyAssignment> assignments = assignmentDao
-                    .listAllContainingDevice(device.getKey().getId())
-                    .stream()
-                    .filter(surveyAssignment -> surveyAssignment.getSurveyId().equals(surveyId))
-                    .collect(Collectors.toList());
-            for (SurveyAssignment assignment : assignments) {
-                allowedFormIds.addAll(assignment.getFormIds());
-            }
-        }
-
         List<SurveyInstance> values = surveyInstanceDAO.fetchItemsByIdBatches(surveyedLocalesIds,
                 "surveyedLocaleId");
         Map<Long, List<SurveyInstance>> surveyInstancesMap = new HashMap<>();
-
         for (SurveyInstance surveyInstance : values) {
             Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
-            if (!surveyInstancesMap.containsKey(surveyedLocaleId)) {
-                surveyInstancesMap.put(surveyedLocaleId, new ArrayList<>());
+            if (surveyInstancesMap.containsKey(surveyedLocaleId)) {
+                surveyInstancesMap.get(surveyedLocaleId).add(surveyInstance);
+            } else {
+                List<SurveyInstance> instances = new ArrayList<>();
+                instances.add(surveyInstance);
+                surveyInstancesMap.put(surveyedLocaleId, instances);
             }
-            if (shouldFilter && !allowedFormIds.contains(surveyInstance.getSurveyId())) {
-                continue;
-            }
-            surveyInstancesMap.get(surveyedLocaleId).add(surveyInstance);
         }
         return surveyInstancesMap;
     }
@@ -172,9 +156,9 @@ public class DataPointUtil {
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
-                                                      HashMap<Long, String> questionTypeMap,
-                                                      @Nullable List<QuestionAnswerStore> questionAnswerStores,
-                                                      @Nullable SurveyInstance surveyInstance) {
+            HashMap<Long, String> questionTypeMap,
+            @Nullable List<QuestionAnswerStore> questionAnswerStores,
+            @Nullable SurveyInstance surveyInstance) {
         SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
         if (surveyInstance != null) {
             surveyInstanceDto.setUuid(surveyInstance.getUuid());
@@ -218,7 +202,7 @@ public class DataPointUtil {
     }
 
     private String getQuestionType(QuestionDao questionDao, HashMap<Long, String> questionTypeMap,
-                                   QuestionAnswerStore questionAnswerStore) {
+            QuestionAnswerStore questionAnswerStore) {
         String type = questionAnswerStore.getType();
         if (type == null || "".equals(type)) {
             type = "VALUE";

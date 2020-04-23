@@ -105,7 +105,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         resp.setResultCount(slList.size());
 
         DataPointUtil dpu = new DataPointUtil();
-        List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId, null);
+        List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId);
 
         resp.setSurveyedLocaleData(dtoList);
         return resp;
