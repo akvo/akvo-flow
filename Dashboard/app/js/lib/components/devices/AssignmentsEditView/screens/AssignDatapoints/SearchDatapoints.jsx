@@ -15,7 +15,6 @@ export default class SearchDatapoints extends React.Component {
 
   onSearch = e => {
     e.preventDefault();
-
     const searchKey = e.target.searchDatapoints.value;
     this.context.actions.findDatapoints(searchKey);
   };
@@ -43,6 +42,9 @@ export default class SearchDatapoints extends React.Component {
       selectedDatapointsIds.map(sDp => datapointsResults.find(dp => dp.id === sDp)),
       this.props.deviceId
     );
+
+    // close popup
+    this.props.changeTab('');
 
     // empty selected devices
     this.setState({ selectedDatapointsIds: [] });
@@ -89,7 +91,7 @@ export default class SearchDatapoints extends React.Component {
           <p>{strings.assignDatapointByNameOrId}</p>
 
           <i
-            className="fa fa-times icon"
+            className="fa fa-times icon clickable"
             onClick={() => this.props.changeTab('')}
             onKeyDown={() => this.props.changeTab('')}
           />
