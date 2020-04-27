@@ -312,17 +312,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
-      trackEvent(
-        'Datapoint Assigned',
-        'Number of devices assigned all datapoints',
-        numberOfAssignedAll
-      );
+      trackEvent('Datapoint Assigned', 'All datapoints', numberOfAssignedAll);
 
-      trackEvent(
-        'Datapoint Assigned',
-        'Number of devices assigned all filtered datapoints (by name or ID)',
-        numberOfAssignedByNameOrID
-      );
+      trackEvent('Datapoint Assigned', 'Filtered datapoints', numberOfAssignedByNameOrID);
 
       // wait half a second before transitioning back to the assignments list
       setTimeout(() => {
