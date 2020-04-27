@@ -68,6 +68,9 @@ export default class SearchDatapoints extends React.Component {
     const emptyResult = datapointsResults.length === 0;
     const allSelected = !emptyResult && selectedDatapointsIds.length === datapointsResults.length;
 
+    const assignedIds = this.props.assignedDataPointIds;
+    const filteredResults = datapointsResults.filter(i => !assignedIds[i.id]);
+
     const selectAllButton =
       emptyResult || allSelected ? (
         <span />
@@ -113,7 +116,7 @@ export default class SearchDatapoints extends React.Component {
               {undoAllButton}
               {selectAllButton}
             </div>
-            {datapointsResults.map(dp => (
+            {filteredResults.map(dp => (
               <div key={dp.id} className="search-result">
                 <Checkbox
                   key={dp.id}
@@ -156,4 +159,5 @@ SearchDatapoints.contextType = AssignmentContext;
 SearchDatapoints.propTypes = {
   deviceId: PropTypes.number.isRequired,
   changeTab: PropTypes.func.isRequired,
+  assignedDataPointIds: PropTypes.object.isRequired,
 };
