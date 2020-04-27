@@ -3,6 +3,7 @@ import React from 'react';
 import AssignmentsEditView from 'akvo-flow/components/devices/AssignmentsEditView';
 import { formatDate } from 'akvo-flow/utils';
 import observe from 'akvo-flow/mixins/observe';
+import { trackPageView, trackEvent } from 'akvo-flow/analytics';
 
 require('akvo-flow/views/react-component');
 
@@ -81,6 +82,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // load intial forms for selected survey group
       this.handleSurveySelect(this.selectedSurveyGroupId);
       this.setupDevices();
+
+      // track page view
+      trackPageView(
+        `Assignments Page - ${FLOW.selectedControl.selectedSurveyAssignment.get('name')}`
+      );
 
       // react render
       this.renderReactSide();
@@ -250,6 +256,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         FLOW.store.commit();
       }
 
+      // track assignment created/edited
+      // check if assignment was updated or created
+      if (sa.get('keyId')) {
+        trackEvent('Assignment Saved', 'Updated assignment');
+      } else {
+        trackEvent('Assignment Saved', 'Created new assignment');
+      }
+
       return true;
     },
 
@@ -259,6 +273,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (!surveyAssignmentId) return;
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+
+      let numberOfAssignedByNameOrID = 0;
+      let numberOfAssignedAll = 0;
 
       // create records for each device datapoints
       this.datapointAssignments.forEach(dpAssignment => {
@@ -276,6 +293,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           }),
         };
 
+        if (dpAssignment.allDataPointsAssigned) {
+          numberOfAssignedAll++;
+        } else {
+          numberOfAssignedByNameOrID++;
+        }
+
         if (dpAssignment.id) {
           // find and update old record with data
           const dpAssignmentRecord = FLOW.DataPointAssignment.find(dpAssignment.id);
@@ -289,8 +312,21 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
+      trackEvent(
+        'Datapoint Assigned',
+        'Number of devices assigned all datapoints',
+        numberOfAssignedAll
+      );
+
+      trackEvent(
+        'Datapoint Assigned',
+        'Number of devices assigned all filtered datapoints (by name or ID)',
+        numberOfAssignedByNameOrID
+      );
+
       // wait half a second before transitioning back to the assignments list
       setTimeout(() => {
+        // track datapoint assigned
         FLOW.router.transitionTo('navDevices.assignSurveysOverview');
       }, 500);
     },

@@ -2,6 +2,8 @@ require('../plugins/flowDashboard');
 require('../plugins/geocells');
 require('../plugins/tooltip');
 
+// init analytics
+
 require('akvo-flow/flowenv'); // eslint-disable-line import/no-unresolved
 require('akvo-flow/models/FLOWrest-adapter-v2-common');
 require('akvo-flow/models/models');
@@ -10,11 +12,9 @@ require('akvo-flow/views/views');
 require('akvo-flow/router/router');
 require('akvo-flow/version');
 require('../vendor/Google');
+require('akvo-flow/analytics').init();
 
 require('../../css/screen.scss');
-
-// init analytics
-require('akvo-flow/analytics').init();
 
 if (FLOW.Env.mapsProvider == 'google') {
   const regionBias = FLOW.Env.googleMapsRegionBias;
