@@ -45,4 +45,4 @@ docker run \
        --volume "${NPM_CACHE}:/home/akvo/.npm:delegated" \
        --volume "$(pwd):/app/src:delegated" \
        --entrypoint /app/src/ci/run-as-user.sh \
-       akvo/akvo-flow-builder:20200115.154607.012ea0b "$@"
+       akvo/akvo-flow-builder:20200427.052642.da8c2ee "$@"
