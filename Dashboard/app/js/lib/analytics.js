@@ -7,7 +7,7 @@ export function init() {
   window._paq.push(['enableLinkTracking']);
 
   (function() {
-    const u = document.location.protocol === 'https://akvo.piwikpro.com/';
+    const u = 'https://akvo.piwikpro.com/';
 
     window._paq.push(['setTrackerUrl', `${u}ppms.php`]);
     window._paq.push(['setSiteId', '2eb02fff-08a4-4973-ae92-fb4ae6157da4']);
