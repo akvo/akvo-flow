@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=272.0.0}"
+CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=290.0.0}"
 
 if [[ "$#" -lt 2 ]]; then
     echo "Usage: ./scripts/deploy/run.sh <version> [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"

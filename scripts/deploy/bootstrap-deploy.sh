@@ -3,11 +3,11 @@
 set -eu
 
 apk add --no-cache \
-    bash~=5.0 \
+    bash~=5 \
     git~=2 \
     jq~=1.6 \
     parallel \
-    shadow~=4.6 \
+    shadow~=4 \
     su-exec~=0.2 \
     unzip~=6.0 \
     zip~=3.0 \
