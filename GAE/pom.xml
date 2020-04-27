@@ -339,6 +339,7 @@
             <devserver.port>8888</devserver.port>
             <devserver.host>0.0.0.0</devserver.host>
             <devserver.startSuccessTimeout>300</devserver.startSuccessTimeout>
+            <cloudSdkHome>/google-cloud-sdk</cloudSdkHome>
             <devserver.jvmFlags>
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
                 <!--suppress UnresolvedMavenProperty -->
