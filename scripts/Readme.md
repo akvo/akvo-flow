@@ -1,14 +1,14 @@
-* Scripts to be called using RemoteAPI
+# Scripts to be called using RemoteAPI
 
-Ant buil.xml script included in ~/data~ folder lets you call any service that implements 
-~org.akvo.gae.remoteapi.RemoteAPI~ included in this folder ~data/src/org/akvo/gae/remoteapi~
+Ant buil.xml script included in `/data` folder lets you call any service that implements 
+`org.akvo.gae.remoteapi.RemoteAPI` included in this folder `data/src/org/akvo/gae/remoteapi`
  
- #+BEGIN_SRC shell
+``` shell
   cd data/src/org/akvo/gae/remoteapi
   ls
- #+END_SRC
+```
 
- #+RESULTS:
+```
  | AddPermission.java                      |
  | AddUsers.java                           |
  | CheckDataPointLocation.java             |
@@ -52,22 +52,22 @@ Ant buil.xml script included in ~/data~ folder lets you call any service that im
  | SurveyedLocaleFix.java                  |
  | UnAssignUnPublishedForms.java           |
  | UserList.java                           |
+```
 
+## calling a RemoteAPIService
 
-** calling a RemoteAPIService
-
-#+BEGIN_SRC 
+``` shell
 ant remoteAPI -DappId=akvoflow-uat2 -Dservice=UnifyDataPointAssignment
-#+END_SRC
+```
 
-By default akvo-server-config/*/*.p12 auth files are taken from this relative path ~../../../akvo-flow-server-config~ but if you have another one, just specify it in the call
+By default akvo-server-config/*/*.p12 auth files are taken from this relative path `../../../akvo-flow-server-config` but if you have another one, just specify it in the call
 
-#+BEGIN_SRC 
+``` shell
 ant remoteAPI -DappId=akvoflow-uat2 -Dservice=UnifyDataPointAssignment -DakvoFlowServerConfigPath=/your-path-to-akvo-flow-server-config
-#+END_SRC
+```
 
 
-* FAQ
+# FAQ
 
-** why is better to use ANT instead of *.sh file?
-Thus ANT build.xml includes java path configuration and takes care of always ~compile~ before calling the RemoteAPIService
+## why is better to use ANT instead of *.sh file?
+Thus ANT build.xml includes java path configuration and takes care of always `compile` before calling the RemoteAPIService
