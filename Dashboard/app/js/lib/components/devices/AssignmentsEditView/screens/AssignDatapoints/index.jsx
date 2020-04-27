@@ -101,6 +101,11 @@ export default class AssignDatapoints extends React.Component {
   render() {
     const { deviceData, datapointsData, allDPAssigned } = this.getAssignmentData();
 
+    const assignedDataPointIds = datapointsData.reduce((acc, current) => {
+      acc[current.id] = true;
+      return acc;
+    }, {});
+
     return (
       <div className="devices-action-page assign-datapoints">
         <div>
@@ -117,7 +122,11 @@ export default class AssignDatapoints extends React.Component {
 
         <div>
           {this.state.currentSubTab === 'SEARCH_DATAPOINTS' && (
-            <SearchDatapoints deviceId={this.props.selectedDeviceId} changeTab={this.changeTab} />
+            <SearchDatapoints
+              deviceId={this.props.selectedDeviceId}
+              changeTab={this.changeTab}
+              assignedDataPointIds={assignedDataPointIds}
+            />
           )}
         </div>
       </div>
