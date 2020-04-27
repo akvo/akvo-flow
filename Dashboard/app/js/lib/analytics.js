@@ -7,10 +7,10 @@ export function init() {
   window._paq.push(['enableLinkTracking']);
 
   (function() {
-    const u = 'https://akvo.piwikpro.com/';
+    const u = 'https://analytics.akvo.org/';
 
     window._paq.push(['setTrackerUrl', `${u}ppms.php`]);
-    window._paq.push(['setSiteId', '2eb02fff-08a4-4973-ae92-fb4ae6157da4']);
+    window._paq.push(['setSiteId', '0282e976-f937-4f0e-93a9-541cb9189dc5']);
 
     const d = document;
     const g = d.createElement('script');
