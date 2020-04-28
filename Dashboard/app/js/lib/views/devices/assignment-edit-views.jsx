@@ -68,6 +68,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.datapointAssignments = [];
 
       // global object variables
+      this.initialSurveyGroupId = null;
       this.searchedDatapoints = null;
       this.datapointsEnabled = null;
       this.deviceInView = null;
@@ -358,6 +359,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
           // load selected survey group
           this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
+          this.initialSurveyGroupId = form.get('surveyGroupId');
 
           this.forms[form.get('keyId')] = {
             // also load pre-selected forms
@@ -447,12 +449,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         // TODO:: Add confirmation from user
-        // empty all currently selected datapoints
+        // reset all currently selected datapoints to all datapoints
         if (this.datapointAssignments.length) {
-          this.datapointAssignments = [];
+          this.selectedDevices.forEach(deviceId => {
+            this.assignAllDatapointsToDevice(deviceId);
+          });
         }
 
-        // using this to trigger an onserver which will load forms and rerender react
+        // using this to trigger an observer which will load forms and rerender react
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
         this.set('datapointsCount', FLOW.SurveyedLocaleCount.find(selectedSG.get('keyId')));
 
@@ -564,6 +568,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // if creating a new assignment then no need to make a fetch
       // return early
       if (!surveyAssignmentId) {
+        return;
+      }
+
+      // if currently selected survey is different from the initial selected survey
+      // return early
+      if (this.initialSurveyGroupId !== this.selectedSurveyGroupId) {
         return;
       }
 
