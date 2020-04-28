@@ -10,7 +10,7 @@ export function init() {
     const u = 'https://analytics.akvo.org/';
 
     window._paq.push(['setTrackerUrl', `${u}ppms.php`]);
-    window._paq.push(['setSiteId', '0282e976-f937-4f0e-93a9-541cb9189dc5']);
+    window._paq.push(['setSiteId', 'ceda081e-8077-4ea3-98bc-f608d6f87cc9']);
 
     const d = document;
     const g = d.createElement('script');
