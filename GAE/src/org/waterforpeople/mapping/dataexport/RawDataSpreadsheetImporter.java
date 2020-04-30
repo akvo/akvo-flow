@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -208,12 +208,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * Parse a raw data report file into a list of InstanceData
-     *
-     * @param baseSheet
-     * @param columnIndexToQuestionId
-     * @param questionIdToQuestionDto
-     * @param optionNodes
-     * @return
      */
     public List<InstanceData> parseSplitSheets(Sheet baseSheet,
             Map<Sheet, Map<Integer, Long>> sheetMap,
@@ -976,11 +970,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    /**
-     * @param serverBase
-     * @param resetUrlString
-     * @param saveUrlString
-     */
     private void sendDataToServer(final String serverBase, final String saveUrlString,
             final String key) {
         threadPool.execute(new Runnable() {
