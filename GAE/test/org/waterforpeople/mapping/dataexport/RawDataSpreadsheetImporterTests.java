@@ -22,11 +22,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -41,9 +46,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RawDataSpreadsheetImporterTests {
 
@@ -149,6 +152,22 @@ class RawDataSpreadsheetImporterTests {
         wb.setActiveSheet(0);
         wb.write(fileOut);
         fileOut.close();
+
+        return new File(fileName);
+    }
+
+    private File createInvalidGeoColumnSpreadsheet(String fileName) throws IOException {
+        Workbook wb = new SXSSFWorkbook(10);
+        Sheet sheet = createSheet(wb, "Raw Data", "Metadata", false, true, 1);
+        Row row1 = sheet.getRow(1);
+        row1.createCell(row1.getLastCellNum(), Cell.CELL_TYPE_STRING).setCellValue("9999|Latitude");
+        row1.createCell(row1.getLastCellNum(), Cell.CELL_TYPE_STRING).setCellValue("- - GEOLON - -");
+
+        wb.setActiveSheet(0);
+
+        FileOutputStream out = new FileOutputStream(fileName);
+        wb.write(out);
+        out.close();
 
         return new File(fileName);
     }
@@ -283,6 +302,38 @@ class RawDataSpreadsheetImporterTests {
         assertEquals("No question columns found on any sheet.", err1);
 
     }
+
+    @Test
+    public void testWellFormedGeoHeaderReturnsTrue() {
+        String p = RawDataSpreadsheetImporter.VALID_GEO_QUESTION_HEADER_PATTERN;
+        int questionId = ThreadLocalRandom.current().nextInt(999999);
+
+        assertTrue(("--GEOLON--|" + questionId).matches(p));
+        assertTrue(("--GEOELE--|" + questionId).matches(p));
+    }
+
+    @Test
+    public void testWrongGeoHeaderDataReturnsFalse() {
+        String p = RawDataSpreadsheetImporter.VALID_GEO_QUESTION_HEADER_PATTERN;
+
+        assertFalse("- - GEOLON - -".matches(p));
+        assertFalse("--GEOLON--".matches(p));
+        assertFalse("--GEOELE--".matches(p));
+    }
+
+    @Test
+    public void testInvalidGeolocationHeaderReturnsValidationError() throws IOException {
+        DataImporter importer = new RawDataSpreadsheetImporter();
+        String file = Paths.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID() + ".xslx").toString();
+        File spreadsheet = createInvalidGeoColumnSpreadsheet(file);
+
+        Map<Integer, String> errors = importer.validate(spreadsheet);
+
+        assertEquals(1, errors.entrySet().size());
+        assertTrue(errors.values().stream().collect(Collectors.toList()).get(0).contains("- - GEOLON - -"));
+    }
+
+
 
     @AfterAll
     public static void removeTestFiles() {

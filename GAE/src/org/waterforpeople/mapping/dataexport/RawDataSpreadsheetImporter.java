@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -84,6 +84,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     public static final String VALID_QUESTION_HEADER_PATTERN = "[0-9]+\\|.+"; //digits followed by a vertical bar
+    public static final String VALID_GEO_QUESTION_HEADER_PATTERN = "^--GEO(LON|ELE)--\\|\\d+$";
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -208,12 +209,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * Parse a raw data report file into a list of InstanceData
-     *
-     * @param baseSheet
-     * @param columnIndexToQuestionId
-     * @param questionIdToQuestionDto
-     * @param optionNodes
-     * @return
      */
     public List<InstanceData> parseSplitSheets(Sheet baseSheet,
             Map<Sheet, Map<Integer, Long>> sheetMap,
@@ -976,11 +971,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    /**
-     * @param serverBase
-     * @param resetUrlString
-     * @param saveUrlString
-     */
     private void sendDataToServer(final String serverBase, final String saveUrlString,
             final String key) {
         threadPool.execute(new Runnable() {
@@ -1011,6 +1001,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
+    private String errorMessage(Cell cell, String cellValue) {
+        return String.format(
+                "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                CellReference.convertNumToColString(cell.getColumnIndex()),
+                cellValue);
+    }
+
     /**
      * @param sheet
      * @param isBaseSheet
@@ -1038,11 +1035,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (isEmptyCell(cell) && nonEmptyHeaderCellsAfter(cell)) {
                 errorMap.put(
                         cell.getColumnIndex(),
-                        String.format(
-                                "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
-                                CellReference.convertNumToColString(cell.getColumnIndex()),
-                                cellValue));
+                        errorMessage(cell, cellValue));
+                break;
+            }
 
+            if (cellValue.contains("GEO") && !cellValue.matches(VALID_GEO_QUESTION_HEADER_PATTERN)) {
+                errorMap.put(cell.getColumnIndex(), errorMessage(cell, cellValue));
                 break;
             }
 
