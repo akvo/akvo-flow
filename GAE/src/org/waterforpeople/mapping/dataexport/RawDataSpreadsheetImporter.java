@@ -84,7 +84,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     public static final String VALID_QUESTION_HEADER_PATTERN = "[0-9]+\\|.+"; //digits followed by a vertical bar
-    //public static final String VALID_GEO_QUESTION_HEADER_PATTERN = "^--GEO(LON|ELE)--\\|\\d+$";
     public static final String VALID_GEO_QUESTION_HEADER_PATTERN = "^(\\d+\\|Latitude|--GEOLON--\\|Longitude|--GEOELE--\\|Elevation)$";
 
     /**
