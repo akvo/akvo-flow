@@ -32,6 +32,7 @@ export default {
     // Tells React to build in prod mode. https://facebook.github.io/react/downloads.html
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env.ANALYTICS_SITE_ID': JSON.stringify('ceda081e-8077-4ea3-98bc-f608d6f87cc9'),
       __DEV__: false,
       __VERSION__: JSON.stringify(execSync('git describe').toString()),
     }),
