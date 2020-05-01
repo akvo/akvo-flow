@@ -308,8 +308,9 @@ class RawDataSpreadsheetImporterTests {
         String p = RawDataSpreadsheetImporter.VALID_GEO_QUESTION_HEADER_PATTERN;
         int questionId = ThreadLocalRandom.current().nextInt(999999);
 
-        assertTrue(("--GEOLON--|" + questionId).matches(p));
-        assertTrue(("--GEOELE--|" + questionId).matches(p));
+        assertTrue((questionId + "|Latitude").matches(p));
+        assertTrue("--GEOLON--|Longitude".matches(p));
+        assertTrue("--GEOELE--|Elevation".matches(p));
     }
 
     @Test
