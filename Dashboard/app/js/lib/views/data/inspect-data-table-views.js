@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+import { trackEvent } from 'akvo-flow/analytics';
 import { isNaN } from 'lodash';
 import observe from '../../mixins/observe';
 
@@ -49,6 +51,8 @@ FLOW.inspectDataTableView = FLOW.View.extend(
         this.set('missingSurvey', true);
         return;
       }
+
+      trackEvent('Data table view', 'Used "Inspect data" table view');
 
       FLOW.surveyInstanceControl.get('sinceArray').clear();
       FLOW.surveyInstanceControl.set('pageNumber', -1);
