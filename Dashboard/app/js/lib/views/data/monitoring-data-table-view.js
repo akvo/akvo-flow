@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+import { trackEvent } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
@@ -52,6 +54,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend(
         this.set('missingSurvey', true);
         return;
       }
+
+      trackEvent('Data table view', 'Used "Monitoring data" table view');
 
       if (ident) {
         criteria.identifier = ident;
