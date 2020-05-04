@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import NewStats from 'akvo-flow/components/stats/NewStats';
+import { trackEvent } from 'akvo-flow/analytics';
 
 require('akvo-flow/views/react-component');
 
@@ -33,10 +34,7 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
 
   generateReport(dates) {
     // create new 'export report'
-    FLOW.selectedControl.set(
-      'selectedReportExport',
-      FLOW.store.createRecord(FLOW.Report, {})
-    );
+    FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
 
     const newReport = FLOW.selectedControl.get('selectedReportExport');
     newReport.set('reportType', 'STATISTICS');
@@ -46,6 +44,7 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
     newReport.set('filename', '');
     newReport.set('state', 'QUEUED');
 
+    trackEvent('Stats Usage', 'Exported Stats in flow');
     FLOW.store.commit();
 
     this.showDialogMessage(
