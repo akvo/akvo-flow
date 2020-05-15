@@ -16,6 +16,8 @@
 
 package org.akvo.gae.remoteapi;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -138,7 +140,7 @@ public class CheckDataPointLocation implements Process {
         Long registrationFormId = (Long) survey.getProperty("newLocaleSurveyId");
         if (registrationFormId != null) {
             List<Entity> list = getForms(ds, surveyId);
-            if (list.size() > 1) {
+            if (list.size() > 0) {
                 Entity geoQuestion = getGeoQuestion(ds, registrationFormId);
                 if (geoQuestion != null) {
                     List<Entity> dataPoints = getDataPoints(ds, surveyId);
@@ -168,6 +170,7 @@ public class CheckDataPointLocation implements Process {
             if (questionAnswer != null) {
                 Double dataPointLatitude = (Double) dataPoint.getProperty("latitude");
                 Double dataPointLongitude = (Double) dataPoint.getProperty("longitude");
+                List<String> geocells = (List<String>) dataPoint.getProperty("geocells");
 
                 String answerValue = (String) questionAnswer.getProperty("value");
                 if (answerValue != null && !answerValue.isEmpty()) {
@@ -176,13 +179,16 @@ public class CheckDataPointLocation implements Process {
                         Double answerLatitude = safeParseDouble(answerBits[0]);
                         Double answerLongitude = safeParseDouble(answerBits[1]);
 
-                        boolean dataPointLocationNeedsUpdate =
-                                answerLatitude != null && answerLongitude != null
+                        boolean dataPointLocationNeedsUpdate = answerLatitude != null
+                                        && answerLongitude != null
                                         && (!answerLatitude.equals(dataPointLatitude)
-                                        || !answerLongitude.equals(dataPointLongitude));
+                                            || !answerLongitude.equals(dataPointLongitude)
+                                            || geocells == null
+                                            || geocells.isEmpty());
                         if (dataPointLocationNeedsUpdate) {
                             dataPoint.setProperty("latitude", answerLatitude);
                             dataPoint.setProperty("longitude", answerLongitude);
+                            dataPoint.setProperty("geocells", GeocellManager.generateGeoCell(new Point(answerLatitude, answerLongitude)));
 
                             System.out.println("Data point " + dataPointId + " needs fixing");
                             return dataPoint;
