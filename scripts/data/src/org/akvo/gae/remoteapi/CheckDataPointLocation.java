@@ -140,7 +140,7 @@ public class CheckDataPointLocation implements Process {
         Long registrationFormId = (Long) survey.getProperty("newLocaleSurveyId");
         if (registrationFormId != null) {
             List<Entity> list = getForms(ds, surveyId);
-            if (list.size() > 0) {
+            if (list.size() > 0) { // incase only the registration form has been created when running script
                 Entity geoQuestion = getGeoQuestion(ds, registrationFormId);
                 if (geoQuestion != null) {
                     List<Entity> dataPoints = getDataPoints(ds, surveyId);
