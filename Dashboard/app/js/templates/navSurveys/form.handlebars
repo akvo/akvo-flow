@@ -9,6 +9,7 @@
 			{{#if view.showFormDeleteButton}}
 				<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>{{t _delete}}</a></li>
 			{{/if}}
+			{{view FLOW.WebFormShareView}}
 		</ul>
 	</nav>
 	<ul class="formSummary">
