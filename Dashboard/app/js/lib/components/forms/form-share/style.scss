@@ -1,9 +1,47 @@
 #form-share-modal {
+  top: 30%;
+  left: 25%;
+  width: 50%;
+  height: 246px;
   padding: 20px 2em;
 
   .modal-header {
     display: flex;
     justify-content: space-between;
-    padding: 2em 0px;
+    padding: 1em 0px 2em;
+
+    .icon {
+      cursor: pointer;
+    }
+  }
+
+  .modal-body {
+    .form-link {
+      a {
+        font-weight: bold;
+      }
+
+      span {
+        font-size: 13px;
+        margin-left: 5px;
+      }
+
+      p {
+        margin-top: 11px;
+
+        span {
+          font-size: 13px;
+          margin-left: 1px;
+        }
+      }
+    }
+
+    .action-button {
+      margin-top: 3em;
+
+      .button {
+        padding: 10px 13px;
+      }
+    }
   }
 }
