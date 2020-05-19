@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 import Modal from 'akvo-flow/components/reusable/Modal';
 import './style.scss';
 
@@ -20,10 +21,15 @@ export default class WebFormShare extends React.Component {
   };
 
   render() {
+    const { valid } = this.props.data;
     return (
       <>
         <li>
-          <a onClick={this.toggleModal} href="#" className="previewNewSurvey">
+          <a
+            onClick={valid ? this.toggleModal : undefined}
+            href="#"
+            className={`previewNewSurvey ${valid ? '' : 'disabled'}`}
+          >
             Share as a webform
           </a>
         </li>
@@ -61,3 +67,8 @@ export default class WebFormShare extends React.Component {
     );
   }
 }
+
+WebFormShare.propTypes = {
+  strings: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
+};
