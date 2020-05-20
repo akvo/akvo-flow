@@ -19,9 +19,9 @@ package com.gallatinsystems.common.util;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -75,7 +75,7 @@ public class MD5Util {
                     mac.getAlgorithm());
             mac.init(secret);
             byte[] digest = mac.doFinal(content.getBytes());
-            return new Base64().encodeAsString(digest);
+            return Base64.getEncoder().encodeToString(digest);
         } catch (NoSuchAlgorithmException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         } catch (InvalidKeyException e) {

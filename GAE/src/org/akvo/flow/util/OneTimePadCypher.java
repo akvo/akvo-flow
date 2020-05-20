@@ -15,17 +15,17 @@
  */
 package org.akvo.flow.util;
 
-import org.springframework.security.crypto.codec.Base64;
+import java.util.Base64;
 
 public class OneTimePadCypher {
 
     public static String encrypt(final String secretKey, final String text) {
-      return new String(Base64.encode(xor(secretKey, text.getBytes())));
+      return new String(Base64.getEncoder().encode(xor(secretKey, text.getBytes())));
     }
 
     public static String decrypt(final String secretKey, final String hash) {
       try {
-        return new String(xor(secretKey, Base64.decode(hash.getBytes())), "UTF-8");
+        return new String(xor(secretKey, Base64.getEncoder().encode(hash.getBytes())), "UTF-8");
       } catch (java.io.UnsupportedEncodingException ex) {
         throw new IllegalStateException(ex);
       }
