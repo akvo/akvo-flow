@@ -11,6 +11,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
     'FLOW.selectedControl.selectedSurveyGroup.monitoringGroup': 'formValidation',
     'FLOW.questionControl.content.isLoaded': 'formValidation',
     'FLOW.questionGroupControl.content.isLoaded': 'formValidation',
+    'FLOW.surveyControl.webformId': 'renderReactSide',
   }),
   {
     init() {
@@ -18,6 +19,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       this.formValidation = this.formValidation.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
       this.getProps = this.getProps.bind(this);
+      this.getShareURL = this.getShareURL.bind(this);
 
       this.valid = false;
     },
@@ -42,6 +44,10 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
         strings: {},
         data: {
           valid: this.valid,
+          shareUrl: FLOW.surveyControl.webformId,
+        },
+        actions: {
+          getShareURL: this.getShareURL,
         },
       };
     },
@@ -62,14 +68,14 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       const noIllegalQuestion =
         questions.some(question => {
           switch (question.get('type')) {
-          case 'CADDISFLY':
-            return true;
-          case 'SIGNATURE':
-            return true;
-          case 'GEOSHAPE':
-            return true;
-          default:
-            return false;
+            case 'CADDISFLY':
+              return true;
+            case 'SIGNATURE':
+              return true;
+            case 'GEOSHAPE':
+              return true;
+            default:
+              return false;
           }
         }) === false;
 
@@ -78,6 +84,10 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
       this.valid = isPublished && isNotMonitoring && noIllegalQuestion && noRepeatedQuestionGroup;
       this.renderReactSide();
+    },
+
+    getShareURL() {
+      FLOW.surveyControl.webformUrl();
     },
   }
 );

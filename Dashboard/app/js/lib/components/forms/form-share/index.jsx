@@ -16,17 +16,26 @@ export default class WebFormShare extends React.Component {
   };
 
   copyToClipboard = () => {
-    navigator.clipboard.writeText('webform url');
+    navigator.clipboard.writeText(this.props.data.shareUrl);
     this.setState({ copyToClipboard: true });
   };
 
+  openModal = () => {
+    if (!this.props.data.valid) {
+      return;
+    }
+
+    this.toggleModal();
+    this.props.actions.getShareURL();
+  };
+
   render() {
-    const { valid } = this.props.data;
+    const { valid, shareUrl } = this.props.data;
     return (
       <>
         <li>
           <a
-            onClick={valid ? this.toggleModal : undefined}
+            onClick={this.openModal}
             href="#"
             className={`previewNewSurvey ${valid ? '' : 'disabled'}`}
           >
@@ -47,13 +56,23 @@ export default class WebFormShare extends React.Component {
 
           <div className="modal-body">
             <div className="form-link">
-              <a onClick={this.copyToClipboard} href="#">
-                Copy link
-              </a>
-              {this.state.copyToClipboard && <span>Copied to clipboard</span>}
-              <p>
-                Password: <span>Webform*</span>
-              </p>
+              {shareUrl ? (
+                <>
+                  <div className="link">
+                    <span>{shareUrl}</span>
+                    <a onClick={this.copyToClipboard} href="#">
+                      Copy link
+                    </a>
+                  </div>
+                  {this.state.copyToClipboard && <span>Copied to clipboard</span>}
+
+                  <div className="password">
+                    <span>Password: Webform*</span>
+                  </div>
+                </>
+              ) : (
+                <p>Loading URL.....</p>
+              )}
             </div>
 
             <div className="action-button">
@@ -71,4 +90,5 @@ export default class WebFormShare extends React.Component {
 WebFormShare.propTypes = {
   strings: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
 };

@@ -17,21 +17,38 @@
 
   .modal-body {
     .form-link {
-      a {
-        font-weight: bold;
-      }
-
-      span {
-        font-size: 13px;
-        margin-left: 5px;
-      }
-
-      p {
-        margin-top: 11px;
+      .link {
+        display: flex;
+        align-items: center;
 
         span {
+          font-size: 15px;
+          margin-right: auto;
+          background: #efefef;
+          padding: 7px 12px;
+          width: 80%;
+          border-radius: 4px;
+        }
+
+        a {
+          font-weight: bold;
+          font-size: 15px;
+        }
+
+        & ~ span {
           font-size: 13px;
-          margin-left: 1px;
+          color: hsl(0, 0%, 38%);
+          font-weight: 500;
+          margin-left: 10px;
+        }
+      }
+
+      .password {
+        margin-top: 12px;
+
+        span {
+          font-size: 15px;
+          font-weight: 500;
         }
       }
     }
