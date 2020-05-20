@@ -22,14 +22,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.akvo.flow.util.OneTimePadCypher;
 import org.springframework.beans.BeanUtils;
@@ -41,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -53,6 +48,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -149,27 +145,19 @@ public class SurveyRestService {
         response.put("surveys", results);
         return response;
     }
-
     // get a webformId if question type webform constraints are ok
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_id")
     @ResponseBody
     public Map<String, String> webformUrl(@PathVariable("id") Long id) {
         final Map<String, String> response = new HashMap<String, String>();
 
-        Set<Question.Type> set = new HashSet<Question.Type>();
-        set.add(Question.Type.CASCADE);
-        set.add(Question.Type.GEOSHAPE);
-        set.add(Question.Type.SIGNATURE);
-        set.add(Question.Type.CADDISFLY);
-
         List<Question> questions = questionDao.listQuestionsBySurvey(id);
-        List<Question> validQuestions = questions.stream().filter(i -> !set.contains(i.getType())).collect(Collectors.toList());
 
-        boolean validWebform = validQuestions.size() == questions.size();
+        boolean webform = WebForm.validWebForm(questions);
 
-        if(validWebform){
+        if(webform){
             Survey s = surveyDao.getById(id);
-            s.setWebForm(true);
+            s.setWebForm(webform);
             surveyDao.save(s);
             try {
                 String webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
