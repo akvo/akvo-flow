@@ -22,15 +22,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class WebForm {
-   
+
+    public static Set<String> unsupportedQuestionTypes(){
+        Set<String> unsupportedTypes = new HashSet<String>();
+        unsupportedTypes.add(Question.Type.CASCADE.toString());
+        unsupportedTypes.add(Question.Type.GEOSHAPE.toString());
+        unsupportedTypes.add(Question.Type.SIGNATURE.toString());
+        unsupportedTypes.add(Question.Type.CADDISFLY.toString());
+        return unsupportedTypes;
+    }
+
     public static boolean validWebForm(final List<Question> questions){
-        Set<Question.Type> set = new HashSet<Question.Type>();
-        set.add(Question.Type.CASCADE);
-        set.add(Question.Type.GEOSHAPE);
-        set.add(Question.Type.SIGNATURE);
-        set.add(Question.Type.CADDISFLY);        
         
-        List<Question> validQuestions = questions.stream().filter(i -> !set.contains(i.getType())).collect(Collectors.toList());
+        List<Question> validQuestions = questions.stream().filter(i -> !unsupportedQuestionTypes().contains(i.getType().toString())).collect(Collectors.toList());
 
         return validQuestions.size() == questions.size();
     }
