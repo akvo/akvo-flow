@@ -37,7 +37,8 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 @PersistenceCapable
 public class Survey extends BaseDomain implements SecuredObject {
 
-    private static final long serialVersionUID = -8638039212962768687L;
+    private static final long serialVersionUID = -6188180121727332787L;
+
     @NotPersistent
     private HashMap<String, Translation> translationMap;
     private String code = null;
@@ -52,6 +53,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     private Long surveyGroupId;
     private String defaultLanguageCode;
     private Boolean requireApproval;
+    private Boolean webForm;
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
@@ -64,6 +66,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     public Survey() {
         questionGroupMap = new TreeMap<Integer, QuestionGroup>();
         requireApproval = false;
+        webForm = false;
     }
 
     public void incrementVersion() {
@@ -193,6 +196,15 @@ public class Survey extends BaseDomain implements SecuredObject {
     public Boolean getRequireApproval() {
         return requireApproval;
     }
+
+    public void setWebForm(Boolean webForm) {
+        this.webForm = webForm;
+    }
+
+    public Boolean getWebForm() {
+        return webForm;
+    }
+
 
     @Override
     public SecuredObject getParentObject() {
