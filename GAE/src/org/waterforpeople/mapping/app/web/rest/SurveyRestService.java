@@ -18,6 +18,8 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -144,19 +146,20 @@ public class SurveyRestService {
     @ResponseBody
     public Map<String, String> webformUrl(@PathVariable("id") Long id) {
         final Map<String, String> response = new HashMap<String, String>();
-/*        
-        Survey s = surveyDao.getByKey(id);
-        SurveyDto dto = null;
-
-        if (s != null) {
-            dto = new SurveyDto();
-            DtoMarshaller.copyToDto(s, dto);
-            // needed because of different names for description in survey and
-            // surveyDto
-            dto.setDescription(s.getDesc());
+        /*
+         * Survey s = surveyDao.getByKey(id); SurveyDto dto = null;
+         * 
+         * if (s != null) { dto = new SurveyDto(); DtoMarshaller.copyToDto(s, dto); //
+         * needed because of different names for description in survey and // surveyDto
+         * dto.setDescription(s.getDesc()); }
+         */
+        String webformId;
+        try {
+            webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
+            response.put("webformId", webformId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
- */
-        response.put("webformId", OneTimePadCypher.encrypt("secretKey", id.toString()));
         return response;
     }
 
