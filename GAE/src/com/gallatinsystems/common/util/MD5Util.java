@@ -21,7 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -75,8 +75,7 @@ public class MD5Util {
                     mac.getAlgorithm());
             mac.init(secret);
             byte[] digest = mac.doFinal(content.getBytes());
-            // TODO: Change to Base64 API when moved to Java 8
-            return DatatypeConverter.printBase64Binary(digest);
+            return new Base64().encodeAsString(digest);
         } catch (NoSuchAlgorithmException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         } catch (InvalidKeyException e) {
