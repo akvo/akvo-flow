@@ -142,16 +142,18 @@ public class SurveyRestService {
     }
   
     // 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_url")
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_id")
     @ResponseBody
     public Map<String, String> webformUrl(@PathVariable("id") Long id) {
         final Map<String, String> response = new HashMap<String, String>();
         /*
          * Survey s = surveyDao.getByKey(id); SurveyDto dto = null;
          * 
-         * if (s != null) { dto = new SurveyDto(); DtoMarshaller.copyToDto(s, dto); //
+         * if (s != null) { 
+         * dto = new SurveyDto(); DtoMarshaller.copyToDto(s, dto); //
          * needed because of different names for description in survey and // surveyDto
-         * dto.setDescription(s.getDesc()); }
+         * dto.setDescription(s.getDesc()); 
+         * }
          */
         String webformId;
         try {
