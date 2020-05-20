@@ -156,7 +156,7 @@ public class SurveyRestService {
             dto.setDescription(s.getDesc());
         }
  */
-        response.put("url", OneTimePadCypher.encrypt("secretKey", id.toString()));
+        response.put("webformId", OneTimePadCypher.encrypt("secretKey", id.toString()));
         return response;
     }
 
