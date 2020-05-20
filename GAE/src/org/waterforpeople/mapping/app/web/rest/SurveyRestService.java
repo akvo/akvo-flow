@@ -18,6 +18,8 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.util.OneTimePadCypher;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -135,6 +138,30 @@ public class SurveyRestService {
         }
 
         response.put("surveys", results);
+        return response;
+    }
+  
+    // 
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_id")
+    @ResponseBody
+    public Map<String, String> webformUrl(@PathVariable("id") Long id) {
+        final Map<String, String> response = new HashMap<String, String>();
+        /*
+         * Survey s = surveyDao.getByKey(id); SurveyDto dto = null;
+         * 
+         * if (s != null) { 
+         * dto = new SurveyDto(); DtoMarshaller.copyToDto(s, dto); //
+         * needed because of different names for description in survey and // surveyDto
+         * dto.setDescription(s.getDesc()); 
+         * }
+         */
+        String webformId;
+        try {
+            webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
+            response.put("webformId", webformId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return response;
     }
 
