@@ -168,6 +168,9 @@ public class SurveyRestService {
         boolean validWebform = validQuestions.size() == questions.size();
 
         if(validWebform){
+            Survey s = surveyDao.getById(id);
+            s.setWebForm(true);
+            surveyDao.save(s);
             try {
                 String webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
                 response.put("webformId", webformId);
