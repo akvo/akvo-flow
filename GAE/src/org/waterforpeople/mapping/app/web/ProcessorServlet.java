@@ -181,7 +181,9 @@ public class ProcessorServlet extends HttpServlet {
             mDao.save(m);
 
         }
-
+        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.addHeader("Access-Control-Allow-Headers", "*");
+        resp.addHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
     }
 
     private Long parseFormID(HttpServletRequest req) {
