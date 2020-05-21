@@ -17,15 +17,32 @@
 #
 
 set -eu
+set -o monitor
+
+_term() {
+  echo "Caught SIGCHLD signal"
+  if jobs -l | grep "Exit" | tr -s " " | grep " $npm_process "; then
+    echo "npm process died. Please check build.dev.log"
+    echo "Stopping container now"
+    exit 1
+  else
+    jobs -l
+  fi
+}
+
+trap _term SIGCHLD
 
 SRC_DIR="/app/src"
 
 cd "$SRC_DIR/Dashboard"
 
 (
+    set -o monitor
     npm install
     npm run build:dev
 ) > "$SRC_DIR/build.dev.log" 2>&1 &
+
+npm_process=$!
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/admin/frames/users.js" ]]; then
     cd "$SRC_DIR/Dashboard/app/cljs"
