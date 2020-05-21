@@ -197,8 +197,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
             log.debug("Finishing assembly of " + formId);
             form.setStatus(Survey.Status.PUBLISHED);
-            boolean webForm = WebForm.validWebForm(surveyGroupDao.getByKey(form.getObjectId()), form, questionDao.listQuestionsBySurvey(form.getObjectId()));
-            form.setWebForm(webForm);
+            if (form.getWebForm()){
+                boolean webForm = WebForm.validWebForm(surveyGroupDao.getByKey(form.getObjectId()), form, questionDao.listQuestionsBySurvey(form.getObjectId()));
+                form.setWebForm(webForm);
+            }
             surveyDao.save(form); //remember PUBLISHED status
             String messageText = "Published.  Please check: " + uc.getUrl();
             message.setShortMessage(messageText);
