@@ -25,17 +25,18 @@ public class WebForm {
 
     public static Set<String> unsupportedQuestionTypes(){
         Set<String> unsupportedTypes = new HashSet<String>();
-        unsupportedTypes.add(Question.Type.CASCADE.toString());
         unsupportedTypes.add(Question.Type.GEOSHAPE.toString());
         unsupportedTypes.add(Question.Type.SIGNATURE.toString());
         unsupportedTypes.add(Question.Type.CADDISFLY.toString());
         return unsupportedTypes;
     }
 
-    public static boolean validWebForm(final List<Question> questions){
-        
+    public static boolean validWebForm(final SurveyGroup surveyGroup, final Survey survey, final List<Question> questions){
+        boolean hasRepeatableGroups = survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable().booleanValue()).collect(Collectors.toList()).size() > 0;
+        if (hasRepeatableGroups) return false;
+        boolean monitoring = surveyGroup.getMonitoringGroup().booleanValue();
+        if (monitoring) return false;
         List<Question> validQuestions = questions.stream().filter(i -> !unsupportedQuestionTypes().contains(i.getType().toString())).collect(Collectors.toList());
-
         return validQuestions.size() == questions.size();
     }
 

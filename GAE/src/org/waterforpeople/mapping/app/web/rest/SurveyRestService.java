@@ -45,9 +45,12 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.servlet.RestAuthFilter;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -59,6 +62,7 @@ public class SurveyRestService {
     private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     private SurveyDAO surveyDao = new SurveyDAO();
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
     private QuestionDao questionDao = new QuestionDao();
 
@@ -152,18 +156,17 @@ public class SurveyRestService {
         final Map<String, String> response = new HashMap<String, String>();
 
         List<Question> questions = questionDao.listQuestionsBySurvey(id);
+        Survey survey = surveyDao.getById(id);
+        boolean validWebForm = WebForm.validWebForm(surveyGroupDao.getByKey(survey.getSurveyGroupId()), survey, questions);
 
-        boolean webform = WebForm.validWebForm(questions);
-
-        if(webform){
-            Survey s = surveyDao.getById(id);
-            s.setWebForm(webform);
-            surveyDao.save(s);
+        if(validWebForm){
+            survey.setWebForm(validWebForm);
+            surveyDao.save(survey);
             response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP),
                     id.toString()));
         } else {
             throw new SurveyNotValidAsWebformException(
-                "Webforms don't support the following question types: cascade, geoshape, signature or caddisfly.");
+                "Webforms don't support monitoring surveys, or repeatable question groups or the following question types: geoshape, signature or caddisfly");
         }
 
         return response;
