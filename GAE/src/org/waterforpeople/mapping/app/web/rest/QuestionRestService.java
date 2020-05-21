@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -25,6 +25,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -225,6 +226,15 @@ public class QuestionRestService {
         return response;
     }
 
+    // take care that question changes doens't break Survey.webform if any
+    protected void ensureWebFormSurvey(QuestionDto q){
+        Survey s = surveyDao.getById(q.getSurveyId());
+        if (s.getWebForm() && WebForm.unsupportedQuestionTypes().contains(q.getType().toString())){
+            s.setWebForm(false);
+            surveyDao.save(s);
+        }
+    }
+
     // update existing question
     // questionOptions are saved and updated on their own
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
@@ -255,11 +265,13 @@ public class QuestionRestService {
                     BeanUtils.copyProperties(questionDto, q, new String[] {
                             "createdDateTime", "type", "optionList"
                     });
-                    if (questionDto.getType() != null)
-                        q.setType(Question.Type.valueOf(questionDto.getType()
-                                .toString()));
-
+                    if (questionDto.getType() != null) {
+                        q.setType(Question.Type.valueOf(questionDto.getType().toString()));
+                        ensureWebFormSurvey(questionDto);
+                    }
+                    
                     q = questionDao.save(q);
+
 
                     dto = QuestionDtoMapper.transform(q);
                     statusDto.setStatus("ok");
@@ -292,6 +304,7 @@ public class QuestionRestService {
                 if (questionDto != null) {
                     Long keyId = questionDto.getKeyId();
                     Question q;
+                    ensureWebFormSurvey(questionDto);
 
                     // if the questionDto has a key, try to get the question.
                     if (keyId != null) {
@@ -353,6 +366,8 @@ public class QuestionRestService {
             } else {
                 q = copyQuestion(questionDto);
             }
+            ensureWebFormSurvey(questionDto);
+
             dto = QuestionDtoMapper.transform(q);
             statusDto.setStatus("ok");
             statusDto.setMessage("");
