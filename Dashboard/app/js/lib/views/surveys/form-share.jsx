@@ -26,10 +26,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
     didInsertElement(...args) {
       this._super(...args);
-
-      // call validate on init
       this.formValidation();
-
       this.renderReactSide();
     },
 
