@@ -41,6 +41,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -157,7 +158,8 @@ public class SurveyRestService {
             Survey s = surveyDao.getById(id);
             s.setWebForm(webform);
             surveyDao.save(s);
-            response.put("webformId", OneTimePadCypher.encrypt("secretKey", id.toString()));
+            response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(WebForm.WEBFORM_ENCODING_KEY),
+                    id.toString()));
         } else {
             throw new SurveyNotValidAsWebformException(
                 "Webforms don't support the following question types: cascade, geoshape, signature or caddisfly.");

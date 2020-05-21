@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class WebForm {
+    public static final String WEBFORM_ENCODING_KEY = "webformEncodingKey";
 
     public static Set<String> unsupportedQuestionTypes(){
         Set<String> unsupportedTypes = new HashSet<String>();
