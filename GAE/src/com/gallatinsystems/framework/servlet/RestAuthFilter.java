@@ -51,7 +51,7 @@ public class RestAuthFilter implements Filter {
     private static final Logger log = Logger.getLogger(RestAuthFilter.class
             .getName());
     private static final String ENABLED_PROP = "enableRestSecurity";
-    private static final String REST_PRIVATE_KEY_PROP = "restPrivateKey";
+    public static final String REST_PRIVATE_KEY_PROP = "restPrivateKey";
     private String privateKey;
     private boolean isEnabled = false;
 
