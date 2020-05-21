@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015,2017-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015,2017-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,8 +18,6 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +41,14 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
+import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.servlet.RestAuthFilter;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -56,6 +59,8 @@ public class SurveyRestService {
     private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     private SurveyDAO surveyDao = new SurveyDAO();
+
+    private QuestionDao questionDao = new QuestionDao();
 
     private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
@@ -140,28 +145,27 @@ public class SurveyRestService {
         response.put("surveys", results);
         return response;
     }
-  
-    // 
+    // get a webformId if question type webform constraints are ok
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_id")
     @ResponseBody
     public Map<String, String> webformUrl(@PathVariable("id") Long id) {
         final Map<String, String> response = new HashMap<String, String>();
-        /*
-         * Survey s = surveyDao.getByKey(id); SurveyDto dto = null;
-         * 
-         * if (s != null) { 
-         * dto = new SurveyDto(); DtoMarshaller.copyToDto(s, dto); //
-         * needed because of different names for description in survey and // surveyDto
-         * dto.setDescription(s.getDesc()); 
-         * }
-         */
-        String webformId;
-        try {
-            webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
-            response.put("webformId", webformId);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
+        List<Question> questions = questionDao.listQuestionsBySurvey(id);
+
+        boolean webform = WebForm.validWebForm(questions);
+
+        if(webform){
+            Survey s = surveyDao.getById(id);
+            s.setWebForm(webform);
+            surveyDao.save(s);
+            response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP),
+                    id.toString()));
+        } else {
+            throw new SurveyNotValidAsWebformException(
+                "Webforms don't support the following question types: cascade, geoshape, signature or caddisfly.");
         }
+
         return response;
     }
 

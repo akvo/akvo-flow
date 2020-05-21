@@ -13,24 +13,21 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
-package org.akvo.flow.util;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+package org.waterforpeople.mapping.app.web.rest;
 
-public class OneTimePadCypherTest {
-    
-    final String secretKey = "very-secret-key";
-    final String encriptedValue = "AgAKDQ";
-    final String valueToEncrypt = "text";
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-    @Test
-    void encrypt() {
-        assertEquals(OneTimePadCypher.encrypt(secretKey, valueToEncrypt), encriptedValue);
-    }
+@ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
+public class SurveyNotValidAsWebformException extends RuntimeException {
 
-    @Test
-    void decrypt() {
-        assertEquals(OneTimePadCypher.decrypt(secretKey, encriptedValue), valueToEncrypt);
-    }
+    /**
+     *
+     */
+    private static final long serialVersionUID = 6821983258134989926L;
+
+    public SurveyNotValidAsWebformException(String message) {
+        super(message);
+	}
 }
