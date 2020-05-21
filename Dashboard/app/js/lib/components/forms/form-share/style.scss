@@ -1,0 +1,64 @@
+#form-share-modal {
+  top: 30%;
+  left: 25%;
+  width: 50%;
+  height: 246px;
+  padding: 20px 2em;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em 0px 2em;
+
+    .icon {
+      cursor: pointer;
+    }
+  }
+
+  .modal-body {
+    .form-link {
+      .link {
+        display: flex;
+        align-items: center;
+
+        span {
+          font-size: 15px;
+          margin-right: auto;
+          background: #efefef;
+          padding: 7px 12px;
+          width: 80%;
+          border-radius: 4px;
+        }
+
+        a {
+          font-weight: bold;
+          font-size: 15px;
+        }
+
+        & ~ span {
+          font-size: 13px;
+          color: hsl(0, 0%, 38%);
+          font-weight: 500;
+          margin-left: 10px;
+        }
+      }
+
+      .password {
+        margin-top: 12px;
+
+        span {
+          font-size: 15px;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .action-button {
+      margin-top: 3em;
+
+      .button {
+        padding: 10px 13px;
+      }
+    }
+  }
+}
