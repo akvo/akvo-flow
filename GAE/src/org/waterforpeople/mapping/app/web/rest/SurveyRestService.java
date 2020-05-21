@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.app.web.rest;
 import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,13 +158,7 @@ public class SurveyRestService {
             Survey s = surveyDao.getById(id);
             s.setWebForm(webform);
             surveyDao.save(s);
-            try {
-                String webformId = URLEncoder.encode(OneTimePadCypher.encrypt("secretKey", id.toString()), "UTF-8");
-                response.put("webformId", webformId);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
+            response.put("webformId", OneTimePadCypher.encrypt("secretKey", id.toString()));
         } else {
             throw new SurveyNotValidAsWebformException(
                 "Webforms don't support the following question types: cascade, geoshape, signature or caddisfly.");

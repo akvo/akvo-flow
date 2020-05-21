@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OneTimePadCypherTest {
     
     final String secretKey = "very-secret-key";
-    final String encriptedValue = "AgAKDQ=="; 
+    final String encriptedValue = "AgAKDQ";
     final String valueToEncrypt = "text";
 
     @Test

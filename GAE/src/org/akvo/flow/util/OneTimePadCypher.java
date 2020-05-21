@@ -20,7 +20,7 @@ import java.util.Base64;
 public class OneTimePadCypher {
 
     public static String encrypt(final String secretKey, final String text) {
-      return new String(Base64.getEncoder().encode(xor(secretKey, text.getBytes())));
+      return new String(Base64.getUrlEncoder().withoutPadding().encodeToString(xor(secretKey, text.getBytes())));
     }
 
     public static String decrypt(final String secretKey, final String hash) {
