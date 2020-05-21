@@ -18,7 +18,6 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
