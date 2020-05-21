@@ -31,11 +31,19 @@ public class WebForm {
         return unsupportedTypes;
     }
 
+    public static boolean validQuestionGroups(final Survey survey){
+        return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable().booleanValue()).collect(Collectors.toList()).size() == 0;
+    }
+
+    public static boolean validSurveyGroup(final SurveyGroup surveyGroup){
+        return !surveyGroup.getMonitoringGroup().booleanValue();
+    }
+
     public static boolean validWebForm(final SurveyGroup surveyGroup, final Survey survey, final List<Question> questions){
-        boolean hasRepeatableGroups = survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable().booleanValue()).collect(Collectors.toList()).size() > 0;
-        if (hasRepeatableGroups) return false;
-        boolean monitoring = surveyGroup.getMonitoringGroup().booleanValue();
-        if (monitoring) return false;
+        boolean validQuestionGroups = validQuestionGroups(survey);
+        if (!validQuestionGroups) return false;
+        boolean validSurveyGroup = validSurveyGroup(surveyGroup);
+        if (!validSurveyGroup) return false;
         List<Question> validQuestions = questions.stream().filter(i -> !unsupportedQuestionTypes().contains(i.getType().toString())).collect(Collectors.toList());
         return validQuestions.size() == questions.size();
     }

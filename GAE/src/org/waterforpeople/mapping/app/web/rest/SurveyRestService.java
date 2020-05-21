@@ -48,9 +48,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -282,7 +280,6 @@ public class SurveyRestService {
                     log.log(Level.WARNING, "Survey version does not match (dashboard="
                             + requestDto.getVersion() + " datastore=" + s.getVersion() + ")");
                 }
-
                 s = surveyDao.save(s);
                 responseDto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, responseDto);
