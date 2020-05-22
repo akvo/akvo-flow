@@ -19,10 +19,10 @@ if [[ -z "$(gcloud config list --format='value(core.account)')" ]]; then
   gcloud auth login
 fi
 
-read_version "akvoflow-dev1"
+read_version "akvoflow-dev2"
 TEST_LIVE_VERSION=$VERSION
 
-read_version "akvoflow-dev2"
+read_version "akvoflow-dev1"
 PROD_DARK_VERSION=$VERSION
 
 read_version "akvoflow-23" # WHH instance
@@ -62,6 +62,7 @@ else
 fi
 log "Commits to be deployed:"
 echo ""
+echo "$NEWEST_VERSION_IN_PROD"
 git log --oneline "$NEWEST_VERSION_IN_PROD".."$TEST_LIVE_VERSION" | grep -v "Merge pull request" | grep -v "Merge branch"
 
 TAG_NAME="promote-$(TZ=UTC date +"%Y%m%d-%H%M%S")"
