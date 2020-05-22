@@ -35,15 +35,15 @@ public class WebForm {
         return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable()).collect(Collectors.toList()).size() == 0;
     }
 
-    public static Boolean validSurveyGroup(final SurveyGroup surveyGroup){
-        return !surveyGroup.getMonitoringGroup();
+    public static boolean validSurveyGroup(final Survey survey, final SurveyGroup surveyGroup){
+        return surveyGroup.getNewLocaleSurveyId() != null && surveyGroup.getNewLocaleSurveyId().equals(survey.getKey().getId());
     }
 
     public static boolean validWebForm(final SurveyGroup surveyGroup, final Survey survey, final List<Question> questions){
         boolean validQuestionGroups = validQuestionGroups(survey);
-        if (!validQuestionGroups) return false;
-        boolean validSurveyGroup = validSurveyGroup(surveyGroup);
-        if (!validSurveyGroup) return false;
+        if (!validQuestionGroups) { return false; }
+        boolean validSurveyGroup = validSurveyGroup(survey, surveyGroup);
+        if (!validSurveyGroup) { return false; }
         List<Question> validQuestions = questions.stream().filter(i -> !unsupportedQuestionTypes().contains(i.getType().toString())).collect(Collectors.toList());
         return validQuestions.size() == questions.size();
     }
