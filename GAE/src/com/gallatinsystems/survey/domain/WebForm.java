@@ -32,11 +32,11 @@ public class WebForm {
     }
 
     public static boolean validQuestionGroups(final Survey survey){
-        return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable().booleanValue()).collect(Collectors.toList()).size() == 0;
+        return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable()).collect(Collectors.toList()).size() == 0;
     }
 
-    public static boolean validSurveyGroup(final SurveyGroup surveyGroup){
-        return !surveyGroup.getMonitoringGroup().booleanValue();
+    public static Boolean validSurveyGroup(final SurveyGroup surveyGroup){
+        return !surveyGroup.getMonitoringGroup();
     }
 
     public static boolean validWebForm(final SurveyGroup surveyGroup, final Survey survey, final List<Question> questions){
