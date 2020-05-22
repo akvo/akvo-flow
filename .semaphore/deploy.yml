@@ -6,7 +6,7 @@ agent:
 blocks:
   - name: UAT2 deployment and flip
     run:
-      when: "branch = 'master' AND tag !~ '.*'"
+      when: "branch = 'issue/3571-delivery-metrics' AND tag !~ '.*'"
     task:
       prologue:
         commands:
