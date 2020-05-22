@@ -61,7 +61,14 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       const isPublished = selectedForm.get('status') === 'PUBLISHED';
 
       // case 2 is not monitoring
-      const isNotMonitoring = selectedSurveyGroup.get('monitoringGroup') === false;
+      let isNotMonitoring = selectedSurveyGroup.get('monitoringGroup') === false;
+
+      // case 2b is monitoring but it's reg form
+      if (!isNotMonitoring) {
+        // it's not monitoring if it's a reg form
+        isNotMonitoring =
+          selectedSurveyGroup.get('newLocaleSurveyId') === selectedForm.get('keyId');
+      }
 
       // case 3 does not have illegal question type
       const noIllegalQuestion =
