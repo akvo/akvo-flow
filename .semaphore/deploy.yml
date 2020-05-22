@@ -19,7 +19,7 @@ blocks:
       jobs:
         - name: UAT deploy
           commands:
-            - ci/deploy.sh
+#            - ci/deploy.sh
   - name: UAT1 deployment and flip
     run:
       when: "tag =~ '^promote-.*'"
@@ -35,8 +35,8 @@ blocks:
       jobs:
         - name: Deploy and flip
           commands:
-            - scripts/deploy/run.sh "$(git describe)" deploy akvoflow-uat1
-            - scripts/deploy/run.sh "$(git describe)" flip akvoflow-uat1
+#            - scripts/deploy/run.sh "$(git describe)" deploy akvoflow-uat1
+#            - scripts/deploy/run.sh "$(git describe)" flip akvoflow-uat1
   - name: Deployments to all instances but UAT1 and UAT2
     run:
       when: "tag =~ '^promote-.*'"
@@ -52,7 +52,7 @@ blocks:
       jobs:
         - name: Instances deploy
           commands:
-            - scripts/deploy/run.sh "$(git describe)" deploy all
+#            - scripts/deploy/run.sh "$(git describe)" deploy all
   - name: Flip traffic in all instances but UAT1 and UAT2
     run:
       when: "tag =~ '^flip-.*'"
@@ -68,4 +68,4 @@ blocks:
       jobs:
         - name: Instances flip traffic
           commands:
-            - scripts/deploy/run.sh "$(git describe)" flip all
+#            - scripts/deploy/run.sh "$(git describe)" flip all
