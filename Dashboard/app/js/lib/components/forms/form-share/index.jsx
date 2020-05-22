@@ -67,7 +67,7 @@ export default class WebFormShare extends React.Component {
                   {this.state.copyToClipboard && <span>Copied to clipboard</span>}
 
                   <div className="password">
-                    <span>Password: Webform*</span>
+                    <span>Password: webform</span>
                   </div>
                 </>
               ) : (
@@ -76,7 +76,7 @@ export default class WebFormShare extends React.Component {
             </div>
 
             <div className="action-button">
-              <button type="button" className="button">
+              <button onClick={this.toggleModal} type="button" className="button">
                 Done
               </button>
             </div>
