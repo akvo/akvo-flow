@@ -85,7 +85,7 @@ export -f deploy_instance
 
 migrate_traffic() {
     gcloud app services set-traffic default \
-	   --splits "${version:8}"=1 \
+	   --splits "${version}"=1 \
 	   --project="${1}"
 }
 export -f migrate_traffic
