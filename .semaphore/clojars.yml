@@ -5,6 +5,8 @@ agent:
     os_image: ubuntu1804
 blocks:
   - name: Clojars deployment
+    run:
+      when: "branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
     task:
       prologue:
         commands:
@@ -15,5 +17,5 @@ blocks:
         - name: akvo-flow-secrets
       jobs:
         - name: Clojars deploy
-          commands:
+          commands: []
 #            - ./ci/bootstrap-build.sh /app/src/ci/clojars-deploy.sh
