@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class WebForm {
 
-    public static Set<String> unsupportedQuestionTypes(){
+    public static Set<String> unsupportedQuestionTypes() {
         Set<String> unsupportedTypes = new HashSet<String>();
         unsupportedTypes.add(Question.Type.GEOSHAPE.toString());
         unsupportedTypes.add(Question.Type.SIGNATURE.toString());
