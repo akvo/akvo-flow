@@ -4,8 +4,8 @@ set -euo pipefail
 
 export SHELL=/bin/bash
 
-if [[ "$#" -lt 2 ]]; then
-    echo "Usage: ./scripts/deploy/run.sh <version> [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"
+if [[ "$#" -lt 3 ]]; then
+    echo "Usage: ./scripts/deploy/run.sh <version> [flip|deploy] [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"
     exit 1
 fi
 
@@ -16,7 +16,10 @@ function log {
 version="${1}"                # <version> as $1
 export version
 
-shift 1                       # $@ rest of instances
+action="${2}"
+export action
+
+shift 2                       # $@ rest of instances
 
 deploy_id="${version}-$(date +%s)"
 tmp="/tmp/${deploy_id}"
@@ -87,7 +90,7 @@ migrate_traffic() {
 }
 export -f migrate_traffic
 
-if [[ "${version:0:8}" == "promote-" ]]; then
+if [[ "${action}" == "flip" ]]; then
     deploy_fn="migrate_traffic"
 else
     deploy_fn="deploy_instance"
