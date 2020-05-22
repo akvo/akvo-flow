@@ -7,6 +7,7 @@ function log {
 }
 
 develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-uat2}"
+FLOW_VERSION=${FLOW_VERSION:-${SEMAPHORE_GIT_SHA}}
 
 project_id="${develop_project_id}"
 
@@ -27,4 +28,4 @@ docker run \
     --env FLOW_CONFIG_REPO \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/akvo-flow-builder:20200427.052642.da8c2ee /app/src/ci/mvn-deploy.sh
+    akvo/akvo-flow-builder:20200427.052642.da8c2ee /app/src/ci/mvn-deploy.sh "$FLOW_VERSION"
