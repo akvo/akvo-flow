@@ -62,7 +62,7 @@ else
 fi
 log "Commits to be deployed:"
 echo ""
-echo "$NEWEST_VERSION_IN_PROD"
+
 git log --oneline "$NEWEST_VERSION_IN_PROD".."$TEST_LIVE_VERSION" | grep -v "Merge pull request" | grep -v "Merge branch"
 
 TAG_NAME="promote-$(TZ=UTC date +"%Y%m%d-%H%M%S")"
