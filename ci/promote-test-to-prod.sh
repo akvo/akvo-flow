@@ -25,7 +25,7 @@ TEST_LIVE_VERSION=$VERSION
 read_version "akvoflow-dev1"
 PROD_DARK_VERSION=$VERSION
 
-read_version "akvoflow-23" # WHH instance
+read_version "akvoflow-dev3" # WHH instance
 PROD_LIVE_VERSION=$VERSION
 
 log "Deployed test version is $TEST_LIVE_VERSION"

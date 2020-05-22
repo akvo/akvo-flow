@@ -51,8 +51,8 @@ blocks:
         - name: akvo-flow-secrets
       jobs:
         - name: Instances deploy
-          commands: []
-#            - scripts/deploy/run.sh "$(git describe)" deploy all
+          commands:
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-dev3
   - name: Flip traffic in all instances but UAT1 and UAT2
     run:
       when: "tag =~ '^flip-.*'"
@@ -67,5 +67,5 @@ blocks:
         - name: akvo-flow-secrets
       jobs:
         - name: Instances flip traffic
-          commands: []
-#            - scripts/deploy/run.sh "$(git describe)" flip all
+          commands:
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-dev3
