@@ -35,7 +35,7 @@ public class WebForm {
         return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable()).collect(Collectors.toList()).size() == 0;
     }
 
-    public static boolean validSurveyGroup(final Survey survey, final SurveyGroup surveyGroup) {
+    public static boolean validForm(final Survey survey, final SurveyGroup surveyGroup) {
         return surveyGroup.getNewLocaleSurveyId() != null && surveyGroup.getNewLocaleSurveyId().equals(survey.getKey().getId());
     }
 
