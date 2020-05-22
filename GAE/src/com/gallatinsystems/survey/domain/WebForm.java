@@ -37,8 +37,7 @@ public class WebForm {
 
     public static boolean validForm(final Survey survey, final SurveyGroup surveyGroup) {
         return !surveyGroup.getMonitoringGroup() ||
-                (surveyGroup.getMonitoringGroup() &&
-                surveyGroup.getNewLocaleSurveyId() != null &&
+                (surveyGroup.getNewLocaleSurveyId() != null &&
                 surveyGroup.getNewLocaleSurveyId().equals(survey.getKey().getId()));
     }
 
