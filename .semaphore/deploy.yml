@@ -4,9 +4,9 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: UAT deployment
-    skip:
-      when: "tag =~ '^promote-.*'"
+  - name: UAT2 deployment and flip
+    run:
+      when: "branch = 'issue/3571-delivery-metrics' AND tag !~ '.*'"
     task:
       prologue:
         commands:
@@ -20,9 +20,26 @@ blocks:
         - name: UAT deploy
           commands:
             - ci/deploy.sh
-  - name: Deployments
-    skip:
-      when: "tag !~ '.*'"
+  - name: UAT1 deployment and flip
+    run:
+      when: "tag =~ '^promote-.*'"
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "m2-$(checksum GAE/pom.xml)"
+          - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+          - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
+      secrets:
+        - name: akvo-flow-secrets
+      jobs:
+        - name: Deploy and flip
+          commands:
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-dev1
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-dev1
+  - name: Deployments to all instances but UAT1 and UAT2
+    run:
+      when: "tag =~ '^promote-.*'"
     task:
       prologue:
         commands:
@@ -35,4 +52,20 @@ blocks:
       jobs:
         - name: Instances deploy
           commands:
-            - scripts/deploy/run.sh "$(git describe)" all
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-dev3
+  - name: Flip traffic in all instances but UAT1 and UAT2
+    run:
+      when: "tag =~ '^flip-.*'"
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore "m2-$(checksum GAE/pom.xml)"
+          - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
+          - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
+      secrets:
+        - name: akvo-flow-secrets
+      jobs:
+        - name: Instances flip traffic
+          commands:
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-dev3
