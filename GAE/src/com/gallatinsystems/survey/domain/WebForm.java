@@ -44,7 +44,7 @@ public class WebForm {
         if (!validQuestionGroups) {
             return false;
         }
-        boolean validSurveyGroup = validSurveyGroup(survey, surveyGroup);
+        boolean validSurveyGroup = validForm(survey, surveyGroup);
         if (!validSurveyGroup) {
             return false;
         }
