@@ -60,15 +60,12 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       // case 1 is form published?
       const isPublished = selectedForm.get('status') === 'PUBLISHED';
 
-      // case 2 is not monitoring
-      let isNotMonitoring = selectedSurveyGroup.get('monitoringGroup') === false;
+      // case 2 is not monitoring survey or monitoring form
+      const isNotMonitoringSurvey = selectedSurveyGroup.get('monitoringGroup') === false;
+      const isNotMonitoringForm = selectedSurveyGroup.get('monitoringGroup') === true &&
+        selectedSurveyGroup.get('newLocaleSurveyId') === selectedForm.get('keyId');
 
-      // case 2b is monitoring but it's reg form
-      if (!isNotMonitoring) {
-        // it's not monitoring if it's a reg form
-        isNotMonitoring =
-          selectedSurveyGroup.get('newLocaleSurveyId') === selectedForm.get('keyId');
-      }
+      const isNotMonitoringSurveyOrMonitoringForm = isNotMonitoringSurvey || isNotMonitoringForm;
 
       // case 3 does not have illegal question type
       const noIllegalQuestion =
@@ -88,7 +85,12 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       // case 4 does not have repeated question group
       const noRepeatedQuestionGroup = questionGroups.some(qg => qg.get('repeatable')) === false;
 
-      this.valid = isPublished && isNotMonitoring && noIllegalQuestion && noRepeatedQuestionGroup;
+      this.valid =
+        isPublished &&
+        isNotMonitoringSurveyOrMonitoringForm &&
+        noIllegalQuestion &&
+        noRepeatedQuestionGroup;
+      
       this.renderReactSide();
     },
 
