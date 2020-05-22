@@ -55,7 +55,7 @@ TAG_NAME="flip-$(TZ=UTC date +"%Y%m%d-%H%M%S")"
 
 log "To flip, run: "
 echo "----------------------------------------------"
-echo "git tag -a $TAG_NAME $NEW_LIVE_VERSION"
+echo "git tag $TAG_NAME $NEW_LIVE_VERSION"
 echo "git push origin $TAG_NAME"
 echo "./notify.team.sh"
 echo "----------------------------------------------"
