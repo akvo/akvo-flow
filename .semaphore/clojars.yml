@@ -6,7 +6,7 @@ agent:
 blocks:
   - name: Clojars deployment
     run:
-      when: "branch = 'issue/3571-delivery-metrics' AND tag !~ '.*' AND pull_request !~ '.*'"
+      when: "branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
     task:
       prologue:
         commands:
