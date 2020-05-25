@@ -6,7 +6,7 @@ agent:
 blocks:
   - name: "Build and test"
     skip:
-      when: "tag =~ '^promote-.*'"
+      when: "tag =~ '.*'"
     task:
       prologue:
         commands:
@@ -30,8 +30,8 @@ promotions:
   - name: Deploy
     pipeline_file: deploy.yml
     auto_promote:
-      when: "result = 'passed' AND ( branch = 'master' OR tag =~ '.*' )"
+      when: "result = 'passed' AND ( branch = 'issue/3571-delivery-metrics' OR tag =~ '.*' ) AND pull_request !~ '.*'"
   - name: Clojars deploy
     pipeline_file: clojars.yml
     auto_promote:
-      when: "result = 'passed'"
+      when: "result = 'passed' AND branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
