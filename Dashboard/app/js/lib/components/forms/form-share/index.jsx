@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'akvo-flow/components/reusable/Modal';
+import { trackEvent } from 'akvo-flow/analytics';
 import './style.scss';
 
 export default class WebFormShare extends React.Component {
@@ -18,6 +19,7 @@ export default class WebFormShare extends React.Component {
   copyToClipboard = () => {
     navigator.clipboard.writeText(this.props.data.shareUrl);
     this.setState({ copyToClipboard: true });
+    trackEvent('Webform URL copied');
   };
 
   openModal = () => {
