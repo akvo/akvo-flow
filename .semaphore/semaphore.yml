@@ -6,7 +6,7 @@ agent:
 blocks:
   - name: "Build and test"
     skip:
-      when: "tag =~ '^promote-.*'"
+      when: "tag =~ '.*'"
     task:
       prologue:
         commands:
@@ -24,14 +24,15 @@ blocks:
       jobs:
         - name: Build and test
           commands:
+            - export CI_COMMIT=${SEMAPHORE_GIT_SHA}
             - ./ci/bootstrap-build.sh /app/src/ci/build.sh
             - cache store "gae-target-$SEMAPHORE_GIT_SHA" "GAE/target"
 promotions:
   - name: Deploy
     pipeline_file: deploy.yml
     auto_promote:
-      when: "result = 'passed' AND ( branch = 'master' OR tag =~ '.*' )"
+      when: "result = 'passed' AND ( branch = 'issue/3571-delivery-metrics' OR tag =~ '.*' ) AND pull_request !~ '.*'"
   - name: Clojars deploy
     pipeline_file: clojars.yml
     auto_promote:
-      when: "result = 'passed'"
+      when: "result = 'passed' AND branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
