@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.akvo.flow.util.OneTimePadCypher;
+
 public class WebForm {
 
     public static Set<String> unsupportedQuestionTypes() {
@@ -53,5 +55,17 @@ public class WebForm {
         List<Question> validQuestions = questions.stream().filter(i -> !unsupportedQuestionTypes().contains(i.getType().toString())).collect(Collectors.toList());
         return validQuestions.size() == questions.size();
     }
+
+	public static String encryptId(Long surveyId, String seed, String pw) {
+		return OneTimePadCypher.encrypt(seed, surveyId.toString()+"$"+pw);
+	}
+	public static String decryptId(String webFormId, String seed, String pw) {
+        String decrypted = OneTimePadCypher.decrypt(seed, webFormId);
+        String[] res = decrypted.split("\\$");
+        if (res.length == 2 && res[1].equals(pw)) {
+            return res[0];
+        }
+		return null;
+	}
 
 }
