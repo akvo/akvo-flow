@@ -6,7 +6,7 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-dev2}"
+develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-uat2}"
 FLOW_VERSION=${FLOW_VERSION:-${CI_COMMIT}}
 
 project_id="${develop_project_id}"

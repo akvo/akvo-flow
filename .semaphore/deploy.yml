@@ -36,8 +36,8 @@ blocks:
       jobs:
         - name: Deploy and flip
           commands:
-            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-dev1
-            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-dev1
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-uat1
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-uat1
   - name: Deployments to all instances but UAT1 and UAT2
     run:
       when: "tag =~ '^promote-.*'"
@@ -53,7 +53,7 @@ blocks:
       jobs:
         - name: Instances deploy
           commands:
-            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy akvoflow-dev3
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" deploy all
   - name: Flip traffic in all instances but UAT1 and UAT2
     run:
       when: "tag =~ '^flip-.*'"
@@ -69,4 +69,4 @@ blocks:
       jobs:
         - name: Instances flip traffic
           commands:
-            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip akvoflow-dev3
+            - scripts/deploy/run.sh "$SEMAPHORE_GIT_SHA" flip all

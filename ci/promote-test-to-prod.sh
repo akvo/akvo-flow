@@ -19,13 +19,13 @@ if [[ -z "$(gcloud config list --format='value(core.account)')" ]]; then
   gcloud auth login
 fi
 
-read_version "akvoflow-dev2"
+read_version "akvoflow-uat2"
 TEST_LIVE_VERSION=$VERSION
 
-read_version "akvoflow-dev1"
+read_version "akvoflow-uat1"
 PROD_DARK_VERSION=$VERSION
 
-read_version "akvoflow-dev3" # WHH instance
+read_version "akvoflow-23" # WHH instance
 PROD_LIVE_VERSION=$VERSION
 
 log "Deployed test version is $TEST_LIVE_VERSION"
