@@ -3,10 +3,6 @@
 
 set -eu
 
-if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "$CI_TAG" ]]; then
-  exit 0
-fi
-
 SRC_DIR="/app/src"
 
 cd "${SRC_DIR}/GAE"
