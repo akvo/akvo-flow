@@ -7,7 +7,7 @@ function log {
 }
 
 develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-dev2}"
-FLOW_VERSION=${FLOW_VERSION:-${SEMAPHORE_GIT_SHA}}
+FLOW_VERSION=${FLOW_VERSION:-${CI_COMMIT}}
 
 project_id="${develop_project_id}"
 

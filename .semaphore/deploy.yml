@@ -14,6 +14,7 @@ blocks:
           - cache restore "m2-$(checksum GAE/pom.xml)"
           - cache restore "gae-target-$SEMAPHORE_GIT_SHA"
           - cache restore "$SEMAPHORE_PROJECT_ID-$SEMAPHORE_GIT_BRANCH"
+          - export CI_COMMIT=${SEMAPHORE_GIT_SHA}
       secrets:
         - name: akvo-flow-secrets
       jobs:
