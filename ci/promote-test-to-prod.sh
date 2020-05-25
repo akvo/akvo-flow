@@ -10,9 +10,9 @@ GITHUB_PROJECT=akvo-flow
 NOTIFICATION=${4:-slack}
 
 function read_version () {
-    CLUSTER=$1
-    log "Reading ${CLUSTER} version"
-    VERSION=$(gcloud app versions list --project="${CLUSTER}" --hide-no-traffic --service=default | grep "default" | tr -s " " | cut -f 2  -d\ )
+    PROJECT=$1
+    log "Reading ${PROJECT} version"
+    VERSION=$(gcloud app versions list --project="${PROJECT}" --hide-no-traffic --service=default | grep "default" | tr -s " " | cut -f 2  -d\ )
 }
 
 if [[ -z "$(gcloud config list --format='value(core.account)')" ]]; then
