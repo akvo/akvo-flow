@@ -17,5 +17,6 @@ blocks:
         - name: akvo-flow-secrets
       jobs:
         - name: Clojars deploy
-          commands: []
-#            - ./ci/bootstrap-build.sh /app/src/ci/clojars-deploy.sh
+          commands:
+            - export CI_COMMIT=${SEMAPHORE_GIT_SHA}
+            - ./ci/bootstrap-build.sh /app/src/ci/clojars-deploy.sh
