@@ -9,7 +9,7 @@ function log {
 function read_version () {
     PROJECT=$1
     log "Reading ${PROJECT} version"
-    VERSION=$(gcloud app versions list --project="${PROJECT}" --hide-no-traffic --service=default | grep "default" | tr -s " " | cut -f 2  -d\ )
+    VERSION=$(gcloud app versions list --project="${PROJECT}" --hide-no-traffic --service=default --format="value(VERSION.id)")
 }
 
 GITHUB_PROJECT=akvo-flow
