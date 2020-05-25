@@ -16,7 +16,7 @@ export default {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
       __DEV__: false,
-      __VERSION__: JSON.stringify(execSync('git describe').toString()),
+      __VERSION__: JSON.stringify(process.env.FLOW_GIT_VERSION || execSync('git describe').toString()),
     }),
 
     // Generate an external css file with a hash in the filename
