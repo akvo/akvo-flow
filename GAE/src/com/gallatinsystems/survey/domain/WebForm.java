@@ -59,13 +59,15 @@ public class WebForm {
 	public static String encryptId(Long surveyId, String seed, String pw) {
 		return OneTimePadCypher.encrypt(seed, surveyId.toString()+"$"+pw);
 	}
-	public static String decryptId(String webFormId, String seed, String pw) {
+	public static String decryptId(String webFormId, String seed) {
+        return OneTimePadCypher.decrypt(seed, webFormId);
+    }
+    public static String authId(String webFormId, String seed, String pw) {
         String decrypted = OneTimePadCypher.decrypt(seed, webFormId);
         String[] res = decrypted.split("\\$");
         if (res.length == 2 && res[1].equals(pw)) {
             return res[0];
         }
-		return null;
-	}
-
+        return null;
+    }
 }
