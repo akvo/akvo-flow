@@ -69,7 +69,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
       // case 3 does not have illegal question type
       const noIllegalQuestion =
-        questions.some(question => {
+        questions && questions.some(question => {
           switch (question.get('type')) {
             case 'CADDISFLY':
               return true;
@@ -83,7 +83,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
         }) === false;
 
       // case 4 does not have repeated question group
-      const noRepeatedQuestionGroup = questionGroups.some(qg => qg.get('repeatable')) === false;
+      const noRepeatedQuestionGroup = questionGroups && questionGroups.some(qg => qg.get('repeatable')) === false;
 
       this.valid =
         isPublished &&
