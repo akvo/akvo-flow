@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.akvo.flow.util.OneTimePadCypher;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +49,7 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.WebForm;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -160,13 +160,13 @@ public class SurveyRestService {
         if(validWebForm){
             survey.setWebForm(validWebForm);
             surveyDao.save(survey);
-            response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP),
-                    id.toString()));
+            String pw = SurveyedLocale.generateBase32Uuid();
+            response.put("webformId", WebForm.encryptId(id, PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP), pw));
+            response.put("password", pw);
         } else {
             throw new SurveyNotValidAsWebformException(
                 "Webforms don't support monitoring surveys, or repeatable question groups or the following question types: geoshape, signature or caddisfly");
         }
-
         return response;
     }
 
