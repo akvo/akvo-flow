@@ -2,35 +2,14 @@
 
 set -euo pipefail
 
-CI_BRANCH="${SEMAPHORE_GIT_BRANCH:=}"
-CI_TAG="${SEMAPHORE_GIT_TAG_NAME:=}"
-CI_PULL_REQUEST="${SEMAPHORE_GIT_PR_NAME:=}"
-
 function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-if [[ "${CI_BRANCH}" != "master" ]] && [[ -z "${CI_TAG}" ]]; then
-   exit 0
-fi
-
-if [[ -n "${CI_PULL_REQUEST}" ]]; then
-    exit 0
-fi
-
-if [[ "${CI_TAG:0:8}" == "promote-" ]]; then
-    echo "Skipping deployment"
-    exit 0
-fi
-
-develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-uat2}"
-release_project_id="${RELEASE_PROJECT_ID:=akvoflow-uat1}"
+develop_project_id="${DEVELOP_PROJECT_ID:=akvoflow-dev2}"
+FLOW_VERSION=${FLOW_VERSION:-${CI_COMMIT}}
 
 project_id="${develop_project_id}"
-
-if [[ -n "${CI_TAG}" ]]; then
-    project_id="${release_project_id}"
-fi
 
 curl --location --silent --output ci/akvoflow-uat1.json \
      --header "Authorization: token ${FLOW_GH_TOKEN}" \
@@ -49,4 +28,4 @@ docker run \
     --env FLOW_CONFIG_REPO \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/akvo-flow-builder:20200427.052642.da8c2ee /app/src/ci/mvn-deploy.sh
+    akvo/akvo-flow-builder:20200427.052642.da8c2ee /app/src/ci/mvn-deploy.sh "$FLOW_VERSION"

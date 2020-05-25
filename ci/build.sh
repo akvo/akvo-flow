@@ -18,11 +18,6 @@
 
 set -eu
 
-if [[ "${CI_TAG:0:8}" == "promote-" ]]; then
-    echo "Skipping build"
-    exit 0
-fi
-
 SRC_DIR="/app/src"
 
 cd "${SRC_DIR}/Dashboard"
