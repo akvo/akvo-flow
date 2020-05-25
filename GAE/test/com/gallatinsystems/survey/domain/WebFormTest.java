@@ -18,9 +18,6 @@ package com.gallatinsystems.survey.domain;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.apphosting.utils.config.ApplicationXml.Modules.Web;
-
 public class WebFormTest {
     
     final String secretKey = "very-secret-key";
@@ -35,6 +32,12 @@ public class WebFormTest {
     
     @Test
     void decryptSurveyId() {
-       assertEquals("12345", WebForm.decryptId(webFormId, secretKey, pw)); 
+       assertEquals(surveyId+"$"+pw, WebForm.decryptId(webFormId, secretKey));
     }
+
+    @Test
+    void authId() {
+       assertEquals("12345", WebForm.authId(webFormId, secretKey, pw));
+    }
+
 }
