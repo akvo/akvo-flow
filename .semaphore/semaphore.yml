@@ -35,4 +35,4 @@ promotions:
   - name: Clojars deploy
     pipeline_file: clojars.yml
     auto_promote:
-      when: "result = 'passed' AND branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
+      when: "result = 'passed' AND branch = 'issue/3571-delivery-metrics' AND tag !~ '.*' AND pull_request !~ '.*'"
