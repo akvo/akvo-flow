@@ -30,7 +30,7 @@ export default class WebFormShare extends React.Component {
   };
 
   render() {
-    const { valid, shareUrl } = this.props.data;
+    const { valid, shareUrl, sharePassword } = this.props.data;
     return (
       <>
         <li>
@@ -67,7 +67,7 @@ export default class WebFormShare extends React.Component {
                   {this.state.copyToClipboard && <span>Copied to clipboard</span>}
 
                   <div className="password">
-                    <span>Password: webform</span>
+                    <span>Password: {sharePassword}</span>
                   </div>
                 </>
               ) : (
