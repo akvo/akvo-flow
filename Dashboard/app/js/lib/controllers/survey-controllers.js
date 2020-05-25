@@ -798,6 +798,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       url,
       success: (data) =>{
         this.set('webformId', data.webformId);
+        this.set('password', data.password);
       },
       error: function(xhr) {
         console.error(xhr)
