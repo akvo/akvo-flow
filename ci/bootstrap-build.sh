@@ -29,7 +29,7 @@ if [[ ! -d "$NPM_CACHE" ]]; then
     mkdir "$NPM_CACHE"
 fi
 
-FLOW_GIT_VERSION=$(git describe)
+FLOW_GIT_VERSION="$(TZ=UTC date +"%Y%m%d-%H%M%S").${CI_COMMIT:0:8}"
 CI_BRANCH="${SEMAPHORE_GIT_BRANCH:=}"
 CI_TAG="${SEMAPHORE_GIT_TAG_NAME:=}"
 

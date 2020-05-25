@@ -24,7 +24,7 @@ log Staging app
 
 mvn appengine:stage
 
-version=$(git describe)
+version=$1
 log Deploying version "${version}"
 
 (

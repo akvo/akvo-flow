@@ -5,8 +5,8 @@ agent:
     os_image: ubuntu1804
 blocks:
   - name: Clojars deployment
-    skip:
-      when: "tag =~ '^promote-.*'"
+    run:
+      when: "branch = 'master' AND tag !~ '.*' AND pull_request !~ '.*'"
     task:
       prologue:
         commands:
@@ -18,4 +18,5 @@ blocks:
       jobs:
         - name: Clojars deploy
           commands:
+            - export CI_COMMIT=${SEMAPHORE_GIT_SHA}
             - ./ci/bootstrap-build.sh /app/src/ci/clojars-deploy.sh
