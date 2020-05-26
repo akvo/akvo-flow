@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.akvo.flow.util.OneTimePadCypher;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +49,8 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.WebForm;
+import com.gallatinsystems.survey.domain.WebFormAuthPayload;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -160,13 +161,30 @@ public class SurveyRestService {
         if(validWebForm){
             survey.setWebForm(validWebForm);
             surveyDao.save(survey);
-            response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP),
-                    id.toString()));
+            String pw = SurveyedLocale.readableUuid(survey.getCreatedDateTime().getTime());
+            response.put("webformId", WebForm.encryptId(id, PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP), pw, survey.getVersion()));
+            response.put("password", pw);
         } else {
             throw new SurveyNotValidAsWebformException(
                 "Webforms don't support monitoring surveys, or repeatable question groups or the following question types: geoshape, signature or caddisfly");
         }
+        return response;
+    }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/webform/auth")
+    @ResponseBody
+    public Map<String, Object> authWebFormId(@RequestBody WebFormAuthPayload payLoad) {
+        final String password = payLoad.getPassword();
+        final String webFormId = payLoad.getWebFormId();
+        final Map<String, Object> response = new HashMap<String, Object>();
+
+        // if the POST data contains a pw and id continue. Otherwise,
+        // server will respond with 400 Bad Request
+        if (password == null || webFormId == null) {
+            return getErrorResponse();
+        }
+
+        response.put("valid", WebForm.authId(webFormId, PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP), password));
         return response;
     }
 
