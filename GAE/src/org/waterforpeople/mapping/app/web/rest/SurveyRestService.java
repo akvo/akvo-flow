@@ -161,8 +161,8 @@ public class SurveyRestService {
         if(validWebForm){
             survey.setWebForm(validWebForm);
             surveyDao.save(survey);
-            String pw = SurveyedLocale.generateBase32Uuid();
-            response.put("webformId", WebForm.encryptId(id, PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP), pw));
+            String pw = SurveyedLocale.readableUuid(survey.getCreatedDateTime().getTime());
+            response.put("webformId", WebForm.encryptId(id, PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP), pw, survey.getVersion()));
             response.put("password", pw);
         } else {
             throw new SurveyNotValidAsWebformException(

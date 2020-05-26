@@ -28,15 +28,16 @@ public class WebFormTest {
     final String valueToEncrypt = "text";
     final Long surveyId = new Long(12345);
     final String pw = SurveyedLocale.readableUuid(new Date(1590477935471L).getTime());
-    final String webFormId = "R1dBTRhXVVNCVFlIUlINWxAZC0s";
+    final String webFormId = "R1dBTRhXQUdCVUQcRgBAQRFfDEYBA0dWQUUDWw";
+    final Double version = new Double(1);
     @Test
     void encryptSurveyId() {
-        assertEquals(webFormId, WebForm.encryptId(surveyId, secretKey, pw)); 
+        assertEquals(webFormId, WebForm.encryptId(surveyId, secretKey, pw, version));
     }
     
     @Test
     void decryptSurveyId() {
-       assertEquals(surveyId+"$"+pw, WebForm.decryptId(webFormId, secretKey));
+       assertEquals(surveyId+"$$$"+pw+"$$$"+version, WebForm.decryptId(webFormId, secretKey));
     }
 
     @Test
