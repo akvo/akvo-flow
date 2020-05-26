@@ -231,9 +231,7 @@ public class SurveyedLocale extends BaseDomain {
     }
 
     /**
-     * Creates a base32 version of a UUID. In the output, it replaces the following letters: l, o, i
-     * are replace by w, x, y, to avoid confusion with 1 and 0 we don't use the z as it can easily
-     * be confused with 2, especially in handwriting. If we can't form the base32 version, we return
+     * Creates a stripped version of base32 version of a UUID. If we can't form the base32 version, we return
      * an empty string. The same code is used in the FLOW Mobile app:
      * https://github.com/akvo/akvo-flow-mobile/blob/feature/pointupdates/survey/
      * src/com/gallatinsystems/survey/device/util/Base32.java The resulting identifier is a string
@@ -244,21 +242,35 @@ public class SurveyedLocale extends BaseDomain {
     public static String generateBase32Uuid() {
         final String uuid = UUID.randomUUID().toString();
         String strippedUUID = (uuid.substring(0, 13) + uuid.substring(24, 27)).replace("-", "");
-        String result = null;
         try {
             Long id = Long.parseLong(strippedUUID, 16);
-            result = Long.toString(id, 32).replace("l", "w").replace("o", "x").replace("i", "y");
-            while (result.length() < 12) { //un-suppress leading zeroes; we must have 12 characters
-                result = "0" + result;
-            }
+            return readableUuid(id);
+
         } catch (NumberFormatException e) {
             // if we can't create the base32 UUID string, return the original uuid.
-            result = uuid;
+            return uuid;
+        }
+    }
+
+    /**
+     * In the output, it replaces the following letters: l, o, i
+     * are replace by w, x, y, to avoid confusion with 1 and 0 we don't use the z as it can easily
+     * be confused with 2, especially in handwriting
+     *
+     * @param uuid
+     * @return
+     */
+    public static String readableUuid(Long uuid) {
+        String result = null;
+        result = Long.toString(uuid, 32).replace("l", "w").replace("o", "x").replace("i", "y");
+        while (result.length() < 12) { //un-suppress leading zeroes; we must have 12 characters
+            result = "0" + result;
         }
 
         // insert dashes for readability
         return String.format("%s-%s-%s", result.substring(0, 4), result.substring(4, 8),
                 result.substring(8));
+
     }
 
     /**
