@@ -18,13 +18,17 @@ package com.gallatinsystems.survey.domain;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Date;
+
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+
 public class WebFormTest {
     
     final String secretKey = "very-secret-key";
     final String valueToEncrypt = "text";
     final Long surveyId = new Long(12345);
-    final String pw = "9pyf-9a0k-htxq";
-    final String webFormId = "R1dBTRhXXBMLA1kUClUSWw0GAVw";
+    final String pw = SurveyedLocale.readableUuid(new Date(1590477935471L).getTime());
+    final String webFormId = "R1dBTRhXVVNCVFlIUlINWxAZC0s";
     @Test
     void encryptSurveyId() {
         assertEquals(webFormId, WebForm.encryptId(surveyId, secretKey, pw)); 
