@@ -16,10 +16,13 @@
 
 package org.akvo.flow.api.app;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.google.appengine.api.utils.SystemProperty;
+
+import org.waterforpeople.mapping.app.web.EnvServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,7 +54,7 @@ public class WebFormServlet extends AbstractRestApiServlet {
         RestResponse res = new RestResponse();
         res.setCode(String.valueOf(HttpServletResponse.SC_OK));
         String surveyId = ((WebFormRequest)req).getSurveyId();
-        String url = String.format("https://tech-consultancy.akvotest.org/akvo-flow-web/%s/%s", SystemProperty.applicationId.get(), surveyId);
+        String url = String.format("%s/%s/%s", PropertyUtil.getProperty(EnvServlet.WEBFORM_REDIRECTION_URL), SystemProperty.applicationId.get(), surveyId);
         res.setMessage(url);
         return res;
     }
