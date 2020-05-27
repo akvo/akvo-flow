@@ -40,6 +40,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
   questionValidationFailure: false,
   questionTooltipValidationFailure: false,
   caddisflyResourceUuid: null,
+  holdPersonalData: null,
 
   showCaddisflyTests: Ember.computed(() => FLOW.router.caddisflyResourceController.get('testsFileLoaded')).property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
 
@@ -176,6 +177,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
     this.set('cascadeResourceId', FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     this.set('caddisflyResourceUuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+    this.set('holdPersonalData', FLOW.selectedControl.selectedQuestion.get('holdPersonalData'));
 
     FLOW.optionListControl.set('content', []);
 
@@ -340,6 +342,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
+    FLOW.selectedControl.selectedQuestion.set('holdPersonalData', this.get('holdPersonalData'));
 
     const minVal = (Ember.empty(this.get('minVal'))) ? null : this.get('minVal');
     const maxVal = (Ember.empty(this.get('maxVal'))) ? null : this.get('maxVal');
