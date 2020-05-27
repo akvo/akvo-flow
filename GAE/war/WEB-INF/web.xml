@@ -27,6 +27,18 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>webFormServlet</servlet-name>
+        <servlet-class>
+            org.akvo.flow.api.app.WebFormServlet
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>webFormServlet</servlet-name>
+        <url-pattern>/webforms/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>oidcservlet</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
@@ -226,8 +238,7 @@
         <servlet-name>ReportTask</servlet-name>
         <url-pattern>/app_worker/reportservlet</url-pattern>
     </servlet-mapping>
-        /app_worker/
-        <servlet>
+    <servlet>
         <servlet-name>QuestionAnswerStoreCleanup</servlet-name>
         <servlet-class>org.waterforpeople.mapping.app.web.QuestionAnswerStoreCleanup</servlet-class>
     </servlet>
