@@ -44,10 +44,12 @@
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}} {{tooltip _use_in_record_display_tooltip}}</p></label>
     {{else}}
       {{#if view.amGeoType}}
-          <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}} {{tooltip _use_as_record_location_tooltip}}</label>
+          <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}} {{tooltip _use_as_record_location_tooltip}}</label><br />
       {{/if}}
     {{/if}}
   {{/if}}
+
+  <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.holdPersonalData"}}{{t _hold_personal_data}}</label>
 
     <!-- Question specific material -->
 {{#if view.hasExtraSettings}}
