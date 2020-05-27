@@ -43,7 +43,6 @@ public class WebFormServlet extends AbstractRestApiServlet {
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
-        log.warning(req.getPathInfo());
         RestRequest restRequest = new WebFormRequest();
         restRequest.populateFromHttpRequest(req);
         return restRequest;
