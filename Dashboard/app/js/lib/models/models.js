@@ -215,6 +215,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   mandatoryFlag: DS.attr('boolean', {
     defaultValue: true,
   }),
+  holdPersonalData: DS.attr('boolean', {
+    defaultValue: false,
+  }),
   dependentFlag: DS.attr('boolean', {
     defaultValue: false,
   }),
