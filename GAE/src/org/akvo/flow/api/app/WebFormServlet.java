@@ -54,7 +54,7 @@ public class WebFormServlet extends AbstractRestApiServlet {
         RestResponse res = new RestResponse();
         res.setCode(String.valueOf(HttpServletResponse.SC_OK));
         String surveyId = ((WebFormRequest)req).getSurveyId();
-        String url = String.format("%s/%s/%s", PropertyUtil.getProperty(EnvServlet.WEBFORM_REDIRECTION_URL), SystemProperty.applicationId.get(), surveyId);
+        String url = String.format("%s/%s/%s", PropertyUtil.getProperty(EnvServlet.WEBFORM_REDIRECTION_URL), PropertyUtil.getProperty("appId"), surveyId);
         res.setMessage(url);
         return res;
     }
