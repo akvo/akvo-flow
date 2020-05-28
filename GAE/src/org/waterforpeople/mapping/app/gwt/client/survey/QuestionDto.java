@@ -64,6 +64,8 @@ public class QuestionDto extends BaseDto {
     private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
+    private Boolean personalData;
+
     /**
      * Geoshape question options
      */
@@ -454,5 +456,13 @@ public class QuestionDto extends BaseDto {
     @Override
     public String toString() {
       return type + "'" + text + "' #" + order + (mandatoryFlag?" *":"");
+    }
+
+    public Boolean getPersonalData() {
+        return personalData;
+    }
+
+    public void setPersonalData(Boolean personalData) {
+        this.personalData = personalData;
     }
 }

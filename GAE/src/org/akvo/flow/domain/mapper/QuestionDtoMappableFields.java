@@ -52,6 +52,7 @@ public interface QuestionDtoMappableFields {
     String variableName = null;
     Long questionGroupId = null;
     Boolean collapseable = null;
+    Boolean personalData = null;
     Boolean immutable = null;
     Map<String, TranslationDto> translationMap = new HashMap<>();
     String path = null;
