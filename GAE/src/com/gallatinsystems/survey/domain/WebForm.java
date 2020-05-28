@@ -28,6 +28,7 @@ public class WebForm {
         unsupportedTypes.add(Question.Type.GEOSHAPE.toString());
         unsupportedTypes.add(Question.Type.SIGNATURE.toString());
         unsupportedTypes.add(Question.Type.CADDISFLY.toString());
+        unsupportedTypes.add(Question.Type.SCAN.toString());
         return unsupportedTypes;
     }
 
