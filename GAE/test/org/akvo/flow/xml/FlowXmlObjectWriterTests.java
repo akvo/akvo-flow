@@ -55,7 +55,7 @@ class FlowXmlObjectWriterTests {
             "</question><question variableName=\"questionTwo\" id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
             "<validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/>" +
             "<text>This is question two</text></question>" +
-            "<question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" " +
+            "<question id=\"1003\" order=\"3\" personalData=\"true\" type=\"geoshape\" mandatory=\"false\" " +
             "localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\">" +
             "<text>This is question three</text></question>" +
             "<heading>This is a group</heading>" +
@@ -193,6 +193,7 @@ class FlowXmlObjectWriterTests {
         q3.setText("This is question three");
         q3.setType(Question.Type.GEOSHAPE);
         q3.setMandatoryFlag(false);
+        q3.setPersonalData(true);
         qm.put(3, q3);
 
         int questionCount = qm.size();
@@ -232,6 +233,7 @@ class FlowXmlObjectWriterTests {
         assertEquals(1003L, xq3.getId());
         assertEquals("This is question three", xq3.getText());
         assertEquals(Boolean.FALSE, xq3.getMandatory());
+        assertEquals(Boolean.TRUE, xq3.getPersonalData());
         assertEquals("geoshape", xq3.getType());
 
         //Convert Jackson tree into an XML string
