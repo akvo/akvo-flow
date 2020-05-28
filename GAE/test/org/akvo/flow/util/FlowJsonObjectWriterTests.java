@@ -85,7 +85,7 @@ class FlowJsonObjectWriterTests {
             // ignoring exception
         }
 
-        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"order\":0}";
+        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
         assertEquals(jsonStringExpected, jsonString);
     }
 }
