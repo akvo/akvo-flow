@@ -55,6 +55,7 @@ public class Question extends BaseDomain {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
+    private Boolean personalData = false;
 
     @NotPersistent
     private String cascadeResource;
@@ -463,6 +464,14 @@ public class Question extends BaseDomain {
 
     public void setLevelNames(List<String> levelNames) {
         this.levelNames = levelNames;
+    }
+
+    public Boolean getPersonalData() {
+        return personalData;
+    }
+
+    public void setPersonalData(Boolean personalData) {
+        this.personalData = personalData;
     }
 
 }

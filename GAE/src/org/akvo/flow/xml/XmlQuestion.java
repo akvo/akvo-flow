@@ -60,6 +60,8 @@ public class XmlQuestion {
     private Boolean locked;
     @JacksonXmlProperty(localName = "allowMultiple", isAttribute = true)
     private Boolean allowMultiple;
+    @JacksonXmlProperty(localName = "personalData", isAttribute = true)
+    private Boolean personalData;
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
@@ -97,6 +99,9 @@ public class XmlQuestion {
         }
         if (Boolean.TRUE.equals(q.getGeoLocked())) {
             locked = Boolean.TRUE;
+        }
+        if (Boolean.TRUE.equals(q.getPersonalData())) {
+            personalData = Boolean.TRUE;
         }
         if (q.getTip() != null) {
             help = new XmlHelp(q.getTip());
@@ -232,6 +237,7 @@ public class XmlQuestion {
                 "',mandatory='" + mandatory +
                 "',requireDoubleEntry='" + requireDoubleEntry +
                 "',locked='" + locked +
+                "',personalData='" + personalData +
                 "',variableName='" + variableName +
                 "',localeNameFlag='" + localeNameFlag +
                 "',allowPoints='" + allowPoints +
@@ -400,5 +406,13 @@ public class XmlQuestion {
 
     public void setVariableName(String variableName) {
         this.variableName = variableName;
+    }
+
+    public Boolean getPersonalData() {
+        return personalData;
+    }
+
+    public void setPersonalData(Boolean personalData) {
+        this.personalData = personalData;
     }
 }
