@@ -31,10 +31,6 @@ public class WebForm {
         return unsupportedTypes;
     }
 
-    public static boolean validQuestionGroups(final Survey survey) {
-        return survey.getQuestionGroupMap().values().stream().filter(i -> i.getRepeatable()).collect(Collectors.toList()).size() == 0;
-    }
-
     public static boolean validForm(final Survey survey, final SurveyGroup surveyGroup) {
         return !surveyGroup.getMonitoringGroup() ||
                 (surveyGroup.getNewLocaleSurveyId() != null &&
@@ -42,10 +38,6 @@ public class WebForm {
     }
 
     public static boolean validWebForm(final SurveyGroup surveyGroup, final Survey survey, final List<Question> questions) {
-        boolean validQuestionGroups = validQuestionGroups(survey);
-        if (!validQuestionGroups) {
-            return false;
-        }
         boolean validSurveyGroup = validForm(survey, surveyGroup);
         if (!validSurveyGroup) {
             return false;
