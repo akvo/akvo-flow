@@ -55,7 +55,6 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       const selectedForm = FLOW.selectedControl.get('selectedSurvey');
       const selectedSurveyGroup = FLOW.selectedControl.get('selectedSurveyGroup');
       const questions = FLOW.questionControl.get('content');
-      const questionGroups = FLOW.questionGroupControl.get('content');
 
       // case 1 is form published?
       const isPublished = selectedForm.get('status') === 'PUBLISHED';
@@ -82,14 +81,11 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
           }
         }) === false;
 
-      // case 4 does not have repeated question group
-      const noRepeatedQuestionGroup = questionGroups && questionGroups.some(qg => qg.get('repeatable')) === false;
 
       this.valid =
         isPublished &&
         isNonMonitoringSurveyOrMonitoringForm &&
-        noIllegalQuestion &&
-        noRepeatedQuestionGroup;
+        noIllegalQuestion;
       
       this.renderReactSide();
     },
