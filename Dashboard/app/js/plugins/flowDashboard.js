@@ -1,32 +1,5 @@
 // Akvo Flow DashBoard Interaction
 // loic@akvo.org
-const tooltip = function () {
-  /* CONFIG */
-  var xOffset = 10;
-  var yOffset = 20;
-  // these 2 variable determine popup's distance from the cursor
-  // you might want to adjust to get the right result
-  /* END CONFIG */
-  var t = "";
-
-  $("a.tooltip").off("mouseenter").on("mouseenter", function (e) {
-    t = this.title;
-    this.title = "";
-    $("body").append("<p id='tooltip'>" + t + "</p>");
-    $("#tooltip").css("top", (e.pageY - xOffset) + "px").css("left", (e.pageX + yOffset) + "px").fadeIn("fast");
-  });
-
-  $("a.tooltip").off("mouseleave").on("mouseleave", function () {
-    this.title = t;
-    $("#tooltip").remove();
-  });
-
-  $("a.tooltip").mousemove(function (e) {
-    $("#tooltip")
-      .css("top", (e.pageY - xOffset) + "px")
-      .css("left", (e.pageX + yOffset) + "px");
-  });
-};
 
 function makePlaceholders() {
     $inputs = $("input[type=text],input[type=email], input[type=tel], input[type=date], input[type=url]");
