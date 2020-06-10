@@ -50,7 +50,7 @@
                 <li><a class="addSurvey noChanges">{{t _create_new_survey}}</a></li>
               {{else}}
                 {{#if view.disableAddSurveyButtonInRoot}}
-                  <li><a class="addSurvey noChanges tooltip" title="{{t _survey_only_in_folder}}" >{{t _create_new_survey}}</a></li>
+                  <li>{{#view FLOW.TooltipText i18nTooltipKey="_survey_only_in_folder"}}{{t _create_new_survey}}{{/view}}</li>
                 {{else}}
                   <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
                 {{/if}}

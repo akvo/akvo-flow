@@ -78,7 +78,7 @@ Ember.Handlebars.registerHelper('if_blank', function(item) {
     );
 });
 
-FLOW.Tooltip = Ember.View.extend({
+FLOW.TooltipQuestionMark = Ember.View.extend({
   tagName: 'a',
 
   template: Ember.Handlebars.compile('?'),
@@ -92,10 +92,10 @@ FLOW.Tooltip = Ember.View.extend({
 
     yOffset: 20,
 
-    tooltipText: null,
+    text: null,
 
     mouseEnter: function (e) {
-      $("body").append("<p id='tooltip'>" + this.get('tooltipText') + "</p>");
+      $("body").append("<p id='tooltip'>" + this.get('text') + "</p>");
       $("#tooltip")
 				.css("top", (e.pageY - this.get('xOffset')) + "px")
 				.css("left", (e.pageX + this.get('yOffset')) + "px")
@@ -114,8 +114,25 @@ FLOW.Tooltip = Ember.View.extend({
   }),
 
   didInsertElement() {
+    this.eventManager.set('text', this.get('tooltipText'));
+  },
+});
+
+FLOW.TooltipText = FLOW.TooltipQuestionMark.extend({
+
+  classNames: ['addSurvey', 'noChanges', 'tooltip'],
+
+  i18nTooltipKey: null,
+
+  init() {
     this._super();
-    this.eventManager.set('tooltipText', this.get('tooltipText'));
+
+    // this class causes the button to be styled in unwanted way
+    this.get('classNames').removeObject('helpIcon');
+  },
+
+  didInsertElement() {
+    this.eventManager.set('text', Ember.String.loc(this.get('i18nTooltipKey')));
   },
 });
 
@@ -130,7 +147,7 @@ Ember.Handlebars.registerHelper('tooltip', function(i18nKey, options) {
 
   options.hash.tooltipText = tooltipText;
 
-  const path = 'FLOW.Tooltip';
+  const path = 'FLOW.TooltipQuestionMark';
 
   return Ember.Handlebars.ViewHelper.helper(this, path, options);
 });
