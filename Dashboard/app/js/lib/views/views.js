@@ -78,17 +78,33 @@ Ember.Handlebars.registerHelper('if_blank', function(item) {
     );
 });
 
-Ember.Handlebars.registerHelper('tooltip', i18nKey => {
-  let tooltip;
+FLOW.Tooltip = Ember.View.extend({
+  tagName: 'a',
+
+  template: Ember.Handlebars.compile('?'),
+
+  classNames: ['helpIcon','tooltip'],
+
+  attributeBindings: ["tooltipText:title"],
+
+  tooltipText: null,
+
+});
+
+Ember.Handlebars.registerHelper('tooltip', function(i18nKey, options) {
+  let tooltipText;
+
   try {
-    tooltip = Ember.String.loc(i18nKey);
+    tooltipText = Ember.String.loc(i18nKey);
   } catch (err) {
-    tooltip = i18nKey;
+    tooltipText = i18nKey;
   }
-  tooltip = Ember.Handlebars.Utils.escapeExpression(tooltip);
-  return new Ember.Handlebars.SafeString(
-    `<a href="#" class="helpIcon tooltip" title="${tooltip}">?</a>`
-  );
+
+  options.hash.tooltipText = tooltipText;
+
+  const path = 'FLOW.Tooltip';
+
+  return Ember.Handlebars.ViewHelper.helper(this, path, options);
 });
 
 FLOW.renderCaddisflyAnswer = function(json) {
