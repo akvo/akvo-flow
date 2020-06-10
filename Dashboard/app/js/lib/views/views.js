@@ -5,7 +5,6 @@ import template from '../mixins/template';
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
-/* global tooltip */
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
@@ -102,7 +101,7 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
         .fadeIn("fast");
     },
 
-    mouseLeave: function (e) {
+    mouseLeave: function () {
       $("#tooltip").remove();
     },
 
