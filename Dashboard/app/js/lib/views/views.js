@@ -97,19 +97,19 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
     mouseEnter: function (e) {
       $("body").append("<p id='tooltip'>" + this.get('text') + "</p>");
       $("#tooltip")
-				.css("top", (e.pageY - this.get('xOffset')) + "px")
-				.css("left", (e.pageX + this.get('yOffset')) + "px")
-				.fadeIn("fast");
+        .css("top", (e.pageY - this.get('xOffset')) + "px")
+        .css("left", (e.pageX + this.get('yOffset')) + "px")
+        .fadeIn("fast");
     },
 
     mouseLeave: function (e) {
-			$("#tooltip").remove();
+      $("#tooltip").remove();
     },
 
     mouseMove: function (e) {
       $("#tooltip")
-			.css("top", (e.pageY - this.get('xOffset')) + "px")
-      .css("left", (e.pageX + this.get('yOffset')) + "px")
+        .css("top", (e.pageY - this.get('xOffset')) + "px")
+        .css("left", (e.pageX + this.get('yOffset')) + "px")
     },
   }),
 
