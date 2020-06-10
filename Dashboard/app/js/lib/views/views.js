@@ -85,10 +85,38 @@ FLOW.Tooltip = Ember.View.extend({
 
   classNames: ['helpIcon','tooltip'],
 
-  attributeBindings: ["tooltipText:title"],
-
   tooltipText: null,
 
+  eventManager: Ember.Object.create({
+    xOffset: 10,
+
+    yOffset: 20,
+
+    tooltipText: null,
+
+    mouseEnter: function (e) {
+      $("body").append("<p id='tooltip'>" + this.get('tooltipText') + "</p>");
+      $("#tooltip")
+				.css("top", (e.pageY - this.get('xOffset')) + "px")
+				.css("left", (e.pageX + this.get('yOffset')) + "px")
+				.fadeIn("fast");
+    },
+
+    mouseLeave: function (e) {
+			$("#tooltip").remove();
+    },
+
+    mouseMove: function (e) {
+      $("#tooltip")
+			.css("top", (e.pageY - this.get('xOffset')) + "px")
+      .css("left", (e.pageX + this.get('yOffset')) + "px")
+    },
+  }),
+
+  didInsertElement() {
+    this._super();
+    this.eventManager.set('tooltipText', this.get('tooltipText'));
+  },
 });
 
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey, options) {
