@@ -1,6 +1,5 @@
 require('../plugins/flowDashboard');
 require('../plugins/geocells');
-require('../plugins/tooltip');
 
 // init analytics
 
