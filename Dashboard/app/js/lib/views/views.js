@@ -5,7 +5,6 @@ import template from '../mixins/template';
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
-/* global tooltip */
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
@@ -78,17 +77,78 @@ Ember.Handlebars.registerHelper('if_blank', function(item) {
     );
 });
 
-Ember.Handlebars.registerHelper('tooltip', i18nKey => {
-  let tooltip;
+FLOW.TooltipQuestionMark = Ember.View.extend({
+  tagName: 'a',
+
+  template: Ember.Handlebars.compile('?'),
+
+  classNames: ['helpIcon','tooltip'],
+
+  tooltipText: null,
+
+  eventManager: Ember.Object.create({
+    xOffset: 10,
+
+    yOffset: 20,
+
+    text: null,
+
+    mouseEnter: function (e) {
+      $("body").append("<p id='tooltip'>" + this.get('text') + "</p>");
+      $("#tooltip")
+        .css("top", (e.pageY - this.get('xOffset')) + "px")
+        .css("left", (e.pageX + this.get('yOffset')) + "px")
+        .fadeIn("fast");
+    },
+
+    mouseLeave: function () {
+      $("#tooltip").remove();
+    },
+
+    mouseMove: function (e) {
+      $("#tooltip")
+        .css("top", (e.pageY - this.get('xOffset')) + "px")
+        .css("left", (e.pageX + this.get('yOffset')) + "px")
+    },
+  }),
+
+  didInsertElement() {
+    this.eventManager.set('text', this.get('tooltipText'));
+  },
+});
+
+FLOW.TooltipText = FLOW.TooltipQuestionMark.extend({
+
+  classNames: ['addSurvey', 'noChanges', 'tooltip'],
+
+  i18nTooltipKey: null,
+
+  init() {
+    this._super();
+
+    // this class causes the button to be styled in unwanted way
+    this.get('classNames').removeObject('helpIcon');
+  },
+
+  didInsertElement() {
+    this.eventManager.set('text', Ember.String.loc(this.get('i18nTooltipKey')));
+  },
+});
+
+Ember.Handlebars.registerHelper('tooltip', function(i18nKey, options) {
+  let tooltipText;
+
   try {
-    tooltip = Ember.String.loc(i18nKey);
+    tooltipText = Ember.String.loc(i18nKey);
   } catch (err) {
-    tooltip = i18nKey;
+    tooltipText = i18nKey;
   }
-  tooltip = Ember.Handlebars.Utils.escapeExpression(tooltip);
-  return new Ember.Handlebars.SafeString(
-    `<a href="#" class="helpIcon tooltip" title="${tooltip}">?</a>`
-  );
+
+  options.hash.tooltipText = tooltipText;
+
+  const path = 'FLOW.TooltipQuestionMark';
+
+  return Ember.Handlebars.ViewHelper.helper(this, path, options);
 });
 
 FLOW.renderCaddisflyAnswer = function(json) {
@@ -655,16 +715,6 @@ FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
 // ********************************************************//
 //                      standard views
 // ********************************************************//
-// TODO check if doing this in View is not impacting performance,
-// as some pages have a lot of views (all navigation elements, for example)
-// one way could be use an extended copy of view, with the didInsertElement,
-// for some of the elements, and not for others.
-Ember.View.reopen({
-  didInsertElement() {
-    this._super();
-    tooltip();
-  },
-});
 
 Ember.Select.reopen({
   attributeBindings: ['size'],
