@@ -202,9 +202,8 @@ public class Survey extends BaseDomain implements SecuredObject {
     }
 
     public Boolean getWebForm() {
-        return webForm;
+        return webForm != null ? webForm : Boolean.FALSE;
     }
-
 
     @Override
     public SecuredObject getParentObject() {
