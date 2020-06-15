@@ -84,6 +84,8 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
 
   classNames: ['helpIcon','tooltip'],
 
+  attributeBindings: ['tooltipText:data-title'],
+
   tooltipText: null,
 
   eventManager: Ember.Object.create({
@@ -91,10 +93,9 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
 
     yOffset: 20,
 
-    text: null,
-
     mouseEnter: function (e) {
-      $("body").append("<p id='tooltip'>" + this.get('text') + "</p>");
+      let tooltipText = $(e.target).attr("data-title");
+      $("body").append("<p id='tooltip'>" + tooltipText + "</p>");
       $("#tooltip")
         .css("top", (e.pageY - this.get('xOffset')) + "px")
         .css("left", (e.pageX + this.get('yOffset')) + "px")
@@ -111,10 +112,6 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
         .css("left", (e.pageX + this.get('yOffset')) + "px")
     },
   }),
-
-  didInsertElement() {
-    this.eventManager.set('text', this.get('tooltipText'));
-  },
 });
 
 FLOW.TooltipText = FLOW.TooltipQuestionMark.extend({
@@ -128,10 +125,8 @@ FLOW.TooltipText = FLOW.TooltipQuestionMark.extend({
 
     // this class causes the button to be styled in unwanted way
     this.get('classNames').removeObject('helpIcon');
-  },
 
-  didInsertElement() {
-    this.eventManager.set('text', Ember.String.loc(this.get('i18nTooltipKey')));
+    this.set('tooltipText', Ember.String.loc(this.get('i18nTooltipKey')));
   },
 });
 
