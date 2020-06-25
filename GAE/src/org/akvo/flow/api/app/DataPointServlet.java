@@ -111,12 +111,10 @@ public class DataPointServlet extends AbstractRestApiServlet {
             // Mimic old behavior
             SurveyAssignmentDao saDao = new SurveyAssignmentDao();
 
-            List<SurveyAssignment> allAssigmentsToDevice = saDao.listAllContainingDevice(deviceId);
-            List<SurveyAssignment> filteredAssignments = allAssigmentsToDevice.stream().filter(assignment ->
-                    assignment.getSurveyId().equals(surveyId)).collect(Collectors.toList());
+            List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
 
-            if (filteredAssignments.isEmpty()) {
-                log.log(Level.SEVERE, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+            if (deviceSurveyAssignments.isEmpty()) {
+                log.log(Level.WARNING, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
                 return null;
             }
 
