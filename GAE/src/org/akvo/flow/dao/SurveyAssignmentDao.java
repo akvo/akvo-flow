@@ -67,7 +67,7 @@ public class SurveyAssignmentDao extends BaseDAO<SurveyAssignment> {
         StringBuilder paramString = new StringBuilder();
         Map<String, Object> paramMap = null;
         paramMap = new HashMap<String, Object>();
-        appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
+        appendNonNullParam("deviceIds", filterString, paramString, "Long", deviceId, paramMap);
         appendNonNullParam("surveyId", filterString, paramString, "Long", surveyId, paramMap);
 
         if (filterString.length() > 0) {
@@ -75,7 +75,9 @@ public class SurveyAssignmentDao extends BaseDAO<SurveyAssignment> {
             query.declareParameters(paramString.toString());
         }
 
-        return (List<SurveyAssignment>) query.executeWithMap(paramMap);
+        List<SurveyAssignment> results = (List<SurveyAssignment>) query.executeWithMap(paramMap);
+
+        return results;
     }
 
 
