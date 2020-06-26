@@ -108,30 +108,43 @@ public class DataPointServlet extends AbstractRestApiServlet {
 
 
         if (assList.isEmpty()) {
-            // Mimic old behavior
-            SurveyAssignmentDao saDao = new SurveyAssignmentDao();
+            return getAllDataPointsForOldApps(deviceId, surveyId);
+        } else {
+            return getAssignedDataPoints(assList.get(0));
+        }
+    }
 
-            List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
+    /*
+     * This method is used to mimic the behaviour of assignments when used with older app versions.
+     * no datapoints have been assigned and there is no DataPointAssignment specifying that all
+     * datapoints have been assigned.  Default expected behaviour for older apps is to receive
+     * all the datapoints
+     */
+    private List<SurveyedLocale> getAllDataPointsForOldApps(Long deviceId, Long surveyId) {
+        SurveyAssignmentDao saDao = new SurveyAssignmentDao();
 
-            if (deviceSurveyAssignments.isEmpty()) {
-                log.log(Level.WARNING, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
-                return null;
-            }
+        List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
 
-            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+        if (deviceSurveyAssignments.isEmpty()) {
+            log.log(Level.WARNING, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+            return null;
         }
 
-        Set<Long> pointSet = new HashSet<>();
-        for (DataPointAssignment ass : assList) {
-            pointSet.addAll(ass.getDataPointIds());
+        return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+    }
+
+    /*
+     * Return only datapoints that have been explicitly assigned to a device
+     */
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
+        Set<Long> assignedDataPointIds = new HashSet<>();
+        assignedDataPointIds.addAll(assignment.getDataPointIds());
+
+        if (ALL_DATAPOINTS.equals(assignedDataPointIds)) {
+            return surveyedLocaleDao.listLocalesBySurveyGroupId(assignment.getSurveyId());
         }
 
-        if (ALL_DATAPOINTS.equals(pointSet)) {
-            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
-        }
-
-        List<Long> pointList = new ArrayList<>(pointSet);
-        return surveyedLocaleDao.listByKeys(pointList);
+        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
     }
 
     /**
