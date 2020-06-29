@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +55,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
     private static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
+    private static final int LIMIT_DATAPOINTS = 30;
 
     public DataPointServlet() {
         setMode(JSON_MODE);
@@ -77,41 +80,48 @@ public class DataPointServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataPointRequest dpReq = (DataPointRequest) req;
         RestResponse res = new RestResponse();
-        if (dpReq.getSurveyId() != null) {
-            //Find the device (if any)
-            DeviceDAO deviceDao = new DeviceDAO();
-            Device device = deviceDao.getDevice(dpReq.getAndroidId(), null, null);
-            if (device != null) {
-                log.info("Found device id: " + device.getKey().getId());
-                log.fine("Found device: " + device);
-                List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId());
-                if (dpList == null) {
-                    res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-                    res.setMessage("No assignment was found");
-                    return res;
-                }
-                res = convertToResponse(dpList, dpReq.getSurveyId());
-                return res;
-            }
-            res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-            res.setMessage("Unknown device");
-        } else {
+        if (dpReq.getSurveyId() == null) {
             res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
             res.setMessage("Invalid Survey");
+            return res;
         }
+
+        //Find the device (if any)
+        DeviceDAO deviceDao = new DeviceDAO();
+        Device device = deviceDao.getDevice(dpReq.getAndroidId(), null, null);
+        if (device == null) {
+            res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            res.setMessage("Unknown device");
+            return res;
+        }
+        log.fine("Found device: " + device);
+
+
+        final List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId(), dpReq.getLastUpdateTime());
+
+        if (dpList.isEmpty()) {
+            res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            res.setMessage("No assignment was found");
+            return res;
+        }
+        res = convertToResponse(dpList, dpReq.getSurveyId());
         return res;
+
     }
 
-    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId) {
+    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId, Date lastUpdateTime) {
         List<DataPointAssignment> assList =
                 dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
 
-
         if (assList.isEmpty()) {
-            return getAllDataPointsForOldApps(deviceId, surveyId);
+            return getAllDataPointsForOldApps(deviceId, surveyId, lastUpdateTime);
         } else {
-            return getAssignedDataPoints(assList.get(0));
+            return getAssignedDataPoints(assList.get(0), lastUpdateTime);
         }
+    }
+
+    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId) {
+        return getDataPointList(surveyId, deviceId, null);
     }
 
     /*
@@ -120,28 +130,36 @@ public class DataPointServlet extends AbstractRestApiServlet {
      * datapoints have been assigned.  Default expected behaviour for older apps is to receive
      * all the datapoints
      */
-    private List<SurveyedLocale> getAllDataPointsForOldApps(Long deviceId, Long surveyId) {
+    private List<SurveyedLocale> getAllDataPointsForOldApps(Long deviceId, Long surveyId, Date lastUpdateTime) {
         SurveyAssignmentDao saDao = new SurveyAssignmentDao();
 
         List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
 
         if (deviceSurveyAssignments.isEmpty()) {
             log.log(Level.WARNING, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
-            return null;
+            return Collections.emptyList();
         }
 
-        return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+        if (lastUpdateTime != null) {
+            return surveyedLocaleDao.listLocalesBySurveyGroupAndDate(surveyId, lastUpdateTime, LIMIT_DATAPOINTS);
+        } else {
+            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
+        }
     }
 
     /*
      * Return only datapoints that have been explicitly assigned to a device
      */
-    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, Date lastUpdateTime) {
         Set<Long> assignedDataPointIds = new HashSet<>();
         assignedDataPointIds.addAll(assignment.getDataPointIds());
 
         if (ALL_DATAPOINTS.equals(assignedDataPointIds)) {
-            return surveyedLocaleDao.listLocalesBySurveyGroupId(assignment.getSurveyId());
+            if (lastUpdateTime != null) {
+                return surveyedLocaleDao.listLocalesBySurveyGroupAndDate(assignment.getSurveyId(), lastUpdateTime, LIMIT_DATAPOINTS);
+            } else {
+                return surveyedLocaleDao.listLocalesBySurveyGroupId(assignment.getSurveyId());
+            }
         }
 
         return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));

@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -219,6 +220,44 @@ public class DataPointServletTest {
         final Long surveyId = randomId();
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, randomId());
-        assertNull(foundDataPoints);
+        assertTrue(foundDataPoints.isEmpty());
+    }
+
+    @Test
+    public void testRetrieveDataPointsByLastUpdateTime() throws InterruptedException {
+        final Long surveyId = randomId();
+        final List<SurveyedLocale> oldDataPoints = createDataPoints(surveyId, 5);
+        final Date lastUpdateTime = new Date();
+        Thread.sleep(1500); // only datapoints created after this point should be retrieved
+        final List<SurveyedLocale> newDataPoints = createDataPoints(surveyId, 10);
+
+        final Long assignmentId = randomId();
+        final Long deviceId = randomId();
+
+        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+
+        final DataPointServlet servlet = new DataPointServlet();
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceId, lastUpdateTime);
+        assertEquals(10, foundDataPoints.size());
+
+        final Set<Long> newDataPointIds = getEntityIds(newDataPoints);
+        final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
+        assertEquals(newDataPointIds, foundDataPointIds);
+    }
+
+    @Test
+    public void testRetrieveLimitedNumberOfDataPoints() throws InterruptedException {
+        final Long surveyId = randomId();
+        final Date lastUpdateTime = new Date();
+        Thread.sleep(500); // only datapoints created after this point should be retrieved
+        final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 32);
+        final Long assignmentId = randomId();
+        final Long deviceId = randomId();
+
+        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+
+        final DataPointServlet servlet = new DataPointServlet();
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceId, lastUpdateTime);
+        assertEquals(30, foundDataPoints.size());
     }
 }
