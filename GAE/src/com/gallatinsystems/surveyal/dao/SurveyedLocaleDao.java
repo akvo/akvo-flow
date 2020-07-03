@@ -315,13 +315,13 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId,
-            Date lastUpdateTime, Integer pageSize) {
-        return listLocalesBySurveyGroupAndDate(surveyGroupId, lastUpdateTime, null, pageSize);
+    public List<SurveyedLocale> listLocalesBySurveyGroupAndUpdateDate(Long surveyGroupId,
+                                                                      Date lastUpdateTime, Integer pageSize) {
+        return listLocalesBySurveyGroupAndUpdateDate(surveyGroupId, lastUpdateTime, null, pageSize);
     }
 
-    public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId,
-                                                                Date lastUpdateTime, String cursor, Integer pageSize) {
+    public List<SurveyedLocale> listLocalesBySurveyGroupAndUpdateDate(Long surveyGroupId,
+                                                                      Date lastUpdateTime, String cursor, Integer pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
         Map<String, Object> paramMap = new HashMap<String, Object>();

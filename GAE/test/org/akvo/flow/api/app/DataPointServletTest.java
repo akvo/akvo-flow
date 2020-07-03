@@ -242,7 +242,7 @@ public class DataPointServletTest {
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> firstBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, null);
         String cursor = BaseDAO.getCursor(firstBatchDataPoints);
-        final List<SurveyedLocale> secondBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, null, cursor);
+        final List<SurveyedLocale> secondBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, cursor);
 
         assertEquals(30, firstBatchDataPoints.size());
         assertEquals(5, secondBatchDataPoints.size());

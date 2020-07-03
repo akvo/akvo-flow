@@ -30,13 +30,10 @@ public class DataPointRequest extends RestRequest {
     private static final String SURVEY_ID_PARAM = "surveyId";
     private static final String ANDROID_ID_PARAM = "androidId";
     private static final String DEVICE_ID_PARAM = "deviceId";
-    private static final String LAST_UPDATE_TIME_PARAM = "lastUpdateTime";
 
     private Long surveyId;
     private String androidId;
     private String deviceId;
-
-    private Date lastUpdateTime;
 
     @Override
     protected void populateErrors() {
@@ -52,17 +49,6 @@ public class DataPointRequest extends RestRequest {
         surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
         androidId = req.getParameter(ANDROID_ID_PARAM);
         deviceId = req.getParameter(DEVICE_ID_PARAM);
-
-        if (req.getParameter(LAST_UPDATE_TIME_PARAM) != null) {
-            try {
-                Long ts = Long.parseLong(req.getParameter(LAST_UPDATE_TIME_PARAM));
-                lastUpdateTime = new Date(ts);
-            } catch (Exception e) {
-                addError(new RestError(RestError.BAD_DATATYPE_CODE,
-                        RestError.BAD_DATATYPE_MESSAGE, LAST_UPDATE_TIME_PARAM
-                        + " not a valid timestamp"));
-            }
-        }
     }
 
     public Long getSurveyId() {
@@ -88,8 +74,4 @@ public class DataPointRequest extends RestRequest {
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
-
-    public Date getLastUpdateTime() { return lastUpdateTime; }
-
-    public void setLastUpdateTime(Date lastUpdateTime) { this.lastUpdateTime = lastUpdateTime; }
 }
