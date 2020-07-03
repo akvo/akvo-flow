@@ -16,6 +16,7 @@
 
 package org.akvo.flow.api.app;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -181,7 +182,10 @@ public class DataPointServletTest {
         final List<SurveyedLocale> allDataPoints = createDataPoints(surveyId, 15);
         final Long assignmentId = randomId();
         final Long deviceId = randomId();
+        final List<Long> deviceIds = Arrays.asList(deviceId);
+        final List<Long> formIds = Arrays.asList(randomId());
 
+        createAssignment(surveyId, deviceIds, formIds);
         createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
@@ -224,40 +228,23 @@ public class DataPointServletTest {
     }
 
     @Test
-    public void testRetrieveDataPointsByLastUpdateTime() throws InterruptedException {
+    public void testRetrieveDataPointsWithCursor() {
         final Long surveyId = randomId();
-        final List<SurveyedLocale> oldDataPoints = createDataPoints(surveyId, 5);
-        final Date lastUpdateTime = new Date();
-        Thread.sleep(1500); // only datapoints created after this point should be retrieved
-        final List<SurveyedLocale> newDataPoints = createDataPoints(surveyId, 10);
-
+        final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 35);
         final Long assignmentId = randomId();
         final Long deviceId = randomId();
+        final List<Long> deviceIds = Arrays.asList(deviceId);
+        final List<Long> formIds = Arrays.asList(randomId());
 
+        createAssignment(surveyId, deviceIds, formIds);
         createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceId, lastUpdateTime);
-        assertEquals(10, foundDataPoints.size());
+        final List<SurveyedLocale> firstBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, null);
+        String cursor = BaseDAO.getCursor(firstBatchDataPoints);
+        final List<SurveyedLocale> secondBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, null, cursor);
 
-        final Set<Long> newDataPointIds = getEntityIds(newDataPoints);
-        final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
-        assertEquals(newDataPointIds, foundDataPointIds);
-    }
-
-    @Test
-    public void testRetrieveLimitedNumberOfDataPoints() throws InterruptedException {
-        final Long surveyId = randomId();
-        final Date lastUpdateTime = new Date();
-        Thread.sleep(500); // only datapoints created after this point should be retrieved
-        final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 32);
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
-
-        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
-
-        final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceId, lastUpdateTime);
-        assertEquals(30, foundDataPoints.size());
+        assertEquals(30, firstBatchDataPoints.size());
+        assertEquals(5, secondBatchDataPoints.size());
     }
 }

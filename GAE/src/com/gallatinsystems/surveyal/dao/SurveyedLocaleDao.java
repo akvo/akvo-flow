@@ -317,6 +317,11 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     @SuppressWarnings("unchecked")
     public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId,
             Date lastUpdateTime, Integer pageSize) {
+        return listLocalesBySurveyGroupAndDate(surveyGroupId, lastUpdateTime, null, pageSize);
+    }
+
+    public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId,
+                                                                Date lastUpdateTime, String cursor, Integer pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
         Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -332,7 +337,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
         query.declareImports("import java.util.Date");
-        query.setRange(0, pageSize);
+        prepareCursor(cursor, pageSize, query);
 
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
     }

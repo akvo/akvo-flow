@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 
 /**
@@ -97,7 +96,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         log.fine("Found device: " + device);
 
 
-        final List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId(), dpReq.getLastUpdateTime());
+        final List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId(), dpReq.getLastUpdateTime(), dpReq.getCursor());
 
         if (dpList.isEmpty()) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
@@ -109,28 +108,35 @@ public class DataPointServlet extends AbstractRestApiServlet {
 
     }
 
-    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId, Date lastUpdateTime) {
+    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId, Date lastUpdateTime, String cursor) {
         List<DataPointAssignment> assList =
                 dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
 
-        if (assList.isEmpty()) {
-            return getAllDataPointsForOldApps(deviceId, surveyId, lastUpdateTime);
+        if (assList.isEmpty() || allDataPointsAreAssigned(assList)) {
+            return getAllDataPoints(deviceId, surveyId, lastUpdateTime, cursor);
         } else {
             return getAssignedDataPoints(assList.get(0), lastUpdateTime);
         }
+    }
+
+    private boolean allDataPointsAreAssigned(List<DataPointAssignment> assList) {
+        Set<Long> assignedDataPoints = new HashSet<>();
+        if (assList.size() > 0) {
+            assignedDataPoints.addAll(assList.get(0).getDataPointIds());
+            return ALL_DATAPOINTS.equals(assignedDataPoints);
+        }
+        return false;
+    }
+
+    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId, Date lastUpdateTime) {
+        return getDataPointList(surveyId, deviceId, lastUpdateTime, null);
     }
 
     public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId) {
         return getDataPointList(surveyId, deviceId, null);
     }
 
-    /*
-     * This method is used to mimic the behaviour of assignments when used with older app versions.
-     * no datapoints have been assigned and there is no DataPointAssignment specifying that all
-     * datapoints have been assigned.  Default expected behaviour for older apps is to receive
-     * all the datapoints
-     */
-    private List<SurveyedLocale> getAllDataPointsForOldApps(Long deviceId, Long surveyId, Date lastUpdateTime) {
+    private List<SurveyedLocale> getAllDataPoints(Long deviceId, Long surveyId, Date lastUpdateTime, String cursor) {
         SurveyAssignmentDao saDao = new SurveyAssignmentDao();
 
         List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
@@ -140,11 +146,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
             return Collections.emptyList();
         }
 
-        if (lastUpdateTime != null) {
-            return surveyedLocaleDao.listLocalesBySurveyGroupAndDate(surveyId, lastUpdateTime, LIMIT_DATAPOINTS);
-        } else {
-            return surveyedLocaleDao.listLocalesBySurveyGroupId(surveyId);
-        }
+        return surveyedLocaleDao.listLocalesBySurveyGroupAndDate(surveyId, lastUpdateTime, cursor, LIMIT_DATAPOINTS);
     }
 
     /*
@@ -153,14 +155,6 @@ public class DataPointServlet extends AbstractRestApiServlet {
     private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, Date lastUpdateTime) {
         Set<Long> assignedDataPointIds = new HashSet<>();
         assignedDataPointIds.addAll(assignment.getDataPointIds());
-
-        if (ALL_DATAPOINTS.equals(assignedDataPointIds)) {
-            if (lastUpdateTime != null) {
-                return surveyedLocaleDao.listLocalesBySurveyGroupAndDate(assignment.getSurveyId(), lastUpdateTime, LIMIT_DATAPOINTS);
-            } else {
-                return surveyedLocaleDao.listLocalesBySurveyGroupId(assignment.getSurveyId());
-            }
-        }
 
         return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
     }
@@ -210,5 +204,4 @@ public class DataPointServlet extends AbstractRestApiServlet {
             getResponse().getWriter().println(resp.getMessage());
         }
     }
-
 }
