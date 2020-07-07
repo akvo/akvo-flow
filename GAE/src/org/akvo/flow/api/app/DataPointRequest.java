@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
+import java.util.Date;
 
 /**
  * data structure for transferring data points
@@ -73,5 +74,4 @@ public class DataPointRequest extends RestRequest {
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
-
 }
