@@ -16,12 +16,18 @@
 
 package org.akvo.flow.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.domain.persistent.SurveyAssignment;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+
+import javax.jdo.PersistenceManager;
 
 public class SurveyAssignmentDao extends BaseDAO<SurveyAssignment> {
 
@@ -54,9 +60,24 @@ public class SurveyAssignmentDao extends BaseDAO<SurveyAssignment> {
         return all.size();
     }
 
-    public List<SurveyAssignment> listBySurveyGroup(Long sgId) {
-        List<SurveyAssignment> sal = listByProperty("surveyGroupId", sgId, "LongString");
-        return sal;
+    public List<SurveyAssignment> listByDeviceAndSurvey(Long deviceId, Long surveyId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyAssignment.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("deviceIds", filterString, paramString, "Long", deviceId, paramMap);
+        appendNonNullParam("surveyId", filterString, paramString, "Long", surveyId, paramMap);
+
+        if (filterString.length() > 0) {
+            query.setFilter(filterString.toString());
+            query.declareParameters(paramString.toString());
+        }
+
+        List<SurveyAssignment> results = (List<SurveyAssignment>) query.executeWithMap(paramMap);
+
+        return results;
     }
 
 
