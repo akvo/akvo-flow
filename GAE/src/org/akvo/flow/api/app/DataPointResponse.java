@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,6 +29,16 @@ import com.gallatinsystems.framework.rest.RestResponse;
 public class DataPointResponse extends RestResponse {
     private static final long serialVersionUID = 1L;
     private List<SurveyedLocaleDto> dataPointData;
+
+    private String cursor;
+
+    public String getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(String cursor) {
+        this.cursor = cursor;
+    }
 
     public List<SurveyedLocaleDto> getDataPointData() {
         return dataPointData;

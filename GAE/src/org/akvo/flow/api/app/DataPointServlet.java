@@ -18,6 +18,7 @@ package org.akvo.flow.api.app;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -77,7 +78,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataPointRequest dpReq = (DataPointRequest) req;
-        RestResponse res = new RestResponse();
+        DataPointResponse res = new DataPointResponse();
         if (dpReq.getSurveyId() == null) {
             res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
             res.setMessage("Invalid Survey");
@@ -99,10 +100,12 @@ public class DataPointServlet extends AbstractRestApiServlet {
 
         if (dpList.isEmpty()) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-            res.setMessage("No assignment was found");
+            res.setMessage("No datapoint assignment was found");
             return res;
         }
         res = convertToResponse(dpList, dpReq.getSurveyId());
+        res.setCursor(BaseDAO.getCursor(dpList));
+
         return res;
 
     }
