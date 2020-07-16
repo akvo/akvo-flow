@@ -157,8 +157,14 @@ public class RestAuthFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig arg) throws ServletException {
-        String enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String enabledFlag = null;
+        if (filterConfig.getInitParameter(ENABLED_PROP) != null) {
+            enabledFlag = filterConfig.getInitParameter(ENABLED_PROP);
+        } else {
+            enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
+        }
+
         if (enabledFlag != null) {
             try {
                 isEnabled = Boolean.parseBoolean(enabledFlag.trim());
@@ -168,7 +174,12 @@ public class RestAuthFilter implements Filter {
                 isEnabled = false;
             }
         }
-        privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
+
+        if (filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP) != null) {
+            privateKey = filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP);
+        } else {
+            privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
+        }
     }
 
     @Override
