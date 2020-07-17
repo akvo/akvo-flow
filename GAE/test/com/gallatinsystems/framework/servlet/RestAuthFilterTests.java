@@ -27,18 +27,19 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class RestAuthFilterTests {
+
     private MockHttpServletRequest mockHttpRequest;
 
     private MockHttpServletResponse mockHttpResponse;
 
     private MockFilterConfig mockFilterConfig;
 
-    private String testPrivateKey = "very private";
-
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws ServletException {
+
         this.mockHttpRequest = new MockHttpServletRequest();
         mockHttpRequest.setRequestURI("/datapoints");
         mockHttpRequest.setMethod("GET");
@@ -60,17 +61,31 @@ public class RestAuthFilterTests {
 
         mockFilterConfig = new MockFilterConfig();
         mockFilterConfig.addInitParameter("restPrivateKey", "very private");
-        mockFilterConfig.addInitParameter("enableRestSecurity", "true");
+    }
+
+    @Test
+    void testDisableRestSecurity() throws ServletException, IOException {
+        mockFilterConfig.addInitParameter("enableRestSecurity", "false");
+
+        // even with extra param that is not included in the hash test should pass
+        mockHttpRequest.addParameter("extraParameter", "NotInHash");
+
+        RestAuthFilter restAuthFilter = new RestAuthFilter();
+        restAuthFilter.init(mockFilterConfig);
+        restAuthFilter.doFilter(mockHttpRequest, mockHttpResponse, new MockFilterChain());
+
+        assertNull(mockHttpResponse.getErrorMessage());
     }
 
     @Test
     void testAuthorizationSucess() throws ServletException, IOException {
+        mockFilterConfig.addInitParameter("enableRestSecurity", "true");
 
-        RestAuthFilter filter = new RestAuthFilter();
-        filter.init(mockFilterConfig);
-        filter.doFilter(mockHttpRequest, mockHttpResponse, new MockFilterChain());
+        RestAuthFilter restAuthFilter = new RestAuthFilter();
+        restAuthFilter.init(mockFilterConfig);
+        restAuthFilter.doFilter(mockHttpRequest, mockHttpResponse, new MockFilterChain());
 
-        assertEquals(null, mockHttpResponse.getErrorMessage());
+        assertNull(mockHttpResponse.getErrorMessage());
     }
 
 }
