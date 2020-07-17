@@ -25,9 +25,12 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RestAuthFilterTests {
 
@@ -48,14 +51,17 @@ public class RestAuthFilterTests {
         mockHttpRequest.addParameter("duration", "41");
         mockHttpRequest.addParameter("questionId", "149382277%7C0%3D44.3845%257C7.5845%257C1%7Ctype%3DGEO");
         mockHttpRequest.addParameter("questionId", "151492308%7C0%3Dhttp%253A%252F%252Fwaterforpeople.s3.amazonaws.com%252Fimages%252Fdb0756e0-b2ec-49ed-bbdb-26d4478af5c3.jpg%7Ctype%3DIMAGE");
+        mockHttpRequest.addParameter("questionId", "151542031%7C0%3D%255B%257B%2522name%2522%253A%2522summer%2522%257D%252C%257B%2522name%2522%253A%2522autumn%2522%257D%252C%257B%2522name%2522%253A%2522winter%2522%257D%252C%257B%2522name%2522%253A%2522spring%2522%257D%255D%7Ctype%3DCASCADE");
         mockHttpRequest.addParameter("questionId", "152332013%7C0%3Dfiunsc%7Ctype%3DVALUE");
+        mockHttpRequest.addParameter("questionId", "150452013%7C0%3D2786%7Ctype%3DVALUE");
         mockHttpRequest.addParameter("questionId", "149292013%7C0%3D3%7Ctype%3DVALUE");
+        mockHttpRequest.addParameter("questionId", "144742013%7C0%3Dckbkchzhx%7Ctype%3DVALUE");
         mockHttpRequest.addParameter("runAsTask", "1");
-        mockHttpRequest.addParameter("submitter", "tony");
-        mockHttpRequest.addParameter("surveyId", "15316201398");
-        mockHttpRequest.addParameter("surveyInstanceId", "15337202187");
-        mockHttpRequest.addParameter("ts", "2020/03/03 15:05:14");
-        mockHttpRequest.addParameter("h", "CmuehPsWW6//5Q4i8O1P5AjS/8Y=");
+        mockHttpRequest.addParameter("submitter", "jana");
+        mockHttpRequest.addParameter("surveyId", "153162013");
+        mockHttpRequest.addParameter("surveyInstanceId", "153372021");
+        mockHttpRequest.addParameter("ts", "2020/07/17 16:03:36");
+        mockHttpRequest.addParameter("h", "R82KP6xWR6rpJ8Jx6w9CjTXiKE0=");
 
         mockHttpResponse = new MockHttpServletResponse();
 
@@ -78,14 +84,41 @@ public class RestAuthFilterTests {
     }
 
     @Test
-    void testAuthorizationSucess() throws ServletException, IOException {
+    void testAuthorizationFailureInvalidTimeStamp() throws ServletException, IOException {
         mockFilterConfig.addInitParameter("enableRestSecurity", "true");
 
         RestAuthFilter restAuthFilter = new RestAuthFilter();
         restAuthFilter.init(mockFilterConfig);
         restAuthFilter.doFilter(mockHttpRequest, mockHttpResponse, new MockFilterChain());
 
-        assertNull(mockHttpResponse.getErrorMessage());
+        assertEquals("Authorization failed", mockHttpResponse.getErrorMessage());
     }
 
+    @Test
+    void testValidHashGenerated() throws ServletException, IOException {
+        mockFilterConfig.addInitParameter("enableRestSecurity", "true");
+
+        RestAuthFilter restAuthFilter = new RestAuthFilter();
+        restAuthFilter.init(mockFilterConfig);
+
+        assertTrue(restAuthFilter.validateHashParam(mockHttpRequest));
+    }
+
+    @Test
+    void testValidTimeStamp() throws ServletException, IOException {
+        mockFilterConfig.addInitParameter("enableRestSecurity", "true");
+
+        RestAuthFilter restAuthFilter = new RestAuthFilter();
+        restAuthFilter.init(mockFilterConfig);
+
+        // should fail because of invalid timestamp
+        assertFalse(restAuthFilter.validateTimeStamp(mockHttpRequest));
+
+        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String incomingTimeStamp = df.format(new Date());
+        mockHttpRequest.setParameter("ts", incomingTimeStamp);
+
+        assertTrue(restAuthFilter.validateTimeStamp(mockHttpRequest));
+    }
 }
