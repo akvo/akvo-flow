@@ -121,4 +121,16 @@ public class RestAuthFilterTests {
 
         assertTrue(restAuthFilter.validateTimeStamp(mockHttpRequest));
     }
+
+    @Test
+    void testHashGenerationWithCursor() throws ServletException, IOException {
+        mockFilterConfig.addInitParameter("enableRestSecurity", "true");
+
+        mockHttpRequest.addParameter("cursor", "ClEKHwoSbGFzdFVwZGF0ZURhdGVUaW1lEgkI-PSu5tTU6gISKmoPYWt2b2Zsb3dzYW5kYm94chcLEg5TdXJ2ZXllZExvY2FsZRiDoK1GDBgAIAA");
+        mockHttpRequest.setParameter("h", "v9ft3ERJ+qHI+9Str1HTwCvLRXs=");
+        RestAuthFilter restAuthFilter = new RestAuthFilter();
+        restAuthFilter.init(mockFilterConfig);
+
+        assertTrue(restAuthFilter.validateHashParam(mockHttpRequest));
+    }
 }
