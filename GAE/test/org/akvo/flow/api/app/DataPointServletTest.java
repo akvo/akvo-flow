@@ -263,4 +263,21 @@ public class DataPointServletTest {
 
         assertEquals(0, finalBatchDataPoints.size(), "There should not be any more datapoints to retrieve");
     }
+
+    @Test
+    void testDataPointsRetrievalWithNoDatapointsPresent() {
+        final Long surveyId = randomId();
+        final Long assignmentId = randomId();
+        final Long deviceId = randomId();
+        final List<Long> deviceIds = Arrays.asList(deviceId);
+        final List<Long> formIds = Arrays.asList(randomId());
+
+        createAssignment(surveyId, deviceIds, formIds);
+        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+
+        final DataPointServlet servlet = new DataPointServlet();
+        final List<SurveyedLocale> noDataPointsRetrieved = servlet.getDataPointList(surveyId, deviceId, null);
+        assertEquals(0, noDataPointsRetrieved.size());
+        assertNull(BaseDAO.getCursor(noDataPointsRetrieved), "There should not be any cursor");
+    }
 }
