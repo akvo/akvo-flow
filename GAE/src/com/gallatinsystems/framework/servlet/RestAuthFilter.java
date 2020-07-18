@@ -17,14 +17,15 @@
 package com.gallatinsystems.framework.servlet;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -85,80 +86,78 @@ public class RestAuthFilter implements Filter {
             "unchecked", "rawtypes"
     })
     private boolean isAuthorized(ServletRequest req) throws Exception {
-
-        Map paramMap = req.getParameterMap();
-        String incomingHash = null;
-        long incomingTimestamp = 0;
-        List<String> names = new ArrayList<String>();
-        if (paramMap != null) {
-            names.addAll(paramMap.keySet());
-            Collections.sort(names);
-            StringBuilder builder = new StringBuilder();
-            for (String name : names) {
-                if (!RestRequest.HASH_PARAM.equals(name)) {
-                    if (builder.length() > 0) {
-                        builder.append("&");
-                    }
-
-                    if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
-                        String timestamp = ((String[]) paramMap.get(name))[0];
-                        try {
-                            DateFormat df = new SimpleDateFormat(
-                                    "yyyy/MM/dd HH:mm:ss");
-                            df.setTimeZone(TimeZone.getTimeZone("GMT"));
-                            incomingTimestamp = df.parse(timestamp).getTime();
-                        } catch (Exception e) {
-                            log.warning("Recived rest api request with invalid timestamp");
-                            return false;
-                        }
-                    }
-                    String[] vals = ((String[]) paramMap.get(name));
-                    int count = 0;
-                    for (String v : vals) {
-                        if (count > 0) {
-                            builder.append("&");
-                        }
-                        builder.append(name).append("=").append(URLEncoder.encode(v, "UTF-8"));
-                        count++;
-                    }
-                } else {
-                    incomingHash = ((String[]) paramMap.get(name))[0];
-                    incomingHash = incomingHash.replaceAll(" ", "+");
-                }
-            }
-
-            if (incomingHash != null) {
-                String ourHash = MD5Util.generateHMAC(builder.toString(),
-                        privateKey);
-                if (ourHash == null) {
-                    // Do something but for now return false;
-                    return false;
-                }
-
-                if (ourHash.equals(incomingHash)) {
-                    return isTimestampValid(incomingTimestamp);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return false;
+        return validateHashParam(req) && validateTimeStamp(req);
     }
 
-    private boolean isTimestampValid(long theirTime) {
-        long time = System.currentTimeMillis();
-        if (Math.abs(time - theirTime) > MAX_TIME) {
+    public boolean validateHashParam(ServletRequest req) throws UnsupportedEncodingException {
+        if (req.getParameterMap() == null || req.getParameter(RestRequest.HASH_PARAM) == null) {
             return false;
-        } else {
-            return true;
+        }
+
+        SortedMap<Object, String[]> sortedParamMap = new TreeMap<>();
+        sortedParamMap.putAll(req.getParameterMap());
+
+        StringBuilder builder = new StringBuilder();
+        for (Object key : sortedParamMap.keySet()) {
+            String paramKey = (String) key;
+            if (RestRequest.HASH_PARAM.equals(paramKey)) {
+                continue;
+            }
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+
+            String[] vals = ((String[]) sortedParamMap.get(paramKey));
+            int count = 0;
+            for (String v : vals) {
+                if (count > 0) {
+                    builder.append("&");
+                }
+                builder.append(paramKey).append("=").append(URLEncoder.encode(v, "UTF-8"));
+                count++;
+            }
+        }
+
+        String incomingHash = ((String[]) sortedParamMap.get(RestRequest.HASH_PARAM))[0];
+        incomingHash = incomingHash.replaceAll(" ", "+");
+
+        String ourHash = MD5Util.generateHMAC(builder.toString(), privateKey);
+        if (ourHash == null) {
+            // Do something but for now return false;
+            return false;
+        }
+
+        return ourHash.equals(incomingHash);
+    }
+
+    public boolean validateTimeStamp(ServletRequest req) {
+        Map<Object, String[]> paramMap = req.getParameterMap();
+
+        if(paramMap.isEmpty() || !paramMap.containsKey(RestRequest.TIMESTAMP_PARAM)) {
+            return false;
+        }
+
+        String timestamp = ((String[]) paramMap.get(RestRequest.TIMESTAMP_PARAM))[0];
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+            long incomingTimeStamp = df.parse(timestamp).getTime();
+            return (Math.abs(System.currentTimeMillis() - incomingTimeStamp) < MAX_TIME);
+        } catch (ParseException e) {
+            log.warning("Recived rest api request with invalid timestamp");
+            return false;
         }
     }
 
     @Override
-    public void init(FilterConfig arg) throws ServletException {
-        String enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String enabledFlag = null;
+        if (filterConfig.getInitParameter(ENABLED_PROP) != null) {
+            enabledFlag = filterConfig.getInitParameter(ENABLED_PROP);
+        } else {
+            enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
+        }
+
         if (enabledFlag != null) {
             try {
                 isEnabled = Boolean.parseBoolean(enabledFlag.trim());
@@ -168,7 +167,12 @@ public class RestAuthFilter implements Filter {
                 isEnabled = false;
             }
         }
-        privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
+
+        if (filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP) != null) {
+            privateKey = filterConfig.getInitParameter(REST_PRIVATE_KEY_PROP);
+        } else {
+            privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
+        }
     }
 
     @Override
