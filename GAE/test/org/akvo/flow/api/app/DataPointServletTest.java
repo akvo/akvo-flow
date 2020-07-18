@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -159,11 +158,11 @@ public class DataPointServletTest {
         final Long assignmentId = randomId();
         final Long deviceId = randomId();
 
-        createDataPointAssignment(assignmentId, deviceId, selectedDataPointIds, surveyId);
+        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, selectedDataPointIds, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
 
-        final List<SurveyedLocale> someDataPoints = servlet.getDataPointList(surveyId, deviceId);
+        final List<SurveyedLocale> someDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, null);
 
         final Set<Long> selectedIds = new HashSet<>(selectedDataPointIds);
         final Set<Long> foundIds = getEntityIds(someDataPoints);
@@ -186,10 +185,10 @@ public class DataPointServletTest {
         final List<Long> formIds = Arrays.asList(randomId());
 
         createAssignment(surveyId, deviceIds, formIds);
-        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceId);
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, null);
 
         final Set<Long> allDataPointIds = getEntityIds(allDataPoints);
         final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
@@ -211,7 +210,7 @@ public class DataPointServletTest {
         final SurveyAssignment sa = createAssignment(surveyId, deviceIds, formIds);
 
         final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, deviceIds.get(0));
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(null, surveyId, deviceIds.get(0), null);
 
         final Set<Long> allDataPointIds = getEntityIds(allDataPoints);
         final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
@@ -223,7 +222,7 @@ public class DataPointServletTest {
     public void noAssignmentTest() {
         final Long surveyId = randomId();
         final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(surveyId, randomId());
+        final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(null, surveyId, randomId(), null);
         assertTrue(foundDataPoints.isEmpty());
     }
 
@@ -237,29 +236,29 @@ public class DataPointServletTest {
         final List<Long> formIds = Arrays.asList(randomId());
 
         createAssignment(surveyId, deviceIds, formIds);
-        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
 
         // first batch
-        final List<SurveyedLocale> firstBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, null);
+        final List<SurveyedLocale> firstBatchDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, null);
         assertEquals(30, firstBatchDataPoints.size());
 
         // remaining points retrieved based on cursor
         String cursorMarkEndOfFirstBatch = BaseDAO.getCursor(firstBatchDataPoints);
-        final List<SurveyedLocale> secondBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, cursorMarkEndOfFirstBatch);
+        final List<SurveyedLocale> secondBatchDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, cursorMarkEndOfFirstBatch);
         assertEquals(5, secondBatchDataPoints.size());
 
         // record cursor and update datapoints lastUpdateDateTime for 10 datapoints.
         String cursorMarkEndOfSecondBatch = BaseDAO.getCursor(secondBatchDataPoints);
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
         dpDao.save(dataPoints.subList(0,10));
-        final List<SurveyedLocale> thirdBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, cursorMarkEndOfSecondBatch);
+        final List<SurveyedLocale> thirdBatchDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, cursorMarkEndOfSecondBatch);
         assertEquals(10, thirdBatchDataPoints.size(), "The cursor should retrieve updated datapoints");
 
 
         String finalCursor = BaseDAO.getCursor(thirdBatchDataPoints);
-        final List<SurveyedLocale> finalBatchDataPoints = servlet.getDataPointList(surveyId, deviceId, finalCursor);
+        final List<SurveyedLocale> finalBatchDataPoints = servlet.getDataPointList(assignment, surveyId, deviceId, finalCursor);
 
         assertEquals(0, finalBatchDataPoints.size(), "There should not be any more datapoints to retrieve");
     }
@@ -273,10 +272,10 @@ public class DataPointServletTest {
         final List<Long> formIds = Arrays.asList(randomId());
 
         createAssignment(surveyId, deviceIds, formIds);
-        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
-        final List<SurveyedLocale> noDataPointsRetrieved = servlet.getDataPointList(surveyId, deviceId, null);
+        final List<SurveyedLocale> noDataPointsRetrieved = servlet.getDataPointList(assignment, surveyId, deviceId, null);
         assertEquals(0, noDataPointsRetrieved.size());
         assertNull(BaseDAO.getCursor(noDataPointsRetrieved), "There should not be any cursor");
     }

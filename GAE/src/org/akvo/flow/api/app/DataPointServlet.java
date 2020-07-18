@@ -37,7 +37,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,55 +94,53 @@ public class DataPointServlet extends AbstractRestApiServlet {
         }
         log.fine("Found device: " + device);
 
+        // verify assignments exist
+        long deviceId = device.getKey().getId();
+        long surveyId = dpReq.getSurveyId();
+        List<DataPointAssignment> dataPointAssignments =
+                dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
+        List<SurveyAssignment> deviceSurveyAssignments = new ArrayList<>();
 
-        final List<SurveyedLocale> dpList = getDataPointList(dpReq.getSurveyId(), device.getKey().getId(), dpReq.getCursor());
+        if (dataPointAssignments.isEmpty()) {
+            SurveyAssignmentDao saDao = new SurveyAssignmentDao();
+            deviceSurveyAssignments.addAll(saDao.listByDeviceAndSurvey(deviceId, surveyId));
+        }
 
-        if (dpList.isEmpty()) {
+        if (dataPointAssignments.isEmpty() && deviceSurveyAssignments.isEmpty()) {
+            log.log(Level.WARNING, "No assignments found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
-            res.setMessage("No datapoint assignment was found");
+            res.setMessage("No datapoint or survey assignment was found");
             return res;
         }
+
+        final List<SurveyedLocale> dpList = getDataPointList(dataPointAssignments.get(0), dpReq.getSurveyId(), device.getKey().getId(), dpReq.getCursor());
+
         res = convertToResponse(dpList, dpReq.getSurveyId());
         res.setCursor(BaseDAO.getCursor(dpList));
 
         return res;
-
     }
 
-    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId, String cursor) {
-        List<DataPointAssignment> assList =
-                dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
-
-        if (assList.isEmpty() || allDataPointsAreAssigned(assList)) {
+    public List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, Long deviceId, String cursor) {
+        if (assignment == null || allDataPointsAreAssigned(assignment)) {
             return getAllDataPoints(deviceId, surveyId, cursor);
         } else {
-            return getAssignedDataPoints(assList.get(0));
+            return getAssignedDataPoints(assignment);
         }
     }
 
-    private boolean allDataPointsAreAssigned(List<DataPointAssignment> assList) {
+    private boolean allDataPointsAreAssigned(DataPointAssignment assignment) {
+        if (assignment == null) {
+            return false;
+        }
+
         Set<Long> assignedDataPoints = new HashSet<>();
-        if (assList.size() > 0) {
-            assignedDataPoints.addAll(assList.get(0).getDataPointIds());
-            return ALL_DATAPOINTS.equals(assignedDataPoints);
-        }
-        return false;
-    }
-
-    public List<SurveyedLocale> getDataPointList(Long surveyId, Long deviceId) {
-        return getDataPointList(surveyId, deviceId, null);
+        assignedDataPoints.addAll(assignment.getDataPointIds());
+        return ALL_DATAPOINTS.equals(assignedDataPoints);
     }
 
     private List<SurveyedLocale> getAllDataPoints(Long deviceId, Long surveyId, String cursor) {
-        SurveyAssignmentDao saDao = new SurveyAssignmentDao();
-
-        List<SurveyAssignment> deviceSurveyAssignments = saDao.listByDeviceAndSurvey(deviceId, surveyId);
-
-        if (deviceSurveyAssignments.isEmpty()) {
-            log.log(Level.WARNING, "No assignment found for surveyId: " + surveyId + " - deviceId: " + deviceId);
-            return Collections.emptyList();
-        }
-
         return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS);
     }
 
