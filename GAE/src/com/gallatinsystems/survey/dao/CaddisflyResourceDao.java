@@ -16,10 +16,6 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.akvo.flow.util.FlowJsonObjectReader;
-import org.waterforpeople.mapping.domain.CaddisflyResource;
-
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -27,13 +23,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.akvo.flow.util.FlowJsonObjectReader;
+import org.waterforpeople.mapping.domain.CaddisflyResource;
+
 /**
  * Dao for listing Caddisfly resources Note: this class doesn't need to implement baseDAO as it
  * consists of only a single method.
  */
 public class CaddisflyResourceDao {
 
-    public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests-v2-dev.json";
+    public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests-v2.json";
 
     private static final Logger log = Logger.getLogger(CascadeResourceDao.class
             .getName());
