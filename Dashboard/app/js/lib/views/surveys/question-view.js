@@ -371,6 +371,11 @@ FLOW.QuestionView = FLOW.View.extend(
 
     doCancelEditQuestion() {
       FLOW.selectedControl.set('selectedQuestion', null);
+
+      // scroll to position
+      const el = document.querySelector(`[data-id="${this.get('content').get('keyId')}"]`);
+      // removing the offset of the fixed topbar (-150px)
+      $('body').animate({ scrollTop: getOffset(el) - 150 }, 500);
     },
 
     doSaveEditQuestion() {
