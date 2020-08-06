@@ -39,6 +39,18 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>pingServlet</servlet-name>
+        <servlet-class>
+            org.akvo.flow.api.app.PingServlet
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>pingServlet</servlet-name>
+        <url-pattern>/ping</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>oidcservlet</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
