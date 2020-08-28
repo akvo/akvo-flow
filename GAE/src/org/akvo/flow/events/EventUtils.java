@@ -110,6 +110,7 @@ public class EventUtils {
         public static final String DATA_POINT_ID = "dataPointId";
         public static final String SUBMITTER_NAME = "submitterName";
         public static final String COLLECTION_DATE = "collectionDate";
+        public static final String FORM_VERSION = "formVersion";
         public static final String SURVEYAL_TIME = "surveyalTime";
         public static final String PUBLIC = "public";
         public static final String VALUE = "value";
@@ -119,6 +120,7 @@ public class EventUtils {
         public static final String URL = "url";
         public static final String ITERATION = "iteration";
         public static final String STATUS = "status";
+        public static final String VERSION = "version";
     }
 
     public static class Prop {
@@ -129,6 +131,7 @@ public class EventUtils {
         public static final String SURVEY_ID = "surveyId";
         public static final String SURVEYED_LOCALE_ID = "surveyedLocaleId";
         public static final String COLLECTION_DATE = "collectionDate";
+        public static final String FORM_VERSION = "formVersion";
         public static final String SURVEYAL_TIME = "surveyalTime";
         public static final String IDENTIFIER = "identifier";
         public static final String LATITUDE = "latitude";
@@ -152,6 +155,7 @@ public class EventUtils {
         public static final String ENABLE_CHANGE_EVENTS = "enableChangeEvents";
         public static final String ITERATION = "iteration";
         public static final String STATUS = "status";
+        public static final String VERSION = "version";
     }
 
     public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";
@@ -238,6 +242,7 @@ public class EventUtils {
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
                 addProperty(Key.DATA_POINT_ID, e.getProperty(Prop.SURVEYED_LOCALE_ID), data);
                 addProperty(Key.COLLECTION_DATE, e.getProperty(Prop.COLLECTION_DATE), data);
+                addProperty(Key.FORM_VERSION, e.getProperty(Prop.FORM_VERSION), data);
                 addProperty(Key.SURVEYAL_TIME, e.getProperty(Prop.SURVEYAL_TIME), data);
                 break;
             case DATA_POINT:
@@ -266,6 +271,7 @@ public class EventUtils {
                 addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESC), data);
                 addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
                 addProperty(Key.STATUS, e.getProperty(Prop.STATUS), data);
+                addProperty(Key.VERSION, e.getProperty(Prop.VERSION), data);
                 break;
             case QUESTION_GROUP:
                 addProperty(Key.NAME, e.getProperty(Prop.NAME), "<name missing>", data);
