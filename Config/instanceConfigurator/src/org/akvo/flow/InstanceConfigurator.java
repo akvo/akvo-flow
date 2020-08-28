@@ -380,9 +380,9 @@ public class InstanceConfigurator {
         signingKey.setArgs(1);
         signingKey.setRequired(true);
 
-        Option sentryDNS = new Option("sentryDNS", "Sentry DNS");
-        sentryDNS.setArgs(1);
-        sentryDNS.setRequired(true);
+        Option sentryDSN = new Option("sentryDSN", "Sentry DSN");
+        sentryDSN.setArgs(1);
+        sentryDSN.setRequired(true);
 
 
         Option oidcDomain = new Option("oidcDomain", "ODIC IdP domain");
@@ -433,7 +433,7 @@ public class InstanceConfigurator {
         options.addOption(hereMapsAppCode);
         options.addOption(alias);
         options.addOption(signingKey);
-        options.addOption(sentryDNS);
+        options.addOption(sentryDSN);
         options.addOption(oidcDomain);
         options.addOption(oidcClientId);
         options.addOption(oidcClientSecret);
