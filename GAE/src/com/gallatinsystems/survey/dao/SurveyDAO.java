@@ -78,6 +78,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
      * @return the form tree
      */
     public Survey loadFullForm(Long formId) {
+        return loadFullFormIncludingQuestionOptions(formId, true);
+    }
+
+    public Survey loadFullFormIncludingQuestionOptions(Long formId, boolean loadQuestionOptionsAndTranslations) {
         //Fetch form
         Survey form = getById(formId);
         //Fetch groups
@@ -86,7 +90,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
         //Fetch all the questions for the form
         QuestionDao questionDao = new QuestionDao();
-        List<Question> ql = questionDao.listQuestionsByForm(formId, true); //Help and options, please
+        List<Question> ql = questionDao.listQuestionsByForm(formId, loadQuestionOptionsAndTranslations); //Help and options, please
         HashMap<Long, Map<Integer, Question>> mapMap = new HashMap<>();
         //Make question maps for all the groups, and remember them by qgId
         for (QuestionGroup qg:qgMap.values()) {
