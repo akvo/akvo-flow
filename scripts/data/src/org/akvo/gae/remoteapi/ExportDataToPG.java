@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.akvo.flow.events.EventUtils.Kind;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.postgresql.util.PGobject;
 
 import com.google.appengine.api.datastore.DatastoreService;
