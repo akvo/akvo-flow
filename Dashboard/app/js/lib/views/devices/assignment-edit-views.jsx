@@ -44,6 +44,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // datapoints methods
       this.saveDatapoints = this.saveDatapoints.bind(this);
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
+      this.getDatapointsDetails = this.getDatapointsDetails.bind(this);
+      this.loadMoreDatapoints = this.loadMoreDatapoints.bind(this);
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.findDatapoints = this.findDatapoints.bind(this);
       this.detectSearchedDatapointLoaded = this.detectSearchedDatapointLoaded.bind(this);
@@ -155,6 +157,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
         // datapoints actions
         findDatapoints: this.findDatapoints,
+        loadMoreDatapoints: this.loadMoreDatapoints,
         clearSearchedDatapoints: this.clearSearchedDatapoints,
         getDeviceDatapoints: this.getDeviceDatapoints,
         removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
@@ -591,7 +594,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const datapointAssignment = this.map(item => ({
           id: item.get('keyId'),
           deviceId: item.get('deviceId'),
-          datapoints: item.get('dataPointIds'),
+          datapointIds: item.get('dataPointIds'),
+          datapoints: [],
+
+          // pagination details
+          hasMoreRawIds: false,
+          currentDatapointsIdsChunk: 0,
         }))[0];
 
         if (!datapointAssignment) {
@@ -599,7 +607,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         }
 
         // check if all datapoints has been assigned
-        if (datapointAssignment.datapoints[0] === 0) {
+        if (datapointAssignment.datapointIds[0] === 0) {
           // return early and check that all datapoints is set
           const completeDatapointAssignment = {
             ...datapointAssignment,
@@ -613,22 +621,66 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           return;
         }
 
-        // get all datapoints for this assignment
-        FLOW.SurveyedLocale.find({ ids: datapointAssignment.datapoints }).on('didLoad', function() {
+        // get first chunk of datapoints details for this assignment
+        that.getDatapointsDetails(datapointAssignment, (datapoints, hasMoreRawIds) => {
           // combine data and add to datapoint assignments
           const completeDatapointAssignment = {
             ...datapointAssignment,
-            datapoints: this.map(dp => ({
-              name: dp.get('displayName'),
-              identifier: dp.get('identifier'),
-              id: dp.get('keyId'),
-            })),
+            hasMoreRawIds,
+            currentDatapointsIdsChunk: datapointAssignment.currentDatapointsIdsChunk + 1,
+            datapoints,
           };
 
           // add to assignment
           that.datapointAssignments.push(completeDatapointAssignment);
           that.renderReactSide();
         });
+      });
+    },
+
+    getDatapointsDetails(datapointAssignment, cb) {
+      const steps = 30;
+      const currentDatapointAssignmentsIds = datapointAssignment.datapointIds.slice(
+        datapointAssignment.currentDatapointsIdsChunk,
+        (datapointAssignment.currentDatapointsIdsChunk + 1) * steps
+      );
+
+      const hasMore =
+        (datapointAssignment.currentDatapointsIdsChunk + 1) * steps <
+        datapointAssignment.datapointIds.length;
+
+      // get this chunk datapoints
+      FLOW.SurveyedLocale.find({ ids: currentDatapointAssignmentsIds }).on('didLoad', function() {
+        cb(
+          this.map(dp => ({
+            name: dp.get('displayName'),
+            identifier: dp.get('identifier'),
+            id: dp.get('keyId'),
+          })),
+          hasMore
+        );
+      });
+    },
+
+    loadMoreDatapoints(deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+      const datapointAssignmentIdx = this.datapointAssignments.findIndex(
+        sDp => sDp.deviceId === deviceId
+      );
+      if (!datapointAssignment) return null;
+
+      return this.getDatapointsDetails(datapointAssignment, (datapoints, hasMoreRawIds) => {
+        // combine data and add to datapoint assignments
+        const completeDatapointAssignment = {
+          ...datapointAssignment,
+          hasMoreRawIds,
+          currentDatapointsIdsChunk: datapointAssignment.currentDatapointsIdsChunk + 1,
+          datapoints: datapointAssignment.datapoints.concat(datapoints),
+        };
+
+        // update assignment
+        this.datapointAssignments[datapointAssignmentIdx] = completeDatapointAssignment;
+        this.renderReactSide();
       });
     },
 
