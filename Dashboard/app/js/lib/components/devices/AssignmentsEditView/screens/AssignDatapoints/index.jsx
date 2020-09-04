@@ -30,16 +30,19 @@ export default class AssignDatapoints extends React.Component {
 
     let datapointsData = [];
     let allDPAssigned = false;
+    let hasMore = false;
 
     if (datapointAssignment) {
       datapointsData = datapointAssignment.datapoints;
       allDPAssigned = datapointAssignment.allDataPointsAssigned;
+      hasMore = datapointAssignment.hasMoreRawIds;
     }
 
     return {
       deviceData,
       datapointsData,
       allDPAssigned,
+      hasMore,
     };
   };
 
@@ -99,7 +102,8 @@ export default class AssignDatapoints extends React.Component {
   };
 
   render() {
-    const { deviceData, datapointsData, allDPAssigned } = this.getAssignmentData();
+    const { loadMoreDatapoints } = this.context.actions;
+    const { deviceData, datapointsData, allDPAssigned, hasMore } = this.getAssignmentData();
 
     const assignedDataPointIds = datapointsData.reduce((acc, current) => {
       acc[current.id] = true;
@@ -116,6 +120,16 @@ export default class AssignDatapoints extends React.Component {
               <AllDatapoints deviceId={deviceData.id} />
             ) : (
               <DatapointList datapointsData={datapointsData} />
+            )}
+
+            {!allDPAssigned && hasMore && (
+              <button
+                onClick={() => loadMoreDatapoints(deviceData.id)}
+                className="btnOutline"
+                type="button"
+              >
+                Load more
+              </button>
             )}
           </div>
         </div>
