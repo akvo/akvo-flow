@@ -35,7 +35,7 @@ export default class AssignDatapoints extends React.Component {
     if (datapointAssignment) {
       datapointsData = datapointAssignment.datapoints;
       allDPAssigned = datapointAssignment.allDataPointsAssigned;
-      hasMore = datapointAssignment.hasMoreRawIds;
+      hasMore = datapointAssignment.datapoints.length < datapointAssignment.datapointIds.length;
     }
 
     return {

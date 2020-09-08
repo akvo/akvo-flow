@@ -596,10 +596,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           deviceId: item.get('deviceId'),
           datapointIds: item.get('dataPointIds'),
           datapoints: [],
-
-          // pagination details
-          hasMoreRawIds: false,
-          currentDatapointsIdsChunk: 0,
         }))[0];
 
         if (!datapointAssignment) {
@@ -622,12 +618,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         }
 
         // get first chunk of datapoints details for this assignment
-        that.getDatapointsDetails(datapointAssignment, (datapoints, hasMoreRawIds) => {
+        that.getDatapointsDetails(datapointAssignment, datapoints => {
           // combine data and add to datapoint assignments
           const completeDatapointAssignment = {
             ...datapointAssignment,
-            hasMoreRawIds,
-            currentDatapointsIdsChunk: datapointAssignment.currentDatapointsIdsChunk + 1,
             datapoints,
           };
 
@@ -638,50 +632,48 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
     },
 
-    getDatapointsDetails(datapointAssignment, cb) {
+    getDatapointsDetails(datapointAssignment, callback) {
       const steps = 30;
-      const currentDatapointAssignmentsIds = datapointAssignment.datapointIds.slice(
-        datapointAssignment.currentDatapointsIdsChunk,
-        (datapointAssignment.currentDatapointsIdsChunk + 1) * steps
-      );
 
-      const hasMore =
-        (datapointAssignment.currentDatapointsIdsChunk + 1) * steps <
-        datapointAssignment.datapointIds.length;
+      const currentDatapointAssignmentsIds = datapointAssignment.datapointIds.slice(
+        datapointAssignment.datapoints.length,
+        datapointAssignment.datapoints.length + steps
+      );
 
       // get this chunk datapoints
       FLOW.SurveyedLocale.find({ ids: currentDatapointAssignmentsIds }).on('didLoad', function() {
-        cb(
+        callback(
           this.map(dp => ({
             name: dp.get('displayName'),
             identifier: dp.get('identifier'),
             id: dp.get('keyId'),
-          })),
-          hasMore
+          }))
         );
       });
     },
 
     loadMoreDatapoints(deviceId) {
-      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
       const datapointAssignmentIdx = this.datapointAssignments.findIndex(
         sDp => sDp.deviceId === deviceId
       );
-      if (!datapointAssignment) return null;
+      if (datapointAssignmentIdx < 0) return null;
 
-      return this.getDatapointsDetails(datapointAssignment, (datapoints, hasMoreRawIds) => {
-        // combine data and add to datapoint assignments
-        const completeDatapointAssignment = {
-          ...datapointAssignment,
-          hasMoreRawIds,
-          currentDatapointsIdsChunk: datapointAssignment.currentDatapointsIdsChunk + 1,
-          datapoints: datapointAssignment.datapoints.concat(datapoints),
-        };
+      return this.getDatapointsDetails(
+        this.datapointAssignments[datapointAssignmentIdx],
+        datapoints => {
+          // combine data and add to datapoint assignments
+          const completeDatapointAssignment = {
+            ...this.datapointAssignments[datapointAssignmentIdx],
+            datapoints: this.datapointAssignments[datapointAssignmentIdx].datapoints.concat(
+              datapoints
+            ),
+          };
 
-        // update assignment
-        this.datapointAssignments[datapointAssignmentIdx] = completeDatapointAssignment;
-        this.renderReactSide();
-      });
+          // update assignment
+          this.datapointAssignments[datapointAssignmentIdx] = completeDatapointAssignment;
+          this.renderReactSide();
+        }
+      );
     },
 
     detectDatapointsLoaded() {
