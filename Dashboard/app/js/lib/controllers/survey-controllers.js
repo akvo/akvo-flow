@@ -94,33 +94,6 @@ FLOW.languageControl = Ember.Object.create({
   ],
 });
 
-FLOW.surveySectorTypeControl = Ember.Object.create({
-  content: [
-    Ember.Object.create({
-      label: 'Water and Sanitation',
-      value: 'WASH',
-    }), Ember.Object.create({
-      label: 'Education',
-      value: 'EDUC',
-    }), Ember.Object.create({
-      label: 'Economic development',
-      value: 'ECONDEV',
-    }), Ember.Object.create({
-      label: 'Health care',
-      value: 'HEALTH',
-    }), Ember.Object.create({
-      label: 'IT and Communication',
-      value: 'ICT',
-    }), Ember.Object.create({
-      label: 'Food security',
-      value: 'FOODSEC',
-    }), Ember.Object.create({
-      label: 'Other',
-      value: 'OTHER',
-    }),
-  ],
-});
-
 FLOW.alwaysTrue = function () {
   return true;
 };
