@@ -29,7 +29,6 @@ public class SurveyDto extends BaseDto {
     private String version;
     private String description;
     private String status;
-    private String sector;
     private List<QuestionGroupDto> questionGroupList;
     private String path;
     private Long surveyGroupId = null;
@@ -109,14 +108,6 @@ public class SurveyDto extends BaseDto {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getSector() {
-        return sector;
-    }
-
-    public void setSector(String sector) {
-        this.sector = sector;
     }
 
     public void setSurveyGroupId(Long surveyGroupId) {
