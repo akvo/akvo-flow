@@ -273,9 +273,6 @@ public class SurveyRestService {
                     }
                 }
                 s.setStatus(Survey.Status.NOT_PUBLISHED);
-                if (requestDto.getSector() != null) {
-                    s.setSector(Survey.Sector.valueOf(requestDto.getSector()));
-                }
                 if (!requestDto.getVersion().equals(s.getVersion().toString())) {
                     log.log(Level.WARNING, "Survey version does not match (dashboard="
                             + requestDto.getVersion() + " datastore=" + s.getVersion() + ")");
@@ -357,9 +354,6 @@ public class SurveyRestService {
         if (dto.getStatus() != null) {
             s.setStatus(Survey.Status
                     .valueOf(dto.getStatus().toString()));
-        }
-        if (dto.getSector() != null) {
-            s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
 
         s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
