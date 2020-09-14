@@ -132,7 +132,6 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.Survey = FLOW.BaseModel.extend({
   defaultLanguageCode: DS.attr('string'),
   status: DS.attr('string'),
-  sector: DS.attr('string'),
   code: DS.attr('string'),
   requireApproval: DS.attr('string'),
   version: DS.attr('string'),
