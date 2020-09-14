@@ -732,9 +732,6 @@ public class BulkDataServiceClient {
                         if (!json.isNull("requireApproval")) {
                             dto.setRequireApproval(json.getBoolean("requireApproval"));
                         }
-                        if (!json.isNull("sector")) {
-                            dto.setSector(json.getString("sector"));
-                        }
                         if (!json.isNull("status")) {
                             dto.setStatus(json.getString("status"));
                         }

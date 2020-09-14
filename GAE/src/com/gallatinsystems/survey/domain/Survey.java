@@ -45,7 +45,6 @@ public class Survey extends BaseDomain implements SecuredObject {
     private String name = null;
     private String desc = null;
     private Status status = null;
-    private Sector sector = null;
     @NotPersistent
     private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
     private Double version = null;
@@ -57,10 +56,6 @@ public class Survey extends BaseDomain implements SecuredObject {
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
-    };
-
-    public enum Sector {
-        WASH, EDUC, ECONDEV, HEALTH, ICT, FOODSEC, OTHER
     };
 
     public Survey() {
@@ -123,14 +118,6 @@ public class Survey extends BaseDomain implements SecuredObject {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public Sector getSector() {
-        return sector;
-    }
-
-    public void setSector(Sector sector) {
-        this.sector = sector;
     }
 
     public Double getVersion() {
