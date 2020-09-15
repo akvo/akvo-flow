@@ -33,7 +33,7 @@ export default class EditDatapoints extends React.Component {
     let datapointsData = [];
 
     if (selectedDatapointAssignment) {
-      datapointsData = selectedDatapointAssignment.datapoints;
+      datapointsData = selectedDatapointAssignment.datapoints.filter(dp => !!dp.id);
     }
 
     return {
