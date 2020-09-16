@@ -594,8 +594,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const datapointAssignment = this.map(item => ({
           id: item.get('keyId'),
           deviceId: item.get('deviceId'),
-          datapointIds: item.get('dataPointIds'),
-          datapoints: [],
+          datapoints: item.get('dataPointIds'),
         }))[0];
 
         if (!datapointAssignment) {
@@ -603,7 +602,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         }
 
         // check if all datapoints has been assigned
-        if (datapointAssignment.datapointIds[0] === 0) {
+        if (datapointAssignment.datapoints[0] === 0) {
           // return early and check that all datapoints is set
           const completeDatapointAssignment = {
             ...datapointAssignment,
@@ -635,20 +634,28 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     getDatapointsDetails(datapointAssignment, callback) {
       const steps = 30;
 
-      const currentDatapointAssignmentsIds = datapointAssignment.datapointIds.slice(
-        datapointAssignment.datapoints.length,
-        datapointAssignment.datapoints.length + steps
+      const currentLoadedDatapoints = datapointAssignment.datapoints.filter(dp => !!dp.id);
+
+      const currentDatapointAssignmentsIds = datapointAssignment.datapoints.slice(
+        currentLoadedDatapoints.length,
+        currentLoadedDatapoints.length + steps
       );
 
       // get this chunk datapoints
       FLOW.SurveyedLocale.find({ ids: currentDatapointAssignmentsIds }).on('didLoad', function() {
-        callback(
-          this.map(dp => ({
-            name: dp.get('displayName'),
-            identifier: dp.get('identifier'),
-            id: dp.get('keyId'),
-          }))
-        );
+        // reassign datapoints array to be mutated
+        const datapoints = [...datapointAssignment.datapoints];
+
+        const newDatapoints = this.map(dp => ({
+          name: dp.get('displayName'),
+          identifier: dp.get('identifier'),
+          id: dp.get('keyId'),
+        }));
+
+        // replace loaded datapoints with new details
+        datapoints.splice(currentLoadedDatapoints.length, newDatapoints.length, ...newDatapoints);
+
+        callback(datapoints);
       });
     },
 
@@ -664,9 +671,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           // combine data and add to datapoint assignments
           const completeDatapointAssignment = {
             ...this.datapointAssignments[datapointAssignmentIdx],
-            datapoints: this.datapointAssignments[datapointAssignmentIdx].datapoints.concat(
-              datapoints
-            ),
+            datapoints,
           };
 
           // update assignment
