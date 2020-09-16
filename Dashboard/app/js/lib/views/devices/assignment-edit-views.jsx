@@ -594,7 +594,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const datapointAssignment = this.map(item => ({
           id: item.get('keyId'),
           deviceId: item.get('deviceId'),
-          // datapointIds: item.get('dataPointIds'),
           datapoints: item.get('dataPointIds'),
         }))[0];
 
