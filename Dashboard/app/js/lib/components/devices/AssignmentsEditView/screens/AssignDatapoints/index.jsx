@@ -35,7 +35,7 @@ export default class AssignDatapoints extends React.Component {
     if (datapointAssignment) {
       datapointsData = datapointAssignment.datapoints;
       allDPAssigned = datapointAssignment.allDataPointsAssigned;
-      hasMore = datapointAssignment.datapoints.length < datapointAssignment.datapointIds.length;
+      hasMore = datapointsData.filter(dp => !!dp.id).length < datapointAssignment.datapoints.length;
     }
 
     return {
@@ -103,7 +103,12 @@ export default class AssignDatapoints extends React.Component {
 
   render() {
     const { loadMoreDatapoints } = this.context.actions;
-    const { deviceData, datapointsData, allDPAssigned, hasMore } = this.getAssignmentData();
+    const { deviceData, datapointsData, allDPAssigned } = this.getAssignmentData();
+    const dataPointsWithDetails = datapointsData.filter(dp => !!dp.id);
+    const showLoadMore =
+      !allDPAssigned &&
+      dataPointsWithDetails.length &&
+      dataPointsWithDetails.length < datapointsData.length;
 
     const assignedDataPointIds = datapointsData.reduce((acc, current) => {
       acc[current.id] = true;
@@ -119,10 +124,10 @@ export default class AssignDatapoints extends React.Component {
             {allDPAssigned ? (
               <AllDatapoints deviceId={deviceData.id} />
             ) : (
-              <DatapointList datapointsData={datapointsData} />
+              <DatapointList datapointsData={dataPointsWithDetails} />
             )}
 
-            {!allDPAssigned && hasMore && (
+            {!!showLoadMore && (
               <button
                 onClick={() => loadMoreDatapoints(deviceData.id)}
                 className="btnOutline"
