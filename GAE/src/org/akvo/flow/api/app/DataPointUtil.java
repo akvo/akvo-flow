@@ -39,6 +39,16 @@ import com.google.api.server.spi.config.Nullable;
 
 public class DataPointUtil {
 
+    public List<SurveyedLocaleDto> getSimpleSurveyedLocaleDtosList(List<SurveyedLocale> slList) {
+        List<SurveyedLocaleDto> dtoList = new ArrayList<>();
+
+        for (SurveyedLocale surveyedLocale : slList) {
+            SurveyedLocaleDto dto = createSimpleSurveyedLocaleDto(surveyedLocale);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
     public List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
@@ -57,6 +67,18 @@ public class DataPointUtil {
             dtoList.add(dto);
         }
         return dtoList;
+    }
+
+    private SurveyedLocaleDto createSimpleSurveyedLocaleDto(SurveyedLocale surveyedLocale) {
+        SurveyedLocaleDto dto = new SurveyedLocaleDto();
+        dto.setId(surveyedLocale.getIdentifier());
+        dto.setSurveyGroupId(surveyedLocale.getSurveyGroupId());
+        dto.setDisplayName(surveyedLocale.getDisplayName());
+        dto.setLat(surveyedLocale.getLatitude());
+        dto.setLon(surveyedLocale.getLongitude());
+        dto.setLastUpdateDateTime(surveyedLocale.getLastUpdateDateTime());
+
+        return dto;
     }
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
