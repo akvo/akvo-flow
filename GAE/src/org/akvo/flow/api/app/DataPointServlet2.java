@@ -53,7 +53,7 @@ public class DataPointServlet2 extends AbstractRestApiServlet {
     private static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
-    private static final int LIMIT_DATAPOINTS = 30;
+    private static final int LIMIT_DATAPOINTS_1000 = 1000;
 
     public DataPointServlet2() {
         setMode(JSON_MODE);
@@ -141,7 +141,7 @@ public class DataPointServlet2 extends AbstractRestApiServlet {
     }
 
     private List<SurveyedLocale> getAllDataPoints(Long deviceId, Long surveyId, String cursor) {
-        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS);
+        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS_1000);
     }
 
     /*
