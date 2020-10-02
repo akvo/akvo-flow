@@ -26,9 +26,13 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FormInstanceUtilTest {
 
@@ -51,51 +55,47 @@ public class FormInstanceUtilTest {
 
 
     @Test
-    public void getFormInstancesByDeviceAndDataPoint() throws Exception {
+    public void anAssigmentWithAllDataPointsReturnsAllFormInstances() throws Exception {
         final Long assignmentId = dataUtil.randomId();
         final Long deviceId = dataUtil.randomId();
         final String androidId = "12345";
         final Long surveyId = dataUtil.randomId();
+
         dataUtil.createDevice(deviceId, androidId);
-
-
         dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
-        dataUtil.createAssignment(surveyId, Arrays.asList(deviceId), Arrays.asList(dataUtil.randomId()));
         List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 1);
         List<SurveyInstance> formInstances = dataUtil.createFormInstances(dataPoints, 5);
         dataUtil.createAnswers(formInstances);
+
         List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), null);
 
         assertEquals(dataUtil.getEntityIds(formInstances), dataUtil.getEntityIds(formInstances1));
-/*
-
-
-        List<SurveyInstance> result = formInstanceUtil.getFormInstances(androidId, dataPointId);
-
-
-        final DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
-        final List<DataPointAssignment> dataPointAssignments = dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
-        assertFalse(dataPointAssignments.isEmpty());
-
-        final DataPointAssignment assignment = dataPointAssignments.get(0);
-        assertEquals(ALL_DATA_POINTS, assignment.getDataPointIds());
-        assertEquals(deviceId, assignment.getDeviceId());
-        assertEquals(surveyId, assignment.getSurveyId());
-
-
-        final List<Long> deviceIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
-        final List<Long> formIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
-
-        dataUtil.createAssignment(surveyId, deviceIds, formIds);
-
-        final SurveyAssignmentDao saDao = new SurveyAssignmentDao();
-        final List<SurveyAssignment> surveyAssignments = saDao.listAllContainingDevice(deviceIds.get(1));
-        assertFalse(surveyAssignments.isEmpty());
-
-        final SurveyAssignment sa = surveyAssignments.get(0);
-        assertEquals(surveyId, sa.getSurveyId());
-        assertTrue(sa.getDeviceIds().contains(deviceIds.get(1)));
-        assertEquals(formIds, sa.getFormIds());*/
     }
 
+    @Test
+    public void anAssignmentWithSomeDataPointsReturnOnlySelectedFormInstances() throws Exception {
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
+        final String androidId = "12345";
+        final Long surveyId = dataUtil.randomId();
+
+        dataUtil.createDevice(deviceId, androidId);
+        List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 3);
+        List<SurveyInstance> formInstances = dataUtil.createFormInstances(dataPoints, 5);
+        dataUtil.createAnswers(formInstances);
+
+        long selectedDataPointId = dataPoints.get(0).getKey().getId();
+        dataUtil.createDataPointAssignment(assignmentId, deviceId, Arrays.asList(selectedDataPointId), surveyId);
+
+        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, null);
+
+        assertTrue(formInstances1.size() == 5); // 1 Datapoint assigned = 5 Form instances generated
+
+        Set<Long> expected = new HashSet<>();
+        expected.add(selectedDataPointId);
+        Set<Long> actual = formInstances1.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
+
+        assertEquals(expected, actual);
+
+    }
 }
