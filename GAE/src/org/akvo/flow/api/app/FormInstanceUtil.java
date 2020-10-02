@@ -18,29 +18,15 @@ package org.akvo.flow.api.app;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.api.server.spi.config.Nullable;
 import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.dao.SurveyAssignmentDao;
-import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
-import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import java.util.*;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.logging.Logger;
-
-import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
 
 public class FormInstanceUtil {
@@ -71,6 +57,6 @@ public class FormInstanceUtil {
 
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 
-        return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, 30,cursor);
+        return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, 30, cursor);
     }
 }
