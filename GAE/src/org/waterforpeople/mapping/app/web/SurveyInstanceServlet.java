@@ -54,7 +54,9 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     private SurveyInstanceDAO surveyInstanceDao;
     private DataPointApprovalDAO approvalDao;
     private ApprovalStepDAO approvalStepDao;
-
+    // ONE form instance (instance of form ) belongs to data-point (instace of Survey)
+    // survey group of forms
+    //
     public SurveyInstanceServlet() {
         setMode(JSON_MODE);
         surveyInstanceDao = new SurveyInstanceDAO();

@@ -43,16 +43,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.akvo.flow.api.app.DataUtil;
 
 public class DataPointServletTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
     private final List<Long> ALL_DATA_POINTS = Collections.singletonList(0L);
-
+    private DataUtil dataUtil;
 
     @BeforeEach
     public void setUp() {
         helper.setUp();
+        dataUtil = new DataUtil();
     }
 
     @AfterEach
@@ -60,64 +62,14 @@ public class DataPointServletTest {
         helper.tearDown();
     }
 
-
-    private DataPointAssignment createDataPointAssignment(Long assignmentId, Long deviceId, List<Long> dataPointIds, Long surveyId) {
-        final DataPointAssignment dpa = new DataPointAssignment();
-        final DataPointAssignmentDao dao = new DataPointAssignmentDao();
-
-        dpa.setDeviceId(deviceId);
-        dpa.setDataPointIds(dataPointIds);
-        dpa.setSurveyAssignmentId(assignmentId);
-        dpa.setSurveyId(surveyId);
-
-        return dao.save(dpa);
-    }
-
-    private SurveyAssignment createAssignment(Long surveyId, List<Long> deviceIds, List<Long> formIds) {
-        final SurveyAssignment sa = new SurveyAssignment();
-        final SurveyAssignmentDao dao = new SurveyAssignmentDao();
-
-        sa.setSurveyId(surveyId);
-        sa.setDeviceIds(deviceIds);
-        sa.setFormIds(formIds);
-
-        return dao.save(sa);
-    }
-
-    private List<SurveyedLocale> createDataPoints(Long surveyId, int howMany) {
-        final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
-        final List<SurveyedLocale> datapoints = new ArrayList<>();
-        for (int i = 0; i < howMany; i++) {
-            SurveyedLocale dataPoint = new SurveyedLocale();
-            dataPoint.setIdentifier(String.valueOf(i));
-            dataPoint.setSurveyGroupId(surveyId);
-            dataPoint.setDisplayName("dataPoint: " + i);
-            datapoints.add(dataPoint);
-        }
-        return new ArrayList<>(dpDao.save(datapoints));
-    }
-
-    private Set<Long> getEntityIds(List<? extends BaseDomain> entities) {
-        Set<Long> entityIds = new HashSet<>();
-        for (BaseDomain o : entities) {
-            entityIds.add(o.getKey().getId());
-        }
-        return entityIds;
-    }
-
-    private Long randomId() {
-        Random rnd = new Random();
-        return rnd.nextLong();
-    }
-
     @Test
     public void datastoreReadWriteTest() {
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
 
-        final Long surveyId = randomId();
+        final Long surveyId = dataUtil.randomId();
 
-        createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
         final List<DataPointAssignment> dataPointAssignments = dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
@@ -129,10 +81,10 @@ public class DataPointServletTest {
         assertEquals(surveyId, assignment.getSurveyId());
 
 
-        final List<Long> deviceIds = Arrays.asList(randomId(), randomId());
-        final List<Long> formIds = Arrays.asList(randomId(), randomId());
+        final List<Long> deviceIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
+        final List<Long> formIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
 
-        createAssignment(surveyId, deviceIds, formIds);
+        dataUtil.createAssignment(surveyId, deviceIds, formIds);
 
         final SurveyAssignmentDao saDao = new SurveyAssignmentDao();
         final List<SurveyAssignment> surveyAssignments = saDao.listAllContainingDevice(deviceIds.get(1));
@@ -147,25 +99,25 @@ public class DataPointServletTest {
     @Test
     public void someDataPointsTest() {
 
-        final Long surveyId = randomId();
-        final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 10);
+        final Long surveyId = dataUtil.randomId();
+        final List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 10);
 
         final List<Long> selectedDataPointIds = dataPoints.stream()
                 .filter(surveyedLocale -> surveyedLocale.getKey().getId() % 2 == 0)
                 .map(surveyedLocale -> surveyedLocale.getKey().getId())
                 .collect(Collectors.toList());
 
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
 
-        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, selectedDataPointIds, surveyId);
+        DataPointAssignment assignment = dataUtil.createDataPointAssignment(assignmentId, deviceId, selectedDataPointIds, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
 
         final List<SurveyedLocale> someDataPoints = servlet.getDataPointList(assignment, surveyId, null);
 
         final Set<Long> selectedIds = new HashSet<>(selectedDataPointIds);
-        final Set<Long> foundIds = getEntityIds(someDataPoints);
+        final Set<Long> foundIds = dataUtil.getEntityIds(someDataPoints);
 
         assertEquals(selectedIds, foundIds);
     }
@@ -177,21 +129,21 @@ public class DataPointServletTest {
     @Test
     public void allDataPointsNewSchemaTest() {
 
-        final Long surveyId = randomId();
-        final List<SurveyedLocale> allDataPoints = createDataPoints(surveyId, 15);
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
+        final Long surveyId = dataUtil.randomId();
+        final List<SurveyedLocale> allDataPoints = dataUtil.createDataPoints(surveyId, 15);
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
         final List<Long> deviceIds = Arrays.asList(deviceId);
-        final List<Long> formIds = Arrays.asList(randomId());
+        final List<Long> formIds = Arrays.asList(dataUtil.randomId());
 
-        createAssignment(surveyId, deviceIds, formIds);
-        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        dataUtil.createAssignment(surveyId, deviceIds, formIds);
+        DataPointAssignment assignment = dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(assignment, surveyId, null);
 
-        final Set<Long> allDataPointIds = getEntityIds(allDataPoints);
-        final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
+        final Set<Long> allDataPointIds = dataUtil.getEntityIds(allDataPoints);
+        final Set<Long> foundDataPointIds = dataUtil.getEntityIds(foundDataPoints);
 
         assertEquals(allDataPointIds, foundDataPointIds);
     }
@@ -202,25 +154,25 @@ public class DataPointServletTest {
      */
     @Test
     public void allDataPointsOldSchemaTest() {
-        final Long surveyId = randomId();
-        final List<SurveyedLocale> allDataPoints = createDataPoints(surveyId, 20);
-        final List<Long> deviceIds = Arrays.asList(randomId(), randomId());
-        final List<Long> formIds = Arrays.asList(randomId(), randomId());
+        final Long surveyId = dataUtil.randomId();
+        final List<SurveyedLocale> allDataPoints = dataUtil.createDataPoints(surveyId, 20);
+        final List<Long> deviceIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
+        final List<Long> formIds = Arrays.asList(dataUtil.randomId(), dataUtil.randomId());
 
-        final SurveyAssignment sa = createAssignment(surveyId, deviceIds, formIds);
+        final SurveyAssignment sa = dataUtil.createAssignment(surveyId, deviceIds, formIds);
 
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(null, surveyId, null);
 
-        final Set<Long> allDataPointIds = getEntityIds(allDataPoints);
-        final Set<Long> foundDataPointIds = getEntityIds(foundDataPoints);
+        final Set<Long> allDataPointIds = dataUtil.getEntityIds(allDataPoints);
+        final Set<Long> foundDataPointIds = dataUtil.getEntityIds(foundDataPoints);
 
         assertEquals(allDataPointIds, foundDataPointIds);
     }
 
     @Test
     public void noAssignmentTest() {
-        final Long surveyId = randomId();
+        final Long surveyId = dataUtil.randomId();
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> foundDataPoints = servlet.getDataPointList(null, surveyId, null);
         assertTrue(foundDataPoints.isEmpty());
@@ -228,15 +180,15 @@ public class DataPointServletTest {
 
     @Test
     public void testRetrieveDataPointsWithCursor() {
-        final Long surveyId = randomId();
-        final List<SurveyedLocale> dataPoints = createDataPoints(surveyId, 35);
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
+        final Long surveyId = dataUtil.randomId();
+        final List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 35);
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
         final List<Long> deviceIds = Arrays.asList(deviceId);
-        final List<Long> formIds = Arrays.asList(randomId());
+        final List<Long> formIds = Arrays.asList(dataUtil.randomId());
 
-        createAssignment(surveyId, deviceIds, formIds);
-        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        dataUtil.createAssignment(surveyId, deviceIds, formIds);
+        DataPointAssignment assignment = dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
 
@@ -265,14 +217,14 @@ public class DataPointServletTest {
 
     @Test
     void testDataPointsRetrievalWithNoDatapointsPresent() {
-        final Long surveyId = randomId();
-        final Long assignmentId = randomId();
-        final Long deviceId = randomId();
+        final Long surveyId = dataUtil.randomId();
+        final Long assignmentId = dataUtil.randomId();
+        final Long deviceId = dataUtil.randomId();
         final List<Long> deviceIds = Arrays.asList(deviceId);
-        final List<Long> formIds = Arrays.asList(randomId());
+        final List<Long> formIds = Arrays.asList(dataUtil.randomId());
 
-        createAssignment(surveyId, deviceIds, formIds);
-        DataPointAssignment assignment = createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        dataUtil.createAssignment(surveyId, deviceIds, formIds);
+        DataPointAssignment assignment = dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointServlet servlet = new DataPointServlet();
         final List<SurveyedLocale> noDataPointsRetrieved = servlet.getDataPointList(assignment, surveyId, null);
