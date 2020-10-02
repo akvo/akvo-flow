@@ -16,14 +16,18 @@
 
 package org.akvo.flow.api.app;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import org.akvo.flow.dao.DataPointAssignmentDao;
+import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -37,7 +41,14 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.api.server.spi.config.Nullable;
 
+import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
+
+
 public class DataPointUtil {
+    private static final Logger log = Logger.getLogger(DataPointUtil.class.getName());
+    SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
+    DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
+    private static final int LIMIT_DATAPOINTS_1000 = 1000;
 
     public List<SurveyedLocaleDto> getSimpleSurveyedLocaleDtosList(List<SurveyedLocale> slList) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
@@ -67,6 +78,66 @@ public class DataPointUtil {
             dtoList.add(dto);
         }
         return dtoList;
+    }
+
+    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor) throws Exception {
+
+        //Find the device (if any)
+        DeviceDAO deviceDao = new DeviceDAO();
+        Device device = deviceDao.getDevice(androidId, null, null);
+        if (device == null) {
+            throw new Exception("Device not found");
+        }
+        log.fine("Found device: " + device);
+
+        // verify assignments exist
+        long deviceId = device.getKey().getId();
+
+        List<DataPointAssignment> dataPointAssignments =
+                dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
+        List<SurveyAssignment> deviceSurveyAssignments = new ArrayList<>();
+
+        if (dataPointAssignments.isEmpty()) {
+            SurveyAssignmentDao saDao = new SurveyAssignmentDao();
+            deviceSurveyAssignments.addAll(saDao.listByDeviceAndSurvey(deviceId, surveyId));
+        }
+
+        if (dataPointAssignments.isEmpty() && deviceSurveyAssignments.isEmpty()) {
+            log.log(Level.WARNING, "No assignments found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+            throw new Exception("No datapoints assigned found");
+        }
+
+        return getDataPointList(dataPointAssignments.get(0), surveyId, device.getKey().getId(), cursor);
+    }
+
+    public List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, Long deviceId, String cursor) {
+        if (assignment == null || allDataPointsAreAssigned(assignment)) {
+            return getAllDataPoints(deviceId, surveyId, cursor);
+        } else {
+            return getAssignedDataPoints(assignment);
+        }
+    }
+
+    private boolean allDataPointsAreAssigned(DataPointAssignment assignment) {
+        if (assignment == null) {
+            return false;
+        }
+
+        Set<Long> assignedDataPoints = new HashSet<>(assignment.getDataPointIds());
+        return ALL_DATAPOINTS.equals(assignedDataPoints);
+    }
+
+    private List<SurveyedLocale> getAllDataPoints(Long deviceId, Long surveyId, String cursor) {
+        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS_1000);
+    }
+
+    /*
+     * Return only datapoints that have been explicitly assigned to a device
+     */
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
+        Set<Long> assignedDataPointIds = new HashSet<>();
+        assignedDataPointIds.addAll(assignment.getDataPointIds());
+        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
     }
 
     private SurveyedLocaleDto createSimpleSurveyedLocaleDto(SurveyedLocale surveyedLocale) {
