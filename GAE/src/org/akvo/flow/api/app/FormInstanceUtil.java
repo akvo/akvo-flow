@@ -47,12 +47,8 @@ public class FormInstanceUtil {
     private static final Logger log = Logger.getLogger(FormInstanceUtil.class.getName());
     SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
-    private static final int LIMIT_DATAPOINTS_1000 = 1000;
-
 
     public List<SurveyInstance> getFormInstances(String androidId, long dataPointId, String cursor) throws Exception {
-        List<SurveyInstance> data = new ArrayList<SurveyInstance>();
-        //Find the device (if any)
         DeviceDAO deviceDao = new DeviceDAO();
         Device device = deviceDao.getDevice(androidId, null, null);
         if (device == null) {
@@ -74,9 +70,7 @@ public class FormInstanceUtil {
         }
 
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-        siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, 30,cursor);
 
-
-        return data;
+        return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, 30,cursor);
     }
 }

@@ -17,7 +17,6 @@
 package org.akvo.flow.api.app;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -30,12 +29,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.akvo.flow.api.app.DataUtil;
+
 
 public class DataPointServletTest {
 
@@ -204,7 +201,7 @@ public class DataPointServletTest {
         // record cursor and update datapoints lastUpdateDateTime for 10 datapoints.
         String cursorMarkEndOfSecondBatch = BaseDAO.getCursor(secondBatchDataPoints);
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
-        dpDao.save(dataPoints.subList(0,10));
+        dpDao.save(dataPoints.subList(0, 10));
         final List<SurveyedLocale> thirdBatchDataPoints = servlet.getDataPointList(assignment, surveyId, cursorMarkEndOfSecondBatch);
         assertEquals(10, thirdBatchDataPoints.size(), "The cursor should retrieve updated datapoints");
 

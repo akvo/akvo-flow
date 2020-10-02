@@ -16,27 +16,20 @@
 
 package org.akvo.flow.api.app;
 
-import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.dao.SurveyAssignmentDao;
-import org.akvo.flow.domain.persistent.DataPointAssignment;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FormInstanceUtilTest {
 
@@ -59,7 +52,7 @@ public class FormInstanceUtilTest {
 
 
     @Test
-    public void getFormInstancesByDeviceAndDataPoint() {
+    public void getFormInstancesByDeviceAndDataPoint() throws Exception {
         final Long assignmentId = dataUtil.randomId();
         final Long deviceId = dataUtil.randomId();
         final String androidId = "12345";
@@ -68,14 +61,13 @@ public class FormInstanceUtilTest {
 
 
         dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
-        List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 10);
+        dataUtil.createAssignment(surveyId, Arrays.asList(deviceId), Arrays.asList(dataUtil.randomId()));
+        List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 1);
         List<SurveyInstance> formInstances = dataUtil.createFormInstances(dataPoints, 5);
-        List<QuestionAnswerStore> answers = dataUtil.createAnswers(formInstances);
-        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId());
-        assertEquals(dataUtil.getEntityIds(formInstances1), dataUtil.getEntityIds(formInstances));
+        dataUtil.createAnswers(formInstances);
+        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), null);
 
-
-
+        assertEquals(dataUtil.getEntityIds(formInstances), dataUtil.getEntityIds(formInstances1));
 /*
 
 
