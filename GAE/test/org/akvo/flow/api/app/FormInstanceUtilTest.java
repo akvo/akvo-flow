@@ -89,13 +89,13 @@ public class FormInstanceUtilTest {
 
         List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, null);
 
-        assertTrue(formInstances1.size() == 5); // 1 Datapoint assigned = 5 Form instances generated
+        assertEquals(5, formInstances1.size()); // 1 Datapoint assigned = 5 Form instances generated
 
-        Set<Long> expected = new HashSet<>();
-        expected.add(selectedDataPointId);
-        Set<Long> actual = formInstances1.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
+        Set<Long> expectedDataPointId = new HashSet<>();
+        expectedDataPointId.add(selectedDataPointId);
+        Set<Long> formInstancesDataPointId = formInstances1.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
 
-        assertEquals(expected, actual);
+        assertEquals(expectedDataPointId, formInstancesDataPointId);
 
     }
 }
