@@ -38,13 +38,13 @@ public class FormInstanceUtilTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
     private final List<Long> ALL_DATA_POINTS = Collections.singletonList(0L);
-    private DataUtil dataUtil;
+    private DataStoreTestUtil dataStoreTestUtil;
     private FormInstanceUtil formInstanceUtil;
 
     @BeforeEach
     public void setUp() {
         helper.setUp();
-        dataUtil = new DataUtil();
+        dataStoreTestUtil = new DataStoreTestUtil();
         formInstanceUtil = new FormInstanceUtil();
     }
 
@@ -56,36 +56,36 @@ public class FormInstanceUtilTest {
 
     @Test
     public void anAssigmentWithAllDataPointsReturnsAllFormInstances() throws Exception {
-        final Long assignmentId = dataUtil.randomId();
-        final Long deviceId = dataUtil.randomId();
+        final Long assignmentId = dataStoreTestUtil.randomId();
+        final Long deviceId = dataStoreTestUtil.randomId();
         final String androidId = "12345";
-        final Long surveyId = dataUtil.randomId();
+        final Long surveyId = dataStoreTestUtil.randomId();
 
-        dataUtil.createDevice(deviceId, androidId);
-        dataUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
-        List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 1);
-        List<SurveyInstance> formInstances = dataUtil.createFormInstances(dataPoints, 5);
-        dataUtil.createAnswers(formInstances);
+        dataStoreTestUtil.createDevice(deviceId, androidId);
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
+        List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 1);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 5);
+        dataStoreTestUtil.createAnswers(formInstances);
 
         List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), null);
 
-        assertEquals(dataUtil.getEntityIds(formInstances), dataUtil.getEntityIds(formInstances1));
+        assertEquals(dataStoreTestUtil.getEntityIds(formInstances), dataStoreTestUtil.getEntityIds(formInstances1));
     }
 
     @Test
     public void anAssignmentWithSomeDataPointsReturnOnlySelectedFormInstances() throws Exception {
-        final Long assignmentId = dataUtil.randomId();
-        final Long deviceId = dataUtil.randomId();
+        final Long assignmentId = dataStoreTestUtil.randomId();
+        final Long deviceId = dataStoreTestUtil.randomId();
         final String androidId = "12345";
-        final Long surveyId = dataUtil.randomId();
+        final Long surveyId = dataStoreTestUtil.randomId();
 
-        dataUtil.createDevice(deviceId, androidId);
-        List<SurveyedLocale> dataPoints = dataUtil.createDataPoints(surveyId, 3);
-        List<SurveyInstance> formInstances = dataUtil.createFormInstances(dataPoints, 5);
-        dataUtil.createAnswers(formInstances);
+        dataStoreTestUtil.createDevice(deviceId, androidId);
+        List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 3);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 5);
+        dataStoreTestUtil.createAnswers(formInstances);
 
         long selectedDataPointId = dataPoints.get(0).getKey().getId();
-        dataUtil.createDataPointAssignment(assignmentId, deviceId, Arrays.asList(selectedDataPointId), surveyId);
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId, Arrays.asList(selectedDataPointId), surveyId);
 
         List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, null);
 
