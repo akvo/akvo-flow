@@ -81,7 +81,7 @@ public class DataPointUtil {
         return dtoList;
     }
 
-    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor) throws Exception {
+    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit) throws Exception {
 
         //Find the device (if any)
         DeviceDAO deviceDao = new DeviceDAO();
@@ -102,11 +102,7 @@ public class DataPointUtil {
             throw new NoDataPointsAssignedException("No datapoints assigned found");
         }
 
-        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor);
-    }
-
-    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor) {
-        return getDataPointList(assignment, surveyId, cursor, LIMIT_DATAPOINTS);
+        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit);
     }
 
     private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit) {

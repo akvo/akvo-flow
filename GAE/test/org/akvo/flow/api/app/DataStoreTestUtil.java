@@ -45,7 +45,7 @@ public class DataStoreTestUtil {
         d.setAndroidId(androidId);
         return dao.save(d);
     }
-    
+
     public DataPointAssignment createDataPointAssignment(Long assignmentId, Long deviceId, List<Long> dataPointIds, Long surveyId) {
         final DataPointAssignment dpa = new DataPointAssignment();
         final DataPointAssignmentDao dao = new DataPointAssignmentDao();

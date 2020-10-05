@@ -48,7 +48,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
-    private static final int LIMIT_DATAPOINTS = 30;
+    public static final int LIMIT_DATAPOINTS_30 = 30;
 
     public DataPointServlet() {
         setMode(JSON_MODE);
@@ -82,7 +82,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocale> dpList;
         try {
-            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor());
+            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_30);
         } catch(Exception e) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             res.setMessage(e.getMessage());

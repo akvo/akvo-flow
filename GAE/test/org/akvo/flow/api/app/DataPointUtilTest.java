@@ -36,6 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static org.akvo.flow.api.app.DataPointServlet.LIMIT_DATAPOINTS_30;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -50,6 +52,7 @@ public class DataPointUtilTest {
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
     private final List<Long> ALL_DATA_POINTS = Collections.singletonList(0L);
     private DataStoreTestUtil dataStoreTestUtil;
+
 
     @BeforeEach
     public void setUp() {
@@ -116,7 +119,7 @@ public class DataPointUtilTest {
 
         final DataPointUtil dpu = new DataPointUtil();
 
-        final List<SurveyedLocale> someDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null);
+        final List<SurveyedLocale> someDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null,LIMIT_DATAPOINTS_30);
 
         final Set<Long> selectedIds = new HashSet<>(selectedDataPointIds);
         final Set<Long> foundIds = dataStoreTestUtil.getEntityIds(someDataPoints);
@@ -145,7 +148,7 @@ public class DataPointUtilTest {
 
         final DataPointUtil dpu = new DataPointUtil();
 
-        final List<SurveyedLocale> foundDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null);
+        final List<SurveyedLocale> foundDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null, LIMIT_DATAPOINTS_30);
 
         final Set<Long> allDataPointIds = dataStoreTestUtil.getEntityIds(allDataPoints);
         final Set<Long> foundDataPointIds = dataStoreTestUtil.getEntityIds(foundDataPoints);
@@ -159,7 +162,7 @@ public class DataPointUtilTest {
         final DataPointUtil dpu = new DataPointUtil();
         final String androidId = "ABCD";
         dataStoreTestUtil.createDevice(dataStoreTestUtil.randomId(), androidId);
-        assertThrows(NoDataPointsAssignedException.class, () -> dpu.getAssignedDataPoints(androidId, surveyId, null));
+        assertThrows(NoDataPointsAssignedException.class, () -> dpu.getAssignedDataPoints(androidId, surveyId, null, LIMIT_DATAPOINTS_30));
     }
 
     @Test
@@ -180,24 +183,24 @@ public class DataPointUtilTest {
         final DataPointUtil dpu = new DataPointUtil();
 
         // first batch
-        final List<SurveyedLocale> firstBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null);
+        final List<SurveyedLocale> firstBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null, LIMIT_DATAPOINTS_30);
         assertEquals(30, firstBatchDataPoints.size());
 
         // remaining points retrieved based on cursor
         String cursorMarkEndOfFirstBatch = BaseDAO.getCursor(firstBatchDataPoints);
-        final List<SurveyedLocale> secondBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, cursorMarkEndOfFirstBatch);
+        final List<SurveyedLocale> secondBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, cursorMarkEndOfFirstBatch, LIMIT_DATAPOINTS_30);
         assertEquals(5, secondBatchDataPoints.size());
 
         // record cursor and update datapoints lastUpdateDateTime for 10 datapoints.
         String cursorMarkEndOfSecondBatch = BaseDAO.getCursor(secondBatchDataPoints);
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
         dpDao.save(dataPoints.subList(0, 10));
-        final List<SurveyedLocale> thirdBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, cursorMarkEndOfSecondBatch);
+        final List<SurveyedLocale> thirdBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, cursorMarkEndOfSecondBatch, LIMIT_DATAPOINTS_30);
         assertEquals(10, thirdBatchDataPoints.size(), "The cursor should retrieve updated datapoints");
 
 
         String finalCursor = BaseDAO.getCursor(thirdBatchDataPoints);
-        final List<SurveyedLocale> finalBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, finalCursor);
+        final List<SurveyedLocale> finalBatchDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, finalCursor, LIMIT_DATAPOINTS_30);
 
         assertEquals(0, finalBatchDataPoints.size(), "There should not be any more datapoints to retrieve");
     }
@@ -217,7 +220,7 @@ public class DataPointUtilTest {
         DataPointAssignment assignment = dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId, ALL_DATA_POINTS, surveyId);
 
         final DataPointUtil dpu = new DataPointUtil();
-        final List<SurveyedLocale> noDataPointsRetrieved = dpu.getAssignedDataPoints(androidId, surveyId, null);
+        final List<SurveyedLocale> noDataPointsRetrieved = dpu.getAssignedDataPoints(androidId, surveyId, null, LIMIT_DATAPOINTS_30);
         assertEquals(0, noDataPointsRetrieved.size());
         assertNull(BaseDAO.getCursor(noDataPointsRetrieved), "There should not be any cursor");
     }
