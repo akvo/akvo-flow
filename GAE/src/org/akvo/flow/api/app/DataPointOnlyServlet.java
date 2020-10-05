@@ -36,10 +36,11 @@ import java.util.logging.Logger;
  * JSON service for returning the list of assigned data point records for a specific device and surveyId
  */
 @SuppressWarnings("serial")
-public class DataPointServlet2 extends AbstractRestApiServlet {
-    private static final Logger log = Logger.getLogger(DataPointServlet2.class.getName());
+public class DataPointOnlyServlet extends AbstractRestApiServlet {
+    private static final Logger log = Logger.getLogger(DataPointOnlyServlet.class.getName());
+    private static final int LIMIT_DATAPOINTS_1000 = 1000;
 
-    public DataPointServlet2() {
+    public DataPointOnlyServlet() {
         setMode(JSON_MODE);
     }
 

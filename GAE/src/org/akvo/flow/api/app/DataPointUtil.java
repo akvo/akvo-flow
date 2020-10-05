@@ -17,6 +17,7 @@
 package org.akvo.flow.api.app;
 
 import java.util.*;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,7 @@ public class DataPointUtil {
     private static final Logger log = Logger.getLogger(DataPointUtil.class.getName());
     SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
-    private static final int LIMIT_DATAPOINTS_1000 = 1000;
+    private static final int LIMIT_DATAPOINTS = 30;
 
     public List<SurveyedLocaleDto> getSimpleSurveyedLocaleDtosList(List<SurveyedLocale> slList) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
@@ -95,24 +96,22 @@ public class DataPointUtil {
 
         List<DataPointAssignment> dataPointAssignments =
                 dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
-        List<SurveyAssignment> deviceSurveyAssignments = new ArrayList<>();
 
         if (dataPointAssignments.isEmpty()) {
-            SurveyAssignmentDao saDao = new SurveyAssignmentDao();
-            deviceSurveyAssignments.addAll(saDao.listByDeviceAndSurvey(deviceId, surveyId));
-        }
-
-        if (dataPointAssignments.isEmpty() && deviceSurveyAssignments.isEmpty()) {
             log.log(Level.WARNING, "No assignments found for surveyId: " + surveyId + " - deviceId: " + deviceId);
-            throw new Exception("No datapoints assigned found");
+            throw new NoDataPointsAssignedException("No datapoints assigned found");
         }
 
-        return getDataPointList(dataPointAssignments.get(0), surveyId, device.getKey().getId(), cursor);
+        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor);
     }
 
-    public List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, Long deviceId, String cursor) {
+    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor) {
+        return getDataPointList(assignment, surveyId, cursor, LIMIT_DATAPOINTS);
+    }
+
+    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit) {
         if (assignment == null || allDataPointsAreAssigned(assignment)) {
-            return getAllDataPoints(deviceId, surveyId, cursor);
+            return getAllDataPoints(surveyId, cursor, limit);
         } else {
             return getAssignedDataPoints(assignment);
         }
@@ -127,8 +126,8 @@ public class DataPointUtil {
         return ALL_DATAPOINTS.equals(assignedDataPoints);
     }
 
-    private List<SurveyedLocale> getAllDataPoints(Long deviceId, Long surveyId, String cursor) {
-        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS_1000);
+    private List<SurveyedLocale> getAllDataPoints(Long surveyId, String cursor, int limit) {
+        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, limit);
     }
 
     /*

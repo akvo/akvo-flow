@@ -95,37 +95,8 @@ public class DataPointServlet extends AbstractRestApiServlet {
         return res;
     }
 
-    public List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor) {
-        if (assignment == null || allDataPointsAreAssigned(assignment)) {
-            return getAllDataPoints(surveyId, cursor);
-        } else {
-            return getAssignedDataPoints(assignment);
-        }
-    }
 
-    private boolean allDataPointsAreAssigned(DataPointAssignment assignment) {
-        if (assignment == null) {
-            return false;
-        }
 
-        Set<Long> assignedDataPoints = new HashSet<>();
-        assignedDataPoints.addAll(assignment.getDataPointIds());
-        return ALL_DATAPOINTS.equals(assignedDataPoints);
-    }
-
-    private List<SurveyedLocale> getAllDataPoints(Long surveyId, String cursor) {
-        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, LIMIT_DATAPOINTS);
-    }
-
-    /*
-     * Return only datapoints that have been explicitly assigned to a device
-     */
-    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
-        Set<Long> assignedDataPointIds = new HashSet<>();
-        assignedDataPointIds.addAll(assignment.getDataPointIds());
-
-        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
-    }
 
     /**
      * converts the domain objects to dtos and then installs them in a DataPointResponse object
