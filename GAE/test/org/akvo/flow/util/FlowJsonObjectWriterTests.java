@@ -18,6 +18,7 @@ package org.akvo.flow.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +34,13 @@ class FlowJsonObjectWriterTests {
     @Test
     void testComplexJsonObject() {
         Map<String, Object> complexJsonObject = new LinkedHashMap<>();
+
+        Date date = new Date();
+        date.setTime(1601983649l);
+        complexJsonObject.put("date", date);
+
         complexJsonObject.put("nullList", null);
         complexJsonObject.put("emptyList", new ArrayList<>());
-
         List<Integer> listOfNumbers = new ArrayList<>();
         listOfNumbers.add(1);
         listOfNumbers.add(2);
@@ -64,7 +69,7 @@ class FlowJsonObjectWriterTests {
         } catch (IOException e) {
             // ignoring exception
         }
-        String jsonStringExpected = "{\"nullList\":null,\"emptyList\":[],\"listOfNumbers\":[1,2,3],\"mapOfLists\":{\"firstList\":[5345,6587,9987],\"secondList\":[\"tea\",\"coffee\"]}}";
+        String jsonStringExpected = "{\"date\":1601983649,\"nullList\":null,\"emptyList\":[],\"listOfNumbers\":[1,2,3],\"mapOfLists\":{\"firstList\":[5345,6587,9987],\"secondList\":[\"tea\",\"coffee\"]}}";
         assertEquals(jsonStringExpected, jsonString);
     }
 
