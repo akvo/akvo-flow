@@ -114,16 +114,18 @@ public class FormInstanceUtilTest {
         assertEquals(formInstancesDtoList.size(), formInstancesDtoList.size());
 
         SurveyInstanceDto siDTO = formInstancesDtoList.get(0);
+
         QuestionAnswerStoreDto qasDTO = siDTO.getQasList().get(0);
+        assertTrue(qasDTO.getA().contains("Random value"));
+        assertEquals(qasDTO.getQ(), "0");
+        assertEquals(qasDTO.getT(), "VALUE");
         siDTO.setQasList(null);
-        // TODO complete
         assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(siDTO),
-                "{\"surveyalTime\":0}");
-
-        // TODO: assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(qasDTO),
-        //          "{\"surveyalTime\":0}");
-
-
+                "{\"collectionDate\":"+ DataStoreTestUtil.mockedTime + ","+
+                        "\"surveyId\":"+DataStoreTestUtil.mockedTime * 2 +"," +
+                        "\"surveyalTime\":0," +
+                        "\"uuid\":\""+DataStoreTestUtil.mockedUUID+"\"," +
+                        "\"submitter\":\""+DataStoreTestUtil.mockedSubmitter+"\"}");
     }
 
 

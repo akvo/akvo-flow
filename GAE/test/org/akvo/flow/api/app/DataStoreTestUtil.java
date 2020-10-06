@@ -36,6 +36,9 @@ import java.util.*;
 
 public class DataStoreTestUtil {
 
+    public static long mockedTime = 1601983649l;
+    public static String mockedUUID = "TheMockedUuid";
+    public static String mockedSubmitter = "TheHappySubmitter";
 
     public Device createDevice(Long deviceId, String androidId) {
         final DeviceDAO dao = new DeviceDAO();
@@ -76,6 +79,7 @@ public class DataStoreTestUtil {
             QuestionAnswerStore qas = new QuestionAnswerStore();
             qas.setSurveyInstanceId(formInstance.getKey().getId());
             qas.setQuestionID("0");
+            qas.setType("VALUE");
             qas.setValue("Random value: "+formInstance.getKey().getId());
             answers.add(qas);
         }
@@ -89,6 +93,12 @@ public class DataStoreTestUtil {
             for(int i = 0; i < howMany; i++) {
                 SurveyInstance si = new SurveyInstance();
                 si.setSurveyedLocaleId(dataPoint.getKey().getId());
+                si.setSubmitterName(mockedSubmitter);
+                si.setUuid(mockedUUID);
+                si.setSurveyId(mockedTime*2);
+                Date date = new Date();
+                date.setTime(mockedTime);
+                si.setCollectionDate(date);
                 surveyInstances.add(si);
             }
         }

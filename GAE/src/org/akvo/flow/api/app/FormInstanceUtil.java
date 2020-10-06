@@ -76,7 +76,7 @@ public class FormInstanceUtil {
             siDTO.setSurveyId(si.getSurveyId());
             siDTO.setCollectionDate(si.getCollectionDate());
             List<QuestionAnswerStoreDto> qasDTOList = new ArrayList<>();
-            List<QuestionAnswerStore> questionAnswerStoreList = qasDAO.listBySurvey(si.getSurveyId());
+            List<QuestionAnswerStore> questionAnswerStoreList = qasDAO.listBySurveyInstance(si.getKey().getId());
             for (QuestionAnswerStore qas : questionAnswerStoreList){
                 QuestionAnswerStoreDto qasDTO = new QuestionAnswerStoreDto();
                 qasDTO.setT(qas.getType());
