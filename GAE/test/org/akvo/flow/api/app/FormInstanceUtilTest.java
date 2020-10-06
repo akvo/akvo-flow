@@ -16,6 +16,7 @@
 
 package org.akvo.flow.api.app;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -53,7 +54,6 @@ public class FormInstanceUtilTest {
         helper.tearDown();
     }
 
-
     @Test
     public void anAssigmentWithAllDataPointsReturnsAllFormInstances() throws Exception {
         final Long assignmentId = dataStoreTestUtil.randomId();
@@ -67,7 +67,7 @@ public class FormInstanceUtilTest {
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 5);
         dataStoreTestUtil.createAnswers(formInstances);
 
-        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), null);
+        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), 30, null);
 
         assertEquals(dataStoreTestUtil.getEntityIds(formInstances), dataStoreTestUtil.getEntityIds(formInstances1));
     }
@@ -80,22 +80,34 @@ public class FormInstanceUtilTest {
         final Long surveyId = dataStoreTestUtil.randomId();
 
         dataStoreTestUtil.createDevice(deviceId, androidId);
+
+
         List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 3);
-        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 5);
-        dataStoreTestUtil.createAnswers(formInstances);
+
+        dataStoreTestUtil.createAnswers(dataStoreTestUtil.createFormInstances(dataPoints, 5));
 
         long selectedDataPointId = dataPoints.get(0).getKey().getId();
-        dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId, Arrays.asList(selectedDataPointId), surveyId);
 
-        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, null);
+        // 1 Datapoint assigned = 5 Form instances generated
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId,
+                Arrays.asList(selectedDataPointId), surveyId);
 
-        assertEquals(5, formInstances1.size()); // 1 Datapoint assigned = 5 Form instances generated
+        List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3,null);
+        assertEquals(3, formInstances.size());
+
+        List<SurveyInstance> formInstances2 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3, BaseDAO.getCursor(formInstances));
+        assertEquals(2, formInstances2.size());
+
+        List<SurveyInstance> formInstances3 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3, BaseDAO.getCursor(formInstances2));
+        assertEquals(0, formInstances3.size());
 
         Set<Long> expectedDataPointId = new HashSet<>();
         expectedDataPointId.add(selectedDataPointId);
-        Set<Long> formInstancesDataPointId = formInstances1.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
+        Set<Long> formInstancesDataPointId = formInstances.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
 
         assertEquals(expectedDataPointId, formInstancesDataPointId);
 
     }
+
+
 }

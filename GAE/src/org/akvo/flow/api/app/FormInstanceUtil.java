@@ -34,7 +34,7 @@ public class FormInstanceUtil {
     SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
 
-    public List<SurveyInstance> getFormInstances(String androidId, long dataPointId, String cursor) throws Exception {
+    public List<SurveyInstance> getFormInstances(String androidId, long dataPointId, Integer pageSize, String cursor) throws Exception {
         DeviceDAO deviceDao = new DeviceDAO();
         Device device = deviceDao.getDevice(androidId, null, null);
         if (device == null) {
@@ -52,11 +52,11 @@ public class FormInstanceUtil {
         List<DataPointAssignment> dataPointAssignments =
                 dataPointAssignmentDao.listByDeviceAndSurvey(device.getKey().getId(), dataPoint.getSurveyGroupId());
         if (dataPointAssignments.isEmpty()) {
-            throw new Exception("No assignments found");
+            throw new NoDataPointsAssignedException("No assignments found");
         }
 
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 
-        return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, 30, cursor);
+        return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, pageSize, cursor);
     }
 }
