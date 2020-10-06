@@ -20,9 +20,12 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.Arrays;
@@ -106,6 +109,20 @@ public class FormInstanceUtilTest {
         Set<Long> formInstancesDataPointId = formInstances.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
 
         assertEquals(expectedDataPointId, formInstancesDataPointId);
+
+        List<SurveyInstanceDto> formInstancesDtoList = formInstanceUtil.getFormInstancesDtoList(formInstances);
+        assertEquals(formInstancesDtoList.size(), formInstancesDtoList.size());
+
+        SurveyInstanceDto siDTO = formInstancesDtoList.get(0);
+        QuestionAnswerStoreDto qasDTO = siDTO.getQasList().get(0);
+        siDTO.setQasList(null);
+        // TODO complete
+        assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(siDTO),
+                "{\"surveyalTime\":0}");
+
+        // TODO: assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(qasDTO),
+        //          "{\"surveyalTime\":0}");
+
 
     }
 

@@ -22,10 +22,14 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -35,6 +39,7 @@ public class FormInstanceUtil {
     private static final Logger log = Logger.getLogger(FormInstanceUtil.class.getName());
     SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
+    QuestionAnswerStoreDao qasDAO = new QuestionAnswerStoreDao();
 
     public List<SurveyInstance> getFormInstances(String androidId, long dataPointId, Integer pageSize, String cursor) throws Exception {
         DeviceDAO deviceDao = new DeviceDAO();
@@ -63,6 +68,25 @@ public class FormInstanceUtil {
     }
 
     public List<SurveyInstanceDto> getFormInstancesDtoList(List<SurveyInstance> formInstances) {
-        return Collections.emptyList(); // TODO: Add tests + implementation
+        List<SurveyInstanceDto> formInstancesDTO = new ArrayList<>();
+        for(SurveyInstance si : formInstances){
+            SurveyInstanceDto siDTO = new SurveyInstanceDto();
+            siDTO.setUuid(si.getUuid());
+            siDTO.setSubmitter(si.getSubmitterName());
+            siDTO.setSurveyId(si.getSurveyId());
+            siDTO.setCollectionDate(si.getCollectionDate());
+            List<QuestionAnswerStoreDto> qasDTOList = new ArrayList<>();
+            List<QuestionAnswerStore> questionAnswerStoreList = qasDAO.listBySurvey(si.getSurveyId());
+            for (QuestionAnswerStore qas : questionAnswerStoreList){
+                QuestionAnswerStoreDto qasDTO = new QuestionAnswerStoreDto();
+                qasDTO.setT(qas.getType());
+                qasDTO.setQ(qas.getQuestionID());
+                qasDTO.setA(qas.getValue());
+                qasDTOList.add(qasDTO);
+            }
+            siDTO.setQasList(qasDTOList);
+            formInstancesDTO.add(siDTO);
+        }
+        return formInstancesDTO;
     }
 }
