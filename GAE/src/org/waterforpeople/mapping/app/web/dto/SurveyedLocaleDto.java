@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 
 /**
  * dto that can hold surveyedLocale data

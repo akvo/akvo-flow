@@ -29,7 +29,7 @@ import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.domain.persistent.SurveyAssignment;
-import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -244,15 +244,15 @@ public class DataPointUtil {
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
-            HashMap<Long, String> questionTypeMap,
-            @Nullable List<QuestionAnswerStore> questionAnswerStores,
-            @Nullable SurveyInstance surveyInstance) {
+                                                      HashMap<Long, String> questionTypeMap,
+                                                      @Nullable List<QuestionAnswerStore> questionAnswerStores,
+                                                      @Nullable SurveyInstance surveyInstance) {
         SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
         if (surveyInstance != null) {
             surveyInstanceDto.setUuid(surveyInstance.getUuid());
             surveyInstanceDto.setSubmitter(surveyInstance.getSubmitterName());
             surveyInstanceDto.setSurveyId(surveyInstance.getSurveyId());
-            surveyInstanceDto.setCollectionDate(surveyInstance.getCollectionDate().getTime());
+            surveyInstanceDto.setCollectionDate(surveyInstance.getCollectionDate());
         }
         if (questionAnswerStores != null) {
             for (QuestionAnswerStore questionAnswerStore : questionAnswerStores) {

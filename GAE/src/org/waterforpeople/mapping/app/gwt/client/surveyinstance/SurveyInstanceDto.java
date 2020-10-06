@@ -48,6 +48,79 @@ public class SurveyInstanceDto extends BaseDto {
     private String surveyedLocaleIdentifier;
     private String surveyedLocaleDisplayName;
 
+    // beginning org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto
+
+    private String uuid;
+    private String submitter;
+    // duplicated private Long surveyId;
+    // duplicated private Long collectionDate;
+    private List<QuestionAnswerStoreDto> qasList;
+
+    // private List<Long> questionIds;
+    // private List<String> answerValues;
+
+    public SurveyInstanceDto() {
+        setQasList(new ArrayList<QuestionAnswerStoreDto>());
+        // setQuestionIds(new ArrayList<Long>());
+        // setAnswerValues(new ArrayList<String>());
+    }
+
+    public String getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(String submitter) {
+        this.submitter = submitter;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+    //duplicated
+    /*
+    public Long getCollectionDate() {
+        return collectionDate;
+    }
+
+    public void setCollectionDate(Long collectionDate) {
+        this.collectionDate = collectionDate;
+    }
+     */
+
+    public void addProperty(Long questionId, String answerValue, String deviceQuestionType) {
+        QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+        qasDto.setQ(questionId + "");
+        qasDto.setA(answerValue);
+        qasDto.setT(deviceQuestionType);
+        this.qasList.add(qasDto);
+    }
+
+    // duplicated
+    /*
+    public Long getSurveyId() {
+        return surveyId;
+    }
+
+
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
+    */
+    public List<QuestionAnswerStoreDto> getQasList() {
+        return qasList;
+    }
+
+    public void setQasList(List<QuestionAnswerStoreDto> qasList) {
+        this.qasList = qasList;
+    }
+
+    // end org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto
+
+
     public Double getFormVersion() {
         return formVersion;
     }
