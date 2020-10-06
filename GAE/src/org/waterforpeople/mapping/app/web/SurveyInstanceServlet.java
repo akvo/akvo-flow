@@ -21,6 +21,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
+import org.akvo.flow.api.app.FormInstanceResponse;
+import org.akvo.flow.api.app.FormInstanceUtil;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -54,6 +57,8 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     private SurveyInstanceDAO surveyInstanceDao;
     private DataPointApprovalDAO approvalDao;
     private ApprovalStepDAO approvalStepDao;
+    public static final int LIMIT_FORM_INSTANCES_30 = 30;
+
     // ONE form instance (instance of form ) belongs to data-point (instace of Survey)
     // survey group of forms
     //
@@ -79,6 +84,16 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
         if (GET_INSTANCE_DATA_ACTION.equals(siReq.getAction())) {
             return retrieveInstanceData(siReq.surveyInstanceId);
+        } else  if (GET_FORM_INSTANCES_ACTION.equals(siReq.getAction())) {
+            FormInstanceUtil formInstanceUtil = new FormInstanceUtil();
+            List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(siReq.getAndroidId(), siReq.getDataPointId(), LIMIT_FORM_INSTANCES_30, siReq.getCursor());
+
+            FormInstanceResponse response = new FormInstanceResponse();
+            response.setSurveyInstances(formInstanceUtil.getFormInstancesDtoList(formInstances));
+            response.setCursor(BaseDAO.getCursor(formInstances));
+            response.setResultCount(formInstances.size());
+
+            return response;
         } else {
             QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
             SurveyInstanceResponse sir = new SurveyInstanceResponse();

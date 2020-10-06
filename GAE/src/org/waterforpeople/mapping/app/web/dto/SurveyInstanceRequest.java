@@ -28,11 +28,34 @@ public class SurveyInstanceRequest extends RestRequest {
     private static final long serialVersionUID = 6642806619258697157L;
     private static final String FIELD_NAME_PARAM = "fieldName";
     private static final String VALUE_NAME_PARAM = "value";
+    private static final String DATA_POINT_ID_PARAM = "dataPointId";
+    private static final String ANDROID_ID_PARAM = "androidId";
     public static final String GET_INSTANCE_DATA_ACTION = "getInstanceData";
+    public static final String GET_FORM_INSTANCES_ACTION = "getFormInstances";
     public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
 
     private String fieldName = null;
     public Long surveyInstanceId;
+
+    private long dataPointId;
+
+    private String androidId;
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
+    public long getDataPointId() {
+        return dataPointId;
+    }
+
+    public void setDataPointId(long dataPointId) {
+        this.dataPointId = dataPointId;
+    }
 
     public String getFieldName() {
         return fieldName;
@@ -60,11 +83,24 @@ public class SurveyInstanceRequest extends RestRequest {
         if (req.getParameter(VALUE_NAME_PARAM) != null) {
             setValue(req.getParameter(VALUE_NAME_PARAM));
         }
+
+        if (req.getParameter(ANDROID_ID_PARAM) != null) {
+            setValue(req.getParameter(ANDROID_ID_PARAM));
+        }
+
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
             try {
                 this.surveyInstanceId = Long.parseLong(req.getParameter(SURVEY_INSTANCE_ID_PARAM));
             } catch (NumberFormatException e) {
-                log.warning("Could not convert survey instance id: " + surveyInstanceId);
+                log.warning("Could not convert survey instance id: " + req.getParameter(SURVEY_INSTANCE_ID_PARAM));
+            }
+        }
+
+        if (req.getParameter(DATA_POINT_ID_PARAM) != null) {
+            try {
+                this.dataPointId = Long.parseLong(req.getParameter(DATA_POINT_ID_PARAM));
+            } catch (NumberFormatException e) {
+                log.warning("Could not parse dataPointId: " + req.getParameter(DATA_POINT_ID_PARAM));
             }
         }
     }

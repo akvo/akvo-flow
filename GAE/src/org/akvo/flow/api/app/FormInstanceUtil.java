@@ -22,9 +22,11 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -58,5 +60,9 @@ public class FormInstanceUtil {
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 
         return siDAO.listInstancesByLocale(dataPoint.getKey().getId(), null, null, pageSize, cursor);
+    }
+
+    public List<SurveyInstanceDto> getFormInstancesDtoList(List<SurveyInstance> formInstances) {
+        return Collections.emptyList(); // TODO: Add tests + implementation
     }
 }
