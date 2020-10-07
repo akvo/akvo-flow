@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,11 +18,17 @@ package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
+import org.akvo.flow.api.app.FormInstanceResponse;
+import org.akvo.flow.api.app.FormInstanceUtil;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest;
@@ -48,13 +54,19 @@ import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
 public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
+    private static final Logger log = Logger.getLogger(SurveyInstanceServlet.class.getName());
+
     private static final String UUID = "UUID";
     private static final String GEO = "GEO";
     private static final long serialVersionUID = -7690514561766005021L;
     private SurveyInstanceDAO surveyInstanceDao;
     private DataPointApprovalDAO approvalDao;
     private ApprovalStepDAO approvalStepDao;
+    public static final int LIMIT_FORM_INSTANCES_30 = 30;
 
+    // ONE form instance (instance of form ) belongs to data-point (instace of Survey)
+    // survey group of forms
+    //
     public SurveyInstanceServlet() {
         setMode(JSON_MODE);
         surveyInstanceDao = new SurveyInstanceDAO();
@@ -77,6 +89,23 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
         if (GET_INSTANCE_DATA_ACTION.equals(siReq.getAction())) {
             return retrieveInstanceData(siReq.surveyInstanceId);
+        } else  if (GET_FORM_INSTANCES_ACTION.equals(siReq.getAction())) {
+            FormInstanceResponse response = new FormInstanceResponse();
+            FormInstanceUtil formInstanceUtil = new FormInstanceUtil();
+
+            try {
+                List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(siReq.getAndroidId(), siReq.getDataPointIdentifier(), LIMIT_FORM_INSTANCES_30, siReq.getCursor());
+                response.setSurveyInstances(formInstanceUtil.getFormInstancesDtoList(formInstances));
+                response.setCursor(BaseDAO.getCursor(formInstances));
+                response.setResultCount(formInstances.size());
+
+                return response;
+            } catch (Exception e) {
+                log.warning("Exception accessing endpoint: " + e.getMessage());
+                response.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+                response.setMessage(e.getMessage());
+            }
+            return response;
         } else {
             QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
             SurveyInstanceResponse sir = new SurveyInstanceResponse();
