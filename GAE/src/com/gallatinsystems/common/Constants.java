@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,6 +15,10 @@
  */
 
 package com.gallatinsystems.common;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Constants {
 
@@ -49,5 +53,7 @@ public class Constants {
 
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
+
+    public static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
 
 }

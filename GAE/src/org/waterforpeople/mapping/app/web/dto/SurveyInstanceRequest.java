@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,11 +28,34 @@ public class SurveyInstanceRequest extends RestRequest {
     private static final long serialVersionUID = 6642806619258697157L;
     private static final String FIELD_NAME_PARAM = "fieldName";
     private static final String VALUE_NAME_PARAM = "value";
+    private static final String DATA_POINT_IDENTIFIER_PARAM = "identifier";
+    private static final String ANDROID_ID_PARAM = "androidId";
     public static final String GET_INSTANCE_DATA_ACTION = "getInstanceData";
+    public static final String GET_FORM_INSTANCES_ACTION = "getFormInstances";
     public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
 
     private String fieldName = null;
     public Long surveyInstanceId;
+
+    private String dataPointIdentifier;
+
+    private String androidId;
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
+    public String getDataPointIdentifier() {
+        return dataPointIdentifier;
+    }
+
+    public void setDataPointIdentifier(String dataPointIdentifier) {
+        this.dataPointIdentifier = dataPointIdentifier;
+    }
 
     public String getFieldName() {
         return fieldName;
@@ -60,12 +83,21 @@ public class SurveyInstanceRequest extends RestRequest {
         if (req.getParameter(VALUE_NAME_PARAM) != null) {
             setValue(req.getParameter(VALUE_NAME_PARAM));
         }
+
+        if (req.getParameter(ANDROID_ID_PARAM) != null) {
+            setAndroidId(req.getParameter(ANDROID_ID_PARAM));
+        }
+
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
             try {
                 this.surveyInstanceId = Long.parseLong(req.getParameter(SURVEY_INSTANCE_ID_PARAM));
             } catch (NumberFormatException e) {
-                log.warning("Could not convert survey instance id: " + surveyInstanceId);
+                log.warning("Could not convert survey instance id: " + req.getParameter(SURVEY_INSTANCE_ID_PARAM));
             }
+        }
+
+        if (req.getParameter(DATA_POINT_IDENTIFIER_PARAM) != null) {
+            setDataPointIdentifier(req.getParameter(DATA_POINT_IDENTIFIER_PARAM));
         }
     }
 
