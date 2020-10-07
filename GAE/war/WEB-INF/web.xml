@@ -247,14 +247,6 @@
         <url-pattern>/app_worker/reportservlet</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>QuestionAnswerStoreCleanup</servlet-name>
-        <servlet-class>org.waterforpeople.mapping.app.web.QuestionAnswerStoreCleanup</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>QuestionAnswerStoreCleanup</servlet-name>
-        <url-pattern>/app_worker/questionanswerstorecleanup</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>ImageCheckTask</servlet-name>
         <servlet-class>org.waterforpeople.mapping.app.web.ImageCheckServlet</servlet-class>
     </servlet>
