@@ -28,7 +28,6 @@ import org.akvo.flow.api.app.FormInstanceResponse;
 import org.akvo.flow.api.app.FormInstanceUtil;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest;
