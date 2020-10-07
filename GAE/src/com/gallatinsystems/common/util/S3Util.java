@@ -40,8 +40,8 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import java.util.Base64;
 
 public class S3Util {
 
@@ -111,7 +111,7 @@ public class S3Util {
             boolean isPublic, String awsAccessId, String awsSecretKey) throws IOException {
 
         final byte[] md5Raw = MD5Util.md5(data);
-        final String md5Base64 = Base64.encodeBase64String(md5Raw).trim();
+        final String md5Base64 = Base64.getEncoder().encodeToString(md5Raw).trim();
         final String md5Hex = MD5Util.toHex(md5Raw);
         final String date = getDate();
         final String payloadStr = isPublic ? PUT_PAYLOAD_PUBLIC : PUT_PAYLOAD_PRIVATE;
