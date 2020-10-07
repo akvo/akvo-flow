@@ -46,14 +46,11 @@ import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 @SuppressWarnings("serial")
 public class DataPointServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
-    private SurveyedLocaleDao surveyedLocaleDao;
-    private DataPointAssignmentDao dataPointAssignmentDao;
+
     public static final int LIMIT_DATAPOINTS_30 = 30;
 
     public DataPointServlet() {
         setMode(JSON_MODE);
-        surveyedLocaleDao = new SurveyedLocaleDao();
-        dataPointAssignmentDao = new DataPointAssignmentDao();
     }
 
     @Override
