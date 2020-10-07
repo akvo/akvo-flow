@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,6 +37,42 @@ public class QuestionAnswerStoreDto extends BaseDto {
     private Integer iteration;
     private String oldValue;
     private String questionText;
+
+    // beginning code from  org.waterforpeople.mapping.app.web.dto.QasDto
+    // questions ids
+    private String q;
+
+    // answers
+    private String a;
+
+    // question type
+    private String t;
+
+    public String getQ() {
+        return q;
+    }
+
+    public void setQ(String q) {
+        this.q = q;
+    }
+
+    public String getA() {
+        return a;
+    }
+
+    public void setA(String a) {
+        this.a = a;
+    }
+
+    public String getT() {
+        return t;
+    }
+
+    public void setT(String t) {
+        this.t = t;
+    }
+
+    // end code from  org.waterforpeople.mapping.app.web.dto.QasDto
 
     public String getOldValue() {
         return oldValue;

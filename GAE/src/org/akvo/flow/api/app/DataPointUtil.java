@@ -16,15 +16,20 @@
 
 package org.akvo.flow.api.app;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import org.akvo.flow.dao.DataPointAssignmentDao;
+import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
-import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -37,7 +42,24 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.api.server.spi.config.Nullable;
 
+import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
+
+
 public class DataPointUtil {
+    private static final Logger log = Logger.getLogger(DataPointUtil.class.getName());
+    SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
+    DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
+    private static final int LIMIT_DATAPOINTS = 30;
+
+    public List<SurveyedLocaleDto> getSimpleSurveyedLocaleDtosList(List<SurveyedLocale> slList) {
+        List<SurveyedLocaleDto> dtoList = new ArrayList<>();
+
+        for (SurveyedLocale surveyedLocale : slList) {
+            SurveyedLocaleDto dto = createSimpleSurveyedLocaleDto(surveyedLocale);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 
     public List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
@@ -57,6 +79,72 @@ public class DataPointUtil {
             dtoList.add(dto);
         }
         return dtoList;
+    }
+
+    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit) throws Exception {
+
+        //Find the device (if any)
+        DeviceDAO deviceDao = new DeviceDAO();
+        Device device = deviceDao.getDevice(androidId, null, null);
+        if (device == null) {
+            throw new Exception("Device not found");
+        }
+        log.fine("Found device: " + device);
+
+        // verify assignments exist
+        long deviceId = device.getKey().getId();
+
+        List<DataPointAssignment> dataPointAssignments =
+                dataPointAssignmentDao.listByDeviceAndSurvey(deviceId, surveyId);
+
+        if (dataPointAssignments.isEmpty()) {
+            log.log(Level.WARNING, "No assignments found for surveyId: " + surveyId + " - deviceId: " + deviceId);
+            throw new NoDataPointsAssignedException("No datapoints assigned found");
+        }
+
+        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit);
+    }
+
+    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit) {
+        if (assignment == null || allDataPointsAreAssigned(assignment)) {
+            return getAllDataPoints(surveyId, cursor, limit);
+        } else {
+            return getAssignedDataPoints(assignment);
+        }
+    }
+
+    private boolean allDataPointsAreAssigned(DataPointAssignment assignment) {
+        if (assignment == null) {
+            return false;
+        }
+
+        Set<Long> assignedDataPoints = new HashSet<>(assignment.getDataPointIds());
+        return ALL_DATAPOINTS.equals(assignedDataPoints);
+    }
+
+    private List<SurveyedLocale> getAllDataPoints(Long surveyId, String cursor, int limit) {
+        return surveyedLocaleDao.listLocalesBySurveyGroupAndUpdateDate(surveyId, null, cursor, limit);
+    }
+
+    /*
+     * Return only datapoints that have been explicitly assigned to a device
+     */
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
+        Set<Long> assignedDataPointIds = new HashSet<>();
+        assignedDataPointIds.addAll(assignment.getDataPointIds());
+        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
+    }
+
+    private SurveyedLocaleDto createSimpleSurveyedLocaleDto(SurveyedLocale surveyedLocale) {
+        SurveyedLocaleDto dto = new SurveyedLocaleDto();
+        dto.setId(surveyedLocale.getIdentifier());
+        dto.setSurveyGroupId(surveyedLocale.getSurveyGroupId());
+        dto.setDisplayName(surveyedLocale.getDisplayName());
+        dto.setLat(surveyedLocale.getLatitude());
+        dto.setLon(surveyedLocale.getLongitude());
+        dto.setLastUpdateDateTime(surveyedLocale.getLastUpdateDateTime());
+
+        return dto;
     }
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
@@ -156,15 +244,15 @@ public class DataPointUtil {
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
-            HashMap<Long, String> questionTypeMap,
-            @Nullable List<QuestionAnswerStore> questionAnswerStores,
-            @Nullable SurveyInstance surveyInstance) {
+                                                      HashMap<Long, String> questionTypeMap,
+                                                      @Nullable List<QuestionAnswerStore> questionAnswerStores,
+                                                      @Nullable SurveyInstance surveyInstance) {
         SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
         if (surveyInstance != null) {
             surveyInstanceDto.setUuid(surveyInstance.getUuid());
             surveyInstanceDto.setSubmitter(surveyInstance.getSubmitterName());
             surveyInstanceDto.setSurveyId(surveyInstance.getSurveyId());
-            surveyInstanceDto.setCollectionDate(surveyInstance.getCollectionDate().getTime());
+            surveyInstanceDto.setCollectionDate(surveyInstance.getCollectionDate());
         }
         if (questionAnswerStores != null) {
             for (QuestionAnswerStore questionAnswerStore : questionAnswerStores) {

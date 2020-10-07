@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 
 /**
  * dto that can hold surveyedLocale data

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019,2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,10 +20,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
@@ -31,25 +28,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
 
 /**
  * JSON service for returning the list of assigned data point records for a specific device and surveyId
  */
 @SuppressWarnings("serial")
-public class DataPointServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
+public class DataPointOnlyServlet extends AbstractRestApiServlet {
+    private static final Logger log = Logger.getLogger(DataPointOnlyServlet.class.getName());
+    private static final int LIMIT_DATAPOINTS_1000 = 1000;
 
-    public static final int LIMIT_DATAPOINTS_30 = 30;
-
-    public DataPointServlet() {
+    public DataPointOnlyServlet() {
         setMode(JSON_MODE);
     }
 
@@ -79,26 +70,24 @@ public class DataPointServlet extends AbstractRestApiServlet {
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocale> dpList;
         try {
-            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_30);
+             dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_1000);
         } catch(Exception e) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             res.setMessage(e.getMessage());
             return res;
         }
 
-        res = convertToResponse(dpList, dpReq.getSurveyId());
+        res = convertToResponse(dpList);
         res.setCursor(BaseDAO.getCursor(dpList));
 
         return res;
     }
 
 
-
-
     /**
      * converts the domain objects to dtos and then installs them in a DataPointResponse object
      */
-    private DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId) {
+    private DataPointResponse convertToResponse(List<SurveyedLocale> slList) {
         DataPointResponse resp = new DataPointResponse();
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -110,7 +99,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         resp.setResultCount(slList.size());
 
         DataPointUtil dpu = new DataPointUtil();
-        List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId);
+        List<SurveyedLocaleDto> dtoList = dpu.getSimpleSurveyedLocaleDtosList(slList);
 
         resp.setDataPointData(dtoList);
         return resp;
