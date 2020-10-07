@@ -78,7 +78,7 @@ public class DataStoreTestUtil {
         for(SurveyInstance formInstance : formInstances){
             QuestionAnswerStore qas = new QuestionAnswerStore();
             qas.setSurveyInstanceId(formInstance.getKey().getId());
-            qas.setQuestionID("0");
+            qas.setQuestionID("12345");
             qas.setType("VALUE");
             qas.setValue("Random value: "+formInstance.getKey().getId());
             answers.add(qas);

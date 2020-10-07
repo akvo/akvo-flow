@@ -111,13 +111,13 @@ public class FormInstanceUtilTest {
         assertEquals(expectedDataPointId, formInstancesDataPointId);
 
         List<SurveyInstanceDto> formInstancesDtoList = formInstanceUtil.getFormInstancesDtoList(formInstances);
-        assertEquals(formInstancesDtoList.size(), formInstancesDtoList.size());
+        assertEquals(formInstances.size(), formInstancesDtoList.size());
 
         SurveyInstanceDto siDTO = formInstancesDtoList.get(0);
 
         QuestionAnswerStoreDto qasDTO = siDTO.getQasList().get(0);
-        assertTrue(qasDTO.getA().contains("Random value"));
-        assertEquals(qasDTO.getQ(), "0");
+        assertTrue(qasDTO.getA().startsWith("Random value: "));
+        assertEquals(qasDTO.getQ(), "12345");
         assertEquals(qasDTO.getT(), "VALUE");
         siDTO.setQasList(null);
         assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(siDTO),
