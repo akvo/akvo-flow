@@ -110,7 +110,7 @@ public class DataStoreTestUtil {
         final List<SurveyedLocale> datapoints = new ArrayList<>();
         for (int i = 0; i < howMany; i++) {
             SurveyedLocale dataPoint = new SurveyedLocale();
-            dataPoint.setIdentifier(String.valueOf(i));
+            dataPoint.setIdentifier("identifier-" + String.valueOf(i));
             dataPoint.setSurveyGroupId(surveyId);
             dataPoint.setDisplayName("dataPoint: " + i);
             datapoints.add(dataPoint);

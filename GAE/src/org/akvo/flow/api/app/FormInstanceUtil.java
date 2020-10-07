@@ -30,7 +30,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,7 +40,7 @@ public class FormInstanceUtil {
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
     QuestionAnswerStoreDao qasDAO = new QuestionAnswerStoreDao();
 
-    public List<SurveyInstance> getFormInstances(String androidId, long dataPointId, Integer pageSize, String cursor) throws Exception {
+    public List<SurveyInstance> getFormInstances(String androidId, String dataPointIdentifier, Integer pageSize, String cursor) throws Exception {
         DeviceDAO deviceDao = new DeviceDAO();
         Device device = deviceDao.getDevice(androidId, null, null);
         if (device == null) {
@@ -50,7 +49,7 @@ public class FormInstanceUtil {
         log.fine("Found device: " + device);
 
 
-        SurveyedLocale dataPoint = surveyedLocaleDao.getById(dataPointId);
+        SurveyedLocale dataPoint = surveyedLocaleDao.getByIdentifier(dataPointIdentifier);
         if (dataPoint == null) {
             throw new Exception("Datapoint not found");
         }

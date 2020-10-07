@@ -28,7 +28,7 @@ public class SurveyInstanceRequest extends RestRequest {
     private static final long serialVersionUID = 6642806619258697157L;
     private static final String FIELD_NAME_PARAM = "fieldName";
     private static final String VALUE_NAME_PARAM = "value";
-    private static final String DATA_POINT_ID_PARAM = "dataPointId";
+    private static final String DATA_POINT_IDENTIFIER_PARAM = "identifier";
     private static final String ANDROID_ID_PARAM = "androidId";
     public static final String GET_INSTANCE_DATA_ACTION = "getInstanceData";
     public static final String GET_FORM_INSTANCES_ACTION = "getFormInstances";
@@ -37,7 +37,7 @@ public class SurveyInstanceRequest extends RestRequest {
     private String fieldName = null;
     public Long surveyInstanceId;
 
-    private long dataPointId;
+    private String dataPointIdentifier;
 
     private String androidId;
 
@@ -49,12 +49,12 @@ public class SurveyInstanceRequest extends RestRequest {
         this.androidId = androidId;
     }
 
-    public long getDataPointId() {
-        return dataPointId;
+    public String getDataPointIdentifier() {
+        return dataPointIdentifier;
     }
 
-    public void setDataPointId(long dataPointId) {
-        this.dataPointId = dataPointId;
+    public void setDataPointIdentifier(String dataPointIdentifier) {
+        this.dataPointIdentifier = dataPointIdentifier;
     }
 
     public String getFieldName() {
@@ -85,7 +85,7 @@ public class SurveyInstanceRequest extends RestRequest {
         }
 
         if (req.getParameter(ANDROID_ID_PARAM) != null) {
-            setValue(req.getParameter(ANDROID_ID_PARAM));
+            setAndroidId(req.getParameter(ANDROID_ID_PARAM));
         }
 
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
@@ -96,12 +96,8 @@ public class SurveyInstanceRequest extends RestRequest {
             }
         }
 
-        if (req.getParameter(DATA_POINT_ID_PARAM) != null) {
-            try {
-                this.dataPointId = Long.parseLong(req.getParameter(DATA_POINT_ID_PARAM));
-            } catch (NumberFormatException e) {
-                log.warning("Could not parse dataPointId: " + req.getParameter(DATA_POINT_ID_PARAM));
-            }
+        if (req.getParameter(DATA_POINT_IDENTIFIER_PARAM) != null) {
+            setDataPointIdentifier(req.getParameter(DATA_POINT_IDENTIFIER_PARAM));
         }
     }
 

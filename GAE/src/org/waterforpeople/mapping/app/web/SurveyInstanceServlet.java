@@ -86,7 +86,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
             return retrieveInstanceData(siReq.surveyInstanceId);
         } else  if (GET_FORM_INSTANCES_ACTION.equals(siReq.getAction())) {
             FormInstanceUtil formInstanceUtil = new FormInstanceUtil();
-            List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(siReq.getAndroidId(), siReq.getDataPointId(), LIMIT_FORM_INSTANCES_30, siReq.getCursor());
+            List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(siReq.getAndroidId(), siReq.getDataPointIdentifier(), LIMIT_FORM_INSTANCES_30, siReq.getCursor());
 
             FormInstanceResponse response = new FormInstanceResponse();
             response.setSurveyInstances(formInstanceUtil.getFormInstancesDtoList(formInstances));

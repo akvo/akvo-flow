@@ -70,7 +70,7 @@ public class FormInstanceUtilTest {
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 5);
         dataStoreTestUtil.createAnswers(formInstances);
 
-        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getKey().getId(), 30, null);
+        List<SurveyInstance> formInstances1 = formInstanceUtil.getFormInstances(androidId, dataPoints.get(0).getIdentifier(), 30, null);
 
         assertEquals(dataStoreTestUtil.getEntityIds(formInstances), dataStoreTestUtil.getEntityIds(formInstances1));
     }
@@ -89,23 +89,23 @@ public class FormInstanceUtilTest {
 
         dataStoreTestUtil.createAnswers(dataStoreTestUtil.createFormInstances(dataPoints, 5));
 
-        long selectedDataPointId = dataPoints.get(0).getKey().getId();
+        SurveyedLocale selectedDataPoint = dataPoints.get(0);
 
         // 1 Datapoint assigned = 5 Form instances generated
         dataStoreTestUtil.createDataPointAssignment(assignmentId, deviceId,
-                Arrays.asList(selectedDataPointId), surveyId);
+                Arrays.asList(selectedDataPoint.getKey().getId()), surveyId);
 
-        List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3,null);
+        List<SurveyInstance> formInstances = formInstanceUtil.getFormInstances(androidId, selectedDataPoint.getIdentifier(), 3,null);
         assertEquals(3, formInstances.size());
 
-        List<SurveyInstance> formInstances2 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3, BaseDAO.getCursor(formInstances));
+        List<SurveyInstance> formInstances2 = formInstanceUtil.getFormInstances(androidId, selectedDataPoint.getIdentifier(), 3, BaseDAO.getCursor(formInstances));
         assertEquals(2, formInstances2.size());
 
-        List<SurveyInstance> formInstances3 = formInstanceUtil.getFormInstances(androidId, selectedDataPointId, 3, BaseDAO.getCursor(formInstances2));
+        List<SurveyInstance> formInstances3 = formInstanceUtil.getFormInstances(androidId, selectedDataPoint.getIdentifier(), 3, BaseDAO.getCursor(formInstances2));
         assertEquals(0, formInstances3.size());
 
         Set<Long> expectedDataPointId = new HashSet<>();
-        expectedDataPointId.add(selectedDataPointId);
+        expectedDataPointId.add(selectedDataPoint.getKey().getId());
         Set<Long> formInstancesDataPointId = formInstances.stream().map(SurveyInstance::getSurveyedLocaleId).collect(Collectors.toSet());
 
         assertEquals(expectedDataPointId, formInstancesDataPointId);
