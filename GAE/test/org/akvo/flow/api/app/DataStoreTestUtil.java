@@ -131,4 +131,11 @@ public class DataStoreTestUtil {
         return rnd.nextLong();
     }
 
+    public Collection<SurveyedLocale> saveDataPoints(List<SurveyedLocale> dataPoints) {
+        return new SurveyedLocaleDao().save(dataPoints);
+    }
+
+    public Collection<SurveyInstance> saveFormInstances(List<SurveyInstance> formInstances) {
+        return new SurveyInstanceDAO().save(formInstances);
+    }
 }

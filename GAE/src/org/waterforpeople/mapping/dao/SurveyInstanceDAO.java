@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -768,6 +769,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         return null;
+    }
+
+    public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
+        List<SurveyInstance> result = new ArrayList<>();
+
+        surveyedLocales.forEach(surveyedLocale ->
+                result.add(getRegistrationSurveyInstance(surveyedLocale, surveyedLocale.getCreationSurveyId())));
+
+
+        surveyedLocales.forEach(surveyedLocale ->
+                // listInstancesByLocale orders by collectionDate DESC
+                result.addAll(listInstancesByLocale(surveyedLocale.getKey().getId(), null, null, numberOfInstances, null)));
+
+        return result;
     }
 
 }
