@@ -17,18 +17,16 @@
 package org.akvo.flow.api.app;
 
 import java.util.*;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -40,7 +38,7 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.api.server.spi.config.Nullable;
+import javax.annotation.Nullable;
 
 import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
@@ -49,7 +47,6 @@ public class DataPointUtil {
     private static final Logger log = Logger.getLogger(DataPointUtil.class.getName());
     SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
     DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
-    private static final int LIMIT_DATAPOINTS = 30;
 
     public List<SurveyedLocaleDto> getSimpleSurveyedLocaleDtosList(List<SurveyedLocale> slList) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
@@ -216,20 +213,9 @@ public class DataPointUtil {
      */
     private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
-        List<SurveyInstance> values = surveyInstanceDAO.fetchItemsByIdBatches(surveyedLocalesIds,
-                "surveyedLocaleId");
-        Map<Long, List<SurveyInstance>> surveyInstancesMap = new HashMap<>();
-        for (SurveyInstance surveyInstance : values) {
-            Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
-            if (surveyInstancesMap.containsKey(surveyedLocaleId)) {
-                surveyInstancesMap.get(surveyedLocaleId).add(surveyInstance);
-            } else {
-                List<SurveyInstance> instances = new ArrayList<>();
-                instances.add(surveyInstance);
-                surveyInstancesMap.put(surveyedLocaleId, instances);
-            }
-        }
-        return surveyInstancesMap;
+        SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
+        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(surveyedLocaleDao.listByKeys(surveyedLocalesIds), 3);
+        return values.stream().collect(Collectors.groupingBy(SurveyInstance::getSurveyedLocaleId));
     }
 
     private List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
