@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015,2018-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.DataUtils;
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -153,7 +153,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                             .append(",")
                             .append(iteration)
                             .append(",")
-                            .append(Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8)));
+                            .append(Base64.encodeBase64URLSafeString(value
+                                    .getBytes(StandardCharsets.UTF_8)));
                 }
             }
         }
