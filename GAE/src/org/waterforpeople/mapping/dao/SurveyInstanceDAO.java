@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -774,9 +774,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
         List<SurveyInstance> result = new ArrayList<>();
 
-        surveyedLocales.forEach(surveyedLocale ->
-                result.add(getRegistrationSurveyInstance(surveyedLocale, surveyedLocale.getCreationSurveyId())));
+        List<Long> creationSurveyIds = surveyedLocales
+                .stream()
+                .map(SurveyedLocale::getCreationSurveyId)
+                .collect(Collectors.toList());
 
+        result.addAll(fetchItemsByIdBatches(creationSurveyIds, "surveyId"));
 
         surveyedLocales.forEach(surveyedLocale ->
                 // listInstancesByLocale orders by collectionDate DESC
