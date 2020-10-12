@@ -774,12 +774,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
         List<SurveyInstance> result = new ArrayList<>();
 
-        List<Long> creationSurveyIds = surveyedLocales
+        Set<Long> creationSurveyIds = surveyedLocales
                 .stream()
                 .map(SurveyedLocale::getCreationSurveyId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        result.addAll(fetchItemsByIdBatches(creationSurveyIds, "surveyId"));
+        result.addAll(fetchItemsByIdBatches(new ArrayList<>(creationSurveyIds), "surveyId"));
 
         surveyedLocales.forEach(surveyedLocale ->
                 // listInstancesByLocale orders by collectionDate DESC
