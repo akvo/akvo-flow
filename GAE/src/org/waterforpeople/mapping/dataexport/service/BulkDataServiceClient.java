@@ -45,7 +45,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -211,7 +211,7 @@ public class BulkDataServiceClient {
 
             Long questionId = Long.valueOf(tokens[0]);
             Long iteration = Long.valueOf(tokens[1]);
-            String value = new String(Base64.decodeBase64(tokens[2]), StandardCharsets.UTF_8)
+            String value = new String(Base64.getDecoder().decode(tokens[2]), StandardCharsets.UTF_8)
                     .trim();
 
             Map<Long, String> iterationMap = result.get(questionId);
