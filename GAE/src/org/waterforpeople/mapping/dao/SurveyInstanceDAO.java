@@ -16,29 +16,6 @@
 
 package org.waterforpeople.mapping.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
-import org.akvo.flow.domain.DataUtils;
-import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
-import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -67,6 +44,26 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import org.akvo.flow.domain.DataUtils;
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
+import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
+import javax.annotation.Nonnull;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final String DEFAULT_ORG_PROP = "defaultOrg";
@@ -774,13 +771,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
         List<SurveyInstance> result = new ArrayList<>();
 
-        surveyedLocales.forEach(surveyedLocale ->
-                result.add(getRegistrationSurveyInstance(surveyedLocale, surveyedLocale.getCreationSurveyId())));
-
-        surveyedLocales.forEach(surveyedLocale ->
+        for (SurveyedLocale s: surveyedLocales) {
+            SurveyInstance registrationSurveyInstance = getRegistrationSurveyInstance(s, s.getCreationSurveyId());
+            if (registrationSurveyInstance != null) {
+                result.add(registrationSurveyInstance);
                 // listInstancesByLocale orders by collectionDate DESC
-                result.addAll(listInstancesByLocale(surveyedLocale.getKey().getId(), null, null, numberOfInstances, null)));
-
+                result.addAll(listInstancesByLocale(s.getKey().getId(), null, null, numberOfInstances, null));
+            }
+        }
         return result;
     }
 
