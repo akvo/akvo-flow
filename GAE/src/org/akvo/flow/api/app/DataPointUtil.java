@@ -16,14 +16,12 @@
 
 package org.akvo.flow.api.app;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
@@ -35,10 +33,18 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
