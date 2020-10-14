@@ -764,7 +764,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         if (res != null && !res.isEmpty()) {
             return res.get(0);
         }
-
+        log.warning(String.format("Registration form withId: %s submission not found for dataPointId: %s", locale.getCreationSurveyId(), locale.getIdentifier()));
         return null;
     }
 
@@ -777,8 +777,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 result.add(registrationSurveyInstance);
                 // listInstancesByLocale orders by collectionDate DESC
                 result.addAll(listInstancesByLocale(s.getKey().getId(), null, null, numberOfInstances, null));
-            } else {
-                log.warning(String.format("Registration form withId: %s submission not found for dataPointId: %s", s.getCreationSurveyId(), s.getIdentifier()));
             }
         }
         return result;
