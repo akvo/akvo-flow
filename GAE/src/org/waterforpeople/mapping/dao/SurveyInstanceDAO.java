@@ -764,14 +764,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         if (res != null && !res.isEmpty()) {
             return res.get(0);
         }
-
+        log.warning(String.format("Registration form withId: %s submission not found for dataPointId: %s", locale.getCreationSurveyId(), locale.getIdentifier()));
         return null;
     }
 
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
         List<SurveyInstance> result = new ArrayList<>();
 
-        for (SurveyedLocale s: surveyedLocales) {
+        for (SurveyedLocale s : surveyedLocales) {
             SurveyInstance registrationSurveyInstance = getRegistrationSurveyInstance(s, s.getCreationSurveyId());
             if (registrationSurveyInstance != null) {
                 result.add(registrationSurveyInstance);
