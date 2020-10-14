@@ -768,15 +768,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         return null;
     }
 
-    public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales, int numberOfInstances) {
+    public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales) {
         List<SurveyInstance> result = new ArrayList<>();
 
         for (SurveyedLocale s : surveyedLocales) {
             SurveyInstance registrationSurveyInstance = getRegistrationSurveyInstance(s, s.getCreationSurveyId());
             if (registrationSurveyInstance != null) {
                 result.add(registrationSurveyInstance);
-                // listInstancesByLocale orders by collectionDate DESC
-                result.addAll(listInstancesByLocale(s.getKey().getId(), null, null, numberOfInstances, null));
             }
         }
         return result;

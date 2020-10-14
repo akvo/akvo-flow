@@ -220,7 +220,7 @@ public class DataPointUtil {
     private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
         SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
-        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(surveyedLocaleDao.listByKeys(surveyedLocalesIds), 3);
+        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(surveyedLocaleDao.listByKeys(surveyedLocalesIds));
         return values.stream().collect(Collectors.groupingBy(SurveyInstance::getSurveyedLocaleId));
     }
 
