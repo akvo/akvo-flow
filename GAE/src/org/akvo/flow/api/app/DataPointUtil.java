@@ -69,8 +69,7 @@ public class DataPointUtil {
         HashMap<Long, String> questionTypeMap = new HashMap<>();
         QuestionDao questionDao = new QuestionDao();
 
-        List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
-        Map<Long, List<SurveyInstance>> surveyInstancesMap = getSurveyInstances(surveyedLocalesIds);
+        Map<Long, List<SurveyInstance>> surveyInstancesMap = getSurveyInstances(slList);
         Map<Long, List<QuestionAnswerStore>> questionAnswerStore = getQuestionAnswerStoreMap(
                 surveyInstancesMap);
 
@@ -216,23 +215,13 @@ public class DataPointUtil {
     /**
      * Fetches SurveyInstances using the surveyedLocalesIds and puts them in a map:
      * key: SurveyedLocalesId, value: list of SurveyInstances
+     * @param dataPointList
      */
-    private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
+    private Map<Long, List<SurveyInstance>> getSurveyInstances(List<SurveyedLocale> dataPointList) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
         SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
-        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(surveyedLocaleDao.listByKeys(surveyedLocalesIds));
+        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(dataPointList);
         return values.stream().collect(Collectors.groupingBy(SurveyInstance::getSurveyedLocaleId));
-    }
-
-    private List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
-        if (slList == null) {
-            return Collections.emptyList();
-        }
-        List<Long> surveyedLocaleIds = new ArrayList<>(slList.size());
-        for (SurveyedLocale surveyedLocale : slList) {
-            surveyedLocaleIds.add(surveyedLocale.getKey().getId());
-        }
-        return surveyedLocaleIds;
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
