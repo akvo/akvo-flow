@@ -57,6 +57,7 @@ import javax.annotation.Nonnull;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -769,15 +770,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales) {
-        List<SurveyInstance> result = new ArrayList<>();
-
+        Long registrationFormId = surveyedLocales.get(0).getCreationSurveyId();
+        List<Long> dataPointIds = new ArrayList<>();
         for (SurveyedLocale s : surveyedLocales) {
-            SurveyInstance registrationSurveyInstance = getRegistrationSurveyInstance(s, s.getCreationSurveyId());
-            if (registrationSurveyInstance != null) {
-                result.add(registrationSurveyInstance);
-            }
+            dataPointIds.add(s.getKey().getId());
         }
-        return result;
+
+        return getRegistrationFormInstances(dataPointIds, registrationFormId);
     }
 
+    private List<SurveyInstance> getRegistrationFormInstances(List<Long> dataPointIds, Long registrationFormId) {
+        if (dataPointIds == null || dataPointIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "surveyId == :p1 && :p2.contains(surveyedLocaleId)";
+        javax.jdo.Query query = pm.newQuery(SurveyInstance.class, queryString);
+
+        return (List<SurveyInstance>) query.execute(registrationFormId, dataPointIds);
+    }
 }
