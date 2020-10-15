@@ -770,6 +770,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales) {
+
+        if (surveyedLocales.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Long registrationFormId = surveyedLocales.get(0).getCreationSurveyId();
         List<Long> dataPointIds = new ArrayList<>();
         for (SurveyedLocale s : surveyedLocales) {
