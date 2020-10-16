@@ -83,7 +83,7 @@ public class DataPointUtil {
         return dtoList;
     }
 
-    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit) throws Exception {
+    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit, int offset) throws Exception {
 
         //Find the device (if any)
         DeviceDAO deviceDao = new DeviceDAO();
@@ -104,14 +104,14 @@ public class DataPointUtil {
             throw new NoDataPointsAssignedException("No datapoints assigned found");
         }
 
-        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit);
+        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit, offset);
     }
 
-    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit) {
+    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit, int offset) {
         if (assignment == null || allDataPointsAreAssigned(assignment)) {
             return getAllDataPoints(surveyId, cursor, limit);
         } else {
-            return getAssignedDataPoints(assignment);
+            return getAssignedDataPoints(assignment, limit, offset);
         }
     }
 
@@ -129,12 +129,16 @@ public class DataPointUtil {
     }
 
     /*
-     * Return only datapoints that have been explicitly assigned to a device
+     * Return only datapoints that have been explicitly assigned to a device using the offset provided by the device
      */
-    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
-        Set<Long> assignedDataPointIds = new HashSet<>();
-        assignedDataPointIds.addAll(assignment.getDataPointIds());
-        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, int limit, int offset) {
+        ArrayList<Long> ids = new ArrayList<>(new HashSet<>(assignment.getDataPointIds()));
+        Collections.sort(ids);
+        if (offset >= ids.size()) {
+            return Collections.emptyList();
+        }
+        int toIndex =  Math.min(offset + limit, ids.size());
+        return surveyedLocaleDao.listByKeys(ids.subList(offset, toIndex));
     }
 
     private SurveyedLocaleDto createSimpleSurveyedLocaleDto(SurveyedLocale surveyedLocale) {

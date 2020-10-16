@@ -20,10 +20,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
@@ -31,13 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
 
 /**
@@ -79,8 +71,9 @@ public class DataPointServlet extends AbstractRestApiServlet {
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocale> dpList;
         try {
-            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_30);
-        } catch(Exception e) {
+            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(),
+                    LIMIT_DATAPOINTS_30, dpReq.getStartRow());
+        } catch (Exception e) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             res.setMessage(e.getMessage());
             return res;
@@ -108,7 +101,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         // set meta data
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
-
+        resp.setOffset(slList.size());
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId);
 
