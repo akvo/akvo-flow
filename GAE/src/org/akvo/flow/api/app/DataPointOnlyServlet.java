@@ -70,7 +70,7 @@ public class DataPointOnlyServlet extends AbstractRestApiServlet {
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocale> dpList;
         try {
-             dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_1000);
+            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_1000, dpReq.getStartRow());
         } catch(Exception e) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             res.setMessage(e.getMessage());
