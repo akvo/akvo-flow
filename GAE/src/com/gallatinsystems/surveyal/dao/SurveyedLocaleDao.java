@@ -16,22 +16,20 @@
 
 package com.gallatinsystems.surveyal.dao;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
+import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.jdo.PersistenceManager;
-
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.SurveyUtils;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * Data access object for manipulating SurveyedLocales
@@ -80,7 +78,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * lists all locales
      *
      * @param cursor
-     * @param pagesize
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -298,7 +295,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
 
     }
-
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
         List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");

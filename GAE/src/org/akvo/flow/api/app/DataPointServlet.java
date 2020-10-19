@@ -20,10 +20,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
@@ -31,13 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
-
-import static com.gallatinsystems.common.Constants.ALL_DATAPOINTS;
 
 
 /**
@@ -87,7 +79,11 @@ public class DataPointServlet extends AbstractRestApiServlet {
         }
 
         res = convertToResponse(dpList, dpReq.getSurveyId());
-        res.setCursor(BaseDAO.getCursor(dpList));
+        String cursor = BaseDAO.getCursor(dpList);
+        if (cursor == null && dpList.size() > 0) {
+            cursor = dpList.size() + "";
+        }
+        res.setCursor(cursor);
 
         return res;
     }

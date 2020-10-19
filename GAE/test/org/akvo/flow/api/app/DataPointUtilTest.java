@@ -127,6 +127,83 @@ public class DataPointUtilTest {
         assertEquals(selectedIds, foundIds);
     }
 
+    @Test
+    public void assignedDataPointsShouldBeReturnedInBatches() throws Exception {
+
+        final Long surveyId = dataStoreTestUtil.randomId();
+        final List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 34);
+
+        final List<Long> selectedDataPointIds = dataPoints.stream()
+                .map(surveyedLocale -> surveyedLocale.getKey().getId())
+                .collect(Collectors.toList());
+
+        final Long assignmentId = dataStoreTestUtil.randomId();
+        final Long deviceId = dataStoreTestUtil.randomId();
+        final String androidId = "ABCD";
+        Device device = dataStoreTestUtil.createDevice(deviceId, androidId);
+
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, device.getKey().getId(), selectedDataPointIds, surveyId);
+
+        final DataPointUtil dpu = new DataPointUtil();
+
+        final List<SurveyedLocale> someDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, null, LIMIT_DATAPOINTS_30);
+
+        final Set<Long> foundIds = dataStoreTestUtil.getEntityIds(someDataPoints);
+
+        assertEquals(LIMIT_DATAPOINTS_30, foundIds.size());
+    }
+
+    @Test
+    public void assignedDataPointsShouldBeReturnedInBatchesUsingCursor() throws Exception {
+
+        final Long surveyId = dataStoreTestUtil.randomId();
+        final List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 34);
+
+        final List<Long> selectedDataPointIds = dataPoints.stream()
+                .map(surveyedLocale -> surveyedLocale.getKey().getId())
+                .collect(Collectors.toList());
+
+        final Long assignmentId = dataStoreTestUtil.randomId();
+        final Long deviceId = dataStoreTestUtil.randomId();
+        final String androidId = "ABCD";
+        Device device = dataStoreTestUtil.createDevice(deviceId, androidId);
+
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, device.getKey().getId(), selectedDataPointIds, surveyId);
+
+        final DataPointUtil dpu = new DataPointUtil();
+
+        final List<SurveyedLocale> someDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, "30", LIMIT_DATAPOINTS_30);
+
+        final Set<Long> foundIds = dataStoreTestUtil.getEntityIds(someDataPoints);
+
+        assertEquals(4, foundIds.size());
+    }
+
+    @Test
+    public void assignedDataPointsShouldPreventIndexOutOfBounds() throws Exception {
+
+        final Long surveyId = dataStoreTestUtil.randomId();
+        final List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 34);
+
+        final List<Long> selectedDataPointIds = dataPoints.stream()
+                .map(surveyedLocale -> surveyedLocale.getKey().getId())
+                .collect(Collectors.toList());
+
+        final Long assignmentId = dataStoreTestUtil.randomId();
+        final Long deviceId = dataStoreTestUtil.randomId();
+        final String androidId = "ABCD";
+        Device device = dataStoreTestUtil.createDevice(deviceId, androidId);
+
+        dataStoreTestUtil.createDataPointAssignment(assignmentId, device.getKey().getId(), selectedDataPointIds, surveyId);
+
+        final DataPointUtil dpu = new DataPointUtil();
+
+        final List<SurveyedLocale> someDataPoints = dpu.getAssignedDataPoints(androidId, surveyId, "60", LIMIT_DATAPOINTS_30);
+
+        final Set<Long> foundIds = dataStoreTestUtil.getEntityIds(someDataPoints);
+
+        assertEquals(0, foundIds.size());
+    }
 
     /**
      * New schema: `[0]` as data point list represent all data points

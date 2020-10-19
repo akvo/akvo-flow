@@ -16,6 +16,32 @@
 
 package com.gallatinsystems.framework.dao;
 
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
+import com.gallatinsystems.user.domain.UserAuthorization;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import net.sf.jsr107cache.CacheException;
+import org.akvo.flow.domain.SecuredObject;
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,28 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-
-import com.google.appengine.api.datastore.*;
-import net.sf.jsr107cache.CacheException;
-
-import org.akvo.flow.domain.SecuredObject;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import org.datanucleus.exceptions.NucleusObjectNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.user.dao.UserAuthorizationDAO;
-import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.domain.User;
-import com.gallatinsystems.user.domain.UserAuthorization;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
