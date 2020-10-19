@@ -78,7 +78,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * lists all locales
      *
      * @param cursor
-     * @param pagesize
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -296,7 +295,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
 
     }
-
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
         List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");

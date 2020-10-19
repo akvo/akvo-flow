@@ -83,7 +83,7 @@ public class DataPointUtil {
         return dtoList;
     }
 
-    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit, int offset) throws Exception {
+    public List<SurveyedLocale> getAssignedDataPoints(String androidId, Long surveyId, String cursor, int limit) throws Exception {
 
         //Find the device (if any)
         DeviceDAO deviceDao = new DeviceDAO();
@@ -104,14 +104,14 @@ public class DataPointUtil {
             throw new NoDataPointsAssignedException("No datapoints assigned found");
         }
 
-        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit, offset);
+        return getDataPointList(dataPointAssignments.get(0), surveyId, cursor, limit);
     }
 
-    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit, int offset) {
+    private List<SurveyedLocale> getDataPointList(DataPointAssignment assignment, Long surveyId, String cursor, int limit) {
         if (assignment == null || allDataPointsAreAssigned(assignment)) {
             return getAllDataPoints(surveyId, cursor, limit);
         } else {
-            return getAssignedDataPoints(assignment, limit, offset);
+            return getAssignedDataPoints(assignment, cursor, limit);
         }
     }
 
@@ -131,9 +131,10 @@ public class DataPointUtil {
     /*
      * Return only datapoints that have been explicitly assigned to a device using the offset provided by the device
      */
-    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, int limit, int offset) {
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, String cursor, int limit) {
         ArrayList<Long> ids = new ArrayList<>(new HashSet<>(assignment.getDataPointIds()));
         Collections.sort(ids);
+        int offset = cursor == null? 0: Integer.parseInt(cursor);
         if (offset >= ids.size()) {
             return Collections.emptyList();
         }

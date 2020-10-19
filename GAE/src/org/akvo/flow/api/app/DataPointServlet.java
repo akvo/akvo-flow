@@ -71,16 +71,19 @@ public class DataPointServlet extends AbstractRestApiServlet {
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocale> dpList;
         try {
-            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(),
-                    LIMIT_DATAPOINTS_30, dpReq.getStartRow());
-        } catch (Exception e) {
+            dpList = dpu.getAssignedDataPoints(dpReq.getAndroidId(), dpReq.getSurveyId(), dpReq.getCursor(), LIMIT_DATAPOINTS_30);
+        } catch(Exception e) {
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
             res.setMessage(e.getMessage());
             return res;
         }
 
         res = convertToResponse(dpList, dpReq.getSurveyId());
-        res.setCursor(BaseDAO.getCursor(dpList));
+        String cursor = BaseDAO.getCursor(dpList);
+        if (cursor == null && dpList.size() > 0) {
+            cursor = dpList.size() + "";
+        }
+        res.setCursor(cursor);
 
         return res;
     }
@@ -101,7 +104,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         // set meta data
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
-        resp.setOffset(slList.size());
+
         DataPointUtil dpu = new DataPointUtil();
         List<SurveyedLocaleDto> dtoList = dpu.getSurveyedLocaleDtosList(slList, surveyId);
 
