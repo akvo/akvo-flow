@@ -24,6 +24,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -81,14 +82,26 @@ public class DataPointServlet extends AbstractRestApiServlet {
         res = convertToResponse(dpList, dpReq.getSurveyId());
         String cursor = BaseDAO.getCursor(dpList);
         if (cursor == null && dpList.size() > 0) {
-            cursor = dpList.size() + "";
+            int offset = getOffsetFromRequest(dpReq.getCursor());
+            cursor = (dpList.size() + offset) + "";
         }
         res.setCursor(cursor);
 
         return res;
     }
 
-
+    private int getOffsetFromRequest(@Nullable String cursor) {
+        if (cursor == null || cursor.isEmpty()) {
+            return 0;
+        } else {
+            try {
+                return Integer.parseInt(cursor);
+            } catch (NumberFormatException e) {
+                //cursor is not a number which can happen, not an error
+                return 0;
+            }
+        }
+    }
 
 
     /**
