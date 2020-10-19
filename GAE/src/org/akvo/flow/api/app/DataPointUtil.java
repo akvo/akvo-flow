@@ -111,7 +111,7 @@ public class DataPointUtil {
         if (assignment == null || allDataPointsAreAssigned(assignment)) {
             return getAllDataPoints(surveyId, cursor, limit);
         } else {
-            return getAssignedDataPoints(assignment);
+            return getAssignedDataPoints(assignment, cursor, limit);
         }
     }
 
@@ -129,12 +129,17 @@ public class DataPointUtil {
     }
 
     /*
-     * Return only datapoints that have been explicitly assigned to a device
+     * Return only datapoints that have been explicitly assigned to a device using the offset provided by the device
      */
-    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment) {
-        Set<Long> assignedDataPointIds = new HashSet<>();
-        assignedDataPointIds.addAll(assignment.getDataPointIds());
-        return surveyedLocaleDao.listByKeys(new ArrayList<>(assignedDataPointIds));
+    private List<SurveyedLocale> getAssignedDataPoints(DataPointAssignment assignment, String cursor, int limit) {
+        ArrayList<Long> ids = new ArrayList<>(new HashSet<>(assignment.getDataPointIds()));
+        Collections.sort(ids);
+        int offset = cursor == null? 0: Integer.parseInt(cursor);
+        if (offset >= ids.size()) {
+            return Collections.emptyList();
+        }
+        int toIndex =  Math.min(offset + limit, ids.size());
+        return surveyedLocaleDao.listByKeys(ids.subList(offset, toIndex));
     }
 
     private SurveyedLocaleDto createSimpleSurveyedLocaleDto(SurveyedLocale surveyedLocale) {
