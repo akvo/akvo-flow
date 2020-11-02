@@ -76,25 +76,20 @@ FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe
   },
 
   insertMapboxMap() {
-    const options = {
-      minZoom: 2,
-      maxZoom: 18,
-      attributionControl: false,
-    };
 
     L.mapbox.accessToken = 'pk.eyJ1IjoiYWt2byIsImEiOiJzUFVwR3pJIn0.8dLa4fHG19fBwwBUJMDOSQ';
-    const baseLayers = {
-      Terrain: L.mapbox.tileLayer('akvo.he30g8mm'),
-      Streets: L.mapbox.tileLayer('akvo.he2pdjhk'),
-      Satellite: L.mapbox.tileLayer('akvo.he30neh4'),
+
+    const layers = {
+      Streets: L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v11'),
+      Outdoors: L.mapbox.styleLayer('mapbox://styles/mapbox/outdoors-v11'),
+      Satellite: L.mapbox.styleLayer('mapbox://styles/mapbox/satellite-v9'),
     };
 
-    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
-    this.map.addControl(L.control.attribution({
-      position: 'bottomright',
-      prefix: '',
-    }));
-    L.control.layers(baseLayers).addTo(this.map);
+    this.map = L.mapbox.map('flowMap')
+    .setView([-0.703107, 36.765], 2);
+
+    layers.Streets.addTo(this.map);
+    L.control.layers(layers).addTo(this.map);
   },
 
   detailsPanelListeners() {
