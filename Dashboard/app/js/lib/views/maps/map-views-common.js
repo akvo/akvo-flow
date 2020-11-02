@@ -82,7 +82,7 @@ FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe
     const layers = {
       Streets: L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v11'),
       Outdoors: L.mapbox.styleLayer('mapbox://styles/mapbox/outdoors-v11'),
-      Satellite: L.mapbox.styleLayer('mapbox://styles/mapbox/satellite-v9')
+      Satellite: L.mapbox.styleLayer('mapbox://styles/mapbox/satellite-v9'),
     };
 
     this.map = L.mapbox.map('flowMap')
