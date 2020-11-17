@@ -452,11 +452,14 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   endCopyProject() {
     const currentFolder = this.get('currentProject');
-
+    const templateIds = JSON.parse(FLOW.Env.templateIds) || [];
+    const immutable = currentFolder && templateIds.indexOf(currentFolder.get('keyId')) >= 0;
+    debugger;
     FLOW.store.findQuery(FLOW.Action, {
       action: 'copyProject',
       targetId: this.get('copyTarget').get('keyId'),
       folderId: currentFolder ? currentFolder.get('keyId') : 0,
+      immutable: immutable,
     });
 
     FLOW.store.commit();
