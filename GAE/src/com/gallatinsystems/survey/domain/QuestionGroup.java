@@ -137,7 +137,7 @@ public class QuestionGroup extends BaseDomain {
         return repeatable;
     }
 
-    public void setImmutable(boolean immutable) {
+    public void setImmutable(Boolean immutable) {
         this.immutable = immutable;
     }
 

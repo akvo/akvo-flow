@@ -74,6 +74,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("extraMapboxTileLayerLabel");
         properties.add(WEBFORM_REDIRECTION_URL);
         properties.add(CADDISFLY_TESTS_FILE_URL_KEY);
+        properties.add("templateIds");
     }
 
     @Override
