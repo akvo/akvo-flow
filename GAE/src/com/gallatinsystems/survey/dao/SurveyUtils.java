@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -99,6 +102,50 @@ public class SurveyUtils {
         queue.add(options);
 
         return newSurvey;
+    }
+
+    public static void copySurvey(Long copiedSurveyId, Long originalSurveyId, boolean immutable) {
+
+        final QuestionGroupDao qgDao = new QuestionGroupDao();
+
+        final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
+        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
+
+        if (qgList == null) {
+            log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
+                    + "} to {surveyId: " + copiedSurveyId + "}");
+            SurveyUtils.resetSurveyState(copiedSurveyId);
+            return;
+        }
+
+        log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
+
+        for (final QuestionGroup sourceGroup : qgList) {
+            // need a temp group to avoid state sharing exception
+            QuestionGroup tmpGroup = new QuestionGroup();
+            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            tmpGroup.setImmutable(immutable);
+            tmpGroup.setSurveyId(copiedSurveyId);
+
+            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
+            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
+                    qDependencyResolutionMap, null, immutable); //new survey, so id re-use is OK
+        }
+
+        final SurveyDAO sDao = new SurveyDAO();
+        final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
+        final Survey originalSurvey = sDao.getById(originalSurveyId);
+
+        MessageDao mDao = new MessageDao();
+        Message message = new Message();
+
+        message.setObjectId(copiedSurveyId);
+        message.setObjectTitle(copiedSurvey.getName());
+        message.setActionAbout("copySurvey");
+        message.setShortMessage("Copying from Survey " + originalSurveyId + " ("
+                + originalSurvey.getName() + ") completed");
+        mDao.save(message);
+
     }
 
 
