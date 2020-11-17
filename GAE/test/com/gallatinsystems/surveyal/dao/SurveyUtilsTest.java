@@ -20,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,6 +50,10 @@ public class SurveyUtilsTest {
         List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
         assertEquals(1, qgs.size());
         assertTrue(qgs.get(0).getImmutable());
+
+        List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, questions.size());
+        assertTrue(questions.get(0).getImmutable());
     }
 
     private Survey copySurvey(Survey sourceSurvey) {
@@ -83,6 +86,7 @@ public class SurveyUtilsTest {
         QuestionGroup newQg = new QuestionGroupDao().save(qg);
 
         Question q = new Question();
+        q.setType(Question.Type.FREE_TEXT);
         q.setQuestionGroupId(newQg.getKey().getId());
         q.setSurveyId(newSurvey.getKey().getId());
         new QuestionDao().save(q);
