@@ -46,6 +46,7 @@ public class QuestionGroup extends BaseDomain {
     private Integer order;
     private Boolean repeatable;
     private Status status = null;
+    private Boolean immutable = false;
 
     public enum Status {
         READY, COPYING
@@ -134,6 +135,14 @@ public class QuestionGroup extends BaseDomain {
     
     public Boolean getRepeatable() {
         return repeatable;
+    }
+
+    public void setImmutable(boolean immutable) {
+        this.immutable = immutable;
+    }
+
+    public Boolean getImmutable() {
+        return immutable;
     }
     
 }

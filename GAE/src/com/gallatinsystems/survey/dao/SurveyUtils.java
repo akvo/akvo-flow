@@ -58,7 +58,7 @@ public class SurveyUtils {
 
     private static final Logger log = Logger.getLogger(SurveyUtils.class.getName());
 
-    public static Survey copySurvey(Survey source, SurveyDto dto) {
+    public static Survey copySurvey(Survey source, SurveyDto dto, boolean immutable) {
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey tmp = new Survey();
@@ -93,7 +93,8 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.SURVEY_ID_PARAM,
                         String.valueOf(newSurvey.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()));
+                        String.valueOf(source.getKey().getId()))
+                .param(DataProcessorRequest.IMMUTABLE_PARAM, String.valueOf(immutable));
 
         queue.add(options);
 
@@ -111,7 +112,7 @@ public class SurveyUtils {
      * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
      */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
-            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse) {
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse, boolean immutable) {
 
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
@@ -132,7 +133,7 @@ public class SurveyUtils {
         List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
-                    newSurveyId, idsInUse);
+                    newSurveyId, idsInUse, immutable);
             qCopyList.add(questionCopy);
         }
 
@@ -171,7 +172,7 @@ public class SurveyUtils {
      * copies one question, ensuring that it has a unique questionId
      */
     public static Question copyQuestion(Question source,
-            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse) {
+            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse, boolean immutable) {
 
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -192,6 +193,7 @@ public class SurveyUtils {
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
+        tmp.setImmutable(immutable);
 
         if (source.getVariableName() != null) {
             if (idsInUse != null) { //must avoid these
@@ -209,6 +211,7 @@ public class SurveyUtils {
                 log.log(Level.FINE, "Keeping QuestionId " + source.getVariableName());
             }
         }
+
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
