@@ -273,10 +273,12 @@
     <nav class="smallMenu">
       <ul>
 		{{#if view.showQuestionModifyButtons}}
+      {{#unless view.content.immutable}}
         <li><a {{action confirm FLOW.dialogControl.delQ target="FLOW.dialogControl"}} class="deleteQuestion">{{t _delete}}</a> </li>
         <li><a {{action "doQuestionCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
         <li><a {{action "doQuestionMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
         <li><a {{action "doQuestionEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
+      {{/unless}}
 		{{/if}}
       </ul>
     </nav>
