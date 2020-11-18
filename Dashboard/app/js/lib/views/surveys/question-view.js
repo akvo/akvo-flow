@@ -953,6 +953,10 @@ FLOW.QuestionView = FLOW.View.extend(
       });
     },
 
+    immutableGroup: Ember.computed(() => {
+      return FLOW.selectedControl.selectedQuestionGroup.get('immutable');
+    }).property('FLOW.selectedControl.selectedQuestionGroup'),
+
     showQuestionModifyButtons: Ember.computed(() => {
       const form = FLOW.selectedControl.get('selectedSurvey');
       return FLOW.permControl.canEditForm(form);

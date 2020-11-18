@@ -35,6 +35,7 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private Long sourceId;
     private Boolean repeatable;
     private String status;
+    private Boolean immutable;
 
     public Integer getOrder() {
         return order;
@@ -127,5 +128,12 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     public Boolean getRepeatable() {
         return repeatable;
     }
-    
+
+    public Boolean getImmutable() {
+        return immutable;
+    }
+
+    public void setImmutable(Boolean immutable) {
+        this.immutable = immutable;
+    }
 }

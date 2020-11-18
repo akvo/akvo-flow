@@ -176,6 +176,9 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
   repeatable: DS.attr('boolean', {
     defaultValue: false,
   }),
+  immutable: DS.attr('boolean', {
+    defaultValue: false,
+  }),
 });
 
 FLOW.Question = FLOW.BaseModel.extend({

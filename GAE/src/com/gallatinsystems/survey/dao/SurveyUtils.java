@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +61,7 @@ public class SurveyUtils {
 
     private static final Logger log = Logger.getLogger(SurveyUtils.class.getName());
 
-    public static Survey copySurvey(Survey source, SurveyDto dto) {
+    public static Survey copySurvey(Survey source, SurveyDto dto, boolean immutable) {
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey tmp = new Survey();
@@ -93,11 +96,56 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.SURVEY_ID_PARAM,
                         String.valueOf(newSurvey.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()));
+                        String.valueOf(source.getKey().getId()))
+                .param(DataProcessorRequest.IMMUTABLE_PARAM, String.valueOf(immutable));
 
         queue.add(options);
 
         return newSurvey;
+    }
+
+    public static void copySurvey(Long copiedSurveyId, Long originalSurveyId, boolean immutable) {
+
+        final QuestionGroupDao qgDao = new QuestionGroupDao();
+
+        final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
+        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
+
+        if (qgList == null) {
+            log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
+                    + "} to {surveyId: " + copiedSurveyId + "}");
+            SurveyUtils.resetSurveyState(copiedSurveyId);
+            return;
+        }
+
+        log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
+
+        for (final QuestionGroup sourceGroup : qgList) {
+            // need a temp group to avoid state sharing exception
+            QuestionGroup tmpGroup = new QuestionGroup();
+            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            tmpGroup.setImmutable(immutable);
+            tmpGroup.setSurveyId(copiedSurveyId);
+
+            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
+            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
+                    qDependencyResolutionMap, null, immutable); //new survey, so id re-use is OK
+        }
+
+        final SurveyDAO sDao = new SurveyDAO();
+        final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
+        final Survey originalSurvey = sDao.getById(originalSurveyId);
+
+        MessageDao mDao = new MessageDao();
+        Message message = new Message();
+
+        message.setObjectId(copiedSurveyId);
+        message.setObjectTitle(copiedSurvey.getName());
+        message.setActionAbout("copySurvey");
+        message.setShortMessage("Copying from Survey " + originalSurveyId + " ("
+                + originalSurvey.getName() + ") completed");
+        mDao.save(message);
+
     }
 
 
@@ -111,7 +159,7 @@ public class SurveyUtils {
      * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
      */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
-            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse) {
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse, boolean immutable) {
 
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
@@ -132,7 +180,7 @@ public class SurveyUtils {
         List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
-                    newSurveyId, idsInUse);
+                    newSurveyId, idsInUse, immutable);
             qCopyList.add(questionCopy);
         }
 
@@ -171,7 +219,7 @@ public class SurveyUtils {
      * copies one question, ensuring that it has a unique questionId
      */
     public static Question copyQuestion(Question source,
-            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse) {
+            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse, boolean immutable) {
 
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -192,6 +240,7 @@ public class SurveyUtils {
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
+        tmp.setImmutable(immutable);
 
         if (source.getVariableName() != null) {
             if (idsInUse != null) { //must avoid these
@@ -209,6 +258,7 @@ public class SurveyUtils {
                 log.log(Level.FINE, "Keeping QuestionId " + source.getVariableName());
             }
         }
+
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 

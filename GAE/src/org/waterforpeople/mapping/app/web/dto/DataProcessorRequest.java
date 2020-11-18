@@ -73,6 +73,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String DELETE_CHILD_CASCADE_NODES = "deleteCascadeNodes";
     public static final String UPDATE_SURVEY_INSTANCE_SUMMARIES = "updateSurveyInstanceSummaries";
     public static final int MAX_TASK_RETRIES = 3;
+    public static final String IMMUTABLE_PARAM = "immutable";
 
     private String country;
     private String source;
@@ -90,6 +91,7 @@ public class DataProcessorRequest extends RestRequest {
     private Long parentNodeId = null;
     private List<Long> dependentQuestionIds;
     private int retry = 0;
+    private Boolean immutable = false;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
@@ -214,6 +216,10 @@ public class DataProcessorRequest extends RestRequest {
             } catch (NumberFormatException e) {
                 // no-op
             }
+        }
+
+        if(req.getParameter(IMMUTABLE_PARAM) != null) {
+            setImmutable(Boolean.valueOf(req.getParameter(IMMUTABLE_PARAM)));
         }
     }
 
@@ -351,6 +357,14 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setSurveyGroupId(Long surveyGroupId) {
         this.surveyGroupId = surveyGroupId;
+    }
+
+    public Boolean getImmutable() {
+        return immutable;
+    }
+
+    public void setImmutable(Boolean immutable) {
+        this.immutable = immutable;
     }
 
 }
