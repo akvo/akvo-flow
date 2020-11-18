@@ -19,6 +19,8 @@ package org.akvo.flow.api.app;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Key;
@@ -137,5 +139,15 @@ public class DataStoreTestUtil {
 
     public Collection<SurveyInstance> saveFormInstances(List<SurveyInstance> formInstances) {
         return new SurveyInstanceDAO().save(formInstances);
+    }
+
+    public Translation createTranslation(Long surveyId, long parentId, Translation.ParentType parentType, String translationText, String languageCode) {
+        Translation translation = new Translation();
+        translation.setText(translationText);
+        translation.setLanguageCode(languageCode);
+        translation.setSurveyId(surveyId);
+        translation.setParentId(parentId);
+        translation.setParentType(parentType);
+        return new TranslationDao().save(translation);
     }
 }
