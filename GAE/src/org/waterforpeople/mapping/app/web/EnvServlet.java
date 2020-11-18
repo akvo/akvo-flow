@@ -135,6 +135,10 @@ public class EnvServlet extends HttpServlet {
             props.put("extraMapboxTileLayerLabel", "");
         }
 
+        if (props.get("templateIds") == null) {
+            props.put("templateIds", "[]");
+        }
+
         props.put("appId", SystemProperty.applicationId.get());
 
         if (!"false".equalsIgnoreCase(props.get(SHOW_MAPS_PROPERTY_KEY))) {
