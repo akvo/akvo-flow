@@ -16,15 +16,16 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.domain.Translation;
-
-import javax.jdo.PersistenceManager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.Translation;
 
 /**
  * dao for manipulating Translation objects

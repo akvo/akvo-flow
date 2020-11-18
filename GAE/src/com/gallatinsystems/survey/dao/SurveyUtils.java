@@ -32,16 +32,6 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import org.akvo.flow.dao.MessageDao;
-import org.akvo.flow.domain.Message;
-import org.akvo.flow.domain.SecuredObject;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
-import org.springframework.beans.BeanUtils;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +43,15 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
+import org.akvo.flow.domain.SecuredObject;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 
 
 public class SurveyUtils {
