@@ -390,9 +390,14 @@ public class SurveyUtils {
 
     private static void updateTranslation(Map<Long, Translation> copiedTranslations, Long originalParentId,
                                           Long parentId, Long questionGroupId) {
+        if (copiedTranslations.size() > 0) {
+            return;
+        }
         Translation translation = copiedTranslations.get(originalParentId);
-        translation.setParentId(parentId);
-        translation.setQuestionGroupId(questionGroupId);
+        if (translation != null) {
+            translation.setParentId(parentId);
+            translation.setQuestionGroupId(questionGroupId);
+        }
     }
 
     public static Survey resetSurveyState(Long surveyId) {
