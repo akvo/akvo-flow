@@ -143,11 +143,12 @@ public class SurveyUtilsTest {
         qg.setName("question group");
         qg.setSurveyId(newSurvey.getKey().getId());
         QuestionGroup newQg = new QuestionGroupDao().save(qg);
-        dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), newQg.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
+        long questionGroupId = newQg.getKey().getId();
+        dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), questionGroupId, Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
 
         Question q = new Question();
         q.setType(Question.Type.OPTION);
-        q.setQuestionGroupId(newQg.getKey().getId());
+        q.setQuestionGroupId(questionGroupId);
         q.setSurveyId(newSurvey.getKey().getId());
         Question question = new QuestionDao().save(q);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
