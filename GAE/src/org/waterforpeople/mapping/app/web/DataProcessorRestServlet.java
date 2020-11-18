@@ -126,7 +126,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             status.setValue("inProgress, target=" + dpReq.getSurveyId());
             statusDao.save(status);
 
-            copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()), dpReq.getImmutable());
+            SurveyUtils.copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()), dpReq.getImmutable());
 
             // now update the status
             status.setInError(false);
@@ -414,51 +414,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             pm.makePersistentAll(toRemove); // some objects are in "transient" state
             dao.delete(toRemove);
         }
-    }
-
-
-    private void copySurvey(Long copiedSurveyId, Long originalSurveyId, boolean immutable) {
-
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-
-        final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
-        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
-
-        if (qgList == null) {
-            log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
-                    + "} to {surveyId: " + copiedSurveyId + "}");
-            SurveyUtils.resetSurveyState(copiedSurveyId);
-            return;
-        }
-
-        log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
-
-        for (final QuestionGroup sourceGroup : qgList) {
-            // need a temp group to avoid state sharing exception
-            QuestionGroup tmpGroup = new QuestionGroup();
-            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
-            tmpGroup.setImmutable(immutable);
-            tmpGroup.setSurveyId(copiedSurveyId);
-
-            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
-            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
-                    qDependencyResolutionMap, null, immutable); //new survey, so id re-use is OK
-        }
-
-        final SurveyDAO sDao = new SurveyDAO();
-        final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
-        final Survey originalSurvey = sDao.getById(originalSurveyId);
-
-        MessageDao mDao = new MessageDao();
-        Message message = new Message();
-
-        message.setObjectId(copiedSurveyId);
-        message.setObjectTitle(copiedSurvey.getName());
-        message.setActionAbout("copySurvey");
-        message.setShortMessage("Copying from Survey " + originalSurveyId + " ("
-                + originalSurvey.getName() + ") completed");
-        mDao.save(message);
-
     }
 
     /**
