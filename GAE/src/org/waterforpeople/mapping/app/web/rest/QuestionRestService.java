@@ -25,6 +25,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -421,7 +422,6 @@ public class QuestionRestService {
             return null;
         }
         return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                source.getSurveyId(),
                 SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()), false);
     }
 

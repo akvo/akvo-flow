@@ -39,9 +39,7 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
-import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.DataUtils;
-import org.akvo.flow.domain.Message;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -147,7 +145,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
                 Long surveyId = originalQuestionGroup.getSurveyId();
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId), false);
+                        surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId), false, copiedTranslations);
 
                 newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
                 qgDao.save(newQuestionGroup);
