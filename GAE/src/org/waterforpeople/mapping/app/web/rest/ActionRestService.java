@@ -81,7 +81,8 @@ public class ActionRestService {
             @RequestParam(value = "version", defaultValue = "") String version,
             @RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions,
             @RequestParam(value = "targetId", defaultValue = "") Long targetId,
-            @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
+            @RequestParam(value = "folderId", defaultValue = "") Long folderId,
+            @RequestParam(value = "immutable", defaultValue = "false") Boolean immutable) {
         String status = "failed";
         String message = "";
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -112,7 +113,7 @@ public class ActionRestService {
         } else if ("publishCascade".equals(action)) {
             status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
-            status = copyProject(targetId, folderId);
+            status = copyProject(targetId, folderId, immutable);
         }
 
         statusDto.setStatus(status);
@@ -276,7 +277,7 @@ public class ActionRestService {
         }
     }
 
-    private String copyProject(Long targetId, Long folderId) {
+    private String copyProject(Long targetId, Long folderId, boolean immutable) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
         SurveyGroup projectParent = null;
@@ -325,7 +326,7 @@ public class ActionRestService {
             surveyDto.setName(sourceSurvey.getName());
             surveyDto.setPath(projectCopy.getPath() + "/" + sourceSurvey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
+            Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto, immutable);
             surveyCopy.setAncestorIds(surveysAncestorIds);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
