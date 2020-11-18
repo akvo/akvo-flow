@@ -126,7 +126,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             status.setValue("inProgress, target=" + dpReq.getSurveyId());
             statusDao.save(status);
 
-            copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
+            copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()), dpReq.getImmutable());
 
             // now update the status
             status.setInError(false);
@@ -147,7 +147,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
                 Long surveyId = originalQuestionGroup.getSurveyId();
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId));
+                        surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId), false);
 
                 newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
                 qgDao.save(newQuestionGroup);
@@ -417,7 +417,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
 
 
-    private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
+    private void copySurvey(Long copiedSurveyId, Long originalSurveyId, boolean immutable) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
 
@@ -437,11 +437,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             // need a temp group to avoid state sharing exception
             QuestionGroup tmpGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            tmpGroup.setImmutable(immutable);
             tmpGroup.setSurveyId(copiedSurveyId);
 
             final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
-                    qDependencyResolutionMap, null); //new survey, so id re-use is OK
+                    qDependencyResolutionMap, null, immutable); //new survey, so id re-use is OK
         }
 
         final SurveyDAO sDao = new SurveyDAO();
