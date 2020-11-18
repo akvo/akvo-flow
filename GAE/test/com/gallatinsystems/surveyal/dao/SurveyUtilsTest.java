@@ -87,8 +87,8 @@ public class SurveyUtilsTest {
         assertEquals(3, translations.size());
 
         List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(translations.get(0).getParentId(), qgs.get(0).getKey().getId());
-        assertEquals(translations.get(2).getText(), "uno");
+        assertEquals(qgs.get(0).getKey().getId(), translations.get(0).getParentId());
+        assertEquals( "uno", translations.get(2).getText());
     }
 
     private Survey copySurvey(Survey sourceSurvey) {
