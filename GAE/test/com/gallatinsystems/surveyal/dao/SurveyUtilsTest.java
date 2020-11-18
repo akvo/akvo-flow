@@ -19,28 +19,28 @@ package com.gallatinsystems.surveyal.dao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import java.util.List;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SurveyUtilsTest {
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -82,10 +82,11 @@ public class SurveyUtilsTest {
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
 
         List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
-        assertEquals(2, translations.size());
+        assertEquals(3, translations.size());
 
         List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
         assertEquals(translations.get(0).getParentId(), qgs.get(0).getKey().getId());
+        assertEquals(translations.get(2).getText(), "uno");
     }
 
     private Survey copySurvey(Survey sourceSurvey) {
@@ -143,12 +144,18 @@ public class SurveyUtilsTest {
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), newQg.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
 
         Question q = new Question();
-        q.setType(Question.Type.FREE_TEXT);
+        q.setType(Question.Type.OPTION);
         q.setQuestionGroupId(newQg.getKey().getId());
         q.setSurveyId(newSurvey.getKey().getId());
-
         Question question = new QuestionDao().save(q);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
+
+        QuestionOption questionOption = new QuestionOption();
+        questionOption.setCode("1");
+        questionOption.setText("1");
+        questionOption.setQuestionId(question.getKey().getId());
+        QuestionOption saved = new QuestionOptionDao().save(questionOption);
+        dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), saved.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
         return newSurvey;
     }
 

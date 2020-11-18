@@ -25,10 +25,14 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.akvo.flow.domain.mapper.QuestionDtoMapper;
 import org.akvo.flow.domain.mapper.QuestionOptionDtoMapper;
 import org.springframework.beans.BeanUtils;
@@ -46,12 +50,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/questions")
@@ -421,8 +419,8 @@ public class QuestionRestService {
             // source question not found, the getByKey already logged the problem
             return null;
         }
-        return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()), false);
+        Set<String> idsInUse = SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId());
+        return SurveyUtils.copyQuestionWithTranslations(idsInUse, false, dto.getQuestionGroupId(), dto.getOrder(), source);
     }
 
     private Question newQuestion(QuestionDto dto) {
