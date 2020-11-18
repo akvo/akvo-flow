@@ -130,4 +130,8 @@ public class TranslationDao extends BaseDAO<Translation> {
         List<Translation> tList = (List<Translation>) q.execute();
         return tList;
     }
+
+    public List<Translation> listByFormId(long id) {
+        return listByProperty("surveyId", id, "Long");
+    }
 }
