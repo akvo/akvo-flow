@@ -499,7 +499,6 @@ public class SurveyUtils {
             Translation copy = new Translation();
             BeanUtils.copyProperties(t, copy, Constants.EXCLUDED_PROPERTIES);
             copy.setSurveyId(targetFormId);
-            translationDao.save(copy);
             targetFormTranslations.put(t.getParentId(), copy);
         }
         return targetFormTranslations;
