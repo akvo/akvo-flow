@@ -34,6 +34,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
@@ -76,12 +77,45 @@ public class SurveyUtilsTest {
     }
 
     @Test
-    public void testCopyTranslations() throws Exception {
+    public void testCopyTranslationsOfTemplateSurvey() throws Exception {
 
         Survey sourceSurvey = createSurveyWithTranslation();
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
+
+        List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
+        assertEquals(3, translations.size());
+
+        List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(qgs.get(0).getKey().getId(), translations.get(0).getParentId());
+        assertEquals( "uno", translations.get(2).getText());
+    }
+
+    @Test
+    public void testCopySurvey() throws Exception {
+
+        Survey sourceSurvey = createSurvey();
+        Survey copiedSurvey = copySurvey(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
+
+        List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, qgs.size());
+        assertFalse(qgs.get(0).getImmutable());
+
+        List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, questions.size());
+        assertFalse(questions.get(0).getImmutable());
+    }
+
+    @Test
+    public void testCopyTranslations() throws Exception {
+
+        Survey sourceSurvey = createSurveyWithTranslation();
+        Survey copiedSurvey = copySurvey(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
 
         List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
         assertEquals(3, translations.size());
