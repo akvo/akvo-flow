@@ -422,7 +422,7 @@ public class QuestionRestService {
             return null;
         }
         Set<String> idsInUse = SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId());
-        return SurveyUtils.copyQuestionWithTranslations(idsInUse, false, dto.getQuestionGroupId(), dto.getOrder(), source);
+        return SurveyUtils.copyQuestion(idsInUse, false, dto.getQuestionGroupId(), dto.getOrder(), source);
     }
 
     private Question newQuestion(QuestionDto dto) {
