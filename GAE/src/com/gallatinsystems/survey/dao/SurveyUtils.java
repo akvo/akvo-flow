@@ -196,17 +196,21 @@ public class SurveyUtils {
     /**
      * @param sourceGroup
      * @param copyGroup
+     * @param newSurveyId
      * @param qDependencyResolutionMap
      * @return
      *
-     * copies all the content of a question group: questions, options and all their translations
+     * copies all the content of a question group: group's translations, questions, options and all their translations
      */
-    public static QuestionGroup copyQuestionGroupContent(QuestionGroup sourceGroup, QuestionGroup copyGroup,
+    public static QuestionGroup copyQuestionGroupContent(QuestionGroup sourceGroup, QuestionGroup copyGroup, Long newSurveyId,
                                                          Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse,
                                                          boolean immutable) {
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
+
+        SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
+                ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
 
         List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceGroupId);
 
