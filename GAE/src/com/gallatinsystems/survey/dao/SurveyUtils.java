@@ -119,18 +119,19 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        for (final QuestionGroup sourceGroup : qgList) {
-            // need a temp group to avoid state sharing exception
-            QuestionGroup tmpGroup = new QuestionGroup();
-            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
-            tmpGroup.setImmutable(immutable);
-            tmpGroup.setSurveyId(copiedSurveyId);
+        Map<Long, QuestionGroup> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, immutable, qgList);
 
-            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
-            SurveyUtils.copyQuestionGroupContent(sourceGroup, copyGroup,
+        // batch save question groups
+        new QuestionGroupDao().save(sourceToCopiedGroupMap.values());
+
+        for(Map.Entry<Long, QuestionGroup> entry : sourceToCopiedGroupMap.entrySet()) {
+            Long sourceGroupId = entry.getKey();
+            Long copyGroupId = entry.getValue().getKey().getId();
+
+            SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroupId,
                     qDependencyResolutionMap, null, immutable, copiedTranslations); //new survey, so id re-use is OK
-            updateTranslation(copiedTranslations, sourceGroup.getKey().getId(), copyGroup.getKey().getId(),
-                    copyGroup.getKey().getId());
+            updateTranslation(copiedTranslations, sourceGroupId, copyGroupId,
+                    copyGroupId);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -153,28 +154,36 @@ public class SurveyUtils {
 
     }
 
+    public static Map<Long, QuestionGroup> shallowCopyQuestionGroups(Long formId, boolean immutable, List<QuestionGroup> questionGroupList) {
+        Map<Long, QuestionGroup> sourceToCopiedGroupMap = new HashMap<>();
+        for (final QuestionGroup sourceGroup : questionGroupList) {
+            // need a temp group to avoid state sharing exception
+            QuestionGroup copyGroup = new QuestionGroup();
+            SurveyUtils.shallowCopy(sourceGroup, copyGroup);
+            copyGroup.setImmutable(immutable);
+            copyGroup.setSurveyId(formId);
+
+            sourceToCopiedGroupMap.put(sourceGroup.getKey().getId(), copyGroup);
+        }
+        return sourceToCopiedGroupMap;
+    }
+
 
     /**
-     * @param sourceGroup
-     * @param copyGroup
+     * @param sourceGroupId
+     * @param copyGroupId
      * @param qDependencyResolutionMap
      * @param translationMap
-     * @return
-     *
-     * copies all the content of a question group: questions, options and updated the translations map with the new
-     * parent object ids as translations were copied in the previous step
      */
-    public static QuestionGroup copyQuestionGroupContent(QuestionGroup sourceGroup, QuestionGroup copyGroup,
-                                                         Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse,
-                                                         boolean immutable, Map<Long, Translation> translationMap) {
+    public static void copyQuestionGroupContent(Long sourceGroupId, Long copyGroupId,
+                                                Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse,
+                                                boolean immutable, Map<Long, Translation> translationMap) {
         final QuestionDao qDao = new QuestionDao();
-        final Long sourceGroupId = sourceGroup.getKey().getId();
-        final Long copyGroupId = copyGroup.getKey().getId();
 
         List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceGroupId);
 
         if (qList == null) {
-            return copyGroup;
+            return;
         }
 
         log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
@@ -189,8 +198,6 @@ public class SurveyUtils {
         }
 
         fixGroupDependencies(qDependencyResolutionMap, qDao, qCopyList);
-
-        return copyGroup;
     }
 
     /**
