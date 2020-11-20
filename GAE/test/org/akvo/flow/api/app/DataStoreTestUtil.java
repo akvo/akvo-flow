@@ -19,7 +19,17 @@ package org.akvo.flow.api.app;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -149,5 +159,42 @@ public class DataStoreTestUtil {
         translation.setParentId(parentId);
         translation.setParentType(parentType);
         return new TranslationDao().save(translation);
+    }
+
+    public SurveyGroup createSurveyGroup() {
+        SurveyGroup sg = new SurveyGroup();
+        return new SurveyGroupDAO().save(sg);
+    }
+
+    public Survey createSurvey(SurveyGroup newSg) {
+        Survey survey = new Survey();
+        survey.setName("Simple survey");
+        survey.setSurveyGroupId(newSg.getKey().getId());
+        return new SurveyDAO().save(survey);
+    }
+
+    public QuestionGroup createQuestionGroup(Survey newSurvey) {
+        QuestionGroup qg = new QuestionGroup();
+        qg.setName("question group");
+        qg.setSurveyId(newSurvey.getKey().getId());
+        return new QuestionGroupDao().save(qg);
+    }
+
+    public Question createQuestion(Survey newSurvey, long questionGroupId, Question.Type type) {
+        Question q = new Question();
+        q.setType(type);
+        q.setQuestionGroupId(questionGroupId);
+        q.setSurveyId(newSurvey.getKey().getId());
+        Question question = new QuestionDao().save(q);
+        return question;
+    }
+
+    public QuestionOption createQuestionOption(Question question) {
+        QuestionOption questionOption = new QuestionOption();
+        questionOption.setCode("1");
+        questionOption.setText("1");
+        questionOption.setQuestionId(question.getKey().getId());
+        QuestionOption saved = new QuestionOptionDao().save(questionOption);
+        return saved;
     }
 }

@@ -144,7 +144,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (originalQuestionGroup != null && newQuestionGroup != null) {
 
                 Long surveyId = originalQuestionGroup.getSurveyId();
-                SurveyUtils.copyQuestionGroupContentWithTranslations(originalQuestionGroup, newQuestionGroup, null,
+                SurveyUtils.copyQuestionGroupContent(originalQuestionGroup, newQuestionGroup, surveyId, null,
                         SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId), false);
 
                 newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied

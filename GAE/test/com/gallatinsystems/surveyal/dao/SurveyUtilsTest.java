@@ -21,7 +21,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
@@ -34,6 +33,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
@@ -76,12 +76,45 @@ public class SurveyUtilsTest {
     }
 
     @Test
-    public void testCopyTranslations() throws Exception {
+    public void testCopyTranslationsOfTemplateSurvey() throws Exception {
 
-        Survey sourceSurvey = createSurveyWithTranslation();
+        Survey sourceSurvey = createSurveyWithTranslations();
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
+
+        List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
+        assertEquals(3, translations.size());
+
+        List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(qgs.get(0).getKey().getId(), translations.get(0).getParentId());
+        assertEquals( "uno", translations.get(2).getText());
+    }
+
+    @Test
+    public void testCopySurvey() throws Exception {
+
+        Survey sourceSurvey = createSurvey();
+        Survey copiedSurvey = copySurvey(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
+
+        List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, qgs.size());
+        assertFalse(qgs.get(0).getImmutable());
+
+        List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, questions.size());
+        assertFalse(questions.get(0).getImmutable());
+    }
+
+    @Test
+    public void testCopyTranslations() throws Exception {
+
+        Survey sourceSurvey = createSurveyWithTranslations();
+        Survey copiedSurvey = copySurvey(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
 
         List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
         assertEquals(3, translations.size());
@@ -107,59 +140,29 @@ public class SurveyUtilsTest {
 
     private Survey createSurvey() {
 
-        SurveyGroup sg = new SurveyGroup();
-        SurveyGroup newSg = new SurveyGroupDAO().save(sg);
+        SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
+        Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
 
-        Survey survey = new Survey();
-        survey.setName("Simple survey");
-        survey.setSurveyGroupId(newSg.getKey().getId());
-        Survey newSurvey = new SurveyDAO().save(survey);
-
-        QuestionGroup qg = new QuestionGroup();
-        qg.setName("quesitongroup");
-        qg.setSurveyId(newSurvey.getKey().getId());
-        QuestionGroup newQg = new QuestionGroupDao().save(qg);
-
-        Question q = new Question();
-        q.setType(Question.Type.FREE_TEXT);
-        q.setQuestionGroupId(newQg.getKey().getId());
-        q.setSurveyId(newSurvey.getKey().getId());
-        new QuestionDao().save(q);
+        dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT);
 
         return newSurvey;
     }
 
-    private Survey createSurveyWithTranslation() {
+    private Survey createSurveyWithTranslations() {
 
-        SurveyGroup sg = new SurveyGroup();
-        SurveyGroup newSg = new SurveyGroupDAO().save(sg);
+        SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
+        Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
 
-        Survey survey = new Survey();
-        survey.setName("Simple survey");
-        survey.setSurveyGroupId(newSg.getKey().getId());
-        Survey newSurvey = new SurveyDAO().save(survey);
-
-        QuestionGroup qg = new QuestionGroup();
-        qg.setName("question group");
-        qg.setSurveyId(newSurvey.getKey().getId());
-        QuestionGroup newQg = new QuestionGroupDao().save(qg);
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
         long questionGroupId = newQg.getKey().getId();
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), questionGroupId, Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
 
-        Question q = new Question();
-        q.setType(Question.Type.OPTION);
-        q.setQuestionGroupId(questionGroupId);
-        q.setSurveyId(newSurvey.getKey().getId());
-        Question question = new QuestionDao().save(q);
+        Question question = dataStoreTestUtil.createQuestion(newSurvey, questionGroupId, Question.Type.OPTION);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
 
-        QuestionOption questionOption = new QuestionOption();
-        questionOption.setCode("1");
-        questionOption.setText("1");
-        questionOption.setQuestionId(question.getKey().getId());
-        QuestionOption saved = new QuestionOptionDao().save(questionOption);
+        QuestionOption saved = dataStoreTestUtil.createQuestionOption(question);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), saved.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
         return newSurvey;
     }
-
 }
