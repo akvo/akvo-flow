@@ -105,8 +105,9 @@ public class SurveyUtilsTest {
         List<Question> copiedSurveyQuestions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
         assertEquals(24, copiedSurveyQuestions.size());
 
-        Map<Integer, Question> copiedQuestionsForOneGroup = new QuestionDao().listQuestionsByQuestionGroup(copiedQuestionGroups.get(0).getKey().getId(), false);
+        List<Question> copiedQuestionsForOneGroup = new QuestionDao().listQuestionsInOrderForGroup(copiedQuestionGroups.get(0).getKey().getId());
         assertEquals(4, copiedQuestionsForOneGroup.size());
+        assertEquals(copiedSurvey.getKey().getId(), copiedQuestionsForOneGroup.get(0).getSurveyId());
     }
 
     @Test
