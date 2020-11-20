@@ -2,6 +2,7 @@ package org.akvo.gae.remoteapi;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -70,10 +71,12 @@ public class FixOldTranslations implements Process {
         System.out.println("Fixing QuestionOption translation");
         Long parentId = (Long) t.getProperty("parentId");
         if (parentId != null) {
-            final Query.Filter fs = new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY,
-                    Query.FilterOperator.EQUAL, KeyFactory.createKey("QuestionOption", parentId));
-            final Query q = new Query("QuestionOption").setFilter(fs);
-            Entity option = ds.prepare(q).asSingleEntity();
+            Entity option = null;
+            try {
+                option = ds.get(KeyFactory.createKey("QuestionOption", parentId));
+            } catch (EntityNotFoundException e) {
+                e.printStackTrace();
+            }
             if (option != null) {
                 final Entity question = fetchQuestion(ds, (Long) option.getProperty("questionId"));
                 if (question != null) {
@@ -111,19 +114,23 @@ public class FixOldTranslations implements Process {
         if (groupId == null) {
             return null;
         }
-        final Query.Filter fs = new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY,
-                Query.FilterOperator.EQUAL, KeyFactory.createKey("QuestionGroup", groupId));
-        final Query q = new Query("QuestionGroup").setFilter(fs);
-        return ds.prepare(q).asSingleEntity();
+        try {
+            return ds.get(KeyFactory.createKey("QuestionGroup", groupId));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private Entity fetchQuestion(DatastoreService ds, Long questionId) {
         if (questionId == null) {
             return null;
         }
-        final Query.Filter fs = new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY,
-                Query.FilterOperator.EQUAL, KeyFactory.createKey("Question", questionId));
-        final Query q = new Query("Question").setFilter(fs);
-        return ds.prepare(q).asSingleEntity();
+        try {
+            return ds.get( KeyFactory.createKey("Question", questionId));
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
