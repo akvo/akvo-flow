@@ -19,7 +19,6 @@ package com.gallatinsystems.surveyal.dao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.TranslationDao;
@@ -40,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,7 +61,7 @@ public class SurveyUtilsTest {
     @Test
     public void testCopyTemplateSurvey() throws Exception {
 
-        Survey sourceSurvey = createSurvey();
+        Survey sourceSurvey = createSurvey(1, 1);
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
@@ -94,18 +94,19 @@ public class SurveyUtilsTest {
     @Test
     public void testCopySurvey() throws Exception {
 
-        Survey sourceSurvey = createSurvey();
+        Survey sourceSurvey = createSurvey(6, 4);
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
 
-        List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(1, qgs.size());
-        assertFalse(qgs.get(0).getImmutable());
+        List<QuestionGroup> copiedQuestionGroups = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(6, copiedQuestionGroups.size());
 
-        List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(1, questions.size());
-        assertFalse(questions.get(0).getImmutable());
+        List<Question> copiedSurveyQuestions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(24, copiedSurveyQuestions.size());
+
+        Map<Integer, Question> copiedQuestionsForOneGroup = new QuestionDao().listQuestionsByQuestionGroup(copiedQuestionGroups.get(0).getKey().getId(), false);
+        assertEquals(4, copiedQuestionsForOneGroup.size());
     }
 
     @Test
@@ -138,13 +139,17 @@ public class SurveyUtilsTest {
         return new SurveyDAO().save(tmp);
     }
 
-    private Survey createSurvey() {
+    private Survey createSurvey(int howManyQuestionGroups, int howManyQuestions) {
 
         SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
         Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
-        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
 
-        dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT);
+        for (int i = 0; i < howManyQuestionGroups; i++) {
+            QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
+            for (int j = 0; j < howManyQuestions; j++) {
+                dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT);
+            }
+        }
 
         return newSurvey;
     }
