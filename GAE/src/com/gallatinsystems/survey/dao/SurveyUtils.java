@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -126,12 +127,12 @@ public class SurveyUtils {
 
         for(Map.Entry<Long, QuestionGroup> entry : sourceToCopiedGroupMap.entrySet()) {
             Long sourceGroupId = entry.getKey();
-            Long copyGroupId = entry.getValue().getKey().getId();
+            QuestionGroup copyGroup = entry.getValue();
 
-            SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroupId,
+            SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroup,
                     qDependencyResolutionMap, null, immutable, copiedTranslations); //new survey, so id re-use is OK
-            updateTranslation(copiedTranslations, sourceGroupId, copyGroupId,
-                    copyGroupId);
+            updateTranslation(copiedTranslations, sourceGroupId, copyGroup.getKey().getId(),
+                    copyGroup.getKey().getId());
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -171,14 +172,15 @@ public class SurveyUtils {
 
     /**
      * @param sourceGroupId
-     * @param copyGroupId
+     * @param copyGroup
      * @param qDependencyResolutionMap
      * @param translationMap
      */
-    public static void copyQuestionGroupContent(Long sourceGroupId, Long copyGroupId,
+    public static void copyQuestionGroupContent(Long sourceGroupId, QuestionGroup copyGroup,
                                                 Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse,
                                                 boolean immutable, Map<Long, Translation> translationMap) {
         final QuestionDao qDao = new QuestionDao();
+        final Long copyGroupId = copyGroup.getKey().getId();
 
         List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceGroupId);
 
@@ -189,15 +191,33 @@ public class SurveyUtils {
         log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
 
         int qCount = 1;
-        List<Question> qCopyList = new ArrayList<>();
+        Map<Long, Question> sourceIdToQuestionCopyMap = new HashMap<>();
         for (Question question : qList) {
-            final Question questionCopy = copyQuestion(idsInUse, immutable, translationMap,
-                    copyGroupId, qCount, question);
-            qCopyList.add(questionCopy);
+            final Question questionCopy = shallowCopyQuestion(question, copyGroup, qCount, idsInUse, immutable);
+            sourceIdToQuestionCopyMap.put(question.getKey().getId(), questionCopy);
             qCount++;
         }
+        // batch save
+        new QuestionDao().save(sourceIdToQuestionCopyMap.values());
 
-        fixGroupDependencies(qDependencyResolutionMap, qDao, qCopyList);
+        Map<Long, QuestionOption> sourceIdToQuestionOptionCopyMap = new HashMap<>();
+        for (Map.Entry<Long, Question> sourceCopyPair : sourceIdToQuestionCopyMap.entrySet()) {
+            Long sourceQuestionId = sourceCopyPair.getKey();
+            Question copiedQuestion = sourceCopyPair.getValue();
+
+            sourceIdToQuestionOptionCopyMap.putAll(copyQuestionContent(copiedQuestion, sourceQuestionId, translationMap));
+            updateTranslation(translationMap, sourceQuestionId, copiedQuestion.getKey().getId(), copyGroupId);
+        }
+        new QuestionOptionDao().save(sourceIdToQuestionOptionCopyMap.values());
+
+        for (Map.Entry<Long, QuestionOption> sourceCopyPair : sourceIdToQuestionOptionCopyMap.entrySet()) {
+            Long sourceQuestionOptionId = sourceCopyPair.getKey();
+            QuestionOption copiedQuestionOption = sourceCopyPair.getValue();
+
+            updateTranslation(translationMap, sourceQuestionOptionId, copiedQuestionOption.getKey().getId(), copyGroupId);
+        }
+
+        fixGroupDependencies(qDependencyResolutionMap, qDao, sourceIdToQuestionCopyMap.values());
     }
 
     /**
@@ -230,7 +250,7 @@ public class SurveyUtils {
         int qCount = 1;
         List<Question> qCopyList = new ArrayList<>();
         for (Question question : qList) {
-            final Question questionCopy = copyQuestion(idsInUse,  immutable, copyGroupId, qCount, question);
+            final Question questionCopy = copyQuestion(idsInUse,  immutable, copyGroup, qCount, question);
             qCopyList.add(questionCopy);
             qCount++;
         }
@@ -240,7 +260,7 @@ public class SurveyUtils {
         return copyGroup;
     }
 
-    private static void fixGroupDependencies(Map<Long, Long> qDependencyResolutionMap, QuestionDao qDao, List<Question> qCopyList) {
+    private static void fixGroupDependencies(Map<Long, Long> qDependencyResolutionMap, QuestionDao qDao, Collection<Question> qCopyList) {
         if (qDependencyResolutionMap == null) {
             return;
         }
@@ -264,21 +284,34 @@ public class SurveyUtils {
     /**
      * Copies a question, options and updates previously copied translation keys
      */
-    private static Question copyQuestion(Set<String> idsInUse, boolean immutable, Map<Long, Translation> translations,
-                                         Long copyGroupId, int order, Question question) {
-        final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, order, idsInUse, immutable);
-        copyQuestionOptions(translations, questionCopy, question.getKey().getId());
-        updateTranslation(translations, question.getKey().getId(), questionCopy.getKey().getId(),
-                questionCopy.getQuestionGroupId());
-        return questionCopy;
+    private static Map<Long, QuestionOption> copyQuestionContent(Question questionCopy, Long sourceQuestionId, Map<Long, Translation> translations) {
+        if (!Question.Type.OPTION.equals(questionCopy.getType())) {
+            return Collections.emptyMap();
+        }
+
+        final QuestionOptionDao qoDao = new QuestionOptionDao();
+        final TreeMap<Integer, QuestionOption> options = qoDao.listOptionByQuestion(sourceQuestionId);
+
+        if (options == null) {
+            return Collections.emptyMap();
+        }
+        log.log(Level.FINE, "Copying " + options.values().size() + " `QuestionOption`");
+
+        Map<Long, QuestionOption> sourceIdToQuestionOptionMap = new HashMap<>();
+        for (QuestionOption qo : options.values()) {
+            sourceIdToQuestionOptionMap.put(qo.getKey().getId(), shallowCopyQuestionOption(qo, questionCopy.getKey().getId()));
+        }
+
+        return sourceIdToQuestionOptionMap;
     }
 
     /**
      * Copies a question, options and all their translations
      */
-    public static Question copyQuestion(Set<String> idsInUse, boolean immutable, Long questionGroupId,
+    public static Question copyQuestion(Set<String> idsInUse, boolean immutable, QuestionGroup questionGroup,
                                         Integer order, Question source) {
-        Question newQuestion = copyQuestion(source, questionGroupId, order, idsInUse, immutable);
+        Question copy = shallowCopyQuestion(source, questionGroup, order, idsInUse, immutable);
+        Question newQuestion = new QuestionDao().save(copy);
         log.log(Level.FINE, "Copying question translations");
         copyTranslation(source.getKey().getId(), newQuestion.getKey().getId(), newQuestion.getSurveyId(),
                 newQuestion.getQuestionGroupId(), ParentType.QUESTION_NAME,
@@ -290,15 +323,15 @@ public class SurveyUtils {
 
     /**
      * @param source
-     * @param newQuestionGroupId
+     * @param newQuestionGroup
      * @param order
      * @param idsInUse the set of all questionIds in use anywhere in the survey group
      * @return the new question
      *
      * copies one question, ensuring that it has a unique questionId
      */
-    private static Question copyQuestion(Question source, Long newQuestionGroupId, Integer order, Set<String> idsInUse,
-                                        boolean immutable) {
+    private static Question shallowCopyQuestion(Question source, QuestionGroup newQuestionGroup, Integer order, Set<String> idsInUse,
+                                                boolean immutable) {
         final QuestionDao qDao = new QuestionDao();
         final Question tmp = new Question();
         final Long sourceQuestionId = source.getKey().getId();
@@ -315,6 +348,8 @@ public class SurveyUtils {
         log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
+        tmp.setSurveyId(newQuestionGroup.getSurveyId());
+        tmp.setQuestionGroupId(newQuestionGroup.getKey().getId());
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
         tmp.setImmutable(immutable);
@@ -336,10 +371,7 @@ public class SurveyUtils {
             }
         }
 
-        final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
-
-        log.log(Level.FINE, "New `Question` ID: " + newQuestion.getKey().getId());
-        return newQuestion;
+        return tmp;
     }
 
     /**
@@ -360,7 +392,7 @@ public class SurveyUtils {
         log.log(Level.FINE, "Copying " + options.values().size() + " `QuestionOption`");
 
         for (QuestionOption qo : options.values()) {
-            QuestionOption newOption = copyQuestionOption(qo, newQuestion.getKey().getId());
+            QuestionOption newOption = shallowCopyQuestionOption(qo, newQuestion.getKey().getId());
             updateTranslation(translations, qo.getKey().getId(), newOption.getKey().getId(),
                     newQuestion.getQuestionGroupId());
         }
@@ -383,16 +415,16 @@ public class SurveyUtils {
         log.log(Level.FINE, "Copying " + options.values().size() + " `QuestionOption`");
 
         for (QuestionOption qo : options.values()) {
-            QuestionOption newOption = copyQuestionOption(qo, newQuestion.getKey().getId());
+            QuestionOption newOption = qoDao.save(shallowCopyQuestionOption(qo, newQuestion.getKey().getId()));
+
             log.log(Level.INFO, "Copying question option translations");
             copyTranslation(sourceQuestionId, newOption.getKey().getId(), newQuestion.getSurveyId(),
                     newQuestion.getQuestionGroupId(), ParentType.QUESTION_OPTION);
         }
     }
 
-    private static QuestionOption copyQuestionOption(QuestionOption source, Long newQuestionId) {
+    private static QuestionOption shallowCopyQuestionOption(QuestionOption source, Long newQuestionId) {
 
-        final QuestionOptionDao qDao = new QuestionOptionDao();
         final QuestionOption tmp = new QuestionOption();
 
         BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
@@ -400,11 +432,7 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying `QuestionOption` " + source.getKey().getId());
 
-        final QuestionOption newQuestionOption = qDao.save(tmp);
-
-        log.log(Level.INFO, "New `QuestionOption` ID: " + newQuestionOption.getKey().getId());
-
-        return newQuestionOption;
+        return tmp;
     }
 
     /**
