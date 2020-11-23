@@ -17,11 +17,13 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -416,13 +418,14 @@ public class QuestionRestService {
 
     private Question copyQuestion(QuestionDto dto) {
         final Question source = questionDao.getByKey(dto.getSourceId());
+        final QuestionGroup qg = new QuestionGroupDao().getByKey(dto.getQuestionGroupId());
 
         if (source == null) {
             // source question not found, the getByKey already logged the problem
             return null;
         }
         Set<String> idsInUse = SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId());
-        return SurveyUtils.copyQuestion(idsInUse, false, dto.getQuestionGroupId(), dto.getOrder(), source);
+        return SurveyUtils.copyQuestion(idsInUse, false, qg, dto.getOrder(), source);
     }
 
     private Question newQuestion(QuestionDto dto) {
