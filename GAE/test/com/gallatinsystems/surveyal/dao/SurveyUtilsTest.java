@@ -19,6 +19,7 @@ package com.gallatinsystems.surveyal.dao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.TranslationDao;
@@ -62,6 +63,7 @@ public class SurveyUtilsTest {
     public void testCopyTemplateSurvey() throws Exception {
 
         Survey sourceSurvey = createSurvey(1, 1);
+
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
@@ -97,16 +99,29 @@ public class SurveyUtilsTest {
         Survey sourceSurvey = createSurvey(6, 4);
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
+        QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7);
+        Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION);
+        dataStoreTestUtil.createQuestionOption(newQuestion);
+        dataStoreTestUtil.createDependentQuestion(sourceSurvey, newQuestion);
+
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
 
         List<QuestionGroup> copiedQuestionGroups = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(6, copiedQuestionGroups.size());
+        assertEquals(7, copiedQuestionGroups.size());
 
         List<Question> copiedSurveyQuestions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(24, copiedSurveyQuestions.size());
+        assertEquals(26, copiedSurveyQuestions.size());
 
-        Map<Integer, Question> copiedQuestionsForOneGroup = new QuestionDao().listQuestionsByQuestionGroup(copiedQuestionGroups.get(0).getKey().getId(), false);
-        assertEquals(4, copiedQuestionsForOneGroup.size());
+        List<Question> copiedQuestionsForOneGroup = new QuestionDao().listQuestionsInOrderForGroup(copiedQuestionGroups.get(6).getKey().getId());
+        assertEquals(2, copiedQuestionsForOneGroup.size());
+        assertEquals(copiedSurvey.getKey().getId(), copiedQuestionsForOneGroup.get(1).getSurveyId());
+
+        Question copiedQuestion = new QuestionDao().getByKey(copiedQuestionsForOneGroup.get(0).getKey().getId());
+        Question dependentCopiedQuestion = new QuestionDao().getByKey(copiedQuestionsForOneGroup.get(1).getKey().getId());
+        assertEquals(copiedQuestion.getKey().getId(), dependentCopiedQuestion.getDependentQuestionId());
+
+        List<QuestionOption> copiedOptions = new QuestionOptionDao().listByQuestionId(copiedQuestion.getKey().getId());
+        assertEquals(1, copiedOptions.size());
     }
 
     @Test
@@ -145,7 +160,7 @@ public class SurveyUtilsTest {
         Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
 
         for (int i = 0; i < howManyQuestionGroups; i++) {
-            QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
+            QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, i);
             for (int j = 0; j < howManyQuestions; j++) {
                 dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT);
             }
@@ -159,7 +174,7 @@ public class SurveyUtilsTest {
         SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
         Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
 
-        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey);
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, 0);
         long questionGroupId = newQg.getKey().getId();
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), questionGroupId, Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
 
