@@ -101,6 +101,7 @@ public class SurveyUtilsTest {
 
         QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7);
         Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION);
+        dataStoreTestUtil.createQuestionOption(newQuestion);
         dataStoreTestUtil.createDependentQuestion(sourceSurvey, newQuestion);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
