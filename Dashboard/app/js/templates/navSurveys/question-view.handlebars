@@ -219,6 +219,12 @@
       {{/if}}
   {{/if}}
 </div>
+{{#if view.isTemplate}}
+  <div class="dependencyBlock">
+    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.immutable"}}{{t _make_copy_immutable}}
+    </label>
+  </div>
+{{/if}}
     <!-- End question specific material -->
     <nav>
       <ul>
@@ -273,21 +279,24 @@
     <nav class="smallMenu">
       <ul>
 		{{#if view.showQuestionModifyButtons}}
-      {{#unless view.content.immutable}}
+      {{#if view.editable}}
         <li><a {{action confirm FLOW.dialogControl.delQ target="FLOW.dialogControl"}} class="deleteQuestion">{{t _delete}}</a> </li>
         <li><a {{action "doQuestionCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
         <li><a {{action "doQuestionMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
         <li><a {{action "doQuestionEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
-      {{/unless}}
+      {{/if}}
 		{{/if}}
       </ul>
     </nav>
     <h1 class="questionNbr">
-        {{#if view.showQuestionModifyButtons}}
-        <a {{action "doQuestionEdit" target="this"}} class="textLink"><span>{{view.content.order}} </span>{{view.content.text}}</a>
+      
+      {{#if view.showQuestionModifyButtons}}
+        {{#if view.editable}}
+          <a {{action "doQuestionEdit" target="this"}} class="textLink"><span>{{view.content.order}} </span>{{view.content.text}}</a>
         {{else}}
-        <span>{{view.content.order}} </span>{{view.content.text}}
+          <span>{{view.content.order}} </span>{{view.content.text}}
         {{/if}}
+      {{/if}}
     </h1>
 
   {{/if}}
