@@ -31,19 +31,16 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import java.util.List;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SurveyUtilsTest {
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -60,30 +57,30 @@ public class SurveyUtilsTest {
     }
 
     @Test
-    public void testCopyTemplateSurvey() throws Exception {
+    public void testCopyMutableSurvey() throws Exception {
 
         Survey sourceSurvey = createSurvey(1, 1);
 
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
-        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
         List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
         assertEquals(1, qgs.size());
-        assertTrue(qgs.get(0).getImmutable());
+        assertFalse(qgs.get(0).getImmutable());
 
         List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
         assertEquals(1, questions.size());
-        assertTrue(questions.get(0).getImmutable());
+        assertFalse(questions.get(0).getImmutable());
     }
 
     @Test
-    public void testCopyTranslationsOfTemplateSurvey() throws Exception {
+    public void testCopySurveyWithTranslations() throws Exception {
 
         Survey sourceSurvey = createSurveyWithTranslations();
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
-        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), true);
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
         List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
         assertEquals(3, translations.size());
@@ -94,17 +91,17 @@ public class SurveyUtilsTest {
     }
 
     @Test
-    public void testCopySurvey() throws Exception {
+    public void testCopyBiggerSurvey() throws Exception {
 
         Survey sourceSurvey = createSurvey(6, 4);
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
-        QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7);
-        Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION);
+        QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7, false);
+        Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION, false);
         dataStoreTestUtil.createQuestionOption(newQuestion);
         dataStoreTestUtil.createDependentQuestion(sourceSurvey, newQuestion);
 
-        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
         List<QuestionGroup> copiedQuestionGroups = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
         assertEquals(7, copiedQuestionGroups.size());
@@ -125,19 +122,30 @@ public class SurveyUtilsTest {
     }
 
     @Test
-    public void testCopyTranslations() throws Exception {
+    public void testCopyImmutableSurvey() throws Exception {
 
-        Survey sourceSurvey = createSurveyWithTranslations();
+        Survey sourceSurvey = createImmutableSurvey();
         Survey copiedSurvey = copySurvey(sourceSurvey);
 
-        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId(), false);
-
-        List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
-        assertEquals(3, translations.size());
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
         List<QuestionGroup> qgs = new QuestionGroupDao().listQuestionGroupBySurvey(copiedSurvey.getKey().getId());
-        assertEquals(qgs.get(0).getKey().getId(), translations.get(0).getParentId());
-        assertEquals( "uno", translations.get(2).getText());
+        assertEquals(1, qgs.size());
+        assertTrue(qgs.get(0).getImmutable());
+
+        List<Question> questions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        assertEquals(1, questions.size());
+        assertTrue(questions.get(0).getImmutable());
+
+    }
+
+    private Survey createImmutableSurvey() {
+        SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
+        Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
+
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, 1, true);
+        dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT, true);
+        return newSurvey;
     }
 
     private Survey copySurvey(Survey sourceSurvey) {
@@ -160,9 +168,9 @@ public class SurveyUtilsTest {
         Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
 
         for (int i = 0; i < howManyQuestionGroups; i++) {
-            QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, i);
+            QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, i, false);
             for (int j = 0; j < howManyQuestions; j++) {
-                dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT);
+                dataStoreTestUtil.createQuestion(newSurvey, newQg.getKey().getId(), Question.Type.FREE_TEXT, false);
             }
         }
 
@@ -174,11 +182,11 @@ public class SurveyUtilsTest {
         SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
         Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
 
-        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, 0);
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, 0, false);
         long questionGroupId = newQg.getKey().getId();
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), questionGroupId, Translation.ParentType.QUESTION_GROUP_NAME, "name", "es");
 
-        Question question = dataStoreTestUtil.createQuestion(newSurvey, questionGroupId, Question.Type.OPTION);
+        Question question = dataStoreTestUtil.createQuestion(newSurvey, questionGroupId, Question.Type.OPTION, false);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
 
         QuestionOption saved = dataStoreTestUtil.createQuestionOption(question);

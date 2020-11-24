@@ -124,7 +124,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             status.setValue("inProgress, target=" + dpReq.getSurveyId());
             statusDao.save(status);
 
-            SurveyUtils.copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()), dpReq.getImmutable());
+            SurveyUtils.copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
 
             // now update the status
             status.setInError(false);
@@ -145,7 +145,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
                 Long surveyId = originalQuestionGroup.getSurveyId();
                 SurveyUtils.copyQuestionGroupContent(originalQuestionGroup, newQuestionGroup, surveyId, null,
-                        SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId), false);
+                        SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId));
 
                 newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
                 qgDao.save(newQuestionGroup);
