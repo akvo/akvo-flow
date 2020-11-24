@@ -425,7 +425,7 @@ public class QuestionRestService {
             return null;
         }
         Set<String> idsInUse = SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId());
-        return SurveyUtils.copyQuestion(idsInUse, false, qg, dto.getOrder(), source);
+        return SurveyUtils.copyQuestion(idsInUse, qg, dto.getOrder(), source);
     }
 
     private Question newQuestion(QuestionDto dto) {

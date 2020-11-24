@@ -173,19 +173,21 @@ public class DataStoreTestUtil {
         return new SurveyDAO().save(survey);
     }
 
-    public QuestionGroup createQuestionGroup(Survey newSurvey, int order) {
+    public QuestionGroup createQuestionGroup(Survey newSurvey, int order, boolean immutable) {
         QuestionGroup qg = new QuestionGroup();
         qg.setName("question group");
         qg.setSurveyId(newSurvey.getKey().getId());
         qg.setOrder(order);
+        qg.setImmutable(immutable);
         return new QuestionGroupDao().save(qg);
     }
 
-    public Question createQuestion(Survey newSurvey, long questionGroupId, Question.Type type) {
+    public Question createQuestion(Survey newSurvey, long questionGroupId, Question.Type type, boolean immutable) {
         Question q = new Question();
         q.setType(type);
         q.setQuestionGroupId(questionGroupId);
         q.setSurveyId(newSurvey.getKey().getId());
+        q.setImmutable(immutable);
         Question question = new QuestionDao().save(q);
         return question;
     }
@@ -200,7 +202,7 @@ public class DataStoreTestUtil {
     }
 
     public Question createDependentQuestion(Survey newSurvey, Question dependent) {
-        Question q = createQuestion(newSurvey, dependent.getQuestionGroupId(), Question.Type.FREE_TEXT);
+        Question q = createQuestion(newSurvey, dependent.getQuestionGroupId(), Question.Type.FREE_TEXT, false);
         q.setDependentFlag(true);
         q.setDependentQuestionId(dependent.getKey().getId());
         return new QuestionDao().save(q);

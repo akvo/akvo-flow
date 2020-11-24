@@ -113,7 +113,7 @@ public class ActionRestService {
         } else if ("publishCascade".equals(action)) {
             status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
-            status = copyProject(targetId, folderId, immutable);
+            status = copyProject(targetId, folderId);
         }
 
         statusDto.setStatus(status);
@@ -277,7 +277,7 @@ public class ActionRestService {
         }
     }
 
-    private String copyProject(Long targetId, Long folderId, boolean immutable) {
+    private String copyProject(Long targetId, Long folderId) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
         SurveyGroup projectParent = null;
@@ -326,7 +326,7 @@ public class ActionRestService {
             surveyDto.setName(sourceSurvey.getName());
             surveyDto.setPath(projectCopy.getPath() + "/" + sourceSurvey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto, immutable);
+            Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
             surveyCopy.setAncestorIds(surveysAncestorIds);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
