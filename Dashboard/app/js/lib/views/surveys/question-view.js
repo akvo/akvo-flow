@@ -936,7 +936,7 @@ FLOW.QuestionView = FLOW.View.extend(
     },
 
     validateQuestionTooltipObserver() {
-      this.set('questionTooltipValidationFailure', this.tip != null && this.tip.length > 500);
+      this.set('questionTooltipValidationFailure', this.tip != null && this.tip.length > 1500);
     },
 
     validateVariableNameObserver() {
