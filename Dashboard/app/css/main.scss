@@ -3003,6 +3003,8 @@ nav.questionActionMenu a:hover {
   color: rgba(246, 160, 26, 1);
 }
 
+
+
 // nav.smallMenu ul li a.editQuestion {
 //     background: url(/admin/images/IconEdit.svg) left center no-repeat;
 // }
@@ -3078,6 +3080,12 @@ nav.questionActionMenu a:hover {
   margin: 5px 0 0 10px;
   width: 35%;
   border-color: white;
+}
+
+.toolTipArea > textarea {
+  width: 97.5%;
+  margin: 5px 0px 0px;
+  padding: 5px 0.5%;
 }
 
 .innerContent h3 {
