@@ -8,11 +8,11 @@
       <span style="color:red">{{view.questionValidationFailureReason}}</span>
       {{/if}}
       {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
-    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span>
+    <label class="toolTipArea">{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span>
     {{#if view.questionTooltipValidationFailure }}
       <span style="color:red">{{t _tooltip_over_500_chars_header}}</span>
       {{/if}}
-      {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+      {{view Ember.TextArea valueBinding="view.tip" cols=100 rows=1}} </label>
     <label>
       {{t _variable_name}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _variable_name_tooltip}}
       {{#if view.variableNameValidationFailure }}
