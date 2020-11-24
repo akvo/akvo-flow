@@ -73,7 +73,22 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('FLOW.selectedControl.selectedQuestion', 'content.keyId')
       .cacheable(),
+    
+    isTemplate: Ember.computed(function() {
+      const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      return JSON.parse(FLOW.Env.templateIds).indexOf(surveyId) >= 0;
+    })
+      .property('FLOW.selectedControl.selectedSurveyGroup')
+      .cacheable(),
 
+    editable: Ember.computed(function() {
+      const immutable = this.get('content').get('immutable');
+      const isTemplate = this.get('isTemplate');
+      return isTemplate || !immutable;
+    })
+      .property('this.isTemplate')
+      .cacheable(),
+    
     amTextType: Ember.computed(function() {
       if (this.type) {
         return this.type.get('value') == 'FREE_TEXT';
@@ -238,6 +253,7 @@ FLOW.QuestionView = FLOW.View.extend(
       this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
       this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
       this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
+      this.set('immutable', FLOW.selectedControl.selectedQuestion.get('immutable'));
       this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
       this.set('cascadeResourceId', FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
       this.set(
@@ -497,6 +513,7 @@ FLOW.QuestionView = FLOW.View.extend(
       FLOW.selectedControl.selectedQuestion.set('allowPoints', this.get('allowPoints'));
       FLOW.selectedControl.selectedQuestion.set('allowLine', this.get('allowLine'));
       FLOW.selectedControl.selectedQuestion.set('allowPolygon', this.get('allowPolygon'));
+      FLOW.selectedControl.selectedQuestion.set('immutable', this.get('immutable'));
 
       const allowExternalSources =
         this.type.get('value') !== 'FREE_TEXT' ? false : this.get('allowExternalSources');
