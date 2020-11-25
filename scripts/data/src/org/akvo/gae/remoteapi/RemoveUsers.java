@@ -24,11 +24,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import static org.akvo.gae.remoteapi.DataUtils.USER_EMAIL_FIELD;
 import static org.akvo.gae.remoteapi.DataUtils.USER_KIND;
 
-/**
- * Add new users to the datastore configuration. Takes in the path of a CSV file containing a list
- * of users to be added to the relevant instance. The CSV file format is
- * emailAddress,permissionList,superAdmin e.g. test@example.com,10,False
- */
 public class RemoveUsers implements Process {
 
     @Override
