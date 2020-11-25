@@ -370,30 +370,6 @@ public class SurveyUtils {
     }
 
     /**
-     * Given a question, copies its options if any, updating the translation map
-     */
-    private static void copyQuestionOptions(Map<Long, Translation> translations, Question newQuestion,
-                                            Long sourceQuestionId) {
-        if (!Question.Type.OPTION.equals(newQuestion.getType())) {
-            return;
-        }
-
-        final QuestionOptionDao qoDao = new QuestionOptionDao();
-        final TreeMap<Integer, QuestionOption> options = qoDao.listOptionByQuestion(sourceQuestionId);
-
-        if (options == null) {
-            return;
-        }
-        log.log(Level.FINE, "Copying " + options.values().size() + " `QuestionOption`");
-
-        for (QuestionOption qo : options.values()) {
-            QuestionOption newOption = shallowCopyQuestionOption(qo, newQuestion.getKey().getId());
-            updateTranslation(translations, qo.getKey().getId(), newOption.getKey().getId(),
-                    newQuestion.getQuestionGroupId());
-        }
-    }
-
-    /**
      * Given a question, copies its options and translations if any
      */
     private static void copyQuestionOptions(Question newQuestion, Long sourceQuestionId) {
