@@ -39,7 +39,6 @@ import javax.jdo.annotations.NotPersistent;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -372,13 +371,14 @@ public class QuestionDao extends BaseDAO<Question> {
                 }
             }
         }
-        if (question.getTranslationMap() != null) {
-            for (Translation t : question.getTranslationMap().values()) {
+        List<Translation> translations = question.getTranslations();
+        if (translations != null) {
+            for (Translation t : translations) {
                 if (t.getParentId() == null) {
                     t.setParentId(question.getKey().getId());
                 }
             }
-            super.save(question.getTranslationMap().values());
+            super.save(translations);
         }
 
         if (question.getQuestionHelpMediaMap() != null) {
@@ -505,8 +505,8 @@ public class QuestionDao extends BaseDAO<Question> {
             if (Question.Type.OPTION == q.getType()) {
                 q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
             }
-            q.setTranslationMap(translationDao.findTranslations(
-                    Translation.ParentType.QUESTION_TEXT, q.getKey().getId()));
+            q.setTranslations(translationDao.findTranslations(
+                    q.getKey().getId(), Translation.ParentType.QUESTION_TEXT));
             // only load scoring rules for types that support scoring
             if (Question.Type.OPTION == q.getType()
                     || Question.Type.FREE_TEXT == q.getType()
@@ -593,8 +593,8 @@ public class QuestionDao extends BaseDAO<Question> {
                     if (Question.Type.OPTION == q.getType()) {
                         q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
                     }
-                    q.setTranslationMap(translationDao.findTranslations(
-                            ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    q.setTranslations(translationDao.findTranslations(
+                            q.getKey().getId(), ParentType.QUESTION_TEXT));
                     //Cascade level names
                     if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
                         CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
@@ -638,8 +638,7 @@ public class QuestionDao extends BaseDAO<Question> {
                             || Question.Type.STRENGTH == q.getType()) {
                         q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
                     }
-                    q.setTranslationMap(translationDao.findTranslations(
-                            ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    q.setTranslations(translationDao.findTranslations(q.getKey().getId(),  ParentType.QUESTION_TEXT));
                     //Cascade level names
                     if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
                         CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());

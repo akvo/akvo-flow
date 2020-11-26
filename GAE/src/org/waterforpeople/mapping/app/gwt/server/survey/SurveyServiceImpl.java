@@ -230,7 +230,7 @@ public class SurveyServiceImpl {
         if (qdto.getTranslationMap() != null) {
             TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto
                     .getTranslationMap());
-            q.setTranslationMap(transMap);
+            q.setTranslations((List<Translation>) transMap.values());
         }
 
         if (qdto.getQuestionHelpList() != null) {
