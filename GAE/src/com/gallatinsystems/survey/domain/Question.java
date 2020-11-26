@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.domain;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+import java.util.HashMap;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class Question extends BaseDomain {
     private String tip = null;
     private String text = null;
     @NotPersistent
-    private Map<String, Translation> translationMap;
+    private List<Translation> translations;
     private Boolean dependentFlag = null;
     private Boolean allowMultipleFlag = null;
     private Boolean allowOtherFlag = null;
@@ -184,12 +185,26 @@ public class Question extends BaseDomain {
         this.questionGroupId = questionGroupId;
     }
 
-    public Map<String, Translation> getTranslationMap() {
-        return translationMap;
+    public Map<String, Translation> translationsAsMap() {
+        if (translations != null) {
+            Map<String, Translation> translationMap = new HashMap<>();
+            for (Translation t: translations) {
+                if (Translation.ParentType.QUESTION_TEXT.equals(t.getParentType())) {
+                    translationMap.put(t.getLanguageCode(), t);
+                }
+            }
+            return translationMap;
+        } else {
+            return null;
+        }
     }
 
-    public void setTranslationMap(Map<String, Translation> translationMap) {
-        this.translationMap = translationMap;
+    public void setTranslations(List<Translation> translations) {
+        this.translations = translations;
+    }
+
+    public List<Translation> getTranslations() {
+        return translations;
     }
 
     public void addQuestionOption(QuestionOption questionOption) {
@@ -303,10 +318,10 @@ public class Question extends BaseDomain {
     }
 
     public void addTranslation(Translation t) {
-        if (translationMap == null) {
-            translationMap = new TreeMap<String, Translation>();
+        if (translations == null) {
+            translations = new ArrayList<>();
         }
-        translationMap.put(t.getLanguageCode(), t);
+        translations.add(t);
     }
 
     public List<ScoringRule> getScoringRules() {

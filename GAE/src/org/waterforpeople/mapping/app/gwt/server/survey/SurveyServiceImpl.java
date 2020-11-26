@@ -100,7 +100,7 @@ public class SurveyServiceImpl {
             qDto.setQuestionDependency(qdDto);
         }
 
-        qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
+        qDto.setTranslationMap(marshalTranslations(q.translationsAsMap()));
 
         if (Question.Type.CASCADE.equals(q.getType()) && q.getCascadeResourceId() != null) {
             qDto.setLevelNames(getCascadeResourceLevelNames(q.getCascadeResourceId()));
@@ -230,7 +230,7 @@ public class SurveyServiceImpl {
         if (qdto.getTranslationMap() != null) {
             TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto
                     .getTranslationMap());
-            q.setTranslationMap(transMap);
+            q.setTranslations((List<Translation>) transMap.values());
         }
 
         if (qdto.getQuestionHelpList() != null) {

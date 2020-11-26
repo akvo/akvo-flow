@@ -670,8 +670,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
                 }
             }
         }
-        if (q.getTranslationMap() != null) {
-            for (Translation t : q.getTranslationMap().values()) {
+        if (q.getTranslations() != null) {
+            for (Translation t : q.getTranslations()) {
                 t.setParentId(q.getKey().getId());
                 t.setParentType(ParentType.QUESTION_TEXT);
                 translationDao.save(t);

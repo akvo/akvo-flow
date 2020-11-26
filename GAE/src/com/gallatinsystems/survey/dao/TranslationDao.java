@@ -16,11 +16,16 @@
 
 package com.gallatinsystems.survey.dao;
 
+import com.gallatinsystems.user.domain.UserAuthorization;
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.stream.Collectors;
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -72,6 +77,16 @@ public class TranslationDao extends BaseDAO<Translation> {
                 translations.put(t.getLanguageCode(), t);
             }
         }
+        return translations;
+    }
+
+    public List<Translation> findTranslations(Long parentId,
+            Translation.ParentType... parentTypes) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "parentId == :p1 && :p2.contains(parentType)";
+        javax.jdo.Query query = pm.newQuery(Translation.class, queryString);
+        List<String> collect = Arrays.stream(parentTypes).map(it-> it.toString()).collect(Collectors.toList());
+        List<Translation> translations = (List<Translation>) query.execute(parentId, collect);
         return translations;
     }
 
