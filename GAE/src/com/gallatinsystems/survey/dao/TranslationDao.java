@@ -16,15 +16,11 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.gallatinsystems.user.domain.UserAuthorization;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.stream.Collectors;
 import javax.jdo.PersistenceManager;
 
