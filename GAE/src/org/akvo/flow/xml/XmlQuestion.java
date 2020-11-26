@@ -164,7 +164,7 @@ public class XmlQuestion {
         //Translations, if any
         if (q.getTranslations() != null) {
             altText = new ArrayList<>();
-            for (Translation t: q.getTranslationMap().values()) {
+            for (Translation t: q.translationsAsMap().values()) {
                 altText.add(new XmlAltText(t));
             }
         }
