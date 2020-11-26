@@ -100,7 +100,7 @@ public class SurveyServiceImpl {
             qDto.setQuestionDependency(qdDto);
         }
 
-        qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
+        qDto.setTranslationMap(marshalTranslations(q.translationsAsMap()));
 
         if (Question.Type.CASCADE.equals(q.getType()) && q.getCascadeResourceId() != null) {
             qDto.setLevelNames(getCascadeResourceLevelNames(q.getCascadeResourceId()));
