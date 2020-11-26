@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,10 @@ package org.akvo.flow.xml;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Translation;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Class for working with form XML tags like this:
@@ -36,14 +40,19 @@ public class XmlHelp {
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
-    private XmlAltText[] altText;
+    private List<XmlAltText> altText;
 
-    public XmlHelp() {
-    }
-
-    public XmlHelp(String txt) {
-        type = "tip";
-        text = txt;
+    public XmlHelp(Question q) {
+        this.text = q.getTip();
+        List<Translation> translations = q.getTranslations();
+        for (Translation t: translations) {
+            if (Translation.ParentType.QUESTION_TIP.equals(t.getParentType())) {
+                if (altText == null) {
+                    altText = new ArrayList<>();
+                }
+                altText.add(new XmlAltText(t));
+            }
+        }
     }
 
     @Override public String toString() {
@@ -61,11 +70,11 @@ public class XmlHelp {
         this.text = text;
     }
 
-    public XmlAltText[] getAltText() {
+    public List<XmlAltText> getAltText() {
         return altText;
     }
 
-    public void setAltText(XmlAltText[] altText) {
+    public void setAltText(List<XmlAltText> altText) {
         this.altText = altText;
     }
 
