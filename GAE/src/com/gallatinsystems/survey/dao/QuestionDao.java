@@ -594,7 +594,7 @@ public class QuestionDao extends BaseDAO<Question> {
                         q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
                     }
                     q.setTranslations(translationDao.findTranslations(
-                            q.getKey().getId(), ParentType.QUESTION_TEXT));
+                            q.getKey().getId(), ParentType.QUESTION_TEXT, ParentType.QUESTION_TIP));
                     //Cascade level names
                     if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
                         CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
