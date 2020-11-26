@@ -18,9 +18,7 @@ package com.gallatinsystems.survey.domain;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import java.util.ArrayList;
@@ -187,7 +185,7 @@ public class Question extends BaseDomain {
         this.questionGroupId = questionGroupId;
     }
 
-    public Map<String, Translation> getTranslationMap() {
+    public Map<String, Translation> translationsAsMap() {
         if (translations != null) {
             Map<String, Translation> translationMap = new HashMap<>();
             for (Translation t: translations) {
