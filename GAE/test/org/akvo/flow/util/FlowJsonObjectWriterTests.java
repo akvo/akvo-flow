@@ -16,6 +16,7 @@
 
 package org.akvo.flow.util;
 
+import com.gallatinsystems.survey.domain.Translation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,6 +92,40 @@ class FlowJsonObjectWriterTests {
         }
 
         String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
+        assertEquals(jsonStringExpected, jsonString);
+    }
+
+    @Test
+    void testWriteSimpleJsonObjectWithTranslations() {
+
+        Question question = new Question();
+        question.setText("First Question");
+        question.setOrder(0);
+        question.setType(Question.Type.FREE_TEXT);
+        question.setAllowOtherFlag(true);
+        question.setTip("Help");
+        List<Translation> translations = new ArrayList<>(2);
+        Translation translation = new Translation();
+        translation.setParentType(Translation.ParentType.QUESTION_TEXT);
+        translation.setText("Primera pregunta");
+        translation.setLanguageCode("es");
+        Translation translation2 = new Translation();
+        translations.add(translation);
+        translation2.setParentType(Translation.ParentType.QUESTION_TIP);
+        translation2.setText("Ayuda");
+        translation2.setLanguageCode("es");
+        translations.add(translation2);
+        question.setTranslations(translations);
+
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter().withExcludeNullValues();
+        String jsonString = null;
+        try {
+            jsonString = writer.writeAsString(question);
+        } catch (IOException e) {
+            // ignoring exception
+        }
+
+        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"tip\":\"Help\",\"text\":\"First Question\",\"translations\":[{\"languageCode\":\"es\",\"text\":\"Primera pregunta\",\"parentType\":\"QUESTION_TEXT\"},{\"languageCode\":\"es\",\"text\":\"Ayuda\",\"parentType\":\"QUESTION_TIP\"}],\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
         assertEquals(jsonStringExpected, jsonString);
     }
 }

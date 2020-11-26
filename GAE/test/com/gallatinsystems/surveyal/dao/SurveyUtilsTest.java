@@ -32,6 +32,7 @@ import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.util.List;
+import java.util.Map;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,6 +55,17 @@ public class SurveyUtilsTest {
     @AfterEach
     public void tearDown() {
         helper.tearDown();
+    }
+
+    @Test
+    public void testRetrieveMultipleTranslationTypes() {
+        dataStoreTestUtil.createTranslation(123L, 1234L, Translation.ParentType.QUESTION_TIP, "uno", "es");
+        dataStoreTestUtil.createTranslation(123L, 1234L, Translation.ParentType.QUESTION_TEXT, "dos", "es");
+
+        TranslationDao dao = new TranslationDao();
+        List<Translation> translations = dao.findTranslations(1234L, Translation.ParentType.QUESTION_TIP, Translation.ParentType.QUESTION_TEXT);
+
+        assertEquals(2, translations.size());
     }
 
     @Test
