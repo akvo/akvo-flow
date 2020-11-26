@@ -104,7 +104,7 @@ public class XmlQuestion {
             personalData = Boolean.TRUE;
         }
         if (q.getTip() != null) {
-            help = new XmlHelp(q.getTip());
+            help = new XmlHelp(q);
         }
         if (q.getVariableName() != null && !q.getVariableName().trim().equals("")) {
             variableName = q.getVariableName();
@@ -162,7 +162,7 @@ public class XmlQuestion {
             dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
         }
         //Translations, if any
-        if (q.getTranslationMap() != null) {
+        if (q.getTranslations() != null) {
             altText = new ArrayList<>();
             for (Translation t: q.getTranslationMap().values()) {
                 altText.add(new XmlAltText(t));
