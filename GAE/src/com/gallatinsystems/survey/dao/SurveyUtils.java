@@ -17,17 +17,10 @@
 package com.gallatinsystems.survey.dao;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
@@ -216,7 +209,7 @@ public class SurveyUtils {
             updateTranslation(translationMap, sourceQuestionOptionId, copiedQuestionOption.getKey().getId(), copyGroupId);
         }
 
-        fixGroupDependencies(qDependencyResolutionMap, qDao, sourceIdToQuestionCopyMap.values());
+        fixGroupDependencies(qDependencyResolutionMap, qDao, new ArrayList<>(sourceIdToQuestionCopyMap.values()));
     }
 
     /**
@@ -258,11 +251,19 @@ public class SurveyUtils {
         return copyGroup;
     }
 
-    private static void fixGroupDependencies(Map<Long, Long> qDependencyResolutionMap, QuestionDao qDao, Collection<Question> qCopyList) {
+    private static void fixGroupDependencies(Map<Long, Long> qDependencyResolutionMap, QuestionDao qDao, List<Question> qCopyList) {
         if (qDependencyResolutionMap == null) {
             return;
         }
         // fixing dependencies
+
+        // Make sure we process questions in Order
+        Collections.sort(qCopyList, new Comparator<Question>() {
+            @Override
+            public int compare(Question q1, Question q2) {
+                return q1.getOrder().compareTo(q2.getOrder());
+            }
+        });
 
         final List<Question> dependentQuestionList = new ArrayList<>();
         for (Question questionCopy : qCopyList) {
