@@ -269,12 +269,10 @@ public class SurveyUtils {
         for (Question questionCopy : qCopyList) {
             qDependencyResolutionMap.put(questionCopy.getSourceQuestionId(), questionCopy.getKey()
                     .getId());
-            log.log(Level.INFO, "qDependencyResolutionMap: " + qDependencyResolutionMap);
             if (questionCopy.getDependentFlag() == null || !questionCopy.getDependentFlag()) {
                 continue;
             }
             Long originalDependentId = questionCopy.getDependentQuestionId();
-            log.log(Level.INFO, "originalDependentId: " + originalDependentId);
             questionCopy.setDependentQuestionId(qDependencyResolutionMap.get(originalDependentId));
             dependentQuestionList.add(questionCopy);
         }
