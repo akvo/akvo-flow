@@ -136,7 +136,7 @@
                 </div>
                 <div class="qHelpTooltip">
               <label class="qTooltip">{{t _question_help_tooltip_optional}}</label>
-              {{view Ember.TextField valueBinding="item.qTipTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" size=40 }}
+              {{view Ember.TextArea valueBinding="item.qTipTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" rows=1 size=40 maxlength=1500 }}
             </div>
             {{/if}}
           </td>
