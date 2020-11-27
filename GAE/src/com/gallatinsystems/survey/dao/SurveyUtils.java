@@ -108,7 +108,7 @@ public class SurveyUtils {
         final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
-        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
+        final Map<Long, Long> qDependencyResolutionMap = new HashMap<>();
 
         if (qgList == null) {
             log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
@@ -198,6 +198,7 @@ public class SurveyUtils {
         // batch save
         new QuestionDao().save(sourceIdToQuestionCopyMap.values());
 
+
         Map<Long, QuestionOption> sourceIdToQuestionOptionCopyMap = new HashMap<>();
         for (Map.Entry<Long, Question> sourceCopyPair : sourceIdToQuestionCopyMap.entrySet()) {
             Long sourceQuestionId = sourceCopyPair.getKey();
@@ -262,17 +263,21 @@ public class SurveyUtils {
             return;
         }
         // fixing dependencies
+
         final List<Question> dependentQuestionList = new ArrayList<>();
         for (Question questionCopy : qCopyList) {
             qDependencyResolutionMap.put(questionCopy.getSourceQuestionId(), questionCopy.getKey()
                     .getId());
+            log.log(Level.INFO, "qDependencyResolutionMap: " + qDependencyResolutionMap);
             if (questionCopy.getDependentFlag() == null || !questionCopy.getDependentFlag()) {
                 continue;
             }
             Long originalDependentId = questionCopy.getDependentQuestionId();
+            log.log(Level.INFO, "originalDependentId: " + originalDependentId);
             questionCopy.setDependentQuestionId(qDependencyResolutionMap.get(originalDependentId));
             dependentQuestionList.add(questionCopy);
         }
+
         qDao.save(dependentQuestionList);
 
         log.log(Level.INFO, "Resolved dependencies for " + dependentQuestionList.size() + " `Question`");
