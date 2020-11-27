@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
