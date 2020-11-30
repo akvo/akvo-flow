@@ -16,7 +16,10 @@
 
 package com.gallatinsystems.survey.dao;
 
+import com.gallatinsystems.survey.domain.Translation;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
@@ -31,8 +34,11 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
  */
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
+    private final TranslationDao translationDao;
+
     public QuestionGroupDao() {
         super(QuestionGroup.class);
+        this.translationDao = new TranslationDao();
     }
 
     /**
@@ -79,6 +85,16 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
         if (groups != null) {
             int i = 1;
             for (QuestionGroup group : groups) {
+                List<Translation> translations = translationDao.findTranslations(
+                        group.getKey().getId(), Translation.ParentType.QUESTION_GROUP_DESC,
+                        Translation.ParentType.QUESTION_GROUP_NAME);
+                HashMap<String, Translation> translationMap = new HashMap<>();
+                if (translations != null) {
+                    for (Translation t: translations) {
+                        translationMap.put(t.getLanguageCode(), t);
+                    }
+                }
+                group.setTranslationMap(translationMap);
                 // TODO: Hack because we seem to have questiongroups with same
                 // order key so put an arbitrary value there for now since it
                 // isn't used.

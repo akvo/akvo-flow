@@ -16,7 +16,9 @@
 
 package org.akvo.flow.xml;
 
+import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -44,7 +46,8 @@ public class XmlQuestionGroup {
 
     @JacksonXmlProperty(localName = "heading", isAttribute = false)
     private String heading;
-
+    @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
+    private List<XmlAltText> altText;
     @JacksonXmlElementWrapper(localName = "question", useWrapping = false)
     private ArrayList<XmlQuestion> question;
 
@@ -63,6 +66,13 @@ public class XmlQuestionGroup {
         }
         order = group.getOrder();
         repeatable = group.getRepeatable();
+        //Translations, if any
+        if (group.getTranslationMap() != null) {
+            altText = new ArrayList<>();
+            for (Translation t: group.getTranslationMap().values()) {
+                altText.add(new XmlAltText(t));
+            }
+        }
         //Now copy the question tree, if any
         if (group.getQuestionMap() != null) {
             question = new ArrayList<XmlQuestion>();

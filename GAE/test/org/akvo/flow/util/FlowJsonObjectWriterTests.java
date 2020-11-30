@@ -16,10 +16,12 @@
 
 package org.akvo.flow.util;
 
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +128,32 @@ class FlowJsonObjectWriterTests {
         }
 
         String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"tip\":\"Help\",\"text\":\"First Question\",\"translations\":[{\"languageCode\":\"es\",\"text\":\"Primera pregunta\",\"parentType\":\"QUESTION_TEXT\"},{\"languageCode\":\"es\",\"text\":\"Ayuda\",\"parentType\":\"QUESTION_TIP\"}],\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
+        assertEquals(jsonStringExpected, jsonString);
+    }
+
+    @Test
+    void testWriteQuestionGroupWithTranslations() {
+        QuestionGroup qg = new QuestionGroup();
+        qg.setName("question group");
+        qg.setSurveyId(123L);
+        qg.setOrder(0);
+        Translation translation = new Translation();
+        translation.setParentType(Translation.ParentType.QUESTION_GROUP_NAME);
+        translation.setText("Primer grupo");
+        translation.setLanguageCode("es");
+        HashMap<String, Translation> translationHashMap = new HashMap<>();
+        translationHashMap.put(translation.getLanguageCode(), translation);
+        qg.setTranslationMap(translationHashMap);
+
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter().withExcludeNullValues();
+        String jsonString = null;
+        try {
+            jsonString = writer.writeAsString(qg);
+        } catch (IOException e) {
+            // ignoring exception
+        }
+
+        String jsonStringExpected = "{\"name\":\"question group\",\"translationMap\":{\"es\":{\"languageCode\":\"es\",\"text\":\"Primer grupo\",\"parentType\":\"QUESTION_GROUP_NAME\"}},\"surveyId\":123,\"order\":0,\"immutable\":false}";
         assertEquals(jsonStringExpected, jsonString);
     }
 }
