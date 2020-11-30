@@ -18,6 +18,7 @@ package org.akvo.flow.xml;
 
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 /* Class for working with XML like this:
 <questionGroup repeatable = "false">
@@ -91,6 +93,14 @@ public class XmlQuestionGroup {
         dto.setCode(heading);
         dto.setOrder(order);
         dto.setRepeatable(repeatable);
+        //Translations
+        if (altText != null) {
+            HashMap<String, TranslationDto> qMap = new HashMap<>();
+            for (XmlAltText alt : altText) {
+                qMap.put(alt.getLanguage(), alt.toDto());
+            }
+            dto.setTranslationMap(qMap);
+        }
         if (question != null) {
             TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
             for (XmlQuestion q : question) {
@@ -144,4 +154,11 @@ public class XmlQuestionGroup {
         this.question = qs;
     }
 
+    public List<XmlAltText> getAltText() {
+        return altText;
+    }
+
+    public void setAltText(List<XmlAltText> altText) {
+        this.altText = altText;
+    }
 }
