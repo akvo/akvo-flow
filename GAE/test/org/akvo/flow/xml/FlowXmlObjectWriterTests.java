@@ -22,6 +22,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -45,6 +46,7 @@ class FlowXmlObjectWriterTests {
     private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
     private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_QUESTIONLESS_XML_WITH_TRANSLATIONS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><altText type=\"translation\" language=\"es\">Formulario</altText><questionGroup><altText type=\"translation\" language=\"es\">Grupo</altText><heading>This is a group</heading></questionGroup></survey>";
 
     private static final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
@@ -513,4 +515,76 @@ class FlowXmlObjectWriterTests {
         //And finally parse it to a DTO
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
     }
+
+    @Test
+    void testSerialiseQuestionLessFormWithTranslations() throws IOException {
+
+        //Mock up a form tree
+        Survey form1 = new Survey();
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setName("This is a form");
+        form1.setVersion(11.0);
+        form1.setSurveyGroupId(123L);
+
+        HashMap<String, Translation> translationHashMap = createTranslationMap("Formulario", "es", form1.getObjectId(),
+                form1.getObjectId(), Translation.ParentType.SURVEY_NAME;
+        form1.setTranslationMap(translationHashMap);
+
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
+        HashMap<String, Translation> translationHashMap2 = createTranslationMap("Grupo", "es", form1.getObjectId(),
+                qg.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME);
+        qg.setTranslationMap(translationHashMap2);
+        gl.put(1, qg);
+        form1.setQuestionGroupMap(gl);
+        //No questions
+
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        //...and test it
+        assertNotEquals(null, form);
+        assertNotEquals(null, form.getQuestionGroup());
+        List<XmlQuestionGroup> ga = form.getQuestionGroup();
+        assertEquals(1, ga.size());
+        assertEquals(1, form.getAltText().size());
+        assertEquals("This is a group", ga.get(0).getHeading());
+        assertEquals(1, ga.get(0).getOrder());
+        assertEquals(1, ga.get(0).getAltText().size());
+        assertNull(ga.get(0).getRepeatable());
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_QUESTIONLESS_XML_WITH_TRANSLATIONS, xml);
+
+        //And finally parse to DTO to see that it is valid
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("11.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
+    }
+
+    private HashMap<String, Translation> createTranslationMap(String text, String languageCode, Long surveyId,
+                                                              long parentId, Translation.ParentType parentType) {
+        HashMap<String, Translation> translationHashMap = new HashMap<>();
+        Translation translation = new Translation();
+        translation.setText(text);
+        translation.setLanguageCode(languageCode);
+        translation.setSurveyId(surveyId);
+        translation.setParentId(parentId);
+        translation.setParentType(parentType);
+        translationHashMap.put(translation.getLanguageCode(), translation);
+        return translationHashMap;
+    }
+
 }
