@@ -33,7 +33,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 @JacksonXmlRootElement(localName = "survey")
 public final class XmlForm {
 
