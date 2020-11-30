@@ -18,9 +18,11 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import java.util.Map;
 
 public class SurveyDto extends BaseDto {
     private static final long serialVersionUID = 6593732844403807030L;
@@ -38,6 +40,8 @@ public class SurveyDto extends BaseDto {
     private Date lastUpdateDateTime;
     private Long sourceId = null;
     private List<Long> ancestorIds;
+
+    private Map<String, TranslationDto> translationMap;
 
     public String getPath() {
         return path;
@@ -158,4 +162,11 @@ public class SurveyDto extends BaseDto {
         this.ancestorIds = ancestorIds;
     }
 
+    public Map<String, TranslationDto> getTranslationMap() {
+        return translationMap;
+    }
+
+    public void setTranslationMap(Map<String, TranslationDto> translationMap) {
+        this.translationMap = translationMap;
+    }
 }

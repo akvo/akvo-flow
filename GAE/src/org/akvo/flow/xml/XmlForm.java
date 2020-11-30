@@ -16,7 +16,10 @@
 
 package org.akvo.flow.xml;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -28,10 +31,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 @JacksonXmlRootElement(localName = "survey")
 public final class XmlForm {
+
+    @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
+    private List<XmlAltText> altText;
 
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
     private List<XmlQuestionGroup> questionGroup;
@@ -75,6 +81,14 @@ public final class XmlForm {
         }
         version = form.getVersion().toString();
         app = appStr;
+        // Translations, if any
+        // Initializing an empty list prevents empty <altText/> tag when there are no translations
+        altText = new ArrayList<>();
+        if (form.getTranslationMap() != null && !form.getTranslationMap().isEmpty()) {
+            for (Translation t: form.getTranslationMap().values()) {
+                altText.add(new XmlAltText(t));
+            }
+        }
         //Now copy the tree of child objects (if any)
         questionGroup = new ArrayList<>(); //Having an empty list prevents a <questionGroup/> tag
         if (form.getQuestionGroupMap() != null) {
@@ -93,6 +107,14 @@ public final class XmlForm {
         dto.setName(name);
         dto.setCode(name);
         dto.setVersion(version);
+        //Translations
+        if (altText != null) {
+            HashMap<String, TranslationDto> qMap = new HashMap<>();
+            for (XmlAltText alt : altText) {
+                qMap.put(alt.getLanguage(), alt.toDto());
+            }
+            dto.setTranslationMap(qMap);
+        }
         if (questionGroup != null) {
             List<QuestionGroupDto> gList = new ArrayList<>();
             int i = 1;
@@ -169,6 +191,14 @@ public final class XmlForm {
 
     public void setSurveyId(String surveyId) {
         this.surveyId = Long.parseLong(surveyId);
+    }
+
+    public List<XmlAltText> getAltText() {
+        return altText;
+    }
+
+    public void setAltText(List<XmlAltText> altText) {
+        this.altText = altText;
     }
 
     @Override public String toString() {
