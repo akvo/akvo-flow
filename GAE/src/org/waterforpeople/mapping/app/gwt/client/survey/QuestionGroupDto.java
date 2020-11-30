@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -36,6 +38,8 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private Boolean repeatable;
     private String status;
     private Boolean immutable;
+
+    private Map<String, TranslationDto> translationMap;
 
     public Integer getOrder() {
         return order;
@@ -135,5 +139,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public void setImmutable(Boolean immutable) {
         this.immutable = immutable;
+    }
+
+    public Map<String, TranslationDto> getTranslationMap() {
+        return translationMap;
+    }
+
+    public void setTranslationMap(Map<String, TranslationDto> translationMap) {
+        this.translationMap = translationMap;
     }
 }
