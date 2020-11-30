@@ -527,7 +527,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(123L);
 
         HashMap<String, Translation> translationHashMap = createTranslationMap("Formulario", "es", form1.getObjectId(),
-                form1.getObjectId(), Translation.ParentType.SURVEY_NAME;
+                form1.getObjectId(), Translation.ParentType.SURVEY_NAME);
         form1.setTranslationMap(translationHashMap);
 
         //Add a QuestionGroup
