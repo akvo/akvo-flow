@@ -86,8 +86,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
             int i = 1;
             for (QuestionGroup group : groups) {
                 List<Translation> translations = translationDao.findTranslations(
-                        group.getKey().getId(), Translation.ParentType.QUESTION_GROUP_DESC,
-                        Translation.ParentType.QUESTION_GROUP_NAME);
+                        group.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME);
                 HashMap<String, Translation> translationMap = new HashMap<>();
                 if (translations != null) {
                     for (Translation t: translations) {
