@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015,2017,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyInstancePayload;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -240,13 +243,24 @@ public class SurveyInstanceRestService {
         }
 
         Long surveyId = si.getSurveyId();
-        surveyInstanceDao.deleteSurveyInstance(si);
+        List<Long> ids = new ArrayList<>();
+        ids.add(surveyId);
+
+        Long surveyedLocaleId = si.getSurveyedLocaleId();
+        surveyInstanceDao.delete(si);
+
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION)
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, Long.toString(id))
+                .param(DataProcessorRequest.LOCALE_ID_PARAM, Long.toString(surveyedLocaleId));
+
+        QueueFactory.getQueue("deletequeue").add(to);
+
         statusDto.setStatus("ok");
 
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(surveyId);
         SurveyUtils.notifyReportService(ids, "invalidate");
-
         return response;
     }
 
