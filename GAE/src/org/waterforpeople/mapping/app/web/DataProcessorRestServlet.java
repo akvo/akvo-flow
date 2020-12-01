@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -228,8 +228,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
         } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
                 .getAction())) {
-            if (dpReq.getSurveyInstanceId() != null) {
-                deleteSurveyResponses(dpReq.getSurveyInstanceId());
+            if (dpReq.getSurveyInstanceId() != null && dpReq.getSurveyedLocaleId() != null) {
+                deleteSurveyResponses(dpReq.getSurveyInstanceId(), dpReq.getSurveyedLocaleId());
             }
         } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
@@ -1069,12 +1069,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      *
      * @param surveyInstanceId
      */
-    private void deleteSurveyResponses(Long surveyInstanceId) {
+    private void deleteSurveyResponses(Long surveyInstanceId, Long surveyedLocaleId) {
         siDao = new SurveyInstanceDAO();
-        SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
-        if (surveyInstance != null) {
-            siDao.deleteSurveyInstance(surveyInstance);
-        }
+        siDao.deleteSurveyInstanceContent(surveyInstanceId, surveyedLocaleId);
     }
 
     /**
