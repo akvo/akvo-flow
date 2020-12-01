@@ -162,8 +162,8 @@ public class XmlQuestion {
             dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
         }
         //Translations, if any
+        altText = new ArrayList<>();
         if (q.getTranslations() != null) {
-            altText = new ArrayList<>();
             for (Translation t: q.translationsAsMap().values()) {
                 altText.add(new XmlAltText(t));
             }
