@@ -21,7 +21,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Class for working with form XML tags like this:
@@ -44,15 +46,32 @@ public class XmlHelp {
 
     public XmlHelp(Question q) {
         this.text = q.getTip();
+        // this removes the empty <altText/> tag from the xml
+        if (altText == null) {
+            altText = new ArrayList<>();
+        }
+        Map<String, Translation> translationMap = createTranslationsMap(q);
+        for (Translation translation: translationMap.values()) {
+            altText.add(new XmlAltText(translation));
+        }
+    }
+
+    /**
+     * This allows to filter out duplicated translations if any
+     * @param q
+     * @return
+     */
+    private Map<String, Translation> createTranslationsMap(Question q) {
+        Map<String, Translation> translationMap = new HashMap<>();
         List<Translation> translations = q.getTranslations();
-        for (Translation t: translations) {
-            if (Translation.ParentType.QUESTION_TIP.equals(t.getParentType())) {
-                if (altText == null) {
-                    altText = new ArrayList<>();
+        if (translations != null) {
+            for (Translation t: translations) {
+                if (Translation.ParentType.QUESTION_TIP.equals(t.getParentType())) {
+                    translationMap.put(t.getLanguageCode(), t);
                 }
-                altText.add(new XmlAltText(t));
             }
         }
+        return translationMap;
     }
 
     @Override public String toString() {
