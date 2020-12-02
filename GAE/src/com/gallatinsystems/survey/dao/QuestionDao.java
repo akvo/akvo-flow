@@ -505,8 +505,7 @@ public class QuestionDao extends BaseDAO<Question> {
             if (Question.Type.OPTION == q.getType()) {
                 q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
             }
-            q.setTranslations(translationDao.findTranslations(
-                    q.getKey().getId(), Translation.ParentType.QUESTION_TEXT));
+            q.setTranslations(translationDao.findTranslations(q.getKey().getId(), ParentType.QUESTION_TEXT, ParentType.QUESTION_TIP));
             // only load scoring rules for types that support scoring
             if (Question.Type.OPTION == q.getType()
                     || Question.Type.FREE_TEXT == q.getType()
