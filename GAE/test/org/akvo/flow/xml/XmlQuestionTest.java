@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class XmlQuestionTest {
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-    private DataStoreTestUtil dsu =  new DataStoreTestUtil();
+    private final DataStoreTestUtil dsu =  new DataStoreTestUtil();
 
     @BeforeEach
     public void setUp() {
@@ -62,8 +62,8 @@ class XmlQuestionTest {
         question.setTip("One");
         dao.save(question);
 
-        Long surveyId = survey.getKey().getId();
-        Long questionId = question.getKey().getId();
+        long surveyId = survey.getKey().getId();
+        long questionId = question.getKey().getId();
 
         dsu.createTranslation(surveyId, questionId, Translation.ParentType.QUESTION_TIP, "uno", "es");
         dsu.createTranslation(surveyId, questionId, Translation.ParentType.QUESTION_TIP, "uno", "es");
