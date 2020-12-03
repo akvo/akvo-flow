@@ -16,7 +16,6 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.google.gwt.dev.util.Pair;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
@@ -113,14 +112,14 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        List<Pair<Long, QuestionGroup>> listOfPairs = shallowCopyQuestionGroups(copiedSurveyId, qgList);
+        List<QuestionGroupPair> listOfPairs = shallowCopyQuestionGroups(copiedSurveyId, qgList);
 
         // batch save question groups
-        new QuestionGroupDao().save(listOfPairs.stream().map(pair -> pair.right).collect(Collectors.toList()));
+        new QuestionGroupDao().save(listOfPairs.stream().map(pair -> pair.getCopiedGroup()).collect(Collectors.toList()));
 
-        for(Pair<Long, QuestionGroup> entry : listOfPairs) {
-            Long sourceGroupId = entry.left;
-            QuestionGroup copyGroup = entry.right;
+        for(QuestionGroupPair entry : listOfPairs) {
+            Long sourceGroupId = entry.getSourceGroupId();
+            QuestionGroup copyGroup = entry.getCopiedGroup();
 
             SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroup,
                     qDependencyResolutionMap, null, copiedTranslations); //new survey, so id re-use is OK
@@ -148,15 +147,15 @@ public class SurveyUtils {
 
     }
 
-    public static List<Pair<Long, QuestionGroup>> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
+    public static List<QuestionGroupPair> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
         //Pair<SourceQuestionId, copyGroup>
-        List<Pair<Long, QuestionGroup>> sourceToCopiedGroups = new ArrayList<>();
+        List<QuestionGroupPair> sourceToCopiedGroups = new ArrayList<>();
         for (final QuestionGroup sourceGroup : questionGroupList) {
             // need a temp group to avoid state sharing exception
             QuestionGroup copyGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
             copyGroup.setSurveyId(formId);
-            sourceToCopiedGroups.add(Pair.create(sourceGroup.getKey().getId(), copyGroup));
+            sourceToCopiedGroups.add(new QuestionGroupPair(sourceGroup.getKey().getId(), copyGroup));
         }
         return sourceToCopiedGroups;
     }
@@ -708,5 +707,23 @@ public class SurveyUtils {
         }
 
         return idsInUse;
+    }
+
+    static class QuestionGroupPair {
+        private final Long sourceGroupId;
+        private final QuestionGroup copiedGroup;
+
+        QuestionGroupPair(Long sourceGroupId, QuestionGroup copiedGroup) {
+            this.sourceGroupId = sourceGroupId;
+            this.copiedGroup = copiedGroup;
+        }
+
+        public Long getSourceGroupId() {
+            return sourceGroupId;
+        }
+
+        public QuestionGroup getCopiedGroup() {
+            return copiedGroup;
+        }
     }
 }
