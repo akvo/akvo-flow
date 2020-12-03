@@ -42,8 +42,8 @@ public class FixCopyDependency implements Process {
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
-        //fixDependencyForSurvey(ds, 107750251L);
-        System.out.println(surveysWithMissingDependencies(ds));
+        fixDependencyForSurvey(ds);
+        // System.out.println(surveysWithMissingDependencies(ds));
     }
 
     private Set<Long> surveysWithMissingDependencies(DatastoreService ds) {
@@ -56,25 +56,25 @@ public class FixCopyDependency implements Process {
         q.setFilter(f1);
 
         PreparedQuery pq = ds.prepare(q);
-
+        int n = 0;
         for (Entity question : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             if (Boolean.TRUE.equals(question.getProperty("dependentFlag")) && question.getProperty("dependentQuestionId") == null) {
+                System.out.println("Question id " + question.getKey().getId());
+                n++;
                 brokenSurveys.add((Long) question.getProperty("surveyId"));
             }
         }
-
+        System.out.println("Number of issue " + n);
         return brokenSurveys;
     }
 
-    private void fixDependencyForSurvey(DatastoreService ds, long surveyId) {
+    private void fixDependencyForSurvey(DatastoreService ds) {
 
         final Query q = new Query("Question");
-        final Filter surveyFilter = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
-        final Filter iamDependent = new FilterPredicate("dependentFlag", FilterOperator.EQUAL, true);
-        final Filter idontHaveDependentQuestionId = new FilterPredicate("dependentQuestionId", FilterOperator.EQUAL, null);
-
-        final Filter theFilter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(surveyFilter, iamDependent, idontHaveDependentQuestionId));
+        Instant t = Instant.parse("2020-11-01T00:00:00Z");
+        final Filter theFilter = new FilterPredicate("createdDateTime", FilterOperator.GREATER_THAN_OR_EQUAL, Date.from(t));
         q.setFilter(theFilter);
+        q.addSort("createdDateTime", Query.SortDirection.ASCENDING);
 
         final PreparedQuery pq = ds.prepare(q);
 
@@ -85,6 +85,11 @@ public class FixCopyDependency implements Process {
         for (Entity brokenQuestion : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             if (brokenQuestion.getProperty("sourceQuestionId") == null) {
+                continue;
+            }
+            if (Boolean.FALSE.equals(brokenQuestion.getProperty("dependentFlag")) ||
+                    (Boolean.TRUE.equals(brokenQuestion.getProperty("dependentFlag")) &&
+                            brokenQuestion.getProperty("dependentQuestionId") != null)) {
                 continue;
             }
 
@@ -104,16 +109,20 @@ public class FixCopyDependency implements Process {
             }
 
             Long oldDependentId = (Long) sourceQuestion.getProperty("dependentQuestionId");
+            if (oldDependentId == null) {
+                System.out.println("OldDependantId null for question: " + sourceQuestion.getKey().getId());
+                continue;
+            }
 
             if (!dependencyCache.containsKey(oldDependentId)) {
-                Query newDependent = new Query("Question");
-                Filter bySurvey = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
-                Filter bySourceId = new FilterPredicate("sourceQuestionId", FilterOperator.EQUAL, oldDependentId);
-                Filter f = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(bySurvey, bySourceId));
-                newDependent.setFilter(f);
 
-                PreparedQuery pqnd = ds.prepare(newDependent);
-                Entity newDependentQuestion = pqnd.asSingleEntity();
+                Entity newDependentQuestion = null;
+                try {
+                    newDependentQuestion = ds.get(KeyFactory.createKey("Question", oldDependentId));
+                } catch (EntityNotFoundException e) {
+                    System.out.println("Question with id " + oldDependentId + " not found, for: " + sourceQuestion.getKey().getId() + " Please check!");
+                    continue;
+                }
                 dependencyCache.put(oldDependentId, newDependentQuestion.getKey().getId());
             }
 
@@ -122,7 +131,7 @@ public class FixCopyDependency implements Process {
             System.out.println(String.format("Setting %s for %s", newDependentId, brokenQuestion.getKey().getId()));
 
             brokenQuestion.setProperty("dependentQuestionId", newDependentId);
-            entitiesToSave.add(brokenQuestion);
+            // entitiesToSave.add(brokenQuestion);
         }
 
         // ds.put(entitiesToSave);
