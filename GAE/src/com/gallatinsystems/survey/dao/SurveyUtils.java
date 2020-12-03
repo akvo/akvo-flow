@@ -113,12 +113,12 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        List<Pair<Long, QuestionGroup>> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, qgList);
+        List<Pair<Long, QuestionGroup>> listOfPairs = shallowCopyQuestionGroups(copiedSurveyId, qgList);
 
         // batch save question groups
-        new QuestionGroupDao().save(sourceToCopiedGroupMap.stream().map(pair -> pair.right).collect(Collectors.toList()));
+        new QuestionGroupDao().save(listOfPairs.stream().map(pair -> pair.right).collect(Collectors.toList()));
 
-        for(Pair<Long, QuestionGroup> entry : sourceToCopiedGroupMap) {
+        for(Pair<Long, QuestionGroup> entry : listOfPairs) {
             Long sourceGroupId = entry.left;
             QuestionGroup copyGroup = entry.right;
 
