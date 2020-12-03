@@ -32,11 +32,12 @@ import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.util.List;
-import java.util.Map;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ public class SurveyUtilsTest {
 
         Survey sourceSurvey = createSurvey(1, 1);
 
-        Survey copiedSurvey = copySurvey(sourceSurvey);
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
@@ -90,7 +91,7 @@ public class SurveyUtilsTest {
     public void testCopySurveyWithTranslations() throws Exception {
 
         Survey sourceSurvey = createSurveyWithTranslations();
-        Survey copiedSurvey = copySurvey(sourceSurvey);
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
@@ -106,11 +107,11 @@ public class SurveyUtilsTest {
     public void testCopyBiggerSurvey() throws Exception {
 
         Survey sourceSurvey = createSurvey(6, 4);
-        Survey copiedSurvey = copySurvey(sourceSurvey);
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
 
         QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7, false);
         Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION, false);
-        dataStoreTestUtil.createQuestionOption(newQuestion);
+        dataStoreTestUtil.createQuestionOption(newQuestion, "1", "1");
         dataStoreTestUtil.createDependentQuestion(sourceSurvey, newQuestion);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
@@ -134,10 +135,41 @@ public class SurveyUtilsTest {
     }
 
     @Test
+    public void testSurveyCopyWithDependencies() {
+        SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
+        Survey sourceSurvey = dataStoreTestUtil.createSurvey(newSg);
+
+        //invert the groups order to simulate a possible issue with group ordering
+        QuestionGroup newQg2 = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 2, false);
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 1, false);
+        Question question1 = dataStoreTestUtil.createQuestion(sourceSurvey, newQg.getKey().getId(), Question.Type.OPTION, false);
+        dataStoreTestUtil.createQuestionOption(question1, "1", "1");
+        dataStoreTestUtil.createQuestionOption(question1, "2", "2");
+        Question question2 = dataStoreTestUtil.createQuestion(sourceSurvey, newQg2.getKey().getId(), Question.Type.OPTION, false);
+        dataStoreTestUtil.createQuestionOption(question2, "3", "3");
+        dataStoreTestUtil.createQuestionOption(question2, "4", "4");
+
+        //setup dependencies: question2 from group2 is dependent on option1 of question1 from group1
+        question2.setDependentFlag(true);
+        question2.setDependentQuestionId(question1.getKey().getId());
+        question2.setDependentQuestionAnswer("1");
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
+
+        List<Question> copiedSurveyQuestions = new QuestionDao().listQuestionsBySurvey(copiedSurvey.getKey().getId());
+        Question question2Copy = copiedSurveyQuestions.stream().filter(question -> question.getSourceQuestionId() == question2.getKey().getId()).findFirst().get();
+        Question question1Copy = copiedSurveyQuestions.stream().filter(question -> question.getSourceQuestionId() == question1.getKey().getId()).findFirst().get();
+        assertEquals("1", question2Copy.getDependentQuestionAnswer());
+        assertNotNull(question2Copy.getDependentQuestionId());
+        assertNull(question1Copy.getDependentQuestionId());
+    }
+
+    @Test
     public void testCopyImmutableSurvey() throws Exception {
 
         Survey sourceSurvey = createImmutableSurvey();
-        Survey copiedSurvey = copySurvey(sourceSurvey);
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
 
@@ -160,7 +192,12 @@ public class SurveyUtilsTest {
         return newSurvey;
     }
 
-    private Survey copySurvey(Survey sourceSurvey) {
+    /**
+     * We need to copy the Survey manually as this is done outside the method we are testing
+     * @param sourceSurvey
+     * @return
+     */
+    private Survey copySurveyManually(Survey sourceSurvey) {
         SurveyDto dto = new SurveyDto();
         dto.setName(sourceSurvey.getName());
         dto.setSurveyGroupId(sourceSurvey.getSurveyGroupId());
@@ -201,7 +238,7 @@ public class SurveyUtilsTest {
         Question question = dataStoreTestUtil.createQuestion(newSurvey, questionGroupId, Question.Type.OPTION, false);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
 
-        QuestionOption saved = dataStoreTestUtil.createQuestionOption(question);
+        QuestionOption saved = dataStoreTestUtil.createQuestionOption(question, "1", "1");
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), saved.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
         return newSurvey;
     }

@@ -16,11 +16,13 @@
 
 package com.gallatinsystems.survey.dao;
 
+import com.google.gwt.dev.util.Pair;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.util.stream.Collectors;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.SecuredObject;
@@ -111,14 +113,14 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        Map<Long, QuestionGroup> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, qgList);
+        List<Pair<Long, QuestionGroup>> listOfPairs = shallowCopyQuestionGroups(copiedSurveyId, qgList);
 
         // batch save question groups
-        new QuestionGroupDao().save(sourceToCopiedGroupMap.values());
+        new QuestionGroupDao().save(listOfPairs.stream().map(pair -> pair.right).collect(Collectors.toList()));
 
-        for(Map.Entry<Long, QuestionGroup> entry : sourceToCopiedGroupMap.entrySet()) {
-            Long sourceGroupId = entry.getKey();
-            QuestionGroup copyGroup = entry.getValue();
+        for(Pair<Long, QuestionGroup> entry : listOfPairs) {
+            Long sourceGroupId = entry.left;
+            QuestionGroup copyGroup = entry.right;
 
             SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroup,
                     qDependencyResolutionMap, null, copiedTranslations); //new survey, so id re-use is OK
@@ -146,17 +148,17 @@ public class SurveyUtils {
 
     }
 
-    public static Map<Long, QuestionGroup> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
-        Map<Long, QuestionGroup> sourceToCopiedGroupMap = new HashMap<>();
+    public static List<Pair<Long, QuestionGroup>> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
+        //Pair<SourceQuestionId, copyGroup>
+        List<Pair<Long, QuestionGroup>> sourceToCopiedGroups = new ArrayList<>();
         for (final QuestionGroup sourceGroup : questionGroupList) {
             // need a temp group to avoid state sharing exception
             QuestionGroup copyGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
             copyGroup.setSurveyId(formId);
-
-            sourceToCopiedGroupMap.put(sourceGroup.getKey().getId(), copyGroup);
+            sourceToCopiedGroups.add(Pair.create(sourceGroup.getKey().getId(), copyGroup));
         }
-        return sourceToCopiedGroupMap;
+        return sourceToCopiedGroups;
     }
 
 
