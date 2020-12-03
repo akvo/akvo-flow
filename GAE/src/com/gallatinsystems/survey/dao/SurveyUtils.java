@@ -16,13 +16,13 @@
 
 package com.gallatinsystems.survey.dao;
 
+import com.google.gwt.dev.util.Pair;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.util.stream.Collectors;
-import javafx.util.Pair;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.SecuredObject;
@@ -116,11 +116,11 @@ public class SurveyUtils {
         List<Pair<Long, QuestionGroup>> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, qgList);
 
         // batch save question groups
-        new QuestionGroupDao().save(sourceToCopiedGroupMap.stream().map(pair -> pair.getValue()).collect(Collectors.toList()));
+        new QuestionGroupDao().save(sourceToCopiedGroupMap.stream().map(pair -> pair.right).collect(Collectors.toList()));
 
         for(Pair<Long, QuestionGroup> entry : sourceToCopiedGroupMap) {
-            Long sourceGroupId = entry.getKey();
-            QuestionGroup copyGroup = entry.getValue();
+            Long sourceGroupId = entry.left;
+            QuestionGroup copyGroup = entry.right;
 
             SurveyUtils.copyQuestionGroupContent(sourceGroupId, copyGroup,
                     qDependencyResolutionMap, null, copiedTranslations); //new survey, so id re-use is OK
@@ -156,7 +156,7 @@ public class SurveyUtils {
             QuestionGroup copyGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
             copyGroup.setSurveyId(formId);
-            sourceToCopiedGroups.add(new Pair<>(sourceGroup.getKey().getId(), copyGroup));
+            sourceToCopiedGroups.add(Pair.create(sourceGroup.getKey().getId(), copyGroup));
         }
         return sourceToCopiedGroups;
     }
