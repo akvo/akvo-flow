@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.util.stream.Collectors;
+import javafx.util.Pair;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.SecuredObject;
@@ -111,12 +113,12 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        Map<Long, QuestionGroup> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, qgList);
+        List<Pair<Long, QuestionGroup>> sourceToCopiedGroupMap = shallowCopyQuestionGroups(copiedSurveyId, qgList);
 
         // batch save question groups
-        new QuestionGroupDao().save(sourceToCopiedGroupMap.values());
+        new QuestionGroupDao().save(sourceToCopiedGroupMap.stream().map(pair -> pair.getValue()).collect(Collectors.toList()));
 
-        for(Map.Entry<Long, QuestionGroup> entry : sourceToCopiedGroupMap.entrySet()) {
+        for(Pair<Long, QuestionGroup> entry : sourceToCopiedGroupMap) {
             Long sourceGroupId = entry.getKey();
             QuestionGroup copyGroup = entry.getValue();
 
@@ -146,17 +148,17 @@ public class SurveyUtils {
 
     }
 
-    public static Map<Long, QuestionGroup> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
-        Map<Long, QuestionGroup> sourceToCopiedGroupMap = new HashMap<>();
+    public static List<Pair<Long, QuestionGroup>> shallowCopyQuestionGroups(Long formId, List<QuestionGroup> questionGroupList) {
+        //Pair<SourceQuestionId, copyGroup>
+        List<Pair<Long, QuestionGroup>> sourceToCopiedGroups = new ArrayList<>();
         for (final QuestionGroup sourceGroup : questionGroupList) {
             // need a temp group to avoid state sharing exception
             QuestionGroup copyGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
             copyGroup.setSurveyId(formId);
-
-            sourceToCopiedGroupMap.put(sourceGroup.getKey().getId(), copyGroup);
+            sourceToCopiedGroups.add(new Pair<>(sourceGroup.getKey().getId(), copyGroup));
         }
-        return sourceToCopiedGroupMap;
+        return sourceToCopiedGroups;
     }
 
 

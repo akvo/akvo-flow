@@ -192,10 +192,10 @@ public class DataStoreTestUtil {
         return question;
     }
 
-    public QuestionOption createQuestionOption(Question question) {
+    public QuestionOption createQuestionOption(Question question, String code, String text) {
         QuestionOption questionOption = new QuestionOption();
-        questionOption.setCode("1");
-        questionOption.setText("1");
+        questionOption.setCode(code);
+        questionOption.setText(text);
         questionOption.setQuestionId(question.getKey().getId());
         QuestionOption saved = new QuestionOptionDao().save(questionOption);
         return saved;
