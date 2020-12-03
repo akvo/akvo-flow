@@ -27,18 +27,43 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class FixCopyDependency implements Process {
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
-        fixDependencyForSurvey(ds, 107750251L);
+        //fixDependencyForSurvey(ds, 107750251L);
+        System.out.println(surveysWithMissingDependencies(ds));
+    }
+
+    private Set<Long> surveysWithMissingDependencies(DatastoreService ds) {
+        Set<Long> brokenSurveys = new HashSet<>();
+
+        Instant t = Instant.parse("2020-11-01T00:00:00Z");
+
+        Query q = new Query("Question");
+        Filter f1 = new FilterPredicate("createdDateTime", FilterOperator.GREATER_THAN_OR_EQUAL, Date.from(t));
+        q.setFilter(f1);
+
+        PreparedQuery pq = ds.prepare(q);
+
+        for (Entity question : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            if (Boolean.TRUE.equals(question.getProperty("dependentFlag")) && question.getProperty("dependentQuestionId") == null) {
+                brokenSurveys.add((Long) question.getProperty("surveyId"));
+            }
+        }
+
+        return brokenSurveys;
     }
 
     private void fixDependencyForSurvey(DatastoreService ds, long surveyId) {
