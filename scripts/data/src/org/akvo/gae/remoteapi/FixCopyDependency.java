@@ -83,6 +83,7 @@ public class FixCopyDependency implements Process {
     private void fixDependencyForSurveys(DatastoreService ds) {
 
         List<Entity> copiedQuestions = getBrokenQuestions(ds);
+        List<Entity> questionsToSave = new ArrayList<>();
 
         for (Entity question : copiedQuestions) {
 
@@ -104,19 +105,19 @@ public class FixCopyDependency implements Process {
             }
 
             Long surveyId = (Long) question.getProperty("surveyId");
-            Entity newDependent = getNewDependentQuestion(ds, surveyId, sourceDependentQuestionId);
+            Entity newDependentQuestion = getNewDependentQuestion(ds, surveyId, sourceDependentQuestionId);
 
-            if (newDependent == null) {
+            if (newDependentQuestion == null) {
                 System.out.println("New dependent question for source id " + sourceDependentQuestionId + " not found");
                 continue;
             }
 
-            setNewDependency(question, newDependent);
-
-            // entitiesToSave.add(brokenQuestion);
+            setNewDependency(question, newDependentQuestion);
+            questionsToSave.add(question);
         }
 
-        // ds.put(entitiesToSave);
+        ds.put(questionsToSave);
+        System.out.println("Total questions: " + questionsToSave.size());
     }
 
     private List<Entity> getBrokenQuestions(DatastoreService ds) {
@@ -145,20 +146,20 @@ public class FixCopyDependency implements Process {
                 .collect(Collectors.toList());
 
         copiedQuestions.sort((entity1, entity2) -> {
+
             Integer order1 = ((Long) entity1.getProperty("order")).intValue();
             Integer order2 = ((Long) entity2.getProperty("order")).intValue();
 
-            Long group1 = (Long) entity1.getProperty("questionGroupId");
-            Long group2 = (Long) entity2.getProperty("questionGroupId");
+            Long questionGroupId1 = (Long) entity1.getProperty("questionGroupId");
+            Long questionGroupId2 = (Long) entity2.getProperty("questionGroupId");
 
-            if (group1.equals(group2)) {
-                return order1.compareTo(order2);
-            }
+            Integer groupOrder1 = groupOrder.get(questionGroupId1);
+            Integer groupOrder2 = groupOrder.get(questionGroupId2);
 
-            Integer orderWithGroup1 = groupOrder.get(group1) * order1;
-            Integer orderWithGroup2 = groupOrder.get(group2) * order2;
+            Integer newOrder1 = Integer.parseInt("" + groupOrder1 + order1);
+            Integer newOrder2 = Integer.parseInt("" + groupOrder2 + order2);
 
-            return orderWithGroup1.compareTo(orderWithGroup2);
+            return newOrder1.compareTo(newOrder2);
         });
 
         return copiedQuestions;
@@ -199,9 +200,10 @@ public class FixCopyDependency implements Process {
         return q;
     }
 
-    private void setNewDependency(Entity question, Entity newDependent) {
-        System.out.println(String.format("Setting %s for %s", newDependent.getKey().getId(), question.getKey().getId()));
-        question.setProperty("dependentQuestionId", newDependent.getKey().getId());
+    private void setNewDependency(Entity question, Entity newDependentQuestion) {
+        System.out.println(String.format("[Survey id: %s] - Setting %s for %s", question.getProperty("surveyId"),
+                newDependentQuestion.getKey().getId(), question.getKey().getId()));
+        question.setProperty("dependentQuestionId", newDependentQuestion.getKey().getId());
         questionCache.put(question.getKey().getId(), question);
     }
 }
