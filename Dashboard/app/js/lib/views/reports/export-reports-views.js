@@ -334,6 +334,10 @@ FLOW.ReportListItemView = FLOW.View.extend(template('navReports/report'), {
     return !url ? '#' : url;
   }).property('content'),
 
+  reportSuccess: Ember.computed(function() {
+    return this.content.get('state') === 'FINISHED_SUCCESS';
+  }).property('content'),
+
   surveyPath: Ember.computed(function() {
     const formId = this.content.get('formId');
     let path = '';

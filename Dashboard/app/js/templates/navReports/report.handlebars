@@ -1,11 +1,15 @@
 {{#if view.isNotStats}}
 <li id="list-{{unbound view.content.keyId}}" {{bindAttr class="view.reportType view.reportStatus"}}>
   <div class="exportInfo">
-    <a id="link-{{unbound view.content.keyId}}" {{bindAttr href="view.reportLink"}}>
-
       <h5>
-        {{view.reportTypeString}} - <span class="exportFileName"
-          id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
+        {{view.reportTypeString}} -
+        {{#if view.reportSuccess}}
+        <a id="link-{{unbound view.content.keyId}}" {{bindAttr href="view.reportLink"}}>
+          <span class="exportFileName" id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
+        </a>
+        {{else}}
+          <span style="color:red">{{view.content.message}}</span>
+        {{/if}}
         <span class="submissionsDate">
           {{#if view.content.lastCollectionOnly}}
           {{t _recent_submissions}}
@@ -15,8 +19,6 @@
           {{/if}}
         </span>
       </h5>
-
-    </a>
     <span class="surveyPath">{{view.surveyPath}}</span>
   </div>
   <div class="exportStatus">
