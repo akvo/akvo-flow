@@ -194,7 +194,10 @@ public class FixCopyDependency implements Process {
         Filter f = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(surveyFilter, sourceFilter));
         query.setFilter(f);
 
-        q = ds.prepare(query).asSingleEntity();
+        List<Entity> found = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+        if (!found.isEmpty()) {
+            q = found.get(0);
+        }
 
         dependencyCache.put(key, q);
         return q;
