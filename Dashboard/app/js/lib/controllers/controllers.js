@@ -20,20 +20,6 @@ require('akvo-flow/controllers/survey-selection');
 
 FLOW.ApplicationController = Ember.Controller.extend({});
 
-FLOW.role = Ember.Object.create({
-  SUPER_ADMIN: Ember.computed(
-    () => FLOW.currentUser && FLOW.currentUser.permissionList === 0
-  ).property(),
-
-  ADMIN: Ember.computed(
-    () => FLOW.currentUser && FLOW.currentUser.permissionList <= 10
-  ).property(),
-
-  USER: Ember.computed(
-    () => FLOW.currentUser && FLOW.currentUser.permissionList <= 20
-  ).property(),
-});
-
 // Navigation controllers
 FLOW.NavigationController = Ember.Controller.extend({ selected: null });
 FLOW.NavHomeController = Ember.Controller.extend();
