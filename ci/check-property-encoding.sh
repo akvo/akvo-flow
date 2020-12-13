@@ -18,23 +18,30 @@
 
 set -euo pipefail
 
-DIRECTORY=$(cd `dirname $0` && pwd)
+EXIT_CODE=0
 
 check() {
-    properties_files="$(find "${DIRECTORY}/.." -type f -name "*.properties")"
+    properties_files="$(find GAE -type f -name "*.properties")"
     if [[ -n "$properties_files" ]]
     then
         while read -r property_file
         do
-            DETECTED_ENCODING=$(uchardet ${property_file})
+            DETECTED_ENCODING=$(uchardet "${property_file}")
             # Should we check for ISO-8859-1, or maybe not UTF-8?
             # Is it possible to check what version of Java?
             if [ "$DETECTED_ENCODING" != "ISO-8859-1" ]; then
-                echo "Found Java properties file with $DETECTED_ENCODING encoding"
-                echo "${property_file}"
+                echo "${DETECTED_ENCODING=} - ${property_file}"
+                EXIT_CODE=1
             fi
         done <<< "${properties_files}"
     fi
 }
 
+echo "Checking for non ISO-8859-1 encoded .properties files:"
 check
+if [ $EXIT_CODE = 0 ];
+then
+    echo "Properties files has the correct encoding"
+fi
+
+exit $EXIT_CODE
