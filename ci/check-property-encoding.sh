@@ -39,7 +39,7 @@ check() {
 
 echo "Checking for non ISO-8859-1 encoded .properties files:"
 check
-if [ $EXIT_CODE = 0 ];
+if [[ $EXIT_CODE = 0 ]]
 then
     echo "Properties files has the correct encoding"
 fi
