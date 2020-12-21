@@ -27,9 +27,8 @@ check() {
         while read -r property_file
         do
             DETECTED_ENCODING=$(uchardet "${property_file}")
-            # Should we check for ISO-8859-1, or maybe not UTF-8?
-            # Is it possible to check what version of Java?
-            if [ "$DETECTED_ENCODING" != "ISO-8859-1" ]; then
+            if [[ "$DETECTED_ENCODING" != "ISO-8859-1" ]]
+            then
                 echo "${DETECTED_ENCODING=} - ${property_file}"
                 EXIT_CODE=1
             fi
