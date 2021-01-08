@@ -30,6 +30,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -134,13 +136,13 @@ public class StatisticsExporter implements DataExporter {
         XSSFWorkbook wb = new XSSFWorkbook();
 
         XSSFCellStyle headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
         XSSFFont headerFont = wb.createFont();
-        headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         headerStyle.setFont(headerFont);
 
         XSSFCellStyle questionStyle = wb.createCellStyle();
-        questionStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_TOP);
+        questionStyle.setVerticalAlignment(VerticalAlignment.TOP);
         questionStyle.setWrapText(true);
 
         writeInstanceSheet(title, groupMap, formMap, instanceCounts, wb, headerStyle, questionStyle);
