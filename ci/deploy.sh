@@ -28,4 +28,4 @@ docker run \
     --env FLOW_CONFIG_REPO \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/akvo-flow-builder:20200427.052642.da8c2ee /app/src/ci/mvn-deploy.sh "$FLOW_VERSION"
+    akvo/akvo-flow-builder:20210108.190049.80f674e /app/src/ci/mvn-deploy.sh "$FLOW_VERSION"
