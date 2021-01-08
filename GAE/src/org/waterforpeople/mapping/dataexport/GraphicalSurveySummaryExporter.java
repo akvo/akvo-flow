@@ -64,6 +64,7 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -298,9 +299,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Workbook createWorkbookAndFormats() {
         Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
         headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
         Font headerFont = wb.createFont();
-        headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         headerStyle.setFont(headerFont);
 
         short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
@@ -1854,7 +1855,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             anchor.setRow1(tableTopRow);
                             anchor.setCol2(6 + CHART_CELL_WIDTH);
                             anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
-                            anchor.setAnchorType(2);
+                            anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
                             patriarch.createPicture(anchor, indx);
                             if (tableTopRow + CHART_CELL_HEIGHT > bottomRow) {
                                 bottomRow = tableTopRow + CHART_CELL_HEIGHT;
@@ -1908,7 +1909,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Write statitics on the collection itself
      * @param questionMap
      * @param sheet
-     * @param rowIndex
      * @return
      */
     private int writeCollectionStats(Map<QuestionGroupDto,
@@ -2186,7 +2186,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * [5] usePublishedForm, true or false
      */
     public static void main(String[] args) {
-
         // Log4j stuff - http://stackoverflow.com/a/9003191
         ConsoleAppender console = new ConsoleAppender();
         console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));

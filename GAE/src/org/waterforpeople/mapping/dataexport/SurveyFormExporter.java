@@ -35,6 +35,8 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -138,19 +140,19 @@ public class SurveyFormExporter implements DataExporter {
         HSSFWorkbook wb = new HSSFWorkbook();
 
         HSSFCellStyle headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
         HSSFFont headerFont = wb.createFont();
-        headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         headerStyle.setFont(headerFont);
 
         HSSFCellStyle questionStyle = wb.createCellStyle();
-        questionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        questionStyle.setVerticalAlignment(VerticalAlignment.TOP);
         questionStyle.setWrapText(true);
 
         HSSFCellStyle depStyle = wb.createCellStyle();
-        depStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        depStyle.setAlignment(HorizontalAlignment.CENTER);
         HSSFFont depFont = wb.createFont();
-        depFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        depFont.setBold(true);
         depFont.setItalic(true);
         depStyle.setFont(depFont);
 
@@ -243,10 +245,10 @@ public class SurveyFormExporter implements DataExporter {
         HSSFSheet sheet = wb.createSheet(FULL_SHEET_NAME);
 
         HSSFCellStyle headerCtr = wb.createCellStyle();
-        headerCtr.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        headerCtr.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        headerCtr.setAlignment(HorizontalAlignment.CENTER);
+        headerCtr.setVerticalAlignment(VerticalAlignment.TOP);
         HSSFFont headerFont = wb.createFont();
-        headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         headerCtr.setFont(headerFont);
         headerCtr.setWrapText(true); //TODO Wrap headers or not?
 
@@ -254,7 +256,7 @@ public class SurveyFormExporter implements DataExporter {
         headerLeft.setFont(headerFont);
 
         HSSFCellStyle optionStyle = wb.createCellStyle();
-        optionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        optionStyle.setVerticalAlignment(VerticalAlignment.TOP);
         optionStyle.setWrapText(true);
 
         final int startRow = createFullHeader(sheet, 0, title, headerCtr);
