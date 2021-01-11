@@ -1459,7 +1459,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        if (doGroupHeaders) {
+        if (doGroupHeaders && questions != null && questions.size() > 1) {
             //Now we know the width; write the group name spanned over entire group
             createCell(getRow(0, sheet), startOffset,
                     "Group " + grpDto.getOrder() + " - " + grpDto.getCode(), headerStyle);
