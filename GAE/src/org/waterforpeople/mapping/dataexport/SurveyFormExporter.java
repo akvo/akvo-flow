@@ -299,9 +299,11 @@ public class SurveyFormExporter implements DataExporter {
                         writeScrollingRowPart(optionStyle, qTextFromId, q, row);
                     }
                     // all rows created; merge all-group cells vertically
-                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
-                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
-                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
+                    if (qList.size() > 1) {
+                        sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
+                        sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
+                        sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
+                    }
                 }
             }
         }
