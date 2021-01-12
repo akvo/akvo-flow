@@ -44,6 +44,10 @@ public class XmlHelp {
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
     private List<XmlAltText> altText;
 
+    public XmlHelp() {
+
+    }
+
     public XmlHelp(Question q) {
         this.text = q.getTip();
         // this removes the empty <altText/> tag from the xml
