@@ -643,16 +643,27 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 
   publishSurvey() {
     const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    FLOW.store.findQuery(FLOW.Action, {
-      action: 'publishSurvey',
-      surveyId,
-    });
+    const questions = FLOW.store.filter(FLOW.Question);
+    const surveyQuestionsLoaded = questions.map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
+    console.log("data question available", surveyQuestionsLoaded[0]._data);
+    // FLOW.store.findQuery(FLOW.Action, {
+    //   action: 'publishSurvey',
+    //   surveyId,
+    // });
+
+    // FLOW.dialogControl.set('activeAction', 'ignore');
+    // FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    // FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    // FLOW.dialogControl.set('showCANCEL', false);
+    // FLOW.dialogControl.set('showDialog', true);
 
     FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('header', 'locally running');
+    FLOW.dialogControl.set('message', 'yuhu');
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
+
+
   },
 
   createForm() {
