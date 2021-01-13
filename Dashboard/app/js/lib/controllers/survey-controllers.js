@@ -871,13 +871,11 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
 
 FLOW.questionControl = Ember.ArrayController.create(observe({
   'FLOW.selectedControl.selectedSurvey': ['populateAllQuestions', 'allQuestionsFilter'],
-  'FLOW.selectedControl.selectedQuestionGroup': 'setQGcontent',
   'FLOW.selectedControl.selectedQuestion': 'setEarlierOptionQuestions',
 }), {
   content: null,
   OPTIONcontent: null,
   earlierOptionQuestions: null,
-  QGcontent: null,
   filterContent: null,
   sortProperties: ['order'],
   sortAscending: true,
@@ -940,12 +938,13 @@ FLOW.questionControl = Ember.ArrayController.create(observe({
     }
   },
 
-  setQGcontent() {
+  visibleQuestions: Ember.computed(() => {
     if (FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      const qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == qId));
+      const qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      return FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') === qgId);
     }
-  },
+    return [];
+  }).property('FLOW.selectedControl.selectedQuestionGroup'),
 
   geoshapeContent: Ember.computed(() => {
     const selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
