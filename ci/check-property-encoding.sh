@@ -18,6 +18,14 @@
 
 set -euo pipefail
 
+# .properties files should be ISO-8859-1 encoded. It's easy to introduce for
+# example UTF-8 when updating translations in some editors. This will render
+# translations strings faulty. Hence we want to guard against this.
+# The flow-builder container have the tool uchardet installed. We use it
+# to try to detect the encoding. However this is a detection tool and will
+# report things like ASCII for valid ISO-8859-1 files. Hence we only guard
+# against findings of UTF-8 and UTF-16.
+
 EXIT_CODE=0
 
 check() {
@@ -27,9 +35,8 @@ check() {
         while read -r property_file
         do
             DETECTED_ENCODING=$(uchardet "${property_file}")
-            # Should we check for ISO-8859-1, or maybe not UTF-8?
-            # Is it possible to check what version of Java?
-            if [ "$DETECTED_ENCODING" != "ISO-8859-1" ]; then
+            if [[ "$DETECTED_ENCODING" == "UTF-8" || "$DETECTED_ENCODING" == "UTF-16" ]]
+            then
                 echo "${DETECTED_ENCODING=} - ${property_file}"
                 EXIT_CODE=1
             fi
@@ -37,11 +44,11 @@ check() {
     fi
 }
 
-echo "Checking for non ISO-8859-1 encoded .properties files:"
+echo "Checking encoding of .properties files:"
 check
 if [[ $EXIT_CODE = 0 ]]
 then
-    echo "Properties files has the correct encoding"
+    echo "Could not find any file with problematic encoding."
 fi
 
 exit $EXIT_CODE
