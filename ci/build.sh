@@ -18,6 +18,8 @@
 
 set -eu
 
+/app/src/ci/check-property-encoding.sh
+
 SRC_DIR="/app/src"
 
 cd "${SRC_DIR}/Dashboard"
