@@ -646,6 +646,9 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     const questions = FLOW.store.filter(FLOW.Question);
     const surveyQuestionsLoaded = questions.map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
     console.log("data question available", surveyQuestionsLoaded[0]._data);
+    const fQuestion = (l, id) => l.find(o => o.id == id)
+    const dependentQuestionsNotFound = surveyQuestionsLoaded.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(surveyQuestionsLoaded, o._data.attributes.dependentQuestionId))
+
     // FLOW.store.findQuery(FLOW.Action, {
     //   action: 'publishSurvey',
     //   surveyId,
@@ -658,8 +661,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     // FLOW.dialogControl.set('showDialog', true);
 
     FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', 'locally running');
-    FLOW.dialogControl.set('message', 'yuhu');
+    FLOW.dialogControl.set('header', 'Validation on publishing');
+    FLOW.dialogControl.set('message', `Number of dependentQuestionsNotFound: ${dependentQuestionsNotFound.length}`);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
 
