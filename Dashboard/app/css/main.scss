@@ -2699,6 +2699,12 @@ span.qtnGroupHead {
   width: 100%;
   color: $flowAnchorLinkHover;
 }
+span.qtnGroupHeadError {
+  display: block;
+  margin: 0.75em 0 0.25em 0;
+  width: 100%;
+  color: red;
+}
 
 .qtnGroupTitle {
   margin: 3px 0 0.5em;

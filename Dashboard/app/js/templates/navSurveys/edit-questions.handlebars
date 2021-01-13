@@ -35,9 +35,12 @@
     <!-- start list of question groups -->
     {{#each questionGroup in FLOW.questionGroupControl.arrangedContent}}
       {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
-        <div class="questionGroupBlock">
-          <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
-
+            <div class="questionGroupBlock">
+                {{#if view.amError}}
+                <header><span class="qtnGroupHeadError">{{t _group}} {{view.content.order}}</span>
+                {{else}}
+                <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+                {{/if}}
           {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
           {{/if}}
 

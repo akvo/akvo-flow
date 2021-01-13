@@ -32,6 +32,7 @@ FLOW.selectedControl = Ember.Controller.create(observe({
   selectedSurveyAssignment: null,
   dependentQuestion: null,
   selectedQuestionGroup: null,
+  questionGroupsWithError: [],
   selectedQuestion: null,
   selectedOption: null,
   selectedDevice: null,
