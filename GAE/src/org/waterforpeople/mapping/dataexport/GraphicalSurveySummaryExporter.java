@@ -485,7 +485,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
 
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            log.error("Error fetching instance data ", e);
                         } finally {
                             synchronized (lock) {
                                 threadsCompleted.getAndIncrement();
