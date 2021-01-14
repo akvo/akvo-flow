@@ -223,8 +223,10 @@ public class SurveyFormExporter implements DataExporter {
                                     .getTranslationMap())
                                     + SMALL_BLANK, null);
                         }
-                        sheet.addMergedRegion(new CellRangeAddress(
-                                questionStartRow, curRow - 1, 0, 0));
+                        CellRangeAddress region = new CellRangeAddress(questionStartRow, curRow - 1, 0, 0);
+                        if (region.getNumberOfCells() > 1) {
+                            sheet.addMergedRegion(region);
+                        }
                     } else {
                         createCell(tempRow, 1, BLANK, null);
                     }
