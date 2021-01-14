@@ -2,7 +2,12 @@
 
 <div class="innerContent" id="innerContent_01" {{bindAttr data-id="view.content.keyId"}}>
   {{#if view.amOpenQuestion}}
-    <h1 class="questionNbr"><span>{{view.content.order}} </span>{{view.content.text}}</h1>
+    <h1 class="questionNbr">
+        {{#if view.amQuestionPublishingError }}
+        <span class="error">PUBLISHING ERROR</span>
+        {{/if}}
+        <span>{{view.content.order}} </span>{{view.content.text}}
+    </h1>
     <label>{{t _question_text}}:
     {{#if view.questionValidationFailure }}
       <span style="color:red">{{view.questionValidationFailureReason}}</span>
@@ -289,8 +294,10 @@
       </ul>
     </nav>
     <h1 class="questionNbr">
-      
-      {{#if view.showQuestionModifyButtons}}
+        {{#if view.amQuestionPublishingError }}
+        <span class="error">PUBLISHING ERROR</span>
+        {{/if}}
+        {{#if view.showQuestionModifyButtons}}
         {{#if view.editable}}
           <a {{action "doQuestionEdit" target="this"}} class="textLink"><span>{{view.content.order}} </span>{{view.content.text}}</a>
         {{else}}
