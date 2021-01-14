@@ -685,7 +685,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     // FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
     // FLOW.dialogControl.set('showCANCEL', false);
     // FLOW.dialogControl.set('showDialog', true);
-    //    `Questions ids of dependentQuestionsNotFound: ${dependentQuestionsNotFound.length}`
+    console.log(`Questions ids of dependentQuestionsNotFound: ${dependentQuestionsNotFound.length}`);
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
     FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
