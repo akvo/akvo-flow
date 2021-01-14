@@ -3172,8 +3172,21 @@ nav.questionActionMenu a:hover {
   text-shadow: none;
 }
 
-.error {
-  color: red;
+.errorQuestionGroupTop {
+    border-top: medium solid red;
+}
+
+.errorQuestionTop {
+    border-top: medium solid red;
+    margin-top: -15px;
+}
+
+.errorQuestionGroupBottom {
+    border-bottom: medium solid red;
+}
+.errorQuestionBottom {
+    border-bottom: medium solid red;
+    margin-bottom: -15px;
 }
 
 .questionNbr span {

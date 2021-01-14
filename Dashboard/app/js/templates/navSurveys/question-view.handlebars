@@ -1,11 +1,9 @@
 {{#unless view.zeroItemQuestion}}
 
 <div class="innerContent" id="innerContent_01" {{bindAttr data-id="view.content.keyId"}}>
-  {{#if view.amOpenQuestion}}
+    {{#if view.amQuestionPublishingError}} <div class="errorQuestionTop"> </div>{{/if}}
+    {{#if view.amOpenQuestion}}
     <h1 class="questionNbr">
-        {{#if view.amQuestionPublishingError }}
-        <span class="error">PUBLISHING ERROR</span>
-        {{/if}}
         <span>{{view.content.order}} </span>{{view.content.text}}
     </h1>
     <label>{{t _question_text}}:
@@ -197,7 +195,7 @@
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label></li>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
       </ul>
-    {{/if}}
+      {{/if}}
 </div>
 {{/if}}
 <!-- End of question specific material -->
@@ -279,7 +277,8 @@
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>
-  {{else}}
+    {{#if view.amQuestionPublishingError}} <div class="errorQuestionBottom"> </div>{{/if}}
+    {{else}}
     <!-- nav is only displayed if question is closed -->
     <nav class="smallMenu">
       <ul>
@@ -294,9 +293,6 @@
       </ul>
     </nav>
     <h1 class="questionNbr">
-        {{#if view.amQuestionPublishingError }}
-        <span class="error">PUBLISHING ERROR</span>
-        {{/if}}
         {{#if view.showQuestionModifyButtons}}
         {{#if view.editable}}
           <a {{action "doQuestionEdit" target="this"}} class="textLink"><span>{{view.content.order}} </span>{{view.content.text}}</a>
@@ -305,9 +301,9 @@
         {{/if}}
       {{/if}}
     </h1>
-
-  {{/if}}
-  </div>
+    {{#if view.amQuestionPublishingError}} <div class="errorQuestionBottom"></div>{{/if}}
+    {{/if}}
+</div>
 
 {{/unless}}
   <div>
