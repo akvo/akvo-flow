@@ -646,10 +646,20 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     const questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId);
     const questions = FLOW.store.filter(FLOW.Question);
     const surveyQuestionsLoaded = questions.map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
-//    questionGroupsInSurvey.content
+
+    const surveyQuestionGroupsLoaded = questionGroupsInSurvey.map((item) => FLOW.store.find(FLOW.QuestionGroup, item.get("id")));
+
+
+    //    questionGroupsInSurvey.content
 
     console.log("data question available", surveyQuestionsLoaded[0]._data);
-    FLOW.selectedControl.set('questionGroupsPublishingError', [questionGroupsInSurvey.content[0]]);
+    const questionGroupClientId = questionGroupsInSurvey.content[0];
+
+
+    const questionsSelectedGroup = surveyQuestionsLoaded.filter(q => q._data.attributes.questionGroupId === surveyQuestionGroupsLoaded[0]._data.attributes.keyId);
+
+    FLOW.selectedControl.set('questionGroupsPublishingError', [questionGroupClientId]);
+    FLOW.selectedControl.set('questionsPublishingError', [questionsSelectedGroup[0].clientId, questionsSelectedGroup[2].clientId]);
     const fQuestion = (l, id) => l.find(o => o.id == id);
     const dependentQuestionsNotFound = surveyQuestionsLoaded.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(surveyQuestionsLoaded, o._data.attributes.dependentQuestionId));
 
