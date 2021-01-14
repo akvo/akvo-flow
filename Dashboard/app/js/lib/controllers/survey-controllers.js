@@ -649,9 +649,9 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 //    questionGroupsInSurvey.content
 
     console.log("data question available", surveyQuestionsLoaded[0]._data);
-    FLOW.selectedControl.set('questionGroupsWithError', [questionGroupsInSurvey.content[0]]);
-    const fQuestion = (l, id) => l.find(o => o.id == id)
-    const dependentQuestionsNotFound = surveyQuestionsLoaded.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(surveyQuestionsLoaded, o._data.attributes.dependentQuestionId))
+    FLOW.selectedControl.set('questionGroupsPublishingError', [questionGroupsInSurvey.content[0]]);
+    const fQuestion = (l, id) => l.find(o => o.id == id);
+    const dependentQuestionsNotFound = surveyQuestionsLoaded.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(surveyQuestionsLoaded, o._data.attributes.dependentQuestionId));
 
     // const options = FLOW.store.filter(
     //     FLOW.QuestionOption,
@@ -663,7 +663,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     //   );
 
 
-    surveyQuestionsLoaded[0]._data.attributes.questionGroupId
+//    surveyQuestionsLoaded[0]._data.attributes.questionGroupId
 
      // FLOW.store.findQuery(FLOW.Action, {
     //   action: 'publishSurvey',

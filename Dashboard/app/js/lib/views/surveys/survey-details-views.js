@@ -238,11 +238,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
     return null;
   }).property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
 
-  amError: Ember.computed(function () {
-    const selected = FLOW.selectedControl.get('questionGroupsWithError').find(x => x === this.content.get('clientId'));
-    console.log(this.content.get('clientId'), selected, FLOW.selectedControl.questionGroupsWithError);
-    return Boolean(selected);
-  }).property('FLOW.selectedControl.questionGroupsWithError'),
+  amQuestionGroupPublishingError: Ember.computed(function () {
+    return Boolean(FLOW.selectedControl.get('questionGroupsPublishingError').find(x => x === this.content.get('clientId')));
+  }).property('FLOW.selectedControl.questionGroupsPublishingError'),
 
   toggleVisibility() {
     if (this.get('amVisible')) {
