@@ -656,6 +656,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       r[q.get('questionGroupId')].push(q.get('keyId'));
         return r;
     }, Object.create(null));
+    const dependentQuestionsNotFound = questions.filter(o => o.get('dependentFlag')).filter(o => !o.get('dependentQuestionId') || !fQuestion(questions, o.get('dependentQuestionId')));
+
   },
 
   publishSurvey() {
