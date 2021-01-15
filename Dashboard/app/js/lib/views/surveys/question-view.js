@@ -73,7 +73,15 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('FLOW.selectedControl.selectedQuestion', 'content.keyId')
       .cacheable(),
-    
+
+    amQuestionPublishingError: Ember.computed(function() {
+      if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
+      const questionGroupId = this.content._data.attributes.questionGroupId;
+      const questionId = this.content._data.attributes.keyId;
+      const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
+      return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
+    }).property('FLOW.selectedControl.publishingErrors'),
+
     isTemplate: Ember.computed(function() {
       const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       return JSON.parse(FLOW.Env.templateIds).indexOf(surveyId) >= 0;
@@ -88,7 +96,7 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('this.isTemplate')
       .cacheable(),
-    
+
     amTextType: Ember.computed(function() {
       if (this.type) {
         return this.type.get('value') == 'FREE_TEXT';
