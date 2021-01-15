@@ -73,7 +73,15 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('FLOW.selectedControl.selectedQuestion', 'content.keyId')
       .cacheable(),
-    
+
+    amQuestionPublishingError: Ember.computed(function() {
+      if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
+      const questionGroupId = this.content.get('questionGroupId');
+      const questionId = this.content.get('keyId');
+      const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
+      return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
+    }).property('FLOW.selectedControl.publishingErrors'),
+
     isTemplate: Ember.computed(function() {
       const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       return JSON.parse(FLOW.Env.templateIds).indexOf(surveyId) >= 0;
@@ -88,7 +96,7 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('this.isTemplate')
       .cacheable(),
-    
+
     amTextType: Ember.computed(function() {
       if (this.type) {
         return this.type.get('value') == 'FREE_TEXT';
@@ -578,6 +586,9 @@ FLOW.QuestionView = FLOW.View.extend(
       FLOW.selectedControl.set('selectedQuestion', null);
       FLOW.selectedControl.set('dependentQuestion', null);
       FLOW.selectedControl.set('selectedCascadeResource', null);
+      const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const validationResult = FLOW.surveyControl.validateSurveyToBePublished(surveyId);
+      FLOW.selectedControl.set('publishingErrors', validationResult);
 
       // scroll to position
       const el = document.querySelector(`[data-id="${this.get('content').get('keyId')}"]`);
