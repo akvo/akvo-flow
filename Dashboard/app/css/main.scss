@@ -3172,6 +3172,29 @@ nav.questionActionMenu a:hover {
   text-shadow: none;
 }
 
+.errorQuestionGroupTop {
+    border-top: medium solid red;
+}
+
+.errorQuestionTop {
+    border-top: medium solid red;
+    margin-top: -15px;
+}
+
+.errorQuestionGroupBottom {
+    border-bottom: medium solid red;
+}
+
+.errorQuestionBottom {
+    border-bottom: medium solid red;
+    margin-bottom: -15px;
+}
+
+.errorIncompleteQuestion {
+    color: red;
+    padding-left: 20px;
+}
+
 .questionNbr span {
   display: inline-block;
   margin: 0 0.1em 0 0;

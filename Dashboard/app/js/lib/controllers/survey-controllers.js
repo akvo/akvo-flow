@@ -179,6 +179,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   setCurrentProject(project) {
     this.set('currentProject', project);
+    FLOW.selectedControl.set('publishingErrors', null);
     window.scrollTo(0, 0);
   },
 
@@ -641,18 +642,48 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.set('newLocaleSurvey', this.find(item => item.get('keyId') === newLocaleId));
   },
 
+
+  validateSurveyToBePublished(surveyId) {
+
+    const questions = FLOW.store.filter(FLOW.Question).map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
+
+    const fQuestion = (l, id) => l.find(o => o.id == id);
+
+    const dependentQuestionsNotFound = questions.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(questions, o._data.attributes.dependentQuestionId));
+
+    const groupId = (q) => q._data.attributes.questionGroupId;
+
+    const questionId = (q) => q._data.attributes.keyId;
+
+    return dependentQuestionsNotFound.reduce(function (r, q) {
+      r[groupId(q)] = r[groupId(q)] || [];
+      r[groupId(q)].push(questionId(q));
+        return r;
+    }, Object.create(null));
+  },
+
   publishSurvey() {
     const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    FLOW.store.findQuery(FLOW.Action, {
-      action: 'publishSurvey',
-      surveyId,
-    });
+    const validationResult = this.validateSurveyToBePublished(surveyId);
+    if(validationResult){
+      FLOW.selectedControl.set('publishingErrors', validationResult);
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    } else {
+      FLOW.store.findQuery(FLOW.Action, {
+        action: 'publishSurvey',
+        surveyId,
+      });
 
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
   },
 
   createForm() {
