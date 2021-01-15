@@ -642,56 +642,48 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.set('newLocaleSurvey', this.find(item => item.get('keyId') === newLocaleId));
   },
 
+
+  validateSurveyToBePublished(surveyId) {
+
+    const questions = FLOW.store.filter(FLOW.Question).map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
+
+    const fQuestion = (l, id) => l.find(o => o.id == id);
+
+    const dependentQuestionsNotFound = questions.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(questions, o._data.attributes.dependentQuestionId));
+
+    const groupId = (q) => q._data.attributes.questionGroupId;
+
+    const questionId = (q) => q._data.attributes.keyId;
+
+    return dependentQuestionsNotFound.reduce(function (r, q) {
+      r[groupId(q)] = r[groupId(q)] || [];
+      r[groupId(q)].push(questionId(q));
+        return r;
+    }, Object.create(null));
+  },
+
   publishSurvey() {
     const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    const questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId);
+    const validationResult = this.validateSurveyToBePublished(surveyId);
+    if(validationResult){
+      FLOW.selectedControl.set('publishingErrors', validationResult);
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    } else {
+      FLOW.store.findQuery(FLOW.Action, {
+        action: 'publishSurvey',
+        surveyId,
+      });
 
-    const questions = FLOW.store.filter(FLOW.Question);
-
-    const surveyQuestionsLoaded = questions.map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
-
-    const surveyQuestionGroupsLoaded = questionGroupsInSurvey.map((item) => FLOW.store.find(FLOW.QuestionGroup, item.get("id")));
-
-
-    //    questionGroupsInSurvey.content
-
-    console.log("data question available", surveyQuestionsLoaded[0]._data);
-    const questionGroupClientId = surveyQuestionGroupsLoaded[0]._data.attributes.keyId;
-    const questionsSelectedGroup = surveyQuestionsLoaded.filter(q => q._data.attributes.questionGroupId === questionGroupClientId);
-    const data = {};
-    data[questionGroupClientId] = [questionsSelectedGroup[0]._data.attributes.keyId, questionsSelectedGroup[2]._data.attributes.keyId];
-    FLOW.selectedControl.set('publishingErrors', data);
-    const fQuestion = (l, id) => l.find(o => o.id == id);
-    const dependentQuestionsNotFound = surveyQuestionsLoaded.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(surveyQuestionsLoaded, o._data.attributes.dependentQuestionId));
-
-    // const options = FLOW.store.filter(
-    //     FLOW.QuestionOption,
-    //     optionItem => optionItem.get('questionId') === c.get('keyId')
-    //   );
-
-    //     const options = FLOW.store.filter(
-    //     FLOW.QuestionOption
-    //   );
-
-
-//    surveyQuestionsLoaded[0]._data.attributes.questionGroupId
-
-     // FLOW.store.findQuery(FLOW.Action, {
-    //   action: 'publishSurvey',
-    //   surveyId,
-    // });
-
-    // FLOW.dialogControl.set('activeAction', 'ignore');
-    // FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
-    // FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
-    // FLOW.dialogControl.set('showCANCEL', false);
-    // FLOW.dialogControl.set('showDialog', true);
-    console.log(`Questions ids of dependentQuestionsNotFound: ${dependentQuestionsNotFound.length}`);
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
   },
 
   createForm() {
