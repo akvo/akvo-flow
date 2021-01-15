@@ -299,7 +299,8 @@
         {{else}}
           <span>{{view.content.order}} </span>{{view.content.text}}
         {{/if}}
-      {{/if}}
+        {{/if}}
+        {{#if view.amQuestionPublishingError}} <span class="errorIncompleteQuestion">{{t _incomplete_question_highlight}}</span>{{/if}}
     </h1>
     {{#if view.amQuestionPublishingError}} <div class="errorQuestionBottom"></div>{{/if}}
     {{/if}}
