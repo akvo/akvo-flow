@@ -661,7 +661,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
   publishSurvey() {
     const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     const validationResult = this.validateSurveyToBePublished(surveyId);
-    if(validationResult){
+    if(Boolean(Object.keys(validationResult).length)){
       FLOW.selectedControl.set('publishingErrors', validationResult);
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
