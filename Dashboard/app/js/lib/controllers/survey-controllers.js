@@ -179,6 +179,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   setCurrentProject(project) {
     this.set('currentProject', project);
+    FLOW.selectedControl.set('publishingErrors', null);
     window.scrollTo(0, 0);
   },
 

@@ -75,10 +75,10 @@ FLOW.QuestionView = FLOW.View.extend(
       .cacheable(),
 
     amQuestionPublishingError: Ember.computed(function() {
+      if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
       const questionGroupId = this.content._data.attributes.questionGroupId;
       const questionId = this.content._data.attributes.keyId;
       const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
-      console.log(questionGroupId, questionId, groupPublishingErrors);
       return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
     }).property('FLOW.selectedControl.publishingErrors'),
 
@@ -96,7 +96,7 @@ FLOW.QuestionView = FLOW.View.extend(
     })
       .property('this.isTemplate')
       .cacheable(),
-    
+
     amTextType: Ember.computed(function() {
       if (this.type) {
         return this.type.get('value') == 'FREE_TEXT';
