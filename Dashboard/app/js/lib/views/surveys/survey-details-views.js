@@ -240,7 +240,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
 
   amQuestionGroupPublishingError: Ember.computed(function () {
     if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
-    return Boolean(FLOW.selectedControl.get('publishingErrors')[this.content._data.attributes.keyId]);
+    return Boolean(FLOW.selectedControl.get('publishingErrors')[this.content.get('keyId')]);
   }).property('FLOW.selectedControl.publishingErrors'),
 
   toggleVisibility() {

@@ -76,8 +76,8 @@ FLOW.QuestionView = FLOW.View.extend(
 
     amQuestionPublishingError: Ember.computed(function() {
       if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
-      const questionGroupId = this.content._data.attributes.questionGroupId;
-      const questionId = this.content._data.attributes.keyId;
+      const questionGroupId = this.content.get('questionGroupId');
+      const questionId = this.content.get('keyId');
       const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
       return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
     }).property('FLOW.selectedControl.publishingErrors'),

@@ -645,19 +645,15 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 
   validateSurveyToBePublished(surveyId) {
 
-    const questions = FLOW.store.filter(FLOW.Question).map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o._data.attributes.surveyId == surveyId);
+    const questions = FLOW.store.filter(FLOW.Question).map((item) => FLOW.store.find(FLOW.Question, item.get("id"))).filter(o => o.get('surveyId') == surveyId);
 
     const fQuestion = (l, id) => l.find(o => o.id == id);
 
-    const dependentQuestionsNotFound = questions.filter(o => o._data.attributes.dependentFlag).filter(o => !fQuestion(questions, o._data.attributes.dependentQuestionId));
-
-    const groupId = (q) => q._data.attributes.questionGroupId;
-
-    const questionId = (q) => q._data.attributes.keyId;
+    const dependentQuestionsNotFound = questions.filter(o => o.get('dependentFlag')).filter(o => !fQuestion(questions, o.get('dependentQuestionId')));
 
     return dependentQuestionsNotFound.reduce(function (r, q) {
-      r[groupId(q)] = r[groupId(q)] || [];
-      r[groupId(q)].push(questionId(q));
+      r[q.get('questionGroupId')] = r[q.get('questionGroupId')] || [];
+      r[q.get('questionGroupId')].push(q.get('keyId'));
         return r;
     }, Object.create(null));
   },
