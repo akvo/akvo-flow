@@ -239,8 +239,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
   }).property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
 
   amQuestionGroupPublishingError: Ember.computed(function () {
-    return Boolean(FLOW.selectedControl.get('questionGroupsPublishingError').find(x => x === this.content.get('clientId')));
-  }).property('FLOW.selectedControl.questionGroupsPublishingError'),
+    return Boolean(FLOW.selectedControl.get('publishingErrors')[this.content._data.attributes.keyId]);
+  }).property('FLOW.selectedControl.publishingErrors'),
 
   toggleVisibility() {
     if (this.get('amVisible')) {

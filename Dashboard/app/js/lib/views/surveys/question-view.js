@@ -75,9 +75,12 @@ FLOW.QuestionView = FLOW.View.extend(
       .cacheable(),
 
     amQuestionPublishingError: Ember.computed(function() {
-      return Boolean(FLOW.selectedControl.get('questionsPublishingError').find(x => x === this.content.get('clientId')));
-    })
-      .property('FLOW.selectedControl.questionsPublishingError'),
+      const questionGroupId = this.content._data.attributes.questionGroupId;
+      const questionId = this.content._data.attributes.keyId;
+      const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
+      console.log(questionGroupId, questionId, groupPublishingErrors);
+      return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
+    }).property('FLOW.selectedControl.publishingErrors'),
 
     isTemplate: Ember.computed(function() {
       const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
