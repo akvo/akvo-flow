@@ -586,6 +586,9 @@ FLOW.QuestionView = FLOW.View.extend(
       FLOW.selectedControl.set('selectedQuestion', null);
       FLOW.selectedControl.set('dependentQuestion', null);
       FLOW.selectedControl.set('selectedCascadeResource', null);
+      const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const validationResult = FLOW.surveyControl.validateSurveyToBePublished(surveyId);
+      FLOW.selectedControl.set('publishingErrors', validationResult);
 
       // scroll to position
       const el = document.querySelector(`[data-id="${this.get('content').get('keyId')}"]`);
