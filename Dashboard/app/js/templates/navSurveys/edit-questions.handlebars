@@ -34,10 +34,10 @@
 
     <!-- start list of question groups -->
     {{#each questionGroup in FLOW.questionGroupControl.arrangedContent}}
-      {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
-        <div class="questionGroupBlock">
-          <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
-
+            {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
+            <div {{bindAttr class="view.amQuestionGroupPublishingError:error :questionGroupBlock"}} >
+                <header>
+                    <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
           {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
           {{/if}}
 
@@ -90,7 +90,7 @@
             </div>
           {{/if}}
           <!-- end question group block -->
-        </div>
+            </div>
 
         {{#if view.showQuestionGroupModifyButtons}}
           <!-- insert, move and copy buttons -->
