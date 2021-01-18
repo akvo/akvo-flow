@@ -645,7 +645,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 
   validateSurveyToBePublished(surveyId) {
 
-    const questions = FLOW.store.filter(FLOW.Question), q => q.get('surveyId') == surveyId);
+    const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') == surveyId);
 
     const fQuestion = (l, id) => l.find(o => o.id == id);
 
