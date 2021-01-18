@@ -1,7 +1,6 @@
 {{#unless view.zeroItemQuestion}}
 
-<div class="innerContent" id="innerContent_01" {{bindAttr data-id="view.content.keyId"}}>
-    {{#if view.amQuestionPublishingError}} <div class="errorQuestionTop"> </div>{{/if}}
+<div id="innerContent_01" {{bindAttr data-id="view.content.keyId"}} {{bindAttr class="view.amQuestionPublishingError:error :innerContent"}}>
     {{#if view.amOpenQuestion}}
     <h1 class="questionNbr">
         <span>{{view.content.order}} </span>{{view.content.text}}
@@ -277,7 +276,6 @@
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>
-    {{#if view.amQuestionPublishingError}} <div class="errorQuestionBottom"> </div>{{/if}}
     {{else}}
     <!-- nav is only displayed if question is closed -->
     <nav class="smallMenu">
@@ -302,7 +300,6 @@
         {{/if}}
         {{#if view.amQuestionPublishingError}} <span class="errorIncompleteQuestion">{{t _incomplete_question_highlight}}</span>{{/if}}
     </h1>
-    {{#if view.amQuestionPublishingError}} <div class="errorQuestionBottom"></div>{{/if}}
     {{/if}}
 </div>
 
