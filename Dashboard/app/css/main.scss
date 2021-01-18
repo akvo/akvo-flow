@@ -3172,22 +3172,22 @@ nav.questionActionMenu a:hover {
   text-shadow: none;
 }
 
-.errorQuestionGroupTop {
-    border-top: medium solid red;
-}
-
 .errorQuestionTop {
     border-top: medium solid red;
     margin-top: -15px;
 }
 
-.errorQuestionGroupBottom {
-    border-bottom: medium solid red;
-}
-
 .errorQuestionBottom {
     border-bottom: medium solid red;
     margin-bottom: -15px;
+}
+
+div.error {
+    border: medium solid red;
+}
+
+.aQuestionSet .questionSetContent div.error  {
+    border: medium solid red;
 }
 
 .errorIncompleteQuestion {
