@@ -272,6 +272,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
     this.set('showSaveCancelButton', false);
 
     FLOW.store.commit();
+    FLOW.surveyControl.validateSurveyToBePublished();
   },
 
   eventManager: Ember.Object.create({
