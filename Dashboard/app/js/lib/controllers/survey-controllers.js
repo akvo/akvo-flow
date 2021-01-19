@@ -642,8 +642,12 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.set('newLocaleSurvey', this.find(item => item.get('keyId') === newLocaleId));
   },
 
-
   validateSurveyToBePublished(surveyId) {
+    if (!surveyId && FLOW.selectedControl.get('publishingErrors')) {
+      const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const validationResult = FLOW.surveyControl.validateSurveyToBePublished(surveyId);
+      FLOW.selectedControl.set('publishingErrors', validationResult);
+    }
 
     const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') == surveyId);
 
