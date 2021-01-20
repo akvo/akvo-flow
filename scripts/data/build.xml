@@ -33,4 +33,13 @@
 			<arg line="${service} ${appId} ${serviceAccount} ${akvoFlowServerConfigPath}/${appId}/${appId}.p12 ${args}" />
 		</java>
 	</target>
+
+	<target name="devRemoteAPI" depends="compile">
+		<property name="service" value="" />
+		<property name="args" value="" />
+		<java classname="org.akvo.gae.remoteapi.RemoteAPI" classpathref="project.classpath" failonerror="true">
+			<arg line="${service} localhost ${args}" />
+		</java>
+	</target>
+
 </project>
