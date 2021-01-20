@@ -571,6 +571,10 @@ FLOW.isoLanguagesDict = {
     name: 'Shona',
     nativeName: 'chiShona',
   },
+  sid: {
+    name: 'Sidaama',
+    nativeName: 'sidaama',
+  },
   si: {
     name: 'Sinhala, Sinhalese',
     nativeName: 'සිංහල',
