@@ -66,6 +66,12 @@ By default akvo-server-config/*/*.p12 auth files are taken from this relative pa
 ant remoteAPI -DappId=akvoflow-uat2 -Dservice=UnifyDataPointAssignment -DakvoFlowServerConfigPath=/your-path-to-akvo-flow-server-config
 ```
 
+## calling a RemoteAPIService against local env
+
+``` shell
+ant devRemoteAPI -Dservice=AddUsers -Dargs=./dev_environment_users.csv
+```
+
 
 # FAQ
 
