@@ -1,22 +1,22 @@
 <div class="generatedExports">
-  <h1>{{t _generated_reports}}</h1>
-  <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
+    <h1>{{t _generated_reports}}</h1>
+    <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
 </div>
 <section class="exportContainer">
-  {{#if FLOW.router.reportsController.reportsAvailable}}
-  <!-- Here is the list of exports generated-->
-  <ul class="exportList">
-    {{#each report in FLOW.router.reportsController}}
-    {{view FLOW.ReportListItemView contentBinding="report"}}
-    {{/each}}
-  </ul>
-  <!-- End -->
-  {{else}}
-  <!-- This is the message you get if you have no exports -->
-  <div class="noExportMsg">
-    <h3>{{t _no_exports_yet}}</h3>
-    <p>{{t _click_new_export}}</p>
-  </div>
-  <!-- End -->
-  {{/if}}
+    {{#if FLOW.router.reportsController.reportsAvailable}}
+        <!-- Here is the list of exports generated-->
+        <ul class="exportList">
+            {{#each report in FLOW.router.reportsController}}
+                {{view FLOW.ReportListItemView contentBinding="report"}}
+            {{/each}}
+        </ul>
+        <!-- End -->
+    {{else}}
+        <!-- This is the message you get if you have no exports -->
+        <div class="noExportMsg">
+            <h3>{{t _no_exports_yet}}</h3>
+            <p>{{t _click_new_export}}</p>
+        </div>
+        <!-- End -->
+    {{/if}}
 </section>

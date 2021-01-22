@@ -1,31 +1,31 @@
 <section class="fullWidth reportTools" id="reportBlocks">
-  <div {{bindAttr class = "view.missingSurvey:redBorder"}} >
-    {{#unless FLOW.projectControl.isLoading}}
-      {{view FLOW.DataCleaningSurveySelectionView}}
-    {{/unless}}
+    <div {{bindAttr class = "view.missingSurvey:redBorder"}} >
+        {{#unless FLOW.projectControl.isLoading}}
+            {{view FLOW.DataCleaningSurveySelectionView}}
+        {{/unless}}
 
-    {{#if FLOW.selectedControl.selectedSurveyGroup}}
-      {{view Ember.Select
-          contentBinding="FLOW.surveyControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedSurvey"
-          optionLabelPath="content.code"
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_form"}}
-    {{/if}}
-  </div>
+        {{#if FLOW.selectedControl.selectedSurveyGroup}}
+            {{view Ember.Select
+                   contentBinding="FLOW.surveyControl.arrangedContent"
+                   selectionBinding="FLOW.selectedControl.selectedSurvey"
+                   optionLabelPath="content.code"
+                   optionValuePath="content.keyId"
+                   prompt=""
+                   promptBinding="Ember.STRINGS._select_form"}}
+        {{/if}}
+    </div>
 
     <div class="rawDataReport block">
-      <h3>{{t _import_data}}</h3>
-      <p>{{t _import_raw_data_applet_text_short_}}</p>
-      {{#if FLOW.uploader.support}}
-        <p><input id="raw-data-import-file" type="file"/></p>
-        <a {{action importFile target="this"}} class="standardBtn"> {{t _import}}</a>
-        <ul class="resumable-list"></ul>
-      {{else}}
-       <div class="resumable-error">
-        {{t _bulk_upload_unsupported_browser}}
-       </div>
-      {{/if}}
+        <h3>{{t _import_data}}</h3>
+        <p>{{t _import_raw_data_applet_text_short_}}</p>
+        {{#if FLOW.uploader.support}}
+            <p><input id="raw-data-import-file" type="file"/></p>
+            <a {{action importFile target="this"}} class="standardBtn"> {{t _import}}</a>
+            <ul class="resumable-list"></ul>
+        {{else}}
+            <div class="resumable-error">
+                {{t _bulk_upload_unsupported_browser}}
+            </div>
+        {{/if}}
     </div>
 </section>

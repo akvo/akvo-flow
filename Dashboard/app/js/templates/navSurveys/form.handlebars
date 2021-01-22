@@ -1,54 +1,59 @@
 {{#with FLOW.selectedControl.selectedSurvey as form}}
-<div id="form01" class="aformContainer">
-	<nav class="newSurveyNav">
-		<ul>
-			{{#if view.showFormPublishButton}}
-			<li><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t _publish}}</a></li>
-			{{/if}}
-			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>{{t _preview}}</a></li>
-			{{#if view.showFormDeleteButton}}
-				<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>{{t _delete}}</a></li>
-			{{/if}}
-			{{view FLOW.WebFormShareView}}
-		</ul>
-	</nav>
-	<ul class="formSummary">
-		<li>{{t _version}}<span class="formVersion">{{form.version}}</span></li>
-		<li><span class="upCase">{{t _id}}</span><span class="formID">{{form.keyId}}</span></li>
-		<li>{{t _questions}}<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
-	</ul>
-	<section class="formDetails">
-		<h3>{{t _form_basics}}</h3>
-		{{#if view.visibleFormBasics}}
-			{{#unless view.isNewForm}}
-				<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _collapse}}</a>
-			{{/unless}}
-			<form class="surveyDetailForm" {{action 'saveProject' on='submit' target="FLOW.projectControl"}}>
-				<label>{{t _form_title}}</label>
-				{{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
-				<nav class="newSurveyNav">
-					<ul class="manageStuff">
-					{{#if view.showFormTranslationsButton}}
-						<li><a class="btnOutline" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
-						<li><a class="btnOutline" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
-					{{/if}}
-					</ul>
-				</nav>
-			</form>
-		{{else}}
-			<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _show}}</a>
-		{{/if}}
-	</section>
-	<section class="surveyForm">
-		{{#if view.manageTranslations}}
-			{{view FLOW.TranslationsView}}
-		{{else}}
-			{{#if view.manageNotifications}}
-				{{view FLOW.NotificationsView}}
-			{{else}}
-				{{view FLOW.EditQuestionsView}}
-			{{/if}}
-		{{/if}}
-	</section>
-</div>
+    <div id="form01" class="aformContainer">
+        <nav class="newSurveyNav">
+            <ul>
+                {{#if view.showFormPublishButton}}
+                    <li><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t
+                            _publish}}</a></li>
+                {{/if}}
+                <li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>{{t _preview}}</a>
+                </li>
+                {{#if view.showFormDeleteButton}}
+                    <li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm
+                                                         target="FLOW.dialogControl"}}>{{t _delete}}</a></li>
+                {{/if}}
+                {{view FLOW.WebFormShareView}}
+            </ul>
+        </nav>
+        <ul class="formSummary">
+            <li>{{t _version}}<span class="formVersion">{{form.version}}</span></li>
+            <li><span class="upCase">{{t _id}}</span><span class="formID">{{form.keyId}}</span></li>
+            <li>{{t _questions}}<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
+        </ul>
+        <section class="formDetails">
+            <h3>{{t _form_basics}}</h3>
+            {{#if view.visibleFormBasics}}
+                {{#unless view.isNewForm}}
+                    <a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _collapse}}</a>
+                {{/unless}}
+                <form class="surveyDetailForm" {{action 'saveProject' on='submit' target="FLOW.projectControl"}}>
+                    <label>{{t _form_title}}</label>
+                    {{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
+                    <nav class="newSurveyNav">
+                        <ul class="manageStuff">
+                            {{#if view.showFormTranslationsButton}}
+                                <li><a class="btnOutline" {{action "doManageTranslations" target="this"}}>{{t
+                                        _manage_translations}}</a></li>
+                                <li><a class="btnOutline" {{action "doManageNotifications" target="this"}}>{{t
+                                        _manage_notifications}}</a></li>
+                            {{/if}}
+                        </ul>
+                    </nav>
+                </form>
+            {{else}}
+                <a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _show}}</a>
+            {{/if}}
+        </section>
+        <section class="surveyForm">
+            {{#if view.manageTranslations}}
+                {{view FLOW.TranslationsView}}
+            {{else}}
+                {{#if view.manageNotifications}}
+                    {{view FLOW.NotificationsView}}
+                {{else}}
+                    {{view FLOW.EditQuestionsView}}
+                {{/if}}
+            {{/if}}
+        </section>
+    </div>
 {{/with}}

@@ -1,98 +1,102 @@
 {{#view FLOW.SurveyBootstrap}}
-<section class="fullWidth manualTransfer" id="assignSurveys">
-    <form>
-      <div class="fieldSetWrap floats-in">
-      <div class="formLeftPanel">
-        <fieldset id="surveySelect" class="floats-in">
-          <h2>01. {{t _select_survey}}:</h2>
-          <span class="infoText">{{t _cant_find_your_survey_}}</span>
-          <div class="">
-            <label for="surveyGroup">{{t _select_survey}}:</label>
-            {{#unless FLOW.projectControl.isLoading}}
-              {{view FLOW.SurveySelectionView}}
-            {{/unless}}
-			</div>
-          <div class="formSelectorList">
-            <nav>
-              <ul>
-                <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
-                <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
-              </ul>
-            </nav>
-            <label for="surveys">{{t _select_forms}}:</label>
-           {{view Ember.Select
-           multiple=true
-           size=10
-        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedSurveys"
-        optionLabelPath="content.name"
-          id="surveys"
-        optionValuePath="content.keyId"}}
-      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
-          </div>
-        </fieldset>
-      </div>
-      <div class="formRightPanel">
-        <fieldset id="surveyPreview" class="floats-in">
-          <h2>{{t _preview_survey_selection}}:</h2>
-          <div class="">
-            <!-- DEVICES TABLE-->
-            <table id="surveyPreviewList" class="previewList" >
-              <!-- TABLE HEADER-->
-              <thead>
-                <tr>
-                  <th class="groupPreview">{{t _survey}}</th>
-                  <th class="surveyPreview">{{t _form}}</th>
-                  <th class="action"></th>
-                </tr>
-              </thead>
-              <!-- TABLE BODY: MAIN CONTENT-->
-              <tbody>
-                {{#each survey in view.surveysPreview}}
-                <tr>
-                  <td class="groupPreview">{{survey.surveyGroupName}}</td>
-                  <td class="surveyPreview"{{survey.name}}</td>
-                  <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">{{t _remove}}</a></td>
-                </tr>
-                {{/each}}
-              </tbody>
-              <!-- TABLE FOOTER-->
-              <tfoot>
-                <tr>
-                  <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>{{t _clear_all}}</a></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </fieldset>
-      </div>
-      </div>
+    <section class="fullWidth manualTransfer" id="assignSurveys">
+        <form>
+            <div class="fieldSetWrap floats-in">
+                <div class="formLeftPanel">
+                    <fieldset id="surveySelect" class="floats-in">
+                        <h2>01. {{t _select_survey}}:</h2>
+                        <span class="infoText">{{t _cant_find_your_survey_}}</span>
+                        <div class="">
+                            <label for="surveyGroup">{{t _select_survey}}:</label>
+                            {{#unless FLOW.projectControl.isLoading}}
+                                {{view FLOW.SurveySelectionView}}
+                            {{/unless}}
+                        </div>
+                        <div class="formSelectorList">
+                            <nav>
+                                <ul>
+                                    <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
+                                    <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
+                                </ul>
+                            </nav>
+                            <label for="surveys">{{t _select_forms}}:</label>
+                            {{view Ember.Select
+                                   multiple=true
+                                   size=10
+                                   contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
+                                   selectionBinding="FLOW.selectedControl.selectedSurveys"
+                                   optionLabelPath="content.name"
+                                   id="surveys"
+                                   optionValuePath="content.keyId"}}
+                            <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="formRightPanel">
+                    <fieldset id="surveyPreview" class="floats-in">
+                        <h2>{{t _preview_survey_selection}}:</h2>
+                        <div class="">
+                            <!-- DEVICES TABLE-->
+                            <table id="surveyPreviewList" class="previewList">
+                                <!-- TABLE HEADER-->
+                                <thead>
+                                <tr>
+                                    <th class="groupPreview">{{t _survey}}</th>
+                                    <th class="surveyPreview">{{t _form}}</th>
+                                    <th class="action"></th>
+                                </tr>
+                                </thead>
+                                <!-- TABLE BODY: MAIN CONTENT-->
+                                <tbody>
+                                {{#each survey in view.surveysPreview}}
+                                    <tr>
+                                        <td class="groupPreview">{{survey.surveyGroupName}}</td>
+                                        <td class="surveyPreview"
+                                            {{survey.name}}</td>
+                                        <td class="action"><a {{action "removeSingleSurvey" survey target="this"}}
+                                                class="remove">{{t _remove}}</a></td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                                <!-- TABLE FOOTER-->
+                                <tfoot>
+                                <tr>
+                                    <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>{{t _clear_all}}</a>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
 
-    <div class="fieldSetWrap makeWhite noBG">
-        <fieldset id="devicesSelect" class="fullWidth">
-          <h2>02. {{t _notification_details}}:</h2>
-          <div class="">
-          <label for="notificationEmail">{{t _notification_email}}:</label>
-         {{view Ember.TextField
-                valueBinding="view.notificationEmail"
-                id="notificationEmail"
-                placeholder=""
-                placeholderBinding="Ember.STRINGS._enter_notification_email"
-                size=30}}
-         {{#if view.undef}}
-           <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
-           {{view Ember.Checkbox checkedBinding="view.includeDBInstructions" id="includeDBInstructions"}}
-           {{#if view.includeDBInstructions}}
-             {{view Ember.TextArea valueBinding="view.dbInstructions" id="dbInstructions"}}
-           {{/if}}
-         {{/if}}
-        </fieldset>
-      </div>
-      <div class="menuConfirm">
-        <ul>
-          <li><a {{action "sendSurveys" target="this"}} class="standardBtn">{{t _send_file}}</a></li>
-        </ul>
-      </div>
-    </form>
-</section>
+            <div class="fieldSetWrap makeWhite noBG">
+                <fieldset id="devicesSelect" class="fullWidth">
+                    <h2>02. {{t _notification_details}}:</h2>
+                    <div class="">
+                        <label for="notificationEmail">{{t _notification_email}}:</label>
+                        {{view Ember.TextField
+                               valueBinding="view.notificationEmail"
+                               id="notificationEmail"
+                               placeholder=""
+                               placeholderBinding="Ember.STRINGS._enter_notification_email"
+                               size=30}}
+                        {{#if view.undef}}
+                            <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
+                            {{view Ember.Checkbox checkedBinding="view.includeDBInstructions"
+                                   id="includeDBInstructions"}}
+                            {{#if view.includeDBInstructions}}
+                                {{view Ember.TextArea valueBinding="view.dbInstructions" id="dbInstructions"}}
+                            {{/if}}
+                        {{/if}}
+                </fieldset>
+            </div>
+            <div class="menuConfirm">
+                <ul>
+                    <li><a {{action "sendSurveys" target="this"}} class="standardBtn">{{t _send_file}}</a></li>
+                </ul>
+            </div>
+        </form>
+    </section>
 {{/view}}

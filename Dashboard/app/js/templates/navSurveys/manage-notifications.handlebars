@@ -1,4 +1,3 @@
-
 <div class="manageNotificationsBlock">
     <section id="manageNotifications" class="mainContent">
         <div class="innerContent">
@@ -10,38 +9,46 @@
 
                     <form class="notificationAdd">
                         <fieldset>
-                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}} - {{t _please_provide_an_email_address}} {{/if}}</label>
-                            {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
+                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}}
+                                - {{t _please_provide_an_email_address}} {{/if}}</label>
+                            {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification"
+                                   size=150 }}
                         </fieldset>
                         <fieldset>
-                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t _please_make_a_choice}}{{/if}}</label>
+                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}}
+                                - {{t _please_make_a_choice}}{{/if}}</label>
                             {{view Ember.Select
-                            contentBinding="FLOW.notificationEventControl.content"
-                            optionLabelPath="content.label"
-                            optionValuePath="content.value"
-                            selectionBinding="view.notificationType"
-                            id="eventNotification"
-                            prompt=""
-                            promptBinding="Ember.STRINGS._select_event"}}
+                                   contentBinding="FLOW.notificationEventControl.content"
+                                   optionLabelPath="content.label"
+                                   optionValuePath="content.value"
+                                   selectionBinding="view.notificationType"
+                                   id="eventNotification"
+                                   prompt=""
+                                   promptBinding="Ember.STRINGS._select_event"}}
                         </fieldset>
                         <fieldset>
-                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label>
+                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}}
+                                - {{t _please_make_a_choice}} {{/if}}</label>
                             {{view Ember.Select
-                            contentBinding="FLOW.notificationOptionControl.content"
-                            optionLabelPath="content.label"
-                            optionValuePath="content.value"
-                            selectionBinding="view.notificationOption"
-                            id="typeNotification"
-                            prompt=""
-                            promptBinding="Ember.STRINGS._select_option"}}
+                                   contentBinding="FLOW.notificationOptionControl.content"
+                                   optionLabelPath="content.label"
+                                   optionValuePath="content.value"
+                                   selectionBinding="view.notificationOption"
+                                   id="typeNotification"
+                                   prompt=""
+                                   promptBinding="Ember.STRINGS._select_option"}}
                         </fieldset>
                         <fieldset>
-                            <label for="dateNotification">{{t _expires}} {{#if view.dateEmpty}} - {{t _please_select_a_date}} {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
+                            <label for="dateNotification">{{t _expires}} {{#if view.dateEmpty}}
+                                - {{t _please_select_a_date}} {{/if}}</label> {{view FLOW.DateField2
+                                                                                     valueBinding="view.expiryDate"
+                                                                                     id="dateNotification" size=30}}
                         </fieldset>
                         <fieldset class="addNotifiBtn">
                             <nav>
                                 <ul>
-                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">{{t _add}}</a></li>
+                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">{{t _add}}</a>
+                                    </li>
                                     <li><a {{action "cancelNotification" target="this"}} >{{t _cancel}}</a></li>
                                 </ul>
                             </nav>
@@ -50,16 +57,16 @@
                     <table class="notificationTable dataTable">
                         <!-- DEVICES TABLE--><!-- TABLE HEADER-->
                         <thead>
-                            <tr>
-                                <th>{{t _email}}</th>
-                                <th>{{t _type}}</th>
-                                <th>{{t _option}}</th>
-                                <th>{{t _expires}}</th>
-                                <th></th>
-                            </tr>
+                        <tr>
+                            <th>{{t _email}}</th>
+                            <th>{{t _type}}</th>
+                            <th>{{t _option}}</th>
+                            <th>{{t _expires}}</th>
+                            <th></th>
+                        </tr>
                         </thead><!-- TABLE BODY: MAIN CONTENT-->
                         <tbody>
-                          {{#each notification in FLOW.notificationControl}}
+                        {{#each notification in FLOW.notificationControl}}
                             <tr>
                                 <td class="">{{notification.notificationDestination}}</td>
                                 <td class="">{{notification.notificationType}}</td>
@@ -69,14 +76,14 @@
                                     <a {{action "removeNotification" notification target="this"}}>{{t _remove}}</a>
                                 </td>
                             </tr>
-                            {{/each}}
+                        {{/each}}
                         </tbody><!-- TABLE FOOTER-->
                         <tfoot>
-                            <tr>
-                                <td colspan="7">
-                                    <small>This is the footer.</small>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="7">
+                                <small>This is the footer.</small>
+                            </td>
+                        </tr>
                         </tfoot>
                     </table>
                 </div>

@@ -5,11 +5,11 @@
     <td class="collected">{{date1 lastUpdateDateTime}}</td>
 
     {{#if view.parentView.showApprovalStatusColumn}}
-    <td class="approvalStatus">
-        <a {{action toggleShowDataApprovalBlock target="view"}}>
-            {{#view FLOW.DataPointApprovalStatusView}}{{view.dataPointApprovalStatus}}{{/view}}
-        </a>
-    </td>
+        <td class="approvalStatus">
+            <a {{action toggleShowDataApprovalBlock target="view"}}>
+                {{#view FLOW.DataPointApprovalStatusView}}{{view.dataPointApprovalStatus}}{{/view}}
+            </a>
+        </td>
     {{/if}}
 
     <td class="action">
@@ -18,35 +18,38 @@
 </tr>
 
 {{#if view.showDataApprovalBlock}}
-<tr class="dataApprovalRow">
-    <td></td>
-    <td class="dataApprovalBlock"  colspan="5">
-        <ol class="dataPointApproval">
-        {{#each step in FLOW.router.approvalStepsController}}
-            <li>
-            <h4>{{step.title}}<h4>
-            {{#view FLOW.DataPointApprovalView stepBinding="step"
-                                                dataPointBinding="view.content"
-                                                target="view"}}
-                {{#if view.isApprovedStep}}
-                    {{#with view.dataPointApproval}}
-                        <div class="approvalStatus">{{status}}</div>
-                        <div class="approvalDate">{{date3 approvalDate}} | {{approverUserName}}</div>
-                        <div class="approvalComment">{{comment}}</div>
-                    {{/with}}
-                {{/if}}
-                {{#if view.showApprovalFields}}
-                    {{view Ember.Select contentBinding="view.parentView.approvalStatus"
-                                        optionLabelPath="content.label"
-                                        optionValuePath="content.value"
-                                        valueBinding="view.dataPointApproval.status"}}
-                    {{view Ember.TextField size="80" valueBinding="view.dataPointApproval.comment"}}
-                    <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
-                {{/if}}
-            {{/view}}
-            </li>
-        {{/each}}
-        </ol>
-    </td>
-</tr>
+    <tr class="dataApprovalRow">
+        <td></td>
+        <td class="dataApprovalBlock" colspan="5">
+            <ol class="dataPointApproval">
+                {{#each step in FLOW.router.approvalStepsController}}
+                    <li>
+                        <h4>{{step.title}}
+                            <h4>
+                                {{#view FLOW.DataPointApprovalView stepBinding="step"
+                                        dataPointBinding="view.content"
+                                        target="view"}}
+                                    {{#if view.isApprovedStep}}
+                                        {{#with view.dataPointApproval}}
+                                            <div class="approvalStatus">{{status}}</div>
+                                            <div class="approvalDate">{{date3 approvalDate}}
+                                                | {{approverUserName}}</div>
+                                            <div class="approvalComment">{{comment}}</div>
+                                        {{/with}}
+                                    {{/if}}
+                                    {{#if view.showApprovalFields}}
+                                        {{view Ember.Select contentBinding="view.parentView.approvalStatus"
+                                               optionLabelPath="content.label"
+                                               optionValuePath="content.value"
+                                               valueBinding="view.dataPointApproval.status"}}
+                                        {{view Ember.TextField size="80" valueBinding="view.dataPointApproval.comment"}}
+                                        <a class="btn" {{action submitDataPointApproval target="view"}}>{{t
+                                                _submit}}</a>
+                                    {{/if}}
+                                {{/view}}
+                    </li>
+                {{/each}}
+            </ol>
+        </td>
+    </tr>
 {{/if}}

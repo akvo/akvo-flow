@@ -1,4 +1,4 @@
-<section class="fullWidth" id="dataApproval" >
+<section class="fullWidth" id="dataApproval">
     <nav class="menuTopbar">
         <ul>
             <li><a {{action doAddApprovalGroup}} class="standardBtn">{{t _add_approval_group}}</a></li>
@@ -6,14 +6,14 @@
     </nav>
     <table class="dataTable" id="dataApprovalTable">
         <thead>
-            <tr>
-                <th class="noArrows">{{t _name}}</th>
-                <th class="noArrows">{{t _type}}</th>
-                <th class="noArrows"></th>
-            </tr>
+        <tr>
+            <th class="noArrows">{{t _name}}</th>
+            <th class="noArrows">{{t _type}}</th>
+            <th class="noArrows"></th>
+        </tr>
         </thead>
         <tbody>
-            {{#each item in controller}}
+        {{#each item in controller}}
             <tr>
                 <td class="name">{{item.name}}</td>
                 <td class="approval-type">{{#if item.ordered}}{{t _ordered}}{{else}}{{t _unordered}}{{/if}}</td>
@@ -24,13 +24,13 @@
                     </ul>
                 </td>
             </tr>
-            {{/each}}
+        {{/each}}
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="7"><small></small>
-                </td>
-            </tr>
+        <tr>
+            <td colspan="7"><small></small>
+            </td>
+        </tr>
         </tfoot>
     </table>
 </section>

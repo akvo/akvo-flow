@@ -1,22 +1,24 @@
 <div class="loadSave">
-      {{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _saving}}</div>
-      {{else}}
-        {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _loading}}</div>
+    {{#if FLOW.savingMessageControl.areSavingBool}}
+        <div class="isSaving">{{t _saving}}</div>
+    {{else}}
+        {{#if FLOW.savingMessageControl.areLoadingBool}}
+            <div class="isLoading">{{t _loading}}</div>
         {{/if}}
-      {{/if}}
-  </div>
-  <header class="floats-in top" id="header" role="banner">
-      <div class="widthConstraint">
-            <h1>Akvo Flow</h1>
-            <ul>
-               <li class="logIn">
-                   <a href="/admin/"  class="smallButton">{{t _log_in}}</a>
-               </li>
-            </ul>
-      </div>
-  </header>
-    <div id="pageWrap" class="widthConstraint belowHeader public">
-        {{outlet}}
+    {{/if}}
+</div>
+<header class="floats-in top" id="header" role="banner">
+    <div class="widthConstraint">
+        <h1>Akvo Flow</h1>
+        <ul>
+            <li class="logIn">
+                <a href="/admin/" class="smallButton">{{t _log_in}}</a>
+            </li>
+        </ul>
+    </div>
+</header>
+<div id="pageWrap" class="widthConstraint belowHeader public">
+    {{outlet}}
 </div>
 
-   {{view FLOW.FooterView}}
+{{view FLOW.FooterView}}
