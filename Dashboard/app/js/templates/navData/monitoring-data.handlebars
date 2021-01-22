@@ -1,129 +1,135 @@
 {{#view FLOW.MonitoringDataTableView}}
-<section class="" id="monitoringData">
-    <div class="floats-in filterData" id="dataFilter">
-      <div {{bindAttr class="view.missingSurvey:redBorder :chooseSurveyData"}}>
-      {{#unless FLOW.projectControl.isLoading}}
-        {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
-      {{/unless}}
-    </div>
-    <div class="dataDeviceId">
-    <label  class="devideId"> {{t _identifier}}:</label>
-      {{view Ember.TextField
-          valueBinding="view.identifier"
-          placeholder=""
-          placeholderBinding="Ember.STRINGS._identifier"
-          size=30}}
-        <label  class="devideId"> {{t _data_point_name}}:</label>
-        {{view Ember.TextField
-          valueBinding="view.displayName"
-          placeholder=""
-          placeholderBinding="Ember.STRINGS._data_point_name"
-          size=30}}
-      </div>
-      <a {{action "findSurveyedLocale" target="this"}} class="findData standardBtn btnAboveTable">{{t _find}}</a>
-  </div>
-    {{#if view.noResults}}
-      <div class="noResults">{{t _no_results_found}}</div>
-    {{/if}}
-    
-    <section class="fullWidth " id="devicesList">
-      <table class="dataTable" id="surveyDataTable">
-        <thead>
-          <tr>
-              <th class="noArrows"></th>
-              <th class="noArrows">{{t _data_point_name}}</th>
-              <th class="noArrows">{{t _identifier}}</th>
-              <th class="noArrows">{{t _last_update}}</th>
-              {{#if view.showApprovalStatusColumn}}
-              <th class="noArrows">{{t _approval_status}}</th>
-              {{/if}}
-              <th class="noArrows">{{t _action}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each FLOW.router.surveyedLocaleController.currentContents}}
-           {{view FLOW.DataPointView contentBinding="this"}}
-          {{/each}}
-        </tbody>
-      </table>
-      <ul class="prevNext">
-        <li class="prevBtn">{{#if view.hasPrevPage}}
-          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
-        </li>
-        <li class="nextBtn">{{#if view.hasNextPage}}
-          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
-        </li>
-      </ul>
-    </section>
+    <section class="" id="monitoringData">
+        <div class="floats-in filterData" id="dataFilter">
+            <div {{bindAttr class="view.missingSurvey:redBorder :chooseSurveyData"}}>
+                {{#unless FLOW.projectControl.isLoading}}
+                    {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
+                {{/unless}}
+            </div>
+            <div class="dataDeviceId">
+                <label class="devideId"> {{t _identifier}}:</label>
+                {{view Ember.TextField
+                       valueBinding="view.identifier"
+                       placeholder=""
+                       placeholderBinding="Ember.STRINGS._identifier"
+                       size=30}}
+                <label class="devideId"> {{t _data_point_name}}:</label>
+                {{view Ember.TextField
+                       valueBinding="view.displayName"
+                       placeholder=""
+                       placeholderBinding="Ember.STRINGS._data_point_name"
+                       size=30}}
+            </div>
+            <a {{action "findSurveyedLocale" target="this"}} class="findData standardBtn btnAboveTable">{{t _find}}</a>
+        </div>
+        {{#if view.noResults}}
+            <div class="noResults">{{t _no_results_found}}</div>
+        {{/if}}
 
-    <!-- surveyInstance details Dialog -->
-    <div {{bindAttr class="view.showingDetailsDialog:display :overlay"}}>
-      <div class="blanketWide"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialogWide">
-         <a {{action "closeDetailsDialog" target="this"}} class="ok closeDialog">{{t _close_window}}</a>
-
-          <h2>{{t _details}}</h2>
-            <nav class="editAnswerMenu">
-          </nav>
-        <p></p>
-      <table class="dataTable" id="surveyDataTable">
-        <thead>
-          <tr>
-              <th class="noArrows"></th>
-              <th class="noArrows">{{t _id}}</th>
-              <th class="noArrows">{{t _form}}</th>
-              <th class="noArrows">{{t _submitter}}</th>
-              <th class="noArrows">{{t _device}}</th>
-              <th class="noArrows">{{t _collected}}</th>
-              <th class="noArrows">{{t _action}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each SI in FLOW.surveyInstanceControl.currentContents}}
-            <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
-              <td class="device">{{SI.keyId}}</td>
-              <td class="survey" style="text-align:left;">{{#with SI}}{{formName surveyId}}{{/with}}</td>
-              <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
-              <td class="device">{{SI.deviceIdentifier}}</td>
-              <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
-              <td class="action">
-                <a {{action showSurveyInstanceDetails SI target="this"}}>
-                  {{t _view_details}}
-                </a>
-              </td>
-            </tr>
-            <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">
-              <td colspan="7">
-              <table class="dataTable" id="surveyDataTable">
-            <!-- TABLE HEADER-->
-            <thead>
+        <section class="fullWidth " id="devicesList">
+            <table class="dataTable" id="surveyDataTable">
+                <thead>
                 <tr>
-                    <th class="noArrows" style="width:10%"></th>
-                    <th class="noArrows">{{t _question}}</th>
-                    <th class="noArrows">{{t _answer}}</th>
+                    <th class="noArrows"></th>
+                    <th class="noArrows">{{t _data_point_name}}</th>
+                    <th class="noArrows">{{t _identifier}}</th>
+                    <th class="noArrows">{{t _last_update}}</th>
+                    {{#if view.showApprovalStatusColumn}}
+                        <th class="noArrows">{{t _approval_status}}</th>
+                    {{/if}}
+                    <th class="noArrows">{{t _action}}</th>
                 </tr>
-            </thead>
-            <!-- TABLE BODY: MAIN CONTENT-->
-            <tbody>
-                {{#each responseSublist in FLOW.questionAnswerControl.contentByGroup}}
-                   {{#each iterations in responseSublist}}
-                       <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
-                            {{each iterations itemViewClass = "FLOW.QuestionAnswerMonitorDataView"}}
-                   {{/each}}
+                </thead>
+                <tbody>
+                {{#each FLOW.router.surveyedLocaleController.currentContents}}
+                    {{view FLOW.DataPointView contentBinding="this"}}
                 {{/each}}
-            </tbody>
-            <!-- TABLE FOOTER-->
-          </table>
-              </td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-     </div>
-    </div>
-  </div>
-</section>
+                </tbody>
+            </table>
+            <ul class="prevNext">
+                <li class="prevBtn">{{#if view.hasPrevPage}}
+                    <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+                </li>
+                <li class="nextBtn">{{#if view.hasNextPage}}
+                    <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+                </li>
+            </ul>
+        </section>
+
+        <!-- surveyInstance details Dialog -->
+        <div {{bindAttr class="view.showingDetailsDialog:display :overlay"}}>
+            <div class="blanketWide"></div>
+            <div class="dialogWrap">
+                <!-- the dialog contents -->
+                <div class="confirmDialog dialogWide">
+                    <a {{action "closeDetailsDialog" target="this"}} class="ok closeDialog">{{t _close_window}}</a>
+
+                    <h2>{{t _details}}</h2>
+                    <nav class="editAnswerMenu">
+                    </nav>
+                    <p></p>
+                    <table class="dataTable" id="surveyDataTable">
+                        <thead>
+                        <tr>
+                            <th class="noArrows"></th>
+                            <th class="noArrows">{{t _id}}</th>
+                            <th class="noArrows">{{t _form}}</th>
+                            <th class="noArrows">{{t _submitter}}</th>
+                            <th class="noArrows">{{t _device}}</th>
+                            <th class="noArrows">{{t _collected}}</th>
+                            <th class="noArrows">{{t _action}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each SI in FLOW.surveyInstanceControl.currentContents}}
+                            <tr>
+                                <td class="device">{{#view FLOW.DataNumView
+                                                           contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+                                <td class="device">{{SI.keyId}}</td>
+                                <td class="survey" style="text-align:left;">{{#with SI}}{{formName
+                                        surveyId}}{{/with}}</td>
+                                <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+                                <td class="device">{{SI.deviceIdentifier}}</td>
+                                <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+                                <td class="action">
+                                    <a {{action showSurveyInstanceDetails SI target="this"}}>
+                                        {{t _view_details}}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr class="si_details" style="background: #fff; display:none;"
+                                data-flow-id="si_details_{{unbound SI.id}}">
+                                <td colspan="7">
+                                    <table class="dataTable" id="surveyDataTable">
+                                        <!-- TABLE HEADER-->
+                                        <thead>
+                                        <tr>
+                                            <th class="noArrows" style="width:10%"></th>
+                                            <th class="noArrows">{{t _question}}</th>
+                                            <th class="noArrows">{{t _answer}}</th>
+                                        </tr>
+                                        </thead>
+                                        <!-- TABLE BODY: MAIN CONTENT-->
+                                        <tbody>
+                                        {{#each responseSublist in FLOW.questionAnswerControl.contentByGroup}}
+                                            {{#each iterations in responseSublist}}
+                                                <tr>
+                                                    <td colspan="3" style="text-align:left"><h3
+                                                            class="questionGroupName">{{iterations.groupName}}</h3></td>
+                                                </tr>
+                                                {{each iterations itemViewClass = "FLOW.QuestionAnswerMonitorDataView"}}
+                                            {{/each}}
+                                        {{/each}}
+                                        </tbody>
+                                        <!-- TABLE FOOTER-->
+                                    </table>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 {{/view}}

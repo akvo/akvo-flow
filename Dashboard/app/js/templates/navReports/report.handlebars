@@ -1,29 +1,30 @@
 {{#if view.isNotStats}}
-<li id="list-{{unbound view.content.keyId}}" {{bindAttr class="view.reportType view.reportStatus"}}>
-  <div class="exportInfo">
-      <h5>
-        {{view.reportTypeString}} -
-        {{#if view.reportSuccess}}
-        <a id="link-{{unbound view.content.keyId}}" {{bindAttr href="view.reportLink"}}>
-          <span class="exportFileName" id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
-        </a>
-        {{else}}
-          <span style="color:red">{{view.content.message}}</span>
-        {{/if}}
-        <span class="submissionsDate">
-          {{#if view.content.lastCollectionOnly}}
-          {{t _recent_submissions}}
-          {{else}}
-          {{#if view.startDate}}{{t _from}} {{view.startDate}} {{/if}}{{#if view.endDate}}{{t _to}}
-          {{view.endDate}}{{/if}}
-          {{/if}}
-        </span>
-      </h5>
-    <span class="surveyPath">{{view.surveyPath}}</span>
-  </div>
-  <div class="exportStatus">
-    <span class="loading">{{t _generating}}</span>
-    <span class="exportDate">{{#if view.lastUpdateDateTime}}{{view.lastUpdateDateTime}}{{/if}}</span>
-  </div>
-</li>
+    <li id="list-{{unbound view.content.keyId}}" {{bindAttr class="view.reportType view.reportStatus"}}>
+        <div class="exportInfo">
+            <h5>
+                {{view.reportTypeString}} -
+                {{#if view.reportSuccess}}
+                    <a id="link-{{unbound view.content.keyId}}" {{bindAttr href="view.reportLink"}}>
+                        <span class="exportFileName"
+                              id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
+                    </a>
+                {{else}}
+                    <span style="color:red">{{view.content.message}}</span>
+                {{/if}}
+                <span class="submissionsDate">
+                    {{#if view.content.lastCollectionOnly}}
+                        {{t _recent_submissions}}
+                    {{else}}
+                        {{#if view.startDate}}{{t _from}} {{view.startDate}} {{/if}}{{#if view.endDate}}{{t _to}}
+                        {{view.endDate}}{{/if}}
+                    {{/if}}
+                </span>
+            </h5>
+            <span class="surveyPath">{{view.surveyPath}}</span>
+        </div>
+        <div class="exportStatus">
+            <span class="loading">{{t _generating}}</span>
+            <span class="exportDate">{{#if view.lastUpdateDateTime}}{{view.lastUpdateDateTime}}{{/if}}</span>
+        </div>
+    </li>
 {{/if}}

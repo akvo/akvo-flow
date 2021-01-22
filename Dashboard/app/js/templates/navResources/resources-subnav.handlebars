@@ -1,12 +1,12 @@
 <ul>
     {{#view view.NavItemView item="cascadeResources" }}
         {{#if view.showCascadeResourcesButton}}
-        <a {{action doCascadeResources}}>{{t _cascade_resources}}</a>
+            <a {{action doCascadeResources}}>{{t _cascade_resources}}</a>
         {{/if}}
     {{/view}}
     {{#view view.NavItemView item="approvalGroup" }}
         {{#if view.showDataApprovalButton}}
-        <a {{action doDataApproval}}>{{t _data_approval}}</a>
+            <a {{action doDataApproval}}>{{t _data_approval}}</a>
         {{/if}}
     {{/view}}
 </ul>

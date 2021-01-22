@@ -4,44 +4,48 @@
     <td {{bindAttr class=":submitter view.isMultipleSelectOption:multiple-option"}} style="text-align:left">
         {{#if view.inEditMode}}
             {{#if view.isOptionType}}
-                    {{#if view.isMultipleSelectOption}}
-                        {{view FLOW.QuestionAnswerMultiOptionEditView contentBinding="view.optionsList" selectionBinding="view.multiSelectOptionValue"}}
-                    {{else}}
-                        {{view Ember.Select
-                            contentBinding="view.optionsList"
-                            optionLabelPath="content.text"
-                            optionValuePath="content.code"
-                            selectionBinding="view.singleSelectOptionValue"}}
-                    {{/if}}
-                    {{#if view.isOtherOptionSelected}}
-                        <div class="editOtherContainer">
-                            <span class="otherLabel">{{t _other}}</span>{{view Ember.TextField class="editOtherText" size=25 valueBinding="view.optionValue.lastObject.otherText"}}
-                        </div>
-                    {{/if}}
+                {{#if view.isMultipleSelectOption}}
+                    {{view FLOW.QuestionAnswerMultiOptionEditView contentBinding="view.optionsList"
+                           selectionBinding="view.multiSelectOptionValue"}}
+                {{else}}
+                    {{view Ember.Select
+                           contentBinding="view.optionsList"
+                           optionLabelPath="content.text"
+                           optionValuePath="content.code"
+                           selectionBinding="view.singleSelectOptionValue"}}
+                {{/if}}
+                {{#if view.isOtherOptionSelected}}
+                    <div class="editOtherContainer">
+                        <span class="otherLabel">{{t _other}}</span>{{view Ember.TextField class="editOtherText" size=25
+                                                                           valueBinding="view.optionValue.lastObject.otherText"}}
+                    </div>
+                {{/if}}
             {{else}} {{#if view.isNumberType}}
-                    {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
+                {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
             {{else}} {{#if view.isTextType}}
-                        {{view Ember.TextField valueBinding="value" size=10 }}
+                {{view Ember.TextField valueBinding="value" size=10 }}
             {{else}} {{#if view.isCascadeType}}
-                        {{view Ember.TextField valueBinding="view.cascadeValue" size=20 }}
+                {{view Ember.TextField valueBinding="view.cascadeValue" size=20 }}
             {{else}} {{#if view.isDateType}}
-                            {{view FLOW.DateField2 valueBinding="view.date" size=20}}
+                {{view FLOW.DateField2 valueBinding="view.date" size=20}}
             {{else}} {{#if view.isBarcodeType}}
-                                {{t _the_barcode_app_on_the_device_is_used_here}}
-                                {{view Ember.TextField valueBinding="value" size=10 }}
+                {{t _the_barcode_app_on_the_device_is_used_here}}
+                {{view Ember.TextField valueBinding="value" size=10 }}
             {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
-        <a {{action doSave target="this" }} class="smallBtn">{{t _save}}</a>  <a {{action doCancel target="this" }}>{{t _cancel}}</a>
+            <a {{action doSave target="this" }} class="smallBtn">{{t _save}}</a> <a {{action doCancel
+                                                                                             target="this" }}>{{t
+                _cancel}}</a>
         {{else}}
             {{#if view.isNotEditable}}
                 {{#if view.isPhotoType}}
-                  <a {{action popupMedia target="this"}} class="media"><img {{bindAttr src="view.photoUrl"}} alt=""/></a>
+                    <a {{action popupMedia target="this"}} class="media"><img {{bindAttr src="view.photoUrl"}} alt=""/></a>
                     {{#if view.photoLocation}}
                         <br>{{view.photoLocation}}
                     {{/if}}
                 {{else}} {{#if view.isVideoType}}
-                <video controls>
-                  <source {{bindAttr src="view.photoUrl"}} type="video/mp4">
-                </video>
+                    <video controls>
+                        <source {{bindAttr src="view.photoUrl"}} type="video/mp4">
+                    </video>
                 {{else}} {{#if view.isDateType}}
                     {{date3 value}}
                 {{else}} {{#if view.isCascadeType}}
@@ -49,7 +53,7 @@
                 {{else}} {{#if view.isOptionType}}
                     {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
                 {{else}} {{#if view.isGeoShapeType}}
-                  {{view FLOW.GeoshapeMapView}}
+                    {{view FLOW.GeoshapeMapView}}
                 {{else}} {{#if view.isSignatureType}}
                     {{#if view.signatureImageSrc}}
                         <div class="signatureImage"><img {{bindAttr src="view.signatureImageSrc"}} /></div>
@@ -60,7 +64,8 @@
                 {{else}} {{#if view.isCaddisflyType}}
                     <div class=""><strong>{{view.testName}}</strong></div>
                     {{#each result in view.testResult}}
-                      <br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
+                        <br>
+                        <div>{{result.name}} : {{result.value}} {{result.unit}}</div>
                     {{/each}}<br>
                     <div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
                 {{else}}
@@ -72,7 +77,8 @@
                 {{else}} {{#if view.isCascadeType}}
                     <a {{action doEdit target="this" }}>{{view.cascadeValue}}</a>
                 {{else}} {{#if view.isOptionType}}
-                    <a {{action doEdit target="this" }}>{{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}</a>
+                    <a {{action doEdit target="this" }}>{{view FLOW.QuestionAnswerOptionListView
+                                                               contentBinding="view.optionValue"}}</a>
                 {{else}}
                     <a {{action doEdit target="this" }}>{{value}}{{if_blank value}}</a>
                 {{/if}} {{/if}} {{/if}}
