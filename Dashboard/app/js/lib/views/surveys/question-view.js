@@ -586,11 +586,7 @@ FLOW.QuestionView = FLOW.View.extend(
       FLOW.selectedControl.set('selectedQuestion', null);
       FLOW.selectedControl.set('dependentQuestion', null);
       FLOW.selectedControl.set('selectedCascadeResource', null);
-      if (FLOW.selectedControl.get('publishingErrors')) {
-        const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-        const validationResult = FLOW.surveyControl.validateSurveyToBePublished(surveyId);
-        FLOW.selectedControl.set('publishingErrors', validationResult);
-      }
+      FLOW.surveyControl.validateSurveyToBePublished();
       // scroll to position
       const el = document.querySelector(`[data-id="${this.get('content').get('keyId')}"]`);
       // removing the offset of the fixed topbar (-150px)

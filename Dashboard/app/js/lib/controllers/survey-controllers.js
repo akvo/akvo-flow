@@ -642,20 +642,36 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.set('newLocaleSurvey', this.find(item => item.get('keyId') === newLocaleId));
   },
 
-
   validateSurveyToBePublished(surveyId) {
+    if (!surveyId && FLOW.selectedControl.get('publishingErrors')) {
+      const id = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const validationResult = FLOW.surveyControl.validateSurveyToBePublished(id);
+      FLOW.selectedControl.set('publishingErrors', validationResult);
+      return;
+    }
 
     const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') == surveyId);
 
+    const findQuestionOption = (questionId, text) => FLOW.store.filter(FLOW.QuestionOption, qo => qo.get('questionId') === questionId && qo.get('text') === text).map(x => x)[0];
+
+
+    const checkQuestionAnswer = (q) => q.get('dependentQuestionAnswer').split('|')
+          .map(v => findQuestionOption(q.get('dependentQuestionId'), v)).every(x => Boolean(x));
+
     const fQuestion = (l, id) => l.find(o => o.id == id);
 
-    const dependentQuestionsNotFound = questions.filter(o => o.get('dependentFlag')).filter(o => !o.get('dependentQuestionId') || !fQuestion(questions, o.get('dependentQuestionId')));
+    const dependentQuestionsNotFound = questions.filter(o => o.get('dependentFlag')).filter(o => !o.get('dependentQuestionId') || !fQuestion(questions, o.get('dependentQuestionId')) || !o.get('dependentQuestionAnswer') || !checkQuestionAnswer(o));
 
-    return dependentQuestionsNotFound.reduce(function (r, q) {
+    const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId).map((item) => FLOW.store.find(FLOW.QuestionGroup, item.get("id")));
+    const questionGroupsNoName = questionGroups.filter(o => !o.get('name'));
+
+    const data = dependentQuestionsNotFound.reduce(function (r, q) {
       r[q.get('questionGroupId')] = r[q.get('questionGroupId')] || [];
       r[q.get('questionGroupId')].push(q.get('keyId'));
         return r;
     }, Object.create(null));
+
+    return questionGroupsNoName.reduce((c, o) => { if(!c[o.get('keyId')]) { c[o.get('keyId')] = [];} return c;} , data);
   },
 
   publishSurvey() {

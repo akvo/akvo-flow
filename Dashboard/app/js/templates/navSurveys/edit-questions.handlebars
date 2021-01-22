@@ -109,12 +109,14 @@
                   <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
                 </ul>
               </nav>
-            {{else}}
+              {{else}}
+              {{#unless view.amQuestionGroupPublishingError}}
               <nav class="insertMenu groupActionMenu">
                 <ul>
                   <li><a {{action "doInsertQuestionGroup" target="this"}} class="">{{t _insert_group_here}}</a></li>
                 </ul>
               </nav>
+              {{/unless}}
             {{/if}}
           {{/if}}
           <!-- end move and copy buttons -->
