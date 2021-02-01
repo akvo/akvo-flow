@@ -113,7 +113,13 @@ public class SurveyDAO extends BaseDAO<Survey> {
         }
         //Sort them into their respective groups' maps
         for (Question q : ql) {
-            mapMap.get(q.getQuestionGroupId()).put(q.getOrder(), q);
+            Long questionGroupId = q.getQuestionGroupId();
+            if (questionGroupId != null) {
+                Map<Integer, Question> integerQuestionMap = mapMap.get(questionGroupId);
+                if (integerQuestionMap != null) {
+                    integerQuestionMap.put(q.getOrder(), q);
+                }
+            }
         }
         return form;
     }
