@@ -662,7 +662,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 
     const dependentQuestionsNotFound = questions.filter(o => o.get('dependentFlag')).filter(o => !o.get('dependentQuestionId') || !fQuestion(questions, o.get('dependentQuestionId')) || !o.get('dependentQuestionAnswer') || !checkQuestionAnswer(o));
 
-    const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId).map((item) => FLOW.store.find(FLOW.QuestionGroup, item.get("id")));
+    const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, qg => qg.get('surveyId') == surveyId);
+
     const questionGroupsNoName = questionGroups.filter(o => !o.get('name'));
 
     const data = dependentQuestionsNotFound.reduce(function (r, q) {
