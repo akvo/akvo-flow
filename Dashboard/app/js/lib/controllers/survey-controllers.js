@@ -395,6 +395,10 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.createNewProject(false);
   },
 
+  displayTemplateList() {
+    console.log(FLOW.Env.templateIds)
+  },
+
   createNewProject(folder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;

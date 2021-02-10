@@ -54,7 +54,13 @@
                       {{t _survey_only_in_folder}} -->
                   <li>{{#view FLOW.TooltipText i18nTooltipKey="_survey_only_in_folder"}}{{t _create_new_survey}}{{/view}}</li>
                 {{else}}
-                  <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
+                    <li class="dropdown">
+                        <a class="addSurvey">{{t _create_new_survey}}</a>
+                        <div class="dropdown-content">
+                            <a href="#" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_survey_blank}}</a>
+                            <a href="#" {{action "displayTemplateList" target="FLOW.projectControl"}}>{{t _create_survey_from_template}}</a>
+                        </div>
+                    </li>
                 {{/if}}
               {{/if}}
               </ul>
