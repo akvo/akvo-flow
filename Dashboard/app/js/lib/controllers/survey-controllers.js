@@ -395,11 +395,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.createNewProject(false);
   },
 
-  displayTemplateList() {
-    console.log(FLOW.Env.templateIds)
-    this.copySurvey(FLOW.Env.templateIds[0]) //TODO: copy first template for now
-  },
-
   createNewProject(folder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
