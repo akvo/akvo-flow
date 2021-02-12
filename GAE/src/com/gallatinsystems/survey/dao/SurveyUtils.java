@@ -132,10 +132,10 @@ public class SurveyUtils {
         final Survey originalSurvey = sDao.getById(originalSurveyId);
 
         if (copiedTranslations.size() > 0) {
-            Collection<List<Translation>> values = copiedTranslations.values();
-            for (List<Translation> translations: values) {
-                new TranslationDao().save(translations);
-            }
+            List<Translation> values = copiedTranslations.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            new TranslationDao().save(values);
         }
 
         MessageDao mDao = new MessageDao();
