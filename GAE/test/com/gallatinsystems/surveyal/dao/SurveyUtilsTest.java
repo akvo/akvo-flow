@@ -104,6 +104,18 @@ public class SurveyUtilsTest {
     }
 
     @Test
+    public void testCopySurveyWithTranslationAndTip() throws Exception {
+
+        Survey sourceSurvey = createSurveyWithQuestionTranslationsAndTip();
+        Survey copiedSurvey = copySurveyManually(sourceSurvey);
+
+        SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
+
+        List<Translation> translations = new TranslationDao().listByFormId(copiedSurvey.getKey().getId());
+        assertEquals(2, translations.size());
+    }
+
+    @Test
     public void testCopyBiggerSurvey() throws Exception {
 
         Survey sourceSurvey = createSurvey(6, 4);
@@ -240,6 +252,27 @@ public class SurveyUtilsTest {
 
         QuestionOption saved = dataStoreTestUtil.createQuestionOption(question, "1", "1");
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), saved.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
+        return newSurvey;
+    }
+
+    private Survey createSurveyWithQuestionTranslationsAndTip() {
+
+        SurveyGroup newSg = dataStoreTestUtil.createSurveyGroup();
+        Survey newSurvey = dataStoreTestUtil.createSurvey(newSg);
+
+        QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(newSurvey, 0, false);
+        long questionGroupId = newQg.getKey().getId();
+
+        Question question = new Question();
+        question.setType(Question.Type.FREE_TEXT);
+        question.setQuestionGroupId(questionGroupId);
+        question.setSurveyId(newSurvey.getKey().getId());
+        question.setImmutable(false);
+        question.setTip("Helpful text");
+        question = new QuestionDao().save(question);
+        dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
+        dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TIP, "texto ayuda", "es");
+
         return newSurvey;
     }
 }
