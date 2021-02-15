@@ -193,12 +193,13 @@ FLOW.ProjectMainView = FLOW.View.extend({
 
   surveyTemplatesList: Ember.computed(() => {
     const projects = FLOW.projectControl.get('content');
-    console.log(FLOW.projectControl.content);
-    return projects.filter(project => FLOW.Env.templateIds.indexOf(project.get("keyId")) >= 0);
+    const templateSurveyIds = JSON.parse(FLOW.Env.templateIds);
+    return projects.filter(project => templateSurveyIds.indexOf(project.get("keyId")) >= 0);
   }).property('FLOW.projectControl.content.@each'),
 
   createSurveyFromTemplate() {
     this.set('showTemplates', false);
+    FLOW.projectControl.copySurvey(this.get('selectedSurveyTemplate'));
   },
 
   hideTemplateList() {
@@ -206,7 +207,6 @@ FLOW.ProjectMainView = FLOW.View.extend({
   },
 
   displayTemplateList() {
-    console.log(FLOW.Env.templateIds)
     this.set('showTemplates', true);
   },
 
