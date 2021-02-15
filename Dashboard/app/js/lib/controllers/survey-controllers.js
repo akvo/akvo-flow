@@ -533,7 +533,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.dialogControl.set('showDialog', true);
 
     this.set('copyTarget', null);
-  }
+  },
 });
 
 
