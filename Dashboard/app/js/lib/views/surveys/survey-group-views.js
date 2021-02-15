@@ -190,21 +190,30 @@ FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
 });
 
 FLOW.ProjectMainView = FLOW.View.extend({
+
   surveyTemplatesList: Ember.computed(() => {
-  const projects = FLOW.projectControl.get('content');
-  return projects.filter(item => FLOW.Env.templateIds.indexOf(item.get("keyId")) >= 0);
-}).property('FLOW.projectControl.currentProjectPath'),
+    const projects = FLOW.projectControl.get('content');
+    console.log(FLOW.projectControl.content);
+    return projects.filter(project => FLOW.Env.templateIds.indexOf(project.get("keyId")) >= 0);
+  }).property('FLOW.projectControl.content.@each'),
+
   createSurveyFromTemplate() {
     this.set('showTemplates', false);
   },
+
   hideTemplateList() {
     this.set('showTemplates', false);
   },
+
   displayTemplateList() {
     console.log(FLOW.Env.templateIds)
     this.set('showTemplates', true);
   },
+
   showTemplates: false,
+
+  selectedSurveyTemplate: null,
+
   hasUnsavedChanges: Ember.computed(() => {
     const selectedProject = FLOW.projectControl.get('currentProject');
     const isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
