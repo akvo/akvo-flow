@@ -84,17 +84,28 @@
             <div class="dialogWrap">
                 <!-- the dialog contents -->
                 <div class="confirmDialog dialog">
-                    <h2>{{t _create_survey_from_template_dialog_title}}</h2>
-                    <br/>
-                    {{#each view.surveyTemplatesList}}
-                        {{view Ember.RadioButton title=this._data.attributes.code option=this.id group="templates" valueBinding="view.selectedSurveyTemplate"}}
-                    {{/each}}
-                    <div class="buttons menuCentre">
-                        <ul>
-                            <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _cancel}}</a></li>
-                            <li><a {{action "createSurveyFromTemplate" target="this"}} class="ok smallBtn">{{t _create}}</a></li>
-                        </ul>
-                    </div>
+                    {{#if view.surveyTemplatesList}}
+                        <h2>{{t _create_survey_from_template_dialog_title}}</h2>
+                        <br/>
+                        {{#each view.surveyTemplatesList}}
+                            {{view Ember.RadioButton title=this._data.attributes.code option=this.id group="templates" valueBinding="view.selectedSurveyTemplate"}}
+                        {{/each}}
+                        <div class="buttons menuCentre">
+                            <ul>
+                                <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _cancel}}</a></li>
+                                <li><a {{action "createSurveyFromTemplate" target="this"}} class="ok smallBtn">{{t _create}}</a></li>
+                            </ul>
+                        </div>
+                    {{else}}
+                        <h2>{{t _no_templates_dialog_title}}</h2>
+                        <br/>
+                        {{t _no_templates_dialog_message}}
+                        <div class="buttons menuCentre">
+                            <ul>
+                                <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _ok}}</a></li>
+                            </ul>
+                        </div>
+                    {{/if}}
                 </div>
             </div>
         </div>
