@@ -54,7 +54,13 @@
                       {{t _survey_only_in_folder}} -->
                   <li>{{#view FLOW.TooltipText i18nTooltipKey="_survey_only_in_folder"}}{{t _create_new_survey}}{{/view}}</li>
                 {{else}}
-                  <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
+                    <li class="dropdown">
+                        <a class="addSurvey">{{t _create_new_survey}}</a>
+                        <div class="dropdown-content">
+                            <a href="#" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_survey_blank}}</a>
+                            <a href="#" {{action "displayTemplateList" target="this"}}>{{t _create_survey_from_template}}</a>
+                        </div>
+                    </li>
                 {{/if}}
               {{/if}}
               </ul>
@@ -73,6 +79,36 @@
           </ul>
         </nav>
       {{/if}}
+        <div {{bindAttr class="view.showTemplates:display :overlay"}}>
+            <div class="blanket"></div>
+            <div class="dialogWrap">
+                <!-- the dialog contents -->
+                <div class="confirmDialog dialog">
+                    {{#if view.surveyTemplatesList}}
+                        <h2>{{t _create_survey_from_template_dialog_title}}</h2>
+                        <br/>
+                        {{#each view.surveyTemplatesList}}
+                            {{view Ember.RadioButton title=this._data.attributes.code option=this.id group="templates" valueBinding="view.selectedSurveyTemplate"}}
+                        {{/each}}
+                        <div class="buttons menuCentre">
+                            <ul>
+                                <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _cancel}}</a></li>
+                                <li><a {{action "createSurveyFromTemplate" target="this"}} class="ok smallBtn">{{t _create}}</a></li>
+                            </ul>
+                        </div>
+                    {{else}}
+                        <h2>{{t _no_templates_dialog_title}}</h2>
+                        <br/>
+                        {{t _no_templates_dialog_message}}
+                        <div class="buttons menuCentre">
+                            <ul>
+                                <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _ok}}</a></li>
+                            </ul>
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
     </section>
   {{#if view.projectListView}}
     {{view FLOW.ProjectListView}}
