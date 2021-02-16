@@ -546,6 +546,22 @@ label[for='newDeviceGroupName'] {
   width: 70%;
 }
 
+.confirmDialog {
+  .ember-radio-button {
+    display: block;
+    height: 55px;
+    padding: 0 15px 0px 15px;
+
+    input[type='radio'] {
+      display: none;
+    }
+
+    label {
+      display: inline;
+    }
+  }
+}
+
 /* .header
 --------------------------------------------- */
 
