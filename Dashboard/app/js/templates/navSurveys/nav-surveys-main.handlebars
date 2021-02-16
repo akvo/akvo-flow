@@ -79,11 +79,11 @@
           </ul>
         </nav>
       {{/if}}
-        <div {{bindAttr class="view.showTemplates:display :overlay"}}>
+        <div {{bindAttr class="view.showTemplates:display :overlay :surveyTemplatesDialog"}}>
             <div class="blanket"></div>
             <div class="dialogWrap">
                 <!-- the dialog contents -->
-                <div class="confirmDialog dialog">
+                <div class="confirmDialog dialogWide">
                     {{#if view.surveyTemplatesList}}
                         <h2>{{t _create_survey_from_template_dialog_title}}</h2>
                         <br/>
