@@ -1,5 +1,5 @@
-import observe from '../mixins/observe';
 import { trackEvent } from 'akvo-flow/analytics';
+import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
