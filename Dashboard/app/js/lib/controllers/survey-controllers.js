@@ -1,4 +1,5 @@
 import observe from '../mixins/observe';
+import { trackEvent } from 'akvo-flow/analytics';
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
@@ -392,6 +393,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   createProject() {
+    trackEvent('Survey list view', 'Creating blank survey');
     this.createNewProject(false);
   },
 
@@ -452,23 +454,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   endCopyProject() {
-    const currentFolder = this.get('currentProject');
-
-    FLOW.store.findQuery(FLOW.Action, {
-      action: 'copyProject',
-      targetId: this.get('copyTarget').get('keyId'),
-      folderId: currentFolder ? currentFolder.get('keyId') : 0,
-    });
-
-    FLOW.store.commit();
-
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
-
-    this.set('copyTarget', null);
+    this.copySurvey(this.get('copyTarget').get('keyId'))
   },
 
   /* Helper methods */
@@ -529,6 +515,27 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
 
     FLOW.store.commit();
+  },
+
+  copySurvey(targetId) {
+    trackEvent('Survey list view', 'Creating survey from template');
+    const currentFolder = this.get('currentProject');
+
+    FLOW.store.findQuery(FLOW.Action, {
+      action: 'copyProject',
+      targetId: targetId,
+      folderId: currentFolder ? currentFolder.get('keyId') : 0,
+    });
+
+    FLOW.store.commit();
+
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+
+    this.set('copyTarget', null);
   },
 });
 
