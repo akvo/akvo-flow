@@ -93,7 +93,11 @@
                         <div class="buttons menuCentre">
                             <ul>
                                 <li><a {{action "hideTemplateList" target="this"}} class="cancel">{{t _cancel}}</a></li>
-                                <li><a {{action "createSurveyFromTemplate" target="this"}} class="ok smallBtn">{{t _create}}</a></li>
+                                {{#if view.selectedSurveyTemplate}}
+                                    <li><a {{action "createSurveyFromTemplate" target="this"}} class="ok smallBtn">{{t _create}}</a></li>
+                                {{else}}
+                                    <li><a class="ok standardBtn noChanges">{{t _create}}</a></li>
+                                {{/if}}
                             </ul>
                         </div>
                     {{else}}

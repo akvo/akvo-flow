@@ -1,3 +1,4 @@
+import { trackEvent } from 'akvo-flow/analytics';
 import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
@@ -392,6 +393,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   createProject() {
+    trackEvent('Survey list view', 'Creating blank survey');
     this.createNewProject(false);
   },
 
@@ -516,6 +518,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   copySurvey(targetId) {
+    trackEvent('Survey list view', 'Creating survey from template');
     const currentFolder = this.get('currentProject');
 
     FLOW.store.findQuery(FLOW.Action, {
