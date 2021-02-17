@@ -396,7 +396,7 @@ public class SurveyUtils {
             QuestionOption newOption = qoDao.save(shallowCopyQuestionOption(qo, newQuestion.getKey().getId()));
 
             log.log(Level.INFO, "Copying question option translations");
-            copyTranslation(sourceQuestionId, newOption.getKey().getId(), newQuestion.getSurveyId(),
+            copyTranslation(qo.getKey().getId(), newOption.getKey().getId(), newQuestion.getSurveyId(),
                     newQuestion.getQuestionGroupId(), ParentType.QUESTION_OPTION);
         }
     }
