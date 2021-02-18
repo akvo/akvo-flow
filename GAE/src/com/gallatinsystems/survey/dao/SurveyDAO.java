@@ -268,4 +268,14 @@ public class SurveyDAO extends BaseDAO<Survey> {
         return results;
     }
 
+    public void saveTranslations(Survey survey) {
+        HashMap<String, Translation> translations = survey.getTranslationMap();
+        if (translations != null) {
+            for (Translation t : translations.values()) {
+                t.setParentId(survey.getKey().getId());
+                t.setSurveyId(survey.getKey().getId());
+            }
+            super.save(translations.values());
+        }
+    }
 }
