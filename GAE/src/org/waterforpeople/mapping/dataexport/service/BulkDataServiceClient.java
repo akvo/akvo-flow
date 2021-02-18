@@ -621,7 +621,10 @@ public class BulkDataServiceClient {
                             dto.setRepeatable(json.getBoolean("repeatable"));
                         }
                         if (!json.isNull("translationMap")) {
-                            dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
+                            /**
+                             * groups require a HashMap, Options require TreeMap
+                             */
+                            dto.setTranslationMap(parseTranslationsForGroups(json.getJSONObject("translationMap")));
                         }
 
                         dtoList.add(dto);
@@ -1054,10 +1057,36 @@ public class BulkDataServiceClient {
     @SuppressWarnings("unchecked")
     private static TreeMap<String, TranslationDto> parseTranslations(
             JSONObject translationMapJson) throws Exception {
+
         Iterator<String> keyIter = translationMapJson.keys();
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
             translationMap = new TreeMap<String, TranslationDto>();
+            //Iterate on all the languages
+            while (keyIter.hasNext()) {
+                String lang = keyIter.next();
+                JSONObject transObj = translationMapJson.getJSONObject(lang);
+                if (transObj != null) {
+                    TranslationDto tDto = new TranslationDto();
+                    tDto.setKeyId(transObj.getLong("keyId"));
+                    tDto.setParentId(transObj.getLong(("parentId")));
+                    tDto.setParentType(transObj.getString("parentType"));
+                    tDto.setLangCode(lang);
+                    tDto.setText(transObj.getString("text"));
+                    translationMap.put(lang, tDto);
+                }
+            }
+        }
+        return translationMap;
+    }
+
+    private static Map<String, TranslationDto> parseTranslationsForGroups(
+            JSONObject translationMapJson) throws Exception {
+
+        Iterator<String> keyIter = translationMapJson.keys();
+        Map<String, TranslationDto> translationMap = null;
+        if (keyIter != null) {
+            translationMap = new HashMap<String, TranslationDto>();
             //Iterate on all the languages
             while (keyIter.hasNext()) {
                 String lang = keyIter.next();
