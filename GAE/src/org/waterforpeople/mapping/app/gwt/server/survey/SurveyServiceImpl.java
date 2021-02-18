@@ -17,12 +17,14 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import java.util.stream.Collectors;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -228,9 +230,9 @@ public class SurveyServiceImpl {
          */
 
         if (qdto.getTranslationMap() != null) {
-            TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto
-                    .getTranslationMap());
-            q.setTranslations((List<Translation>) transMap.values());
+            TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto.getTranslationMap());
+            List<Translation> values = transMap.values().stream().collect(Collectors.toList());
+            q.setTranslations(values);
         }
 
         if (qdto.getQuestionHelpList() != null) {
