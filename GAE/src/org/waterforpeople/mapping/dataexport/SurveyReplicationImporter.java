@@ -52,7 +52,7 @@ public class SurveyReplicationImporter {
      * copies one surveyGroup "Survey" remaps all ids to make merging two instances safe
      *
      * @param sourceBase
-     * @param groupId
+     * @param surveyId
      * @param apiKey
      */
     public void importOneGroup(String sourceBase, long surveyId, String apiKey) {
@@ -113,6 +113,7 @@ public class SurveyReplicationImporter {
                         s.setVersion(1.0);
                         sDao.save(s);
                         long newSurveyId = s.getKey().getId();
+                        sDao.saveTranslations(s);
                         // Fix up newLocaleSurveyId
                         if (sg.getNewLocaleSurveyId() != null
                                 && sg.getNewLocaleSurveyId() == oldSurveyId) {
@@ -138,6 +139,7 @@ public class SurveyReplicationImporter {
                             qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
+                            qgDao.saveGroupTranslations(qg);
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
                                 System.out.println("       q:" + q.getKey().getId() + " "

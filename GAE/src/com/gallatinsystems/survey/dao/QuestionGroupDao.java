@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.dao;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,18 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     public QuestionGroupDao() {
         super(QuestionGroup.class);
         this.translationDao = new TranslationDao();
+    }
+
+    public void saveGroupTranslations(QuestionGroup item) {
+        HashMap<String, Translation> translations = item.getTranslationMap();
+        if (translations != null) {
+            for (Translation t : translations.values()) {
+                t.setParentId(item.getKey().getId());
+                t.setSurveyId(item.getSurveyId());
+                t.setQuestionGroupId(item.getKey().getId());
+            }
+            super.save(translations.values());
+        }
     }
 
     /**
