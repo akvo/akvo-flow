@@ -620,6 +620,9 @@ public class BulkDataServiceClient {
                         if (!json.isNull("repeatable")) {
                             dto.setRepeatable(json.getBoolean("repeatable"));
                         }
+                        if (!json.isNull("translationMap")) {
+                            dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
+                        }
 
                         dtoList.add(dto);
                     } catch (Exception e) {
@@ -740,6 +743,9 @@ public class BulkDataServiceClient {
                         }
                         if (!json.isNull("version")) {
                             dto.setVersion(json.getString("version"));
+                        }
+                        if (!json.isNull("translationMap")) {
+                            dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
                         }
                         if (!json.isNull("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
