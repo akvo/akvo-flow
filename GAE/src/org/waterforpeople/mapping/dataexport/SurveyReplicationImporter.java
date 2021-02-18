@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -43,6 +45,8 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 public class SurveyReplicationImporter {
+
+    private static final Logger log = Logger.getLogger(SurveyReplicationImporter.class.getName());
 
     /**
      * copies one surveyGroup "Survey" remaps all ids to make merging two instances safe
@@ -177,6 +181,7 @@ public class SurveyReplicationImporter {
                     + " questions copied. ");
         } catch (Exception e) {
             e.printStackTrace();
+            log.log(Level.SEVERE, "Error copying survey", e);
         }
 
     }
@@ -287,11 +292,11 @@ public class SurveyReplicationImporter {
             QuestionDto dtoDetail = null;
             for (int i = 0; i < 3; i++) {
                 try {
-                    dtoDetail = BulkDataServiceClient
-                            .loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
+                    dtoDetail = BulkDataServiceClient.loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
                     break;
                 } catch (IOException iex) {
                     System.out.print("Retrying because of timeout.");
+                    log.log(Level.SEVERE, "Error fetchQuestions", iex);
                 }
             }
             Question q = ssi.marshalQuestion(dtoDetail);
@@ -308,11 +313,11 @@ public class SurveyReplicationImporter {
             try {
                 canonical = clazz.newInstance();
             } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                log.log(Level.SEVERE, "Error copyAndCreateList", e);
             } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                log.log(Level.SEVERE, "Error copyAndCreateList", e);
             }
             DtoMarshaller.copyToCanonical(canonical, dto);
 
