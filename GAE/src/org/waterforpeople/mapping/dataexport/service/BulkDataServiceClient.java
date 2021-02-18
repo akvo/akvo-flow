@@ -620,12 +620,12 @@ public class BulkDataServiceClient {
                         if (!json.isNull("repeatable")) {
                             dto.setRepeatable(json.getBoolean("repeatable"));
                         }
-                        if (!json.isNull("translationMap")) {
-                            /**
-                             * groups require a HashMap, Options require TreeMap
-                             */
-                            dto.setTranslationMap(parseTranslationsForGroups(json.getJSONObject("translationMap")));
-                        }
+//                        if (!json.isNull("translationMap")) {
+//                            /**
+//                             * groups require a HashMap, Options require TreeMap
+//                             */
+//                            dto.setTranslationMap(parseTranslationsForGroups(json.getJSONObject("translationMap")));
+//                        }
 
                         dtoList.add(dto);
                     } catch (Exception e) {
