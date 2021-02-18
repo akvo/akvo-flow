@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2018,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,6 +17,8 @@
 package org.waterforpeople.mapping.app.util;
 
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -40,6 +42,8 @@ import com.google.appengine.api.datastore.Text;
 
 public class DtoMarshaller {
 
+    private static final Logger log = Logger.getLogger(DtoMarshaller.class.getSimpleName());
+
     public static <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
             T canonical, U dto) {
         try {
@@ -52,7 +56,7 @@ public class DtoMarshaller {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Unable to copy object properties: ", e);
         }
     }
 
@@ -65,7 +69,7 @@ public class DtoMarshaller {
                 dto.setKeyId(canonical.getKey().getId());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Unable to Dto properties: ", e);
         }
     }
 
