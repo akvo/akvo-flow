@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
