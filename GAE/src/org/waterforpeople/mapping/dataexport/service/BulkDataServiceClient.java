@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import com.gallatinsystems.common.util.MD5Util;
@@ -46,7 +48,6 @@ import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import java.util.Base64;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
  */
 public class BulkDataServiceClient {
 
-    private static final Logger log = Logger.getLogger(BulkDataServiceClient.class);
+    private static final Logger log = Logger.getLogger(BulkDataServiceClient.class.getSimpleName());
 
     private static final String DATA_SERVLET_PATH = "/databackout";
     public static final String RESPONSE_KEY = "dtoList";
@@ -173,7 +174,7 @@ public class BulkDataServiceClient {
             try {
                 count = Long.parseLong(instanceString.trim()); //remove trailing newline
             } catch (Exception e) {
-                log.error("Unparsable instance count " + e.getMessage());
+                log.severe("Unparsable instance count " + e.getMessage());
                 // Leave it as null
             }
         }
@@ -185,10 +186,10 @@ public class BulkDataServiceClient {
             Map<String, String> results = BulkDataServiceClient
                     .fetchInstanceIds(args[1], args[0], args[2], false, null, null, null);
             if (results != null) {
-                log.info(results);
+                log.info(results.toString());
             }
         } catch (Exception e) {
-            log.error("Error: " + e.getMessage(), e);
+            log.log(Level.SEVERE, "Error: " + e.getMessage(), e);
         }
     }
 
@@ -393,7 +394,7 @@ public class BulkDataServiceClient {
             InstanceDataDto instanceData = jsonReader.readObject(instanceDataResponse, typeReference);
             return instanceData;
         } catch (IOException e) {
-            log.error("Error while parsing: ", e);
+            log.log(Level.SEVERE, "Error while parsing: ", e);
         }
 
         return new InstanceDataDto();
@@ -438,7 +439,7 @@ public class BulkDataServiceClient {
                     true,
                     apiKey);
 
-            log.debug("response: " + surveyGroupResponse);
+            log.fine("response: " + surveyGroupResponse);
 
             final FlowJsonObjectReader jsonDeserialiser = new FlowJsonObjectReader();
             final TypeReference<SurveyGroupDto> listItemTypeReference = new TypeReference<SurveyGroupDto>(){};
@@ -448,7 +449,7 @@ public class BulkDataServiceClient {
                 surveyGroupDto = surveyGroupList.get(0);
             }
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
 
         return surveyGroupDto;
@@ -690,7 +691,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                        log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -757,7 +758,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                        log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -1013,7 +1014,7 @@ public class BulkDataServiceClient {
                             }
                             dtoList.add(dto);
                         } catch (Exception e) {
-                            log.error("Error in json parsing: " + e.getMessage(), e);
+                            log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                         }
                     }
                 }
@@ -1141,7 +1142,7 @@ public class BulkDataServiceClient {
                 queryString = "";
             }
             URL url = new URL(baseUrl);
-            log.debug("Calling: " + baseUrl + " with params: " + queryString);
+            log.fine("Calling: " + baseUrl + " with params: " + queryString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1195,7 +1196,7 @@ public class BulkDataServiceClient {
         String result = null;
         try {
             URL url = new URL(fullUrl);
-            log.debug("Calling: " + url.toString());
+            log.fine("Calling: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1274,7 +1275,7 @@ public class BulkDataServiceClient {
      * converts the string into a JSON array object.
      */
     public static JSONArray getJsonArray(String response) throws Exception {
-        log.debug("response: " + response);
+        log.fine("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
             if (json != null) {
