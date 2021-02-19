@@ -16,17 +16,21 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import com.gallatinsystems.survey.domain.Translation;
+import com.google.appengine.api.datastore.KeyFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -99,7 +103,8 @@ public class SurveyReplicationImporter {
                     // Now copy everything inside it
                     // First, surveys (may be more than one for a monitored survey)
                     for (Survey s : allSurveys) {
-                        System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode());
+                        int numberOfTranslations = s.getTranslationMap() == null ? 0 : s.getTranslationMap().size();
+                        System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode()+ " with " + numberOfTranslations + " translations");
 
                         long oldSurveyId = s.getKey().getId();
                         s.setKey(null);// want a new key
@@ -131,8 +136,8 @@ public class SurveyReplicationImporter {
                         List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase,
                                 apiKey);
                         for (QuestionGroup qg : allQgs) {
-                            System.out.println("     qg:" + qg.getKey().getId() + " "
-                                    + qg.getCode());
+                            int numberOfTranslationsGr = qg.getTranslations() == null? 0: qg.getTranslations().size();
+                            System.out.println("     qg:" + qg.getKey().getId() + " " + qg.getCode() + "with " + numberOfTranslationsGr + " translations");
                             long oldQgId = qg.getKey().getId();
                             qg.setKey(null); // want a new key
                             qg.setSurveyId(newSurveyId);
@@ -279,8 +284,46 @@ public class SurveyReplicationImporter {
             String serverBase, String apiKey) throws Exception {
         List<QuestionGroupDto> qgDtoList = BulkDataServiceClient
                 .fetchQuestionGroups(serverBase, surveyId.toString(), apiKey);
-        List<QuestionGroup> qgList = new ArrayList<QuestionGroup>();
-        return copyAndCreateList(qgList, qgDtoList, QuestionGroup.class);
+        return copyAndCreateGroupList(qgDtoList);
+    }
+
+    private List<QuestionGroup> copyAndCreateGroupList(List<QuestionGroupDto> qgDtoList) {
+        List<QuestionGroup> groups = new ArrayList<>();
+        if (qgDtoList != null) {
+            for (QuestionGroupDto dto : qgDtoList) {
+                QuestionGroup group = new QuestionGroup();
+                DtoMarshaller.copyToCanonical(group, dto);
+                Map<String, TranslationDto> translationMap = dto.getTranslationMap();
+                if (translationMap != null) {
+                    HashMap<String, Translation> mappedTranslations = mapTranslations(translationMap);
+                    group.setTranslations(mappedTranslations);
+                }
+            }
+        }
+        return groups;
+    }
+
+    private static HashMap<String, Translation> mapTranslations(Map<String, TranslationDto> translationMap) {
+        HashMap<String, Translation> translationHashMap = new HashMap<>();
+        for (TranslationDto dto: translationMap.values()) {
+            Translation t = new Translation();
+                t.setKey((KeyFactory.createKey(
+                        Translation.class.getSimpleName(), dto.getKeyId())));
+            t.setLanguageCode(dto.getLangCode());
+            t.setText(dto.getText());
+            t.setParentId(dto.getParentId());
+            if (Translation.ParentType.SURVEY_NAME.toString().equals(dto.getParentType())) {
+                t.setParentType(Translation.ParentType.SURVEY_NAME);
+            } else if (Translation.ParentType.SURVEY_DESC.toString().equals(dto.getParentType())) {
+                t.setParentType(Translation.ParentType.SURVEY_DESC);
+            } else if (Translation.ParentType.QUESTION_GROUP_DESC.toString().equals(dto.getParentType())) {
+                t.setParentType(Translation.ParentType.QUESTION_GROUP_DESC);
+            } else if (Translation.ParentType.QUESTION_GROUP_NAME.toString().equals(dto.getParentType())) {
+                t.setParentType(Translation.ParentType.QUESTION_GROUP_NAME);
+            }
+            translationHashMap.put(dto.getLangCode(), t);
+        }
+        return null;
     }
 
     public List<Question> fetchQuestions(Long questionGroupId, String serverBase, String apiKey)
@@ -333,6 +376,9 @@ public class SurveyReplicationImporter {
 
                 // mismatch in SurveyDto and Survey property names
                 s.setDesc(d.getDescription());
+                if (d.getTranslationMap() != null) {
+                    s.setTranslationMap(mapTranslations(d.getTranslationMap()));
+                }
             }
             canonicalList.add(canonical);
         }
