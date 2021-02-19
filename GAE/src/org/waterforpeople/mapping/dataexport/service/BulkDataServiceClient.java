@@ -624,7 +624,6 @@ public class BulkDataServiceClient {
                             if (!json.isNull("translationMap")) {
                                 dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
                             }
-
                             dtoList.add(dto);
                     }
                 }
@@ -1059,6 +1058,31 @@ public class BulkDataServiceClient {
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
             translationMap = new TreeMap<>();
+            //Iterate on all the languages
+            while (keyIter.hasNext()) {
+                String lang = keyIter.next();
+                JSONObject transObj = translationMapJson.getJSONObject(lang);
+                if (transObj != null) {
+                    TranslationDto tDto = new TranslationDto();
+                    tDto.setKeyId(transObj.getLong("keyId"));
+                    tDto.setParentId(transObj.getLong(("parentId")));
+                    tDto.setParentType(transObj.getString("parentType"));
+                    tDto.setLangCode(lang);
+                    tDto.setText(transObj.getString("text"));
+                    translationMap.put(lang, tDto);
+                }
+            }
+        }
+        return translationMap;
+    }
+
+    private static Map<String, TranslationDto> parseTranslationsForGroups(
+            JSONObject translationMapJson) throws Exception {
+
+        Iterator<String> keyIter = translationMapJson.keys();
+        Map<String, TranslationDto> translationMap = null;
+        if (keyIter != null) {
+            translationMap = new HashMap<String, TranslationDto>();
             //Iterate on all the languages
             while (keyIter.hasNext()) {
                 String lang = keyIter.next();
