@@ -143,7 +143,7 @@ class FlowJsonObjectWriterTests {
         translation.setLanguageCode("es");
         HashMap<String, Translation> translationHashMap = new HashMap<>();
         translationHashMap.put(translation.getLanguageCode(), translation);
-        qg.setTranslationMap(translationHashMap);
+        qg.setTranslations(translationHashMap);
 
         FlowJsonObjectWriter writer = new FlowJsonObjectWriter().withExcludeNullValues();
         String jsonString = null;
@@ -153,7 +153,7 @@ class FlowJsonObjectWriterTests {
             // ignoring exception
         }
 
-        String jsonStringExpected = "{\"name\":\"question group\",\"translationMap\":{\"es\":{\"languageCode\":\"es\",\"text\":\"Primer grupo\",\"parentType\":\"QUESTION_GROUP_NAME\"}},\"surveyId\":123,\"order\":0,\"immutable\":false}";
+        String jsonStringExpected = "{\"name\":\"question group\",\"translations\":{\"es\":{\"languageCode\":\"es\",\"text\":\"Primer grupo\",\"parentType\":\"QUESTION_GROUP_NAME\"}},\"surveyId\":123,\"order\":0,\"immutable\":false}";
         assertEquals(jsonStringExpected, jsonString);
     }
 

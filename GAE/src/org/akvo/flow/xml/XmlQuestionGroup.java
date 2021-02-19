@@ -69,9 +69,9 @@ public class XmlQuestionGroup {
         order = group.getOrder();
         repeatable = group.getRepeatable();
         //Translations, if any
-        if (group.getTranslationMap() != null) {
+        if (group.getTranslations() != null) {
             altText = new ArrayList<>();
-            for (Translation t: group.getTranslationMap().values()) {
+            for (Translation t: group.getTranslations().values()) {
                 altText.add(new XmlAltText(t));
             }
         }
