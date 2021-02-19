@@ -136,7 +136,7 @@ public class SurveyReplicationImporter {
                         List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase,
                                 apiKey);
                         for (QuestionGroup qg : allQgs) {
-                            int numberOfTranslationsGr = qg.getTranslations() == null? 0: qg.getTranslations().size();
+                            int numberOfTranslationsGr = qg.getTranslations() == null ? 0 : qg.getTranslations().size();
                             System.out.println("     qg:" + qg.getKey().getId() + " " + qg.getCode() + "with " + numberOfTranslationsGr + " translations");
                             long oldQgId = qg.getKey().getId();
                             qg.setKey(null); // want a new key
@@ -305,25 +305,29 @@ public class SurveyReplicationImporter {
 
     private static HashMap<String, Translation> mapTranslations(Map<String, TranslationDto> translationMap) {
         HashMap<String, Translation> translationHashMap = new HashMap<>();
-        for (TranslationDto dto: translationMap.values()) {
-            Translation t = new Translation();
-                t.setKey((KeyFactory.createKey(
-                        Translation.class.getSimpleName(), dto.getKeyId())));
-            t.setLanguageCode(dto.getLangCode());
-            t.setText(dto.getText());
-            t.setParentId(dto.getParentId());
-            if (Translation.ParentType.SURVEY_NAME.toString().equals(dto.getParentType())) {
-                t.setParentType(Translation.ParentType.SURVEY_NAME);
-            } else if (Translation.ParentType.SURVEY_DESC.toString().equals(dto.getParentType())) {
-                t.setParentType(Translation.ParentType.SURVEY_DESC);
-            } else if (Translation.ParentType.QUESTION_GROUP_DESC.toString().equals(dto.getParentType())) {
-                t.setParentType(Translation.ParentType.QUESTION_GROUP_DESC);
-            } else if (Translation.ParentType.QUESTION_GROUP_NAME.toString().equals(dto.getParentType())) {
-                t.setParentType(Translation.ParentType.QUESTION_GROUP_NAME);
+        try {
+            for (TranslationDto dto: translationMap.values()) {
+                Translation t = new Translation();
+                    t.setKey((KeyFactory.createKey(
+                            Translation.class.getSimpleName(), dto.getKeyId())));
+                t.setLanguageCode(dto.getLangCode());
+                t.setText(dto.getText());
+                t.setParentId(dto.getParentId());
+                if (Translation.ParentType.SURVEY_NAME.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.SURVEY_NAME);
+                } else if (Translation.ParentType.SURVEY_DESC.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.SURVEY_DESC);
+                } else if (Translation.ParentType.QUESTION_GROUP_DESC.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.QUESTION_GROUP_DESC);
+                } else if (Translation.ParentType.QUESTION_GROUP_NAME.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.QUESTION_GROUP_NAME);
+                }
+                translationHashMap.put(dto.getLangCode(), t);
             }
-            translationHashMap.put(dto.getLangCode(), t);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error mapping translations", e);
         }
-        return null;
+        return translationHashMap;
     }
 
     public List<Question> fetchQuestions(Long questionGroupId, String serverBase, String apiKey)

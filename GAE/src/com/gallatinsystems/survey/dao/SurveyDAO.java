@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -269,13 +270,17 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     public void saveTranslations(Survey survey) {
-        HashMap<String, Translation> translations = survey.getTranslationMap();
-        if (translations != null) {
-            for (Translation t : translations.values()) {
-                t.setParentId(survey.getKey().getId());
-                t.setSurveyId(survey.getKey().getId());
+        try {
+            HashMap<String, Translation> translations = survey.getTranslationMap();
+            if (translations != null) {
+                for (Translation t : translations.values()) {
+                    t.setParentId(survey.getKey().getId());
+                    t.setSurveyId(survey.getKey().getId());
+                }
+                super.save(translations.values());
             }
-            super.save(translations.values());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error saving translations", e);
         }
     }
 }

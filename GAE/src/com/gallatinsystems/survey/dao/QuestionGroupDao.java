@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -42,14 +43,18 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     }
 
     public void saveGroupTranslations(QuestionGroup item) {
-        Map<String, Translation> translations = item.getTranslations();
-        if (translations != null) {
-            for (Translation t : translations.values()) {
-                t.setParentId(item.getKey().getId());
-                t.setSurveyId(item.getSurveyId());
-                t.setQuestionGroupId(item.getKey().getId());
+        try {
+            Map<String, Translation> translations = item.getTranslations();
+            if (translations != null) {
+                for (Translation t : translations.values()) {
+                    t.setParentId(item.getKey().getId());
+                    t.setSurveyId(item.getSurveyId());
+                    t.setQuestionGroupId(item.getKey().getId());
+                }
+                super.save(translations.values());
             }
-            super.save(translations.values());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error saving translations", e);
         }
     }
 
