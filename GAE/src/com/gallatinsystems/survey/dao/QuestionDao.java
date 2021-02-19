@@ -386,14 +386,12 @@ public class QuestionDao extends BaseDAO<Question> {
 
         if (question.getQuestionHelpMediaMap() != null) {
             for (QuestionHelpMedia help : question.getQuestionHelpMediaMap().values()) {
-                help.setQuestionId(question.getKey().getId());
-
-                save(help);
+                //help is only used to transmit question tip translations
                 if (help.getTranslationMap() != null) {
                     for (Translation t : help.getTranslationMap().values()) {
-                        if (t.getParentId() == null) {
-                            t.setParentId(help.getKey().getId());
-                        }
+                        t.setParentId(question.getKey().getId());
+                        t.setSurveyId(surveyId);
+                        t.setQuestionGroupId(questionGroupId);
                     }
                     super.save(help.getTranslationMap().values());
                 }
@@ -745,23 +743,6 @@ public class QuestionDao extends BaseDAO<Question> {
             for (Question q : questionList) {
                 Question persistentQuestion = getByKey(q.getKey());
                 persistentQuestion.setOrder(q.getOrder());
-                // since the object is still attached, we don't need to call
-                // save. It will be saved on flush of the Persistent session
-            }
-        }
-    }
-
-    /**
-     * updates ONLY the order field within the question group object for the questions passed in.
-     * All question groups must exist in the datastore
-     *
-     * @param questionList
-     */
-    public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {
-        if (groupList != null) {
-            for (QuestionGroup q : groupList) {
-                QuestionGroup persistentGroup = getByKey(q.getKey(), QuestionGroup.class);
-                persistentGroup.setOrder(q.getOrder());
                 // since the object is still attached, we don't need to call
                 // save. It will be saved on flush of the Persistent session
             }
