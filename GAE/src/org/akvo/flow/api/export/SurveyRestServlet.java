@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -297,6 +298,18 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             for (QuestionGroup q : groups.values()) {
                 QuestionGroupDto dto = new QuestionGroupDto();
                 DtoMarshaller.copyToDto(q, dto);
+                if(q.getTranslations() != null) {
+                    if(dto.getTranslationMap() == null) {
+                        dto.setTranslationMap(new HashMap<>());
+                    }
+                    for(Translation t : q.getTranslations().values()) {
+                        TranslationDto tDto = new TranslationDto();
+                        DtoMarshaller.copyToDto(t, tDto);
+                        tDto.setLangCode(t.getLanguageCode());
+                        tDto.setParentType(t.getParentType().toString());
+                        dto.getTranslationMap().put(t.getLanguageCode(), tDto);
+                    }
+                }
                 dtoList.add(dto);
             }
         }
