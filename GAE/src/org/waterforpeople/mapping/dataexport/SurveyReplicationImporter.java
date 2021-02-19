@@ -298,6 +298,7 @@ public class SurveyReplicationImporter {
                     HashMap<String, Translation> mappedTranslations = mapTranslations(translationMap);
                     group.setTranslations(mappedTranslations);
                 }
+                groups.add(group);
             }
         }
         return groups;
