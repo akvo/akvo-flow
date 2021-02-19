@@ -342,7 +342,7 @@ public class SurveyReplicationImporter {
             QuestionDto dtoDetail = null;
             for (int i = 0; i < 3; i++) {
                 try {
-                    dtoDetail = BulkDataServiceClient.loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
+                    dtoDetail = BulkDataServiceClient.loadQuestionAllDetails(serverBase, dto.getKeyId(), apiKey);
                     break;
                 } catch (IOException iex) {
                     System.out.print("Retrying because of timeout.");

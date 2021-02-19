@@ -183,6 +183,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             List<BaseDto> dtoList = new ArrayList<BaseDto>();
             dtoList.add(dto);
             response.setDtoList(dtoList);
+        } else if (SurveyRestRequest.GET_QUESTION_ALL_DETAILS_ACTION.equals(surveyReq.getAction())) {
+            QuestionDto dto = loadQuestionAllDetails(new Long(surveyReq.getQuestionId()));
+            List<BaseDto> dtoList = new ArrayList<>();
+            dtoList.add(dto);
+            response.setDtoList(dtoList);
         } else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION
                 .equals(surveyReq.getAction())) {
             SurveyInstanceDto dto = findSurveyInstance(surveyReq
@@ -479,6 +484,21 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         QuestionDto result = null;
         if (q != null) {
             result = SurveyServiceImpl.marshalQuestionDto(q);
+        }
+        return result;
+    }
+
+    /**
+     * loads all details (dependency, translation, options, etc) for a single question + translation of the tip
+     *
+     * @param questionId
+     * @return
+     */
+    private QuestionDto loadQuestionAllDetails(Long questionId) {
+        Question q = qDao.getByKey(questionId, true);
+        QuestionDto result = null;
+        if (q != null) {
+            result = SurveyServiceImpl.marshalQuestionDtoWithTipTranslation(q);
         }
         return result;
     }

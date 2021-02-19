@@ -111,6 +111,85 @@ public class SurveyServiceImpl {
         return qDto;
     }
 
+    public static QuestionDto marshalQuestionDtoWithTipTranslation(Question q) {
+        QuestionDto qDto = new QuestionDto();
+
+        DtoMarshaller.copyToDto(q, qDto);
+
+        if (q.getQuestionHelpMediaMap() != null) {
+            for (QuestionHelpMedia help : q.getQuestionHelpMediaMap().values()) {
+                QuestionHelpDto dto = new QuestionHelpDto();
+                Map<String, Translation> transMap = help.getTranslationMap();
+                help.setTranslationMap(null);
+                DtoMarshaller.copyToDto(help, dto);
+                if (transMap != null) {
+                    dto.setTranslationMap(marshalTranslations(transMap));
+                }
+                qDto.addQuestionHelp(dto);
+            }
+        }
+
+        if (q.getQuestionOptionMap() != null) {
+            OptionContainerDto ocDto = new OptionContainerDto();
+            if (q.getAllowOtherFlag() != null)
+                ocDto.setAllowOtherFlag(q.getAllowOtherFlag());
+            if (q.getAllowMultipleFlag() != null)
+                ocDto.setAllowMultipleFlag(q.getAllowMultipleFlag());
+            for (QuestionOption qo : q.getQuestionOptionMap().values()) {
+                QuestionOptionDto ooDto = new QuestionOptionDto();
+                ooDto.setTranslationMap(marshalTranslations(qo
+                        .getTranslationMap()));
+                ooDto.setKeyId(qo.getKey().getId());
+                if (qo.getCode() != null)
+                    ooDto.setCode(qo.getCode());
+                if (qo.getText() != null)
+                    ooDto.setText(qo.getText());
+                ooDto.setOrder(qo.getOrder());
+                ocDto.addQuestionOption(ooDto);
+
+            }
+            qDto.setOptionContainerDto(ocDto);
+        }
+
+        if (q.getDependentQuestionId() != null) {
+            QuestionDependencyDto qdDto = new QuestionDependencyDto();
+            qdDto.setQuestionId(q.getDependentQuestionId());
+            qdDto.setAnswerValue(q.getDependentQuestionAnswer());
+            qDto.setQuestionDependency(qdDto);
+        }
+
+        Map<String, Translation> translationMap = q.translationsAsMap();
+        qDto.setTranslationMap(marshalTranslations(translationMap));
+
+        if (q.getTip() != null && q.getTip() != "") {
+            List<Translation> translations = q.getTranslations();
+            Map<String, TranslationDto> tipTranslations = new TreeMap<>();
+            for (Translation t: translations) {
+                if (t.getParentType().equals(ParentType.QUESTION_TIP)) {
+                    TranslationDto tDto = new TranslationDto();
+                    tDto.setKeyId(t.getKey().getId());
+                    tDto.setLangCode(t.getLanguageCode());
+                    tDto.setText(t.getText());
+                    tDto.setParentId(t.getParentId());
+                    tDto.setParentType(t.getParentType().toString());
+                    tipTranslations.put(t.getLanguageCode(), tDto);
+                }
+            }
+            if (!tipTranslations.isEmpty()) {
+                QuestionHelpDto dto = new QuestionHelpDto();
+                dto.setText(q.getTip());
+                dto.setTranslationMap(tipTranslations);
+                qDto.addQuestionHelp(dto);
+            }
+        }
+
+        if (Question.Type.CASCADE.equals(q.getType()) && q.getCascadeResourceId() != null) {
+            qDto.setLevelNames(getCascadeResourceLevelNames(q.getCascadeResourceId()));
+        }
+
+        return qDto;
+    }
+
     private static List<String> getCascadeResourceLevelNames(Long id) {
         final CascadeResource cr = new CascadeResourceDao().getByKey(id);
         if (cr == null || cr.getLevelNames() == null || cr.getLevelNames().isEmpty()) {
@@ -137,28 +216,25 @@ public class SurveyServiceImpl {
         return transMap;
     }
 
-    private static TreeMap<String, Translation> marshalFromDtoTranslations(
-            Map<String, TranslationDto> translationMap) {
+    private static TreeMap<String, Translation> marshalFromDtoTranslations(Map<String, TranslationDto> translationMap) {
         TreeMap<String, Translation> transMap = null;
         if (translationMap != null && translationMap.size() > 0) {
-            transMap = new TreeMap<String, Translation>();
+            transMap = new TreeMap<>();
             for (TranslationDto trans : translationMap.values()) {
                 Translation t = new Translation();
                 if (trans.getKeyId() != null)
-                    t.setKey((KeyFactory.createKey(
-                            Translation.class.getSimpleName(), trans.getKeyId())));
+                    t.setKey((KeyFactory.createKey(Translation.class.getSimpleName(), trans.getKeyId())));
                 t.setLanguageCode(trans.getLangCode());
                 t.setText(trans.getText());
                 t.setParentId(trans.getParentId());
-                if (trans.getParentType().equals(
-                        Translation.ParentType.QUESTION_TEXT.toString())) {
+                if (trans.getParentType().equals(Translation.ParentType.QUESTION_TEXT.toString())) {
                     t.setParentType(ParentType.QUESTION_TEXT);
-                } else if (trans.getParentType().equals(
-                        Translation.ParentType.QUESTION_OPTION.toString())) {
+                } else if (trans.getParentType().equals(Translation.ParentType.QUESTION_OPTION.toString())) {
                     t.setParentType(ParentType.QUESTION_OPTION);
-                } else if (Translation.ParentType.QUESTION_HELP_MEDIA_TEXT
-                        .toString().equals(trans.getParentType())) {
+                } else if (Translation.ParentType.QUESTION_HELP_MEDIA_TEXT.toString().equals(trans.getParentType())) {
                     t.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+                } else if (Translation.ParentType.QUESTION_TIP.toString().equals(trans.getParentType())) {
+                    t.setParentType(ParentType.QUESTION_TIP);
                 }
                 transMap.put(t.getLanguageCode(), t);
             }
@@ -170,13 +246,6 @@ public class SurveyServiceImpl {
         Question q = new Question();
 
         DtoMarshaller.copyToCanonical(q, qdto);
-
-        /*
-         * TODO: remove as same code seems to be duplicated later in this method if
-         * (qdto.getQuestionHelpList() != null) { List<QuestionHelpDto> qHListDto =
-         * qdto.getQuestionHelpList(); for (QuestionHelpDto qhDto : qHListDto) { QuestionHelpMedia
-         * qh = new QuestionHelpMedia(); DtoMarshaller.copyToCanonical(qh, qhDto); } }
-         */
 
         if (qdto.getOptionContainerDto() != null) {
             OptionContainerDto ocDto = qdto.getOptionContainerDto();
@@ -220,15 +289,6 @@ public class SurveyServiceImpl {
             }
         }
 
-        /*
-         * TODO: remove. probably not necessary as already covered by dependentFlag,
-         * dependentQuestionId, and dependentQUestionAnswer members in schema if
-         * (qdto.getQuestionDependency() != null) {
-         * q.setDependentQuestionId(qdto.getQuestionDependency() .getQuestionId());
-         * q.setDependentQuestionAnswer(qdto.getQuestionDependency() .getAnswerValue());
-         * q.setDependentFlag(true); }
-         */
-
         if (qdto.getTranslationMap() != null) {
             TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto.getTranslationMap());
             List<Translation> values = transMap.values().stream().collect(Collectors.toList());
@@ -243,8 +303,7 @@ public class SurveyServiceImpl {
                 help.setTranslationMap(null);
                 DtoMarshaller.copyToCanonical(helpDomain, help);
                 if (transMap != null) {
-                    helpDomain
-                            .setTranslationMap(marshalFromDtoTranslations(transMap));
+                    helpDomain.setTranslationMap(marshalFromDtoTranslations(transMap));
                 }
                 q.addHelpMedia(count++, helpDomain);
             }

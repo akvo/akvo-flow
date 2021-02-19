@@ -256,6 +256,30 @@ public class BulkDataServiceClient {
     }
 
     /**
+     * loads full details for a single question (options, translations, etc) + also the tip translation
+     *
+     * @param serverBase
+     * @param questionId
+     * @return
+     */
+    public static QuestionDto loadQuestionAllDetails(String serverBase,
+                                                  Long questionId, String apiKey) throws Exception {
+
+        List<QuestionDto> dtoList = parseQuestions(fetchDataFromServer(serverBase
+                        + SURVEY_SERVLET_PATH, "?action="
+                        + SurveyRestRequest.GET_QUESTION_ALL_DETAILS_ACTION + "&"
+                        + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+                apiKey));
+
+        if (dtoList != null && dtoList.size() > 0) {
+            return dtoList.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
+    /**
      * returns an array containing 2 elements: the first is an ordered list of questionIds (in the
      * order they appear in the survey) and the second element is a map of questions (keyed on id)
      *
