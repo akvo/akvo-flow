@@ -16,7 +16,6 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     }
 
     public void saveGroupTranslations(QuestionGroup item) {
-        HashMap<String, Translation> translations = item.getTranslationMap();
+        Map<String, Translation> translations = item.getTranslations();
         if (translations != null) {
             for (Translation t : translations.values()) {
                 t.setParentId(item.getKey().getId());
@@ -106,7 +105,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
                         translationMap.put(t.getLanguageCode(), t);
                     }
                 }
-                group.setTranslationMap(translationMap);
+                group.setTranslations(translationMap);
                 // TODO: Hack because we seem to have questiongroups with same
                 // order key so put an arbitrary value there for now since it
                 // isn't used.

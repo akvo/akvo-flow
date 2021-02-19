@@ -591,46 +591,46 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<QuestionGroupDto> parseQuestionGroups(String response) throws Exception {
+    public static List<QuestionGroupDto> parseQuestionGroups(String response) {
         List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
-        JSONArray arr = getJsonArray(response);
-        if (arr != null) {
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject json = arr.getJSONObject(i);
-                if (json != null) {
-                    QuestionGroupDto dto = new QuestionGroupDto();
-                    try {
-                        if (!json.isNull("code")) {
-                            dto.setCode(json.getString("code"));
-                        }
-                        if (!json.isNull("keyId")) {
-                            dto.setKeyId(json.getLong("keyId"));
-                        }
-                        if (!json.isNull("displayName")) {
-                            dto.setName(json.getString("displayName"));
-                        }
-                        if (!json.isNull("order")) {
-                            dto.setOrder(json.getInt("order"));
-                        }
-                        if (!json.isNull("path")) {
-                            dto.setPath(json.getString("path"));
-                        }
-                        if (!json.isNull("surveyId")) {
-                            dto.setSurveyId(json.getLong("surveyId"));
-                        }
-                        if (!json.isNull("repeatable")) {
-                            dto.setRepeatable(json.getBoolean("repeatable"));
-                        }
-                        if (!json.isNull("translationMap")) {
-                            dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
-                        }
+        try {
+            JSONArray arr = getJsonArray(response);
+            if (arr != null) {
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject json = arr.getJSONObject(i);
+                    if (json != null) {
+                        QuestionGroupDto dto = new QuestionGroupDto();
+                            if (!json.isNull("code")) {
+                                dto.setCode(json.getString("code"));
+                            }
+                            if (!json.isNull("keyId")) {
+                                dto.setKeyId(json.getLong("keyId"));
+                            }
+                            if (!json.isNull("displayName")) {
+                                dto.setName(json.getString("displayName"));
+                            }
+                            if (!json.isNull("order")) {
+                                dto.setOrder(json.getInt("order"));
+                            }
+                            if (!json.isNull("path")) {
+                                dto.setPath(json.getString("path"));
+                            }
+                            if (!json.isNull("surveyId")) {
+                                dto.setSurveyId(json.getLong("surveyId"));
+                            }
+                            if (!json.isNull("repeatable")) {
+                                dto.setRepeatable(json.getBoolean("repeatable"));
+                            }
+                            if (!json.isNull("translationMap")) {
+                                dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
+                            }
 
-                        dtoList.add(dto);
-                    } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                            dtoList.add(dto);
                     }
                 }
             }
+        } catch (JSONException e) {
+            log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
         }
         return dtoList;
     }
@@ -1047,18 +1047,18 @@ public class BulkDataServiceClient {
                 }
             }
         } catch (Exception e) {
-            log.warn("Could not parse question options: " + response, e);
+            log.log(Level.WARNING, "Could not parse question options: " + response, e);
         }
         return dtoList;
     }
 
     @SuppressWarnings("unchecked")
     private static TreeMap<String, TranslationDto> parseTranslations(
-            JSONObject translationMapJson) throws Exception {
+            JSONObject translationMapJson) throws JSONException {
         Iterator<String> keyIter = translationMapJson.keys();
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
-            translationMap = new TreeMap<String, TranslationDto>();
+            translationMap = new TreeMap<>();
             //Iterate on all the languages
             while (keyIter.hasNext()) {
                 String lang = keyIter.next();
@@ -1274,7 +1274,7 @@ public class BulkDataServiceClient {
     /**
      * converts the string into a JSON array object.
      */
-    public static JSONArray getJsonArray(String response) throws Exception {
+    public static JSONArray getJsonArray(String response) throws JSONException {
         log.fine("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
