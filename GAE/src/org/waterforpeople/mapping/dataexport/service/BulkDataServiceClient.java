@@ -56,6 +56,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
@@ -987,6 +988,17 @@ public class BulkDataServiceClient {
                             }
                             if (!json.isNull("allowPolygon")) {
                                 dto.setAllowPolygon(json.getBoolean("allowPolygon"));
+                            }
+                            if (!json.isNull("questionHelpList")) {
+                                JSONArray optArray = json.getJSONArray("questionHelpList");
+                                if (optArray.length() > 0) {
+                                    JSONObject optJson = optArray.getJSONObject(0);
+                                    QuestionHelpDto help = new QuestionHelpDto();
+                                    if (!optJson.isNull("translationMap")) {
+                                        help.setTranslationMap(parseTranslations(optJson.getJSONObject("translationMap")));
+                                        dto.addQuestionHelp(help);
+                                    }
+                                }
                             }
                             if (!json.isNull("optionContainerDto")) {
                                 OptionContainerDto container = new OptionContainerDto();
