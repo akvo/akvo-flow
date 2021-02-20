@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,12 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import com.gallatinsystems.common.util.MD5Util;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
-import java.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +62,13 @@ import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.gallatinsystems.common.util.MD5Util;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.GET_INSTANCE_DATA_ACTION;
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.SURVEY_INSTANCE_ID_PARAM;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -1100,7 +1102,6 @@ public class BulkDataServiceClient {
                 JSONObject transObj = translationMapJson.getJSONObject(lang);
                 if (transObj != null) {
                     TranslationDto tDto = new TranslationDto();
-                    tDto.setKeyId(transObj.getLong("keyId"));
                     tDto.setParentId(transObj.getLong(("parentId")));
                     tDto.setParentType(transObj.getString("parentType"));
                     tDto.setLangCode(lang);

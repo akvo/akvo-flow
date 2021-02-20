@@ -16,16 +16,14 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import com.gallatinsystems.survey.domain.Translation;
-import com.google.appengine.api.datastore.KeyFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -47,6 +45,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Survey.Status;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import com.gallatinsystems.survey.domain.Translation;
 
 public class SurveyReplicationImporter {
 
@@ -309,8 +308,6 @@ public class SurveyReplicationImporter {
         try {
             for (TranslationDto dto: translationMap.values()) {
                 Translation t = new Translation();
-                    t.setKey((KeyFactory.createKey(
-                            Translation.class.getSimpleName(), dto.getKeyId())));
                 t.setLanguageCode(dto.getLangCode());
                 t.setText(dto.getText());
                 t.setParentId(dto.getParentId());
