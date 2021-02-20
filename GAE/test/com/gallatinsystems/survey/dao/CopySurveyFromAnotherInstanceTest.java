@@ -42,7 +42,7 @@ public class CopySurveyFromAnotherInstanceTest {
     private final DataStoreTestUtil dataStoreTestUtil = new DataStoreTestUtil();
 
     @Test
-//    @Disabled
+    @Disabled
     public void testing() throws IOException, InterruptedException {
         installRemoteApi();
         cleanupDatabase();
