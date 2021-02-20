@@ -772,7 +772,7 @@ public class BulkDataServiceClient {
                             dto.setVersion(json.getString("version"));
                         }
                         if (!json.isNull("translationMap")) {
-                            dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
+                            dto.setTranslationMap(new HashMap<>(parseTranslations(json.getJSONObject("translationMap"))));
                         }
                         if (!json.isNull("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
@@ -898,7 +898,7 @@ public class BulkDataServiceClient {
                                 dto.setText(json.getString("text"));
                             }
                             if (!json.isNull("keyId")) {
-                                dto.setKeyId(json.getLong("keyId"));
+                                dto.setKeyId(json.getLong("keyId")); // maybe here
                             }
                             if (!json.isNull("collapseable")) {
                                 dto.setCollapseable(json.getBoolean("collapseable"));

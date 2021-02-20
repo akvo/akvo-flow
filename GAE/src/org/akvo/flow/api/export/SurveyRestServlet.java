@@ -253,6 +253,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         cursorString = SurveyDAO.getCursor(groups);
         if (groups != null) {
             for (Survey s : groups) {
+                sDao.loadTranslations(s);
                 SurveyDto dto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, dto);
 
