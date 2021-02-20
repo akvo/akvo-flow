@@ -100,6 +100,10 @@ public class CopySurveyFromAnotherInstanceTest {
         addTranslation(survey, question, Translation.ParentType.QUESTION_TEXT, "hola", "es");
         addTranslation(survey, question, Translation.ParentType.QUESTION_TEXT, "ciao", "it");
 
+        Question dependantQuestion = dataStoreTestUtil.createDependentQuestion(survey, question);
+        addTranslation(survey, dependantQuestion, Translation.ParentType.QUESTION_TEXT, "dependant hola", "es");
+        addTranslation(survey, dependantQuestion, Translation.ParentType.QUESTION_TEXT, "dependant ciao", "it");
+
         QuestionOption questionOption = dataStoreTestUtil.createQuestionOption(question, "1", "1");
         addTranslation(survey, questionOption, Translation.ParentType.QUESTION_OPTION, "primero", "es");
         addTranslation(survey, questionOption, Translation.ParentType.QUESTION_OPTION, "primo", "it");
@@ -136,7 +140,7 @@ public class CopySurveyFromAnotherInstanceTest {
         Question optionQuestion = questions.get(0);
         assertNotNull(optionQuestion, stage + " option question is null");
         assertTranslations(stage + " question",
-                firstQuestion.getTranslations(),
+                optionQuestion.getTranslations(),
                 expect(Translation.ParentType.QUESTION_TIP, "hola tip", "es"),
                 expect(Translation.ParentType.QUESTION_TIP, "ciao tip", "it"),
                 expect(Translation.ParentType.QUESTION_TEXT, "hola", "es"),
