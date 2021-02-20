@@ -195,7 +195,7 @@ public class DataStoreTestUtil {
         q.setQuestionGroupId(questionGroupId);
         q.setSurveyId(newSurvey.getKey().getId());
         q.setImmutable(immutable);
-        q.setOrder(1);
+        q.setOrder(0);
         q.setDependentFlag(false);
         q.setTip("the tip");
         return new QuestionDao().save(q);

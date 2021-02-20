@@ -29,8 +29,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
 import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 // This is more of an end to end tests that requires the app to be up and running.
@@ -43,7 +42,7 @@ public class CopySurveyFromAnotherInstanceTest {
     private final DataStoreTestUtil dataStoreTestUtil = new DataStoreTestUtil();
 
     @Test
-    @Disabled
+//    @Disabled
     public void testing() throws IOException, InterruptedException {
         installRemoteApi();
         cleanupDatabase();
@@ -131,15 +130,29 @@ public class CopySurveyFromAnotherInstanceTest {
                 expect(Translation.ParentType.QUESTION_GROUP_NAME, "nombre", "es"),
                 expect(Translation.ParentType.QUESTION_GROUP_NAME, "Nome", "it"));
 
-        Question firstQuestion = firstQuestionGroup.getQuestionMap().firstEntry().getValue();
+        // We cannot rely on the map as it is indexing by order, but order is changed if it does not start with 0.
+        // We rely now on the fact that the map is sorted by order.
+        List<Question> questions = new ArrayList<>(firstQuestionGroup.getQuestionMap().values());
+        Question optionQuestion = questions.get(0);
+        assertNotNull(optionQuestion, stage + " option question is null");
         assertTranslations(stage + " question",
                 firstQuestion.getTranslations(),
                 expect(Translation.ParentType.QUESTION_TIP, "hola tip", "es"),
                 expect(Translation.ParentType.QUESTION_TIP, "ciao tip", "it"),
                 expect(Translation.ParentType.QUESTION_TEXT, "hola", "es"),
                 expect(Translation.ParentType.QUESTION_TEXT, "ciao", "it"));
+        assertEquals(optionQuestion.getQuestionGroupId(), firstQuestionGroup.getKey().getId(), stage + " option question has the incorrect question group");
 
-        Map.Entry<Integer, QuestionOption> firstQuestionOption = firstQuestion.getQuestionOptionMap().firstEntry();
+        Question dependantQuestion = questions.get(1);
+        assertNotNull(dependantQuestion, stage + " dependant question is null");
+        assertTranslations(stage + " dependant question",
+                dependantQuestion.getTranslations(),
+                expect(Translation.ParentType.QUESTION_TEXT, "dependant hola", "es"),
+                expect(Translation.ParentType.QUESTION_TEXT, "dependant ciao", "it"));
+        assertEquals(dependantQuestion.getQuestionGroupId(), firstQuestionGroup.getKey().getId(), stage + " dependant question has the incorrect question group");
+        assertEquals(optionQuestion.getKey().getId(), dependantQuestion.getDependentQuestionId(), stage + " dependant question is not the expected one");
+
+        Map.Entry<Integer, QuestionOption> firstQuestionOption = optionQuestion.getQuestionOptionMap().firstEntry();
         assertNotNull(firstQuestionOption, stage + " question group is null");
         assertTranslations(stage + " question group",
                 firstQuestionOption.getValue().getTranslationMap().values(),
@@ -178,17 +191,11 @@ public class CopySurveyFromAnotherInstanceTest {
             for (QuestionOption translation : list2) {
                 new QuestionOptionDao().deleteByKey(translation.getKey());
             }
-        }
-
-        for (int i = 0; i < 100; i++) {
-            List<QuestionOption> list2 = new QuestionOptionDao().list("");
-            for (QuestionOption translation : list2) {
-                new QuestionOptionDao().deleteByKey(translation.getKey());
-            }
             List<Question> list3 = new QuestionDao().list("");
             for (Question translation : list3) {
                 new QuestionDao().deleteByKey(translation.getKey());
             }
+
         }
 
     }
