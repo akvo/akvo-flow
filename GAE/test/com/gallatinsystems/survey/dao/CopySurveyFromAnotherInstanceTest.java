@@ -49,21 +49,18 @@ public class CopySurveyFromAnotherInstanceTest {
         cleanupDatabase();
 
         Survey newSurvey = createSurveyWithTranslations();
+        assertTranslations("health check", newSurvey.getKey().getId());
 
         List<Key> surveysBeforeCopy = new SurveyDAO().listSurveyIds();
-
-        assertTranslations("precheck", newSurvey.getKey().getId()); // health check
         makeCopy(newSurvey);
-//        assertTranslations("after copy precheck", newSurvey.getKey().getId()); // health check again. The original survey has not been touched
+        ArrayList<Key> newSurveysAfterCopy = new ArrayList<>(new SurveyDAO().listSurveyIds());
+        newSurveysAfterCopy.removeAll(surveysBeforeCopy);
 
-        ArrayList<Key> surveysAfterCopy = new ArrayList<>(new SurveyDAO().listSurveyIds());
-        surveysAfterCopy.removeAll(surveysBeforeCopy);
+        assertEquals(1, newSurveysAfterCopy.size(), "Expected only one new survey in " + newSurveysAfterCopy + ", before it was: " + surveysBeforeCopy);
 
-        assertEquals(1, surveysAfterCopy.size(), "Expected only one new survey in " + surveysAfterCopy + ", before it was: " + surveysBeforeCopy);
+        assertTranslations("copied survey check", newSurveysAfterCopy.get(0).getId());
 
-        Key copiedSurvey = surveysAfterCopy.stream().findFirst().get();
-
-        assertTranslations("actual check", copiedSurvey.getId());
+        assertTranslations("original survey is still ok", newSurvey.getKey().getId()); // Ensure that the keys are not copied from the original survey
 
     }
 
@@ -143,7 +140,7 @@ public class CopySurveyFromAnotherInstanceTest {
                 expect(Translation.ParentType.QUESTION_TEXT, "ciao", "it"));
 
         Map.Entry<Integer, QuestionOption> firstQuestionOption = firstQuestion.getQuestionOptionMap().firstEntry();
-        assertNotNull(firstQuestionOption, stage + "question group is null");
+        assertNotNull(firstQuestionOption, stage + " question group is null");
         assertTranslations(stage + " question group",
                 firstQuestionOption.getValue().getTranslationMap().values(),
                 expect(Translation.ParentType.QUESTION_OPTION, "primero", "es"),

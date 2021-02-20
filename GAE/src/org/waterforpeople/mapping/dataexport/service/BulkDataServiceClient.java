@@ -1011,7 +1011,6 @@ public class BulkDataServiceClient {
                                         for (int j = 0; j < optArray.length(); j++) {
                                             JSONObject optJson = optArray.getJSONObject(j);
                                             QuestionOptionDto opt = new QuestionOptionDto();
-                                            opt.setKeyId(optJson.getLong("keyId"));
                                             opt.setText(optJson.getString("text"));
                                             if (!optJson.isNull("code")) {
                                                 // getString on null gives String "null"
