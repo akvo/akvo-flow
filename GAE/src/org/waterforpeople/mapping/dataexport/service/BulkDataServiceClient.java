@@ -898,7 +898,7 @@ public class BulkDataServiceClient {
                                 dto.setText(json.getString("text"));
                             }
                             if (!json.isNull("keyId")) {
-                                dto.setKeyId(json.getLong("keyId")); // maybe here
+                                dto.setKeyId(json.getLong("keyId"));
                             }
                             if (!json.isNull("collapseable")) {
                                 dto.setCollapseable(json.getBoolean("collapseable"));
