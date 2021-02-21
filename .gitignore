@@ -98,3 +98,5 @@ tmp/
 Dashboard/package-lock.json
 build.dev.log
 .vscode
+
+notify-stream.sh
