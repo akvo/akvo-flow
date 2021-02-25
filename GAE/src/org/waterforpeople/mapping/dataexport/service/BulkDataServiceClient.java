@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,15 +39,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import com.gallatinsystems.common.util.MD5Util;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
-import java.util.Base64;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +52,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
@@ -64,7 +62,13 @@ import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.gallatinsystems.common.util.MD5Util;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.GET_INSTANCE_DATA_ACTION;
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.SURVEY_INSTANCE_ID_PARAM;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -73,7 +77,7 @@ import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
  */
 public class BulkDataServiceClient {
 
-    private static final Logger log = Logger.getLogger(BulkDataServiceClient.class);
+    private static final Logger log = Logger.getLogger(BulkDataServiceClient.class.getSimpleName());
 
     private static final String DATA_SERVLET_PATH = "/databackout";
     public static final String RESPONSE_KEY = "dtoList";
@@ -173,7 +177,7 @@ public class BulkDataServiceClient {
             try {
                 count = Long.parseLong(instanceString.trim()); //remove trailing newline
             } catch (Exception e) {
-                log.error("Unparsable instance count " + e.getMessage());
+                log.severe("Unparsable instance count " + e.getMessage());
                 // Leave it as null
             }
         }
@@ -185,10 +189,10 @@ public class BulkDataServiceClient {
             Map<String, String> results = BulkDataServiceClient
                     .fetchInstanceIds(args[1], args[0], args[2], false, null, null, null);
             if (results != null) {
-                log.info(results);
+                log.info(results.toString());
             }
         } catch (Exception e) {
-            log.error("Error: " + e.getMessage(), e);
+            log.log(Level.SEVERE, "Error: " + e.getMessage(), e);
         }
     }
 
@@ -244,6 +248,30 @@ public class BulkDataServiceClient {
                 + SURVEY_SERVLET_PATH, "?action="
                 + SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
                 + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+                apiKey));
+
+        if (dtoList != null && dtoList.size() > 0) {
+            return dtoList.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
+    /**
+     * loads full details for a single question (options, translations, etc) + also the tip translation
+     *
+     * @param serverBase
+     * @param questionId
+     * @return
+     */
+    public static QuestionDto loadQuestionAllDetails(String serverBase,
+                                                  Long questionId, String apiKey) throws Exception {
+
+        List<QuestionDto> dtoList = parseQuestions(fetchDataFromServer(serverBase
+                        + SURVEY_SERVLET_PATH, "?action="
+                        + SurveyRestRequest.GET_QUESTION_ALL_DETAILS_ACTION + "&"
+                        + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
                 apiKey));
 
         if (dtoList != null && dtoList.size() > 0) {
@@ -393,7 +421,7 @@ public class BulkDataServiceClient {
             InstanceDataDto instanceData = jsonReader.readObject(instanceDataResponse, typeReference);
             return instanceData;
         } catch (IOException e) {
-            log.error("Error while parsing: ", e);
+            log.log(Level.SEVERE, "Error while parsing: ", e);
         }
 
         return new InstanceDataDto();
@@ -438,7 +466,7 @@ public class BulkDataServiceClient {
                     true,
                     apiKey);
 
-            log.debug("response: " + surveyGroupResponse);
+            log.fine("response: " + surveyGroupResponse);
 
             final FlowJsonObjectReader jsonDeserialiser = new FlowJsonObjectReader();
             final TypeReference<SurveyGroupDto> listItemTypeReference = new TypeReference<SurveyGroupDto>(){};
@@ -448,7 +476,7 @@ public class BulkDataServiceClient {
                 surveyGroupDto = surveyGroupList.get(0);
             }
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
 
         return surveyGroupDto;
@@ -590,43 +618,45 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<QuestionGroupDto> parseQuestionGroups(String response) throws Exception {
+    public static List<QuestionGroupDto> parseQuestionGroups(String response) {
         List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
-        JSONArray arr = getJsonArray(response);
-        if (arr != null) {
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject json = arr.getJSONObject(i);
-                if (json != null) {
-                    QuestionGroupDto dto = new QuestionGroupDto();
-                    try {
-                        if (!json.isNull("code")) {
-                            dto.setCode(json.getString("code"));
-                        }
-                        if (!json.isNull("keyId")) {
-                            dto.setKeyId(json.getLong("keyId"));
-                        }
-                        if (!json.isNull("displayName")) {
-                            dto.setName(json.getString("displayName"));
-                        }
-                        if (!json.isNull("order")) {
-                            dto.setOrder(json.getInt("order"));
-                        }
-                        if (!json.isNull("path")) {
-                            dto.setPath(json.getString("path"));
-                        }
-                        if (!json.isNull("surveyId")) {
-                            dto.setSurveyId(json.getLong("surveyId"));
-                        }
-                        if (!json.isNull("repeatable")) {
-                            dto.setRepeatable(json.getBoolean("repeatable"));
-                        }
-
-                        dtoList.add(dto);
-                    } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+        try {
+            JSONArray arr = getJsonArray(response);
+            if (arr != null) {
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject json = arr.getJSONObject(i);
+                    if (json != null) {
+                        QuestionGroupDto dto = new QuestionGroupDto();
+                            if (!json.isNull("code")) {
+                                dto.setCode(json.getString("code"));
+                            }
+                            if (!json.isNull("keyId")) {
+                                dto.setKeyId(json.getLong("keyId"));
+                            }
+                            if (!json.isNull("displayName")) {
+                                dto.setName(json.getString("displayName"));
+                            }
+                            if (!json.isNull("order")) {
+                                dto.setOrder(json.getInt("order"));
+                            }
+                            if (!json.isNull("path")) {
+                                dto.setPath(json.getString("path"));
+                            }
+                            if (!json.isNull("surveyId")) {
+                                dto.setSurveyId(json.getLong("surveyId"));
+                            }
+                            if (!json.isNull("repeatable")) {
+                                dto.setRepeatable(json.getBoolean("repeatable"));
+                            }
+                            if (!json.isNull("translationMap")) {
+                                dto.setTranslationMap(parseTranslations(json.getJSONObject("translationMap")));
+                            }
+                            dtoList.add(dto);
                     }
                 }
             }
+        } catch (JSONException e) {
+            log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
         }
         return dtoList;
     }
@@ -687,7 +717,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                        log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -741,6 +771,9 @@ public class BulkDataServiceClient {
                         if (!json.isNull("version")) {
                             dto.setVersion(json.getString("version"));
                         }
+                        if (!json.isNull("translationMap")) {
+                            dto.setTranslationMap(new HashMap<>(parseTranslations(json.getJSONObject("translationMap"))));
+                        }
                         if (!json.isNull("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
                             List<Long> ancestorIds = new ArrayList<Long>();
@@ -751,7 +784,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                        log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -958,6 +991,17 @@ public class BulkDataServiceClient {
                             if (!json.isNull("allowPolygon")) {
                                 dto.setAllowPolygon(json.getBoolean("allowPolygon"));
                             }
+                            if (!json.isNull("questionHelpList")) {
+                                JSONArray optArray = json.getJSONArray("questionHelpList");
+                                if (optArray.length() > 0) {
+                                    JSONObject optJson = optArray.getJSONObject(0);
+                                    QuestionHelpDto help = new QuestionHelpDto();
+                                    if (!optJson.isNull("translationMap")) {
+                                        help.setTranslationMap(parseTranslations(optJson.getJSONObject("translationMap")));
+                                        dto.addQuestionHelp(help);
+                                    }
+                                }
+                            }
                             if (!json.isNull("optionContainerDto")) {
                                 OptionContainerDto container = new OptionContainerDto();
                                 JSONObject contJson = json.getJSONObject("optionContainerDto");
@@ -967,7 +1011,6 @@ public class BulkDataServiceClient {
                                         for (int j = 0; j < optArray.length(); j++) {
                                             JSONObject optJson = optArray.getJSONObject(j);
                                             QuestionOptionDto opt = new QuestionOptionDto();
-                                            opt.setKeyId(optJson.getLong("keyId"));
                                             opt.setText(optJson.getString("text"));
                                             if (!optJson.isNull("code")) {
                                                 // getString on null gives String "null"
@@ -1007,7 +1050,7 @@ public class BulkDataServiceClient {
                             }
                             dtoList.add(dto);
                         } catch (Exception e) {
-                            log.error("Error in json parsing: " + e.getMessage(), e);
+                            log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                         }
                     }
                 }
@@ -1040,25 +1083,24 @@ public class BulkDataServiceClient {
                 }
             }
         } catch (Exception e) {
-            log.warn("Could not parse question options: " + response, e);
+            log.log(Level.WARNING, "Could not parse question options: " + response, e);
         }
         return dtoList;
     }
 
     @SuppressWarnings("unchecked")
     private static TreeMap<String, TranslationDto> parseTranslations(
-            JSONObject translationMapJson) throws Exception {
+            JSONObject translationMapJson) throws JSONException {
         Iterator<String> keyIter = translationMapJson.keys();
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
-            translationMap = new TreeMap<String, TranslationDto>();
+            translationMap = new TreeMap<>();
             //Iterate on all the languages
             while (keyIter.hasNext()) {
                 String lang = keyIter.next();
                 JSONObject transObj = translationMapJson.getJSONObject(lang);
                 if (transObj != null) {
                     TranslationDto tDto = new TranslationDto();
-                    tDto.setKeyId(transObj.getLong("keyId"));
                     tDto.setParentId(transObj.getLong(("parentId")));
                     tDto.setParentType(transObj.getString("parentType"));
                     tDto.setLangCode(lang);
@@ -1135,7 +1177,7 @@ public class BulkDataServiceClient {
                 queryString = "";
             }
             URL url = new URL(baseUrl);
-            log.debug("Calling: " + baseUrl + " with params: " + queryString);
+            log.fine("Calling: " + baseUrl + " with params: " + queryString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1189,7 +1231,7 @@ public class BulkDataServiceClient {
         String result = null;
         try {
             URL url = new URL(fullUrl);
-            log.debug("Calling: " + url.toString());
+            log.fine("Calling: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1267,8 +1309,8 @@ public class BulkDataServiceClient {
     /**
      * converts the string into a JSON array object.
      */
-    public static JSONArray getJsonArray(String response) throws Exception {
-        log.debug("response: " + response);
+    public static JSONArray getJsonArray(String response) throws JSONException {
+        log.fine("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
             if (json != null) {

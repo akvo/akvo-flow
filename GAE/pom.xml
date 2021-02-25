@@ -309,6 +309,12 @@
       <artifactId>metadata-extractor</artifactId>
       <version>2.12.0</version>
     </dependency>
+     <dependency>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-remote-api</artifactId>
+        <version>1.9.71</version>
+        <scope>test</scope>
+     </dependency>
   </dependencies>
 
   <build>
@@ -345,6 +351,7 @@
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
                 <!--suppress UnresolvedMavenProperty -->
                 <devserver.jvmFlag>-Dappengine.fullscan.seconds=${env.GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
+                <devserver.jvmFlag>-Ddatastore.default_high_rep_job_policy_unapplied_job_pct=0</devserver.jvmFlag>
                 <devserver.jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</devserver.jvmFlag>
                 <devserver.jvmFlag>-Djava.util.logging.SimpleFormatter.format=[%1$tT] %4$s: %2$s - %5$s %6$s%n</devserver.jvmFlag>
             </devserver.jvmFlags>

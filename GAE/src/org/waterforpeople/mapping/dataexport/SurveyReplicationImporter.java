@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -41,14 +45,17 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Survey.Status;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import com.gallatinsystems.survey.domain.Translation;
 
 public class SurveyReplicationImporter {
+
+    private static final Logger log = Logger.getLogger(SurveyReplicationImporter.class.getName());
 
     /**
      * copies one surveyGroup "Survey" remaps all ids to make merging two instances safe
      *
      * @param sourceBase
-     * @param groupId
+     * @param surveyId
      * @param apiKey
      */
     public void importOneGroup(String sourceBase, long surveyId, String apiKey) {
@@ -95,7 +102,8 @@ public class SurveyReplicationImporter {
                     // Now copy everything inside it
                     // First, surveys (may be more than one for a monitored survey)
                     for (Survey s : allSurveys) {
-                        System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode());
+                        int numberOfTranslations = s.getTranslationMap() == null ? 0 : s.getTranslationMap().size();
+                        System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode()+ " with " + numberOfTranslations + " translations");
 
                         long oldSurveyId = s.getKey().getId();
                         s.setKey(null);// want a new key
@@ -109,6 +117,7 @@ public class SurveyReplicationImporter {
                         s.setVersion(1.0);
                         sDao.save(s);
                         long newSurveyId = s.getKey().getId();
+                        sDao.saveTranslations(s);
                         // Fix up newLocaleSurveyId
                         if (sg.getNewLocaleSurveyId() != null
                                 && sg.getNewLocaleSurveyId() == oldSurveyId) {
@@ -126,14 +135,15 @@ public class SurveyReplicationImporter {
                         List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase,
                                 apiKey);
                         for (QuestionGroup qg : allQgs) {
-                            System.out.println("     qg:" + qg.getKey().getId() + " "
-                                    + qg.getCode());
+                            int numberOfTranslationsGr = qg.getTranslations() == null ? 0 : qg.getTranslations().size();
+                            System.out.println("     qg:" + qg.getKey().getId() + " " + qg.getCode() + "with " + numberOfTranslationsGr + " translations");
                             long oldQgId = qg.getKey().getId();
                             qg.setKey(null); // want a new key
                             qg.setSurveyId(newSurveyId);
                             qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
+                            qgDao.saveGroupTranslations(qg);
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
                                 System.out.println("       q:" + q.getKey().getId() + " "
@@ -177,6 +187,7 @@ public class SurveyReplicationImporter {
                     + " questions copied. ");
         } catch (Exception e) {
             e.printStackTrace();
+            log.log(Level.SEVERE, "Error copying survey", e);
         }
 
     }
@@ -272,8 +283,49 @@ public class SurveyReplicationImporter {
             String serverBase, String apiKey) throws Exception {
         List<QuestionGroupDto> qgDtoList = BulkDataServiceClient
                 .fetchQuestionGroups(serverBase, surveyId.toString(), apiKey);
-        List<QuestionGroup> qgList = new ArrayList<QuestionGroup>();
-        return copyAndCreateList(qgList, qgDtoList, QuestionGroup.class);
+        return copyAndCreateGroupList(qgDtoList);
+    }
+
+    private List<QuestionGroup> copyAndCreateGroupList(List<QuestionGroupDto> qgDtoList) {
+        List<QuestionGroup> groups = new ArrayList<>();
+        if (qgDtoList != null) {
+            for (QuestionGroupDto dto : qgDtoList) {
+                QuestionGroup group = new QuestionGroup();
+                DtoMarshaller.copyToCanonical(group, dto);
+                Map<String, TranslationDto> translationMap = dto.getTranslationMap();
+                if (translationMap != null) {
+                    HashMap<String, Translation> mappedTranslations = mapTranslations(translationMap);
+                    group.setTranslations(mappedTranslations);
+                }
+                groups.add(group);
+            }
+        }
+        return groups;
+    }
+
+    private static HashMap<String, Translation> mapTranslations(Map<String, TranslationDto> translationMap) {
+        HashMap<String, Translation> translationHashMap = new HashMap<>();
+        try {
+            for (TranslationDto dto: translationMap.values()) {
+                Translation t = new Translation();
+                t.setLanguageCode(dto.getLangCode());
+                t.setText(dto.getText());
+                t.setParentId(dto.getParentId());
+                if (Translation.ParentType.SURVEY_NAME.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.SURVEY_NAME);
+                } else if (Translation.ParentType.SURVEY_DESC.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.SURVEY_DESC);
+                } else if (Translation.ParentType.QUESTION_GROUP_DESC.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.QUESTION_GROUP_DESC);
+                } else if (Translation.ParentType.QUESTION_GROUP_NAME.toString().equals(dto.getParentType())) {
+                    t.setParentType(Translation.ParentType.QUESTION_GROUP_NAME);
+                }
+                translationHashMap.put(dto.getLangCode(), t);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error mapping translations", e);
+        }
+        return translationHashMap;
     }
 
     public List<Question> fetchQuestions(Long questionGroupId, String serverBase, String apiKey)
@@ -287,11 +339,11 @@ public class SurveyReplicationImporter {
             QuestionDto dtoDetail = null;
             for (int i = 0; i < 3; i++) {
                 try {
-                    dtoDetail = BulkDataServiceClient
-                            .loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
+                    dtoDetail = BulkDataServiceClient.loadQuestionAllDetails(serverBase, dto.getKeyId(), apiKey);
                     break;
                 } catch (IOException iex) {
                     System.out.print("Retrying because of timeout.");
+                    log.log(Level.SEVERE, "Error fetchQuestions", iex);
                 }
             }
             Question q = ssi.marshalQuestion(dtoDetail);
@@ -308,11 +360,11 @@ public class SurveyReplicationImporter {
             try {
                 canonical = clazz.newInstance();
             } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                log.log(Level.SEVERE, "Error copyAndCreateList", e);
             } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                log.log(Level.SEVERE, "Error copyAndCreateList", e);
             }
             DtoMarshaller.copyToCanonical(canonical, dto);
 
@@ -326,6 +378,9 @@ public class SurveyReplicationImporter {
 
                 // mismatch in SurveyDto and Survey property names
                 s.setDesc(d.getDescription());
+                if (d.getTranslationMap() != null) {
+                    s.setTranslationMap(mapTranslations(d.getTranslationMap()));
+                }
             }
             canonicalList.add(canonical);
         }

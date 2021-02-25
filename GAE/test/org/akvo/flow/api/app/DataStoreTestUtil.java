@@ -16,6 +16,23 @@
 
 package org.akvo.flow.api.app;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.akvo.flow.dao.DataPointAssignmentDao;
+import org.akvo.flow.dao.SurveyAssignmentDao;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -35,16 +52,6 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import org.akvo.flow.dao.DataPointAssignmentDao;
-import org.akvo.flow.dao.SurveyAssignmentDao;
-import org.akvo.flow.domain.persistent.DataPointAssignment;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
-import java.util.*;
 
 public class DataStoreTestUtil {
 
@@ -188,8 +195,10 @@ public class DataStoreTestUtil {
         q.setQuestionGroupId(questionGroupId);
         q.setSurveyId(newSurvey.getKey().getId());
         q.setImmutable(immutable);
-        Question question = new QuestionDao().save(q);
-        return question;
+        q.setOrder(0);
+        q.setDependentFlag(false);
+        q.setTip("the tip");
+        return new QuestionDao().save(q);
     }
 
     public QuestionOption createQuestionOption(Question question, String code, String text) {
@@ -197,13 +206,14 @@ public class DataStoreTestUtil {
         questionOption.setCode(code);
         questionOption.setText(text);
         questionOption.setQuestionId(question.getKey().getId());
-        QuestionOption saved = new QuestionOptionDao().save(questionOption);
-        return saved;
+        questionOption.setOrder(1);
+        return new QuestionOptionDao().save(questionOption);
     }
 
     public Question createDependentQuestion(Survey newSurvey, Question dependent) {
         Question q = createQuestion(newSurvey, dependent.getQuestionGroupId(), Question.Type.FREE_TEXT, false);
         q.setDependentFlag(true);
+        q.setOrder(1);
         q.setDependentQuestionId(dependent.getKey().getId());
         return new QuestionDao().save(q);
     }

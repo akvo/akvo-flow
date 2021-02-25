@@ -17,6 +17,7 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.annotations.NotPersistent;
@@ -39,7 +40,7 @@ public class QuestionGroup extends BaseDomain {
     @NotPersistent
     private TreeMap<Integer, Question> questionMap;
     @NotPersistent
-    private HashMap<String, Translation> translationMap;
+    private Map<String, Translation> translations;
     private String code = null;
     private String path = null;
     private Long surveyId;
@@ -68,12 +69,12 @@ public class QuestionGroup extends BaseDomain {
         this.surveyId = surveyId;
     }
 
-    public HashMap<String, Translation> getTranslationMap() {
-        return translationMap;
+    public Map<String, Translation> getTranslations() {
+        return translations;
     }
 
-    public void setTranslationMap(HashMap<String, Translation> translationMap) {
-        this.translationMap = translationMap;
+    public void setTranslations(HashMap<String, Translation> translations) {
+        this.translations = translations;
     }
 
     public void addQuestion(Integer order, Question question) {
@@ -115,10 +116,10 @@ public class QuestionGroup extends BaseDomain {
     }
 
     public void addTranslation(Translation t) {
-        if (translationMap == null) {
-            translationMap = new HashMap<String, Translation>();
+        if (translations == null) {
+            translations = new HashMap<String, Translation>();
         }
-        translationMap.put(t.getLanguageCode(), t);
+        translations.put(t.getLanguageCode(), t);
     }
     
     public Status getStatus() {

@@ -97,7 +97,7 @@ public class SurveyUtils {
     }
 
     public static void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
-        Map<Long,Translation> copiedTranslations = SurveyUtils.copyTranslations(originalSurveyId, copiedSurveyId);
+        Map<Long, List<Translation>> copiedTranslations = SurveyUtils.copyTranslations(originalSurveyId, copiedSurveyId);
         final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
@@ -132,7 +132,10 @@ public class SurveyUtils {
         final Survey originalSurvey = sDao.getById(originalSurveyId);
 
         if (copiedTranslations.size() > 0) {
-            new TranslationDao().save(copiedTranslations.values());
+            List<Translation> values = copiedTranslations.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            new TranslationDao().save(values);
         }
 
         MessageDao mDao = new MessageDao();
@@ -169,7 +172,7 @@ public class SurveyUtils {
      */
     public static void copyQuestionGroupContent(Long sourceGroupId, QuestionGroup copyGroup,
                                                 Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse,
-                                                Map<Long, Translation> translationMap) {
+                                                Map<Long, List<Translation>> translationMap) {
         final QuestionDao qDao = new QuestionDao();
         final Long copyGroupId = copyGroup.getKey().getId();
 
@@ -197,7 +200,7 @@ public class SurveyUtils {
             Long sourceQuestionId = sourceCopyPair.getKey();
             Question copiedQuestion = sourceCopyPair.getValue();
 
-            sourceIdToQuestionOptionCopyMap.putAll(copyQuestionContent(copiedQuestion, sourceQuestionId, translationMap));
+            sourceIdToQuestionOptionCopyMap.putAll(copyQuestionContent(copiedQuestion, sourceQuestionId));
             updateTranslation(translationMap, sourceQuestionId, copiedQuestion.getKey().getId(), copyGroupId);
         }
         new QuestionOptionDao().save(sourceIdToQuestionOptionCopyMap.values());
@@ -285,7 +288,7 @@ public class SurveyUtils {
     /**
      * Copies a question, options and updates previously copied translation keys
      */
-    private static Map<Long, QuestionOption> copyQuestionContent(Question questionCopy, Long sourceQuestionId, Map<Long, Translation> translations) {
+    private static Map<Long, QuestionOption> copyQuestionContent(Question questionCopy, Long sourceQuestionId) {
         if (!Question.Type.OPTION.equals(questionCopy.getType())) {
             return Collections.emptyMap();
         }
@@ -393,7 +396,7 @@ public class SurveyUtils {
             QuestionOption newOption = qoDao.save(shallowCopyQuestionOption(qo, newQuestion.getKey().getId()));
 
             log.log(Level.INFO, "Copying question option translations");
-            copyTranslation(sourceQuestionId, newOption.getKey().getId(), newQuestion.getSurveyId(),
+            copyTranslation(qo.getKey().getId(), newOption.getKey().getId(), newQuestion.getSurveyId(),
                     newQuestion.getQuestionGroupId(), ParentType.QUESTION_OPTION);
         }
     }
@@ -418,12 +421,16 @@ public class SurveyUtils {
      * @param parentId
      * @param questionGroupId
      */
-    private static void updateTranslation(Map<Long, Translation> translations, Long originalParentId,
+    private static void updateTranslation(Map<Long, List<Translation>> translations, Long originalParentId,
                                           Long parentId, Long questionGroupId) {
-        Translation translation = translations.get(originalParentId);
-        if (translation != null) {
-            translation.setParentId(parentId);
-            translation.setQuestionGroupId(questionGroupId);
+        List<Translation> translationList = translations.get(originalParentId);
+        if (translationList != null) {
+            if (translationList != null) {
+                for (Translation t: translationList) {
+                    t.setParentId(parentId);
+                    t.setQuestionGroupId(questionGroupId);
+                }
+            }
         }
     }
 
@@ -516,10 +523,10 @@ public class SurveyUtils {
                 copyParentId, newSurveyId, newQuestionGroupId);
     }
 
-    public static Map<Long, Translation> copyTranslations(Long sourceFormId, Long targetFormId) {
+    public static Map<Long, List<Translation>> copyTranslations(Long sourceFormId, Long targetFormId) {
         TranslationDao translationDao = new TranslationDao();
         List<Translation> sourceFormTranslations = translationDao.listByFormId(sourceFormId);
-        Map<Long, Translation> targetFormTranslations = new HashMap<>();
+        Map<Long, List<Translation>> targetFormTranslations = new HashMap<>();
         for (Translation t : sourceFormTranslations) {
             // Survey translations are copied before the task is executed
             // @see https://github.com/akvo/akvo-flow/blob/2260138782d2ff8cf2efb36a4838769b782fa45a/GAE/src/com/gallatinsystems/survey/dao/SurveyUtils.java#L84
@@ -529,7 +536,16 @@ public class SurveyUtils {
             Translation copy = new Translation();
             BeanUtils.copyProperties(t, copy, Constants.EXCLUDED_PROPERTIES);
             copy.setSurveyId(targetFormId);
-            targetFormTranslations.put(t.getParentId(), copy);
+            /**
+             * This can be a list as given a question parentId it can have 2 translations: one for the question
+             * and one for the tip
+             */
+            List<Translation> parentTranslationsList = targetFormTranslations.get(t.getParentId());
+            if (parentTranslationsList == null) {
+                parentTranslationsList = new ArrayList<>();
+            }
+            parentTranslationsList.add(copy);
+            targetFormTranslations.put(t.getParentId(), parentTranslationsList);
         }
         return targetFormTranslations;
     }

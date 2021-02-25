@@ -16,11 +16,11 @@
 
 package com.gallatinsystems.survey.dao;
 
-import com.gallatinsystems.survey.domain.Translation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -36,6 +36,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.Translation;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -87,16 +88,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
     public Survey loadFullFormIncludingQuestionOptions(Long formId, boolean loadQuestionOptionsAndTranslations) {
         //Fetch form and its translation
         Survey form = getById(formId);
-        List<Translation> translations = translationDao.findTranslations(
-                form.getKey().getId(), Translation.ParentType.SURVEY_DESC,
-                Translation.ParentType.SURVEY_NAME);
-        HashMap<String, Translation> translationMap = new HashMap<>();
-        if (translations != null) {
-            for (Translation t: translations) {
-                translationMap.put(t.getLanguageCode(), t);
-            }
-        }
-        form.setTranslationMap(translationMap);
+        loadTranslations(form);
         //Fetch groups
         TreeMap<Integer, QuestionGroup> qgMap = questionGroupDao.listQuestionGroupsBySurvey(formId);
         form.setQuestionGroupMap(qgMap);
@@ -122,6 +114,19 @@ public class SurveyDAO extends BaseDAO<Survey> {
             }
         }
         return form;
+    }
+
+    public void loadTranslations(Survey form) {
+        List<Translation> translations = translationDao.findTranslations(
+                form.getKey().getId(), Translation.ParentType.SURVEY_DESC,
+                Translation.ParentType.SURVEY_NAME);
+        HashMap<String, Translation> translationMap = new HashMap<>();
+        if (translations != null) {
+            for (Translation t: translations) {
+                translationMap.put(t.getLanguageCode(), t);
+            }
+        }
+        form.setTranslationMap(translationMap);
     }
 
     /**
@@ -268,4 +273,18 @@ public class SurveyDAO extends BaseDAO<Survey> {
         return results;
     }
 
+    public void saveTranslations(Survey survey) {
+        try {
+            HashMap<String, Translation> translations = survey.getTranslationMap();
+            if (translations != null) {
+                for (Translation t : translations.values()) {
+                    t.setParentId(survey.getKey().getId());
+                    t.setSurveyId(survey.getKey().getId());
+                }
+                super.save(translations.values());
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error saving translations", e);
+        }
+    }
 }

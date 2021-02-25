@@ -539,7 +539,7 @@ class FlowXmlObjectWriterTests {
         TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
         HashMap<String, Translation> translationHashMap2 = createTranslationMap("Grupo", "es", form1.getObjectId(),
                 qg.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME);
-        qg.setTranslationMap(translationHashMap2);
+        qg.setTranslations(translationHashMap2);
         gl.put(1, qg);
         form1.setQuestionGroupMap(gl);
         //No questions

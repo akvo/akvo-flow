@@ -333,11 +333,13 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     public Question save(Question question, Long questionGroupId) {
+        Long surveyId = null;
         if (questionGroupId != null) {
             question.setQuestionGroupId(questionGroupId);
             QuestionGroup group = getByKey(questionGroupId, QuestionGroup.class);
             if (group != null) {
-                question.setSurveyId(group.getSurveyId());
+                surveyId = group.getSurveyId();
+                question.setSurveyId(surveyId);
             }
         }
         question = saveTransactional(question);
@@ -361,36 +363,35 @@ public class QuestionDao extends BaseDAO<Question> {
                     }
                 }
                 save(opt);
-                if (opt.getTranslationMap() != null) {
-                    for (Translation t : opt.getTranslationMap().values()) {
-                        if (t.getParentId() == null) {
-                            t.setParentId(opt.getKey().getId());
-                        }
+                HashMap<String, Translation> optionsTranslationMap = opt.getTranslationMap();
+                if (optionsTranslationMap != null) {
+                    for (Translation t : optionsTranslationMap.values()) {
+                        t.setParentId(opt.getKey().getId());
+                        t.setSurveyId(surveyId);
+                        t.setQuestionGroupId(questionGroupId);
                     }
-                    super.save(opt.getTranslationMap().values());
+                    super.save(optionsTranslationMap.values());
                 }
             }
         }
         List<Translation> translations = question.getTranslations();
         if (translations != null) {
             for (Translation t : translations) {
-                if (t.getParentId() == null) {
-                    t.setParentId(question.getKey().getId());
-                }
+                t.setParentId(question.getKey().getId());
+                t.setSurveyId(surveyId);
+                t.setQuestionGroupId(questionGroupId);
             }
             super.save(translations);
         }
 
         if (question.getQuestionHelpMediaMap() != null) {
             for (QuestionHelpMedia help : question.getQuestionHelpMediaMap().values()) {
-                help.setQuestionId(question.getKey().getId());
-
-                save(help);
+                //help is only used to transmit question tip translations
                 if (help.getTranslationMap() != null) {
                     for (Translation t : help.getTranslationMap().values()) {
-                        if (t.getParentId() == null) {
-                            t.setParentId(help.getKey().getId());
-                        }
+                        t.setParentId(question.getKey().getId());
+                        t.setSurveyId(surveyId);
+                        t.setQuestionGroupId(questionGroupId);
                     }
                     super.save(help.getTranslationMap().values());
                 }
@@ -742,23 +743,6 @@ public class QuestionDao extends BaseDAO<Question> {
             for (Question q : questionList) {
                 Question persistentQuestion = getByKey(q.getKey());
                 persistentQuestion.setOrder(q.getOrder());
-                // since the object is still attached, we don't need to call
-                // save. It will be saved on flush of the Persistent session
-            }
-        }
-    }
-
-    /**
-     * updates ONLY the order field within the question group object for the questions passed in.
-     * All question groups must exist in the datastore
-     *
-     * @param questionList
-     */
-    public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {
-        if (groupList != null) {
-            for (QuestionGroup q : groupList) {
-                QuestionGroup persistentGroup = getByKey(q.getKey(), QuestionGroup.class);
-                persistentGroup.setOrder(q.getOrder());
                 // since the object is still attached, we don't need to call
                 // save. It will be saved on flush of the Persistent session
             }

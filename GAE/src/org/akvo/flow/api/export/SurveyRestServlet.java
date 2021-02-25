@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -182,6 +183,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             List<BaseDto> dtoList = new ArrayList<BaseDto>();
             dtoList.add(dto);
             response.setDtoList(dtoList);
+        } else if (SurveyRestRequest.GET_QUESTION_ALL_DETAILS_ACTION.equals(surveyReq.getAction())) {
+            QuestionDto dto = loadQuestionAllDetails(new Long(surveyReq.getQuestionId()));
+            List<BaseDto> dtoList = new ArrayList<>();
+            dtoList.add(dto);
+            response.setDtoList(dtoList);
         } else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION
                 .equals(surveyReq.getAction())) {
             SurveyInstanceDto dto = findSurveyInstance(surveyReq
@@ -247,6 +253,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         cursorString = SurveyDAO.getCursor(groups);
         if (groups != null) {
             for (Survey s : groups) {
+                sDao.loadTranslations(s);
                 SurveyDto dto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, dto);
 
@@ -297,6 +304,18 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             for (QuestionGroup q : groups.values()) {
                 QuestionGroupDto dto = new QuestionGroupDto();
                 DtoMarshaller.copyToDto(q, dto);
+                if(q.getTranslations() != null) {
+                    if(dto.getTranslationMap() == null) {
+                        dto.setTranslationMap(new HashMap<>());
+                    }
+                    for(Translation t : q.getTranslations().values()) {
+                        TranslationDto tDto = new TranslationDto();
+                        DtoMarshaller.copyToDto(t, tDto);
+                        tDto.setLangCode(t.getLanguageCode());
+                        tDto.setParentType(t.getParentType().toString());
+                        dto.getTranslationMap().put(t.getLanguageCode(), tDto);
+                    }
+                }
                 dtoList.add(dto);
             }
         }
@@ -466,6 +485,21 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         QuestionDto result = null;
         if (q != null) {
             result = SurveyServiceImpl.marshalQuestionDto(q);
+        }
+        return result;
+    }
+
+    /**
+     * loads all details (dependency, translation, options, etc) for a single question + translation of the tip
+     *
+     * @param questionId
+     * @return
+     */
+    private QuestionDto loadQuestionAllDetails(Long questionId) {
+        Question q = qDao.getByKey(questionId, true);
+        QuestionDto result = null;
+        if (q != null) {
+            result = SurveyServiceImpl.marshalQuestionDtoWithTipTranslation(q);
         }
         return result;
     }

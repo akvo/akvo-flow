@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -39,6 +40,22 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     public QuestionGroupDao() {
         super(QuestionGroup.class);
         this.translationDao = new TranslationDao();
+    }
+
+    public void saveGroupTranslations(QuestionGroup item) {
+        try {
+            Map<String, Translation> translations = item.getTranslations();
+            if (translations != null) {
+                for (Translation t : translations.values()) {
+                    t.setParentId(item.getKey().getId());
+                    t.setSurveyId(item.getSurveyId());
+                    t.setQuestionGroupId(item.getKey().getId());
+                }
+                super.save(translations.values());
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error saving translations", e);
+        }
     }
 
     /**
@@ -93,7 +110,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
                         translationMap.put(t.getLanguageCode(), t);
                     }
                 }
-                group.setTranslationMap(translationMap);
+                group.setTranslations(translationMap);
                 // TODO: Hack because we seem to have questiongroups with same
                 // order key so put an arbitrary value there for now since it
                 // isn't used.

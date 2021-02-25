@@ -40,6 +40,10 @@ public class SurveyRestRequest extends RestRequest {
     public static final String LIST_SURVEY_QUESTION_OPTIONS_ACTION = "listSurveyQuestionOptions";
     public static final String GET_SUMMARY_ACTION = "getSummary";
     public static final String GET_QUESTION_DETAILS_ACTION = "getQuestionDetails";
+    /**
+     * This one includes also the translations of the tip
+     */
+    public static final String GET_QUESTION_ALL_DETAILS_ACTION = "getQuestionAllDetails";
     public static final String GET_SURVEY_INSTANCE_ACTION = "getSurveyInstance";
     public static final String GET_GRAPH_ACTION = "getGraph";
     public static final String UPDATE_QUESTION_ORDER_ACTION = "updateQuestionOrder";
