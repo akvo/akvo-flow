@@ -502,7 +502,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 log.debug("Sleeping, Queue has: " + jobQueue.size());
                 Thread.sleep(5000);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.debug("Error thread sleep", e);
             }
         }
 
