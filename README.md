@@ -133,4 +133,3 @@ YourKit has offered an open source license to the Akvo FLOW team for the profili
 <img src="http://www.browserstack.com/images/layout/browserstack-logo-600x315.png" width="280"/>
 
 [BrowserStack](http://www.browserstack.com) is supporting Akvo, allowing us to use their service and infrastructure to test the code in this repository. Thank you for supporting the open source community!
-
