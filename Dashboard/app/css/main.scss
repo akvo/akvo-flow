@@ -549,11 +549,12 @@ label[for='newDeviceGroupName'] {
 .confirmDialog {
   .ember-radio-button {
     display: block;
-    height: 55px;
-    padding: 0 15px 0px 15px;
+    padding: 15px 15px 0px 15px;
 
     input[type='radio'] {
-      display: none;
+      display: inherit;
+      margin-left: 8px;
+      margin-right: 8px;
     }
 
     label {

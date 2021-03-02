@@ -86,7 +86,6 @@
                 <div class="confirmDialog dialogWide">
                     {{#if view.surveyTemplatesList}}
                         <h2>{{t _create_survey_from_template_dialog_title}}</h2>
-                        <br/>
                         {{#each view.surveyTemplatesList}}
                             {{view Ember.RadioButton title=this._data.attributes.code option=this.id group="templates" valueBinding="view.selectedSurveyTemplate"}}
                         {{/each}}
