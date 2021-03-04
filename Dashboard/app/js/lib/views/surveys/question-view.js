@@ -27,7 +27,7 @@ FLOW.QuestionView = FLOW.View.extend(
   }),
   {
     content: null,
-    variableName: null,
+    variableName: '',
     text: null,
     tip: null,
     type: null,
@@ -617,7 +617,7 @@ FLOW.QuestionView = FLOW.View.extend(
       const { selectedQuestion } = FLOW.selectedControl;
       const questionKeyId = selectedQuestion.get('keyId');
       const variableName = this.get('variableName') || '';
-      if (FLOW.Env.mandatoryQuestionID && variableName.match(/^\s*$/)) {
+      if (FLOW.Env.mandatoryQuestionID && (variableName.match(/^\s*$/) || variableName.length == 0)) {
         args.failure(Ember.String.loc('_variable_name_mandatory'));
       } else if (!variableName.match(/^[A-Za-z0-9_-]*$/)) {
         args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
@@ -963,6 +963,10 @@ FLOW.QuestionView = FLOW.View.extend(
     validateQuestionTooltipObserver() {
       this.set('questionTooltipValidationFailure', this.tip != null && this.tip.length > 1500);
     },
+
+    variableNameOptional: Ember.computed(() => {
+      return FLOW.Env.mandatoryQuestionID != true
+    }),
 
     validateVariableNameObserver() {
       const self = this;
