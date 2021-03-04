@@ -17,7 +17,7 @@
                 {{/if}}
                 {{view Ember.TextArea valueBinding="view.tip" cols=100 rows=1}} </label>
             <label>
-                {{t _variable_name}}: <span class="fadedText">({{t _optional}})</span> {{tooltip
+                {{t _variable_name}}: {{#if view.variableNameOptional}}<span class="fadedText">({{t _optional}})</span> {{/if}}{{tooltip
                     _variable_name_tooltip}}
                 {{#if view.variableNameValidationFailure }}
                     <span style="color:red">{{view.variableNameValidationFailureReason}}</span>
