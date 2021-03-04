@@ -613,7 +613,6 @@ FLOW.QuestionView = FLOW.View.extend(
     throttleTimer: null,
 
     validateVariableName(args) {
-      console.log("validateVariableName")
       const self = this;
       const { selectedQuestion } = FLOW.selectedControl;
       const questionKeyId = selectedQuestion.get('keyId');
