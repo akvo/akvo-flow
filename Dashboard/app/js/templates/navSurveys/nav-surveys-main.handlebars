@@ -58,7 +58,7 @@
                         <a class="addSurvey">{{t _create_new_survey}}</a>
                         <div class="dropdown-content">
                             <a href="#" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_survey_blank}}</a>
-                            <a href="#" {{action "displayTemplateList" target="this"}}>{{t _create_survey_from_template}}</a>
+                            <a href="#" {{action "displayTemplateList" target="this"}}>{{t _create_survey_from_template}} <span class="new">{{t _new}}</span> </a>
                         </div>
                     </li>
                 {{/if}}
