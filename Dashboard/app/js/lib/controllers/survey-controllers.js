@@ -518,7 +518,6 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   copySurvey(targetId) {
-    trackEvent('Survey list view', 'Creating survey from template');
     const currentFolder = this.get('currentProject');
 
     FLOW.store.findQuery(FLOW.Action, {
