@@ -581,28 +581,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
             qasDao.delete(qasList);
         }
-
-        // task to adapt cluster data + delete surveyedlocale if not needed anymore
-        if (surveyedLocaleId != null) {
-            List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
-                    surveyedLocaleId, "Long");
-
-            if (relatedSurveyInstances.size() < 2) {
-                // only the current (or no) survey instance is related to the locale. we fire task
-                // to delete locale and update clusters
-                // The locale is deleted in the decrement cluster task.
-                Queue queue = QueueFactory.getDefaultQueue();
-                TaskOptions to = TaskOptions.Builder
-                        .withUrl("/app_worker/surveyalservlet")
-                        .param(SurveyalRestRequest.ACTION_PARAM,
-                                SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
-                        .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
-                                surveyedLocaleId + "")
-                        .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
-                                Boolean.TRUE.toString());
-                queue.add(to);
-            }
-        }
     }
 
     /**
