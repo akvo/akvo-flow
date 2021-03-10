@@ -226,10 +226,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
-        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getSurveyedLocaleId() != null) {
-                deleteSurveyResponses(dpReq.getSurveyInstanceId(), dpReq.getSurveyedLocaleId());
+                siDao = new SurveyInstanceDAO();
+                siDao.deleteSurveyInstanceContent(dpReq.getSurveyInstanceId());
             }
         } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
@@ -1062,16 +1063,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             Queue queue = QueueFactory.getQueue("background-processing");
             queue.add(options);
         }
-    }
-
-    /**
-     * Delete the specified survey instance
-     *
-     * @param surveyInstanceId
-     */
-    private void deleteSurveyResponses(Long surveyInstanceId, Long surveyedLocaleId) {
-        siDao = new SurveyInstanceDAO();
-        siDao.deleteSurveyInstanceContent(surveyInstanceId, surveyedLocaleId);
     }
 
     /**
