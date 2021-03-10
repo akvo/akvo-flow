@@ -47,77 +47,79 @@
                   </li>
                 </ul>
                 {{#if FLOW.projectControl.hasForms}}
-                      <label for="enableMonitoring" class="labelcheckbox">
+                    <label for="enableMonitoring" class="labelcheckbox">
                         {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring" disabledBinding="view.disableFolderSurveyInputField"}}{{t _enable_monitoring_features}}
-                      </label>
-                      {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                    </label>
+                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
 
-                      <p class="monitoringHint">{{t _choose_the_registration_form}}: {{tooltip _choose_the_registration_form_tooltip}}</p>
-                      {{view Ember.Select
-                        contentBinding="FLOW.surveyControl.arrangedContent"
-                        selectionBinding="view.selectedRegistrationForm"
-                        optionLabelPath="content.code"
-                        optionValuePath="content.keyId"
-                        disabledBinding="view.disableFolderSurveyInputField"}}
+                        <p class="monitoringHint">{{t _choose_the_registration_form}}: {{tooltip _choose_the_registration_form_tooltip}}</p>
+                        {{view Ember.Select
+                               contentBinding="FLOW.surveyControl.arrangedContent"
+                               selectionBinding="view.selectedRegistrationForm"
+                               optionLabelPath="content.code"
+                               optionValuePath="content.keyId"
+                               disabledBinding="view.disableFolderSurveyInputField"}}
 
+                        {{#if view.showDataApproval}}
+                            <label for="enableDataApproval" class="labelcheckbox">
+                                {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                            </label>
+                            {{#if view.showDataApprovalList}}
+                                {{view Ember.Select
+                                       contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
+                                       optionLabelPath="content.name"
+                                       optionValuePath="content.keyId"
+                                       selectionBinding="FLOW.projectControl.dataApprovalGroup"
+                                       disabledBinding="view.disableFolderSurveyInputField"
+                                       promptBinding="Ember.STRINGS._choose_data_approval_group"}}
 
-
-
-                    {{#if view.showDataApproval}}
-                        <label for="enableDataApproval" class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
-                        </label>
-                        {{#if view.showDataApprovalList}}
-                          {{view Ember.Select
-                            contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
-                            optionLabelPath="content.name"
-                            optionValuePath="content.keyId"
-                            selectionBinding="FLOW.projectControl.dataApprovalGroup"
-                            disabledBinding="view.disableFolderSurveyInputField"
-                            promptBinding="Ember.STRINGS._choose_data_approval_group"}}
-
-                            {{#if view.showDataApprovalDetails}}
-                              <div class="hideShow">
-                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
-                              </div>
-                                {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
-                                  <div class="approvalDetail">
-                                    <h2>{{name}}</h2>
-                                    <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
-                                    <ul class="approvalSteps">
-                                    {{#each step in FLOW.router.approvalStepsController}}
-                                        {{#view FLOW.SurveyApprovalStepView stepBinding="step"}}
-                                            <li><h4>{{view.step.title}}</h4> <a {{action toggleShowResponsibleUsers target="view"}}>{{t _responsible_users}}</a></li>
-                                            {{#if view.showResponsibleUsers}}
-                                            <div>
-                                                <ul class="responsibleUsers">
-                                                    {{#each user in FLOW.router.userListController}}
-                                                        {{#view FLOW.ApprovalResponsibleUserView
-                                                                    userBinding="user"
-                                                                    stepBinding="view.step"}}
-                                                            <li>
-                                                            {{view Ember.Checkbox
-                                                                    checkedBinding="view.isResponsibleUser"}}
-                                                            {{view.user.userName}}
-                                                            </li>
-                                                        {{/view}}
-                                                    {{/each}}
-                                                </ul>
-                                            </div>
-                                            {{/if}}
-                                        {{/view}}
-                                    {{/each}}
-                                    </ul>
-                                  </div>
-                                {{/view}}
-                              {{else}}
-                              <div class="hideShow">
-                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
-                              </div>
+                                {{#if view.showDataApprovalDetails}}
+                                    <div class="hideShow">
+                                        <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
+                                    </div>
+                                    {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                                        <div class="approvalDetail">
+                                            <h2>{{name}}</h2>
+                                            <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
+                                            <ul class="approvalSteps">
+                                                {{#each step in FLOW.router.approvalStepsController}}
+                                                    {{#view FLOW.SurveyApprovalStepView stepBinding="step"}}
+                                                        <li><h4>{{view.step.title}}</h4> <a {{action toggleShowResponsibleUsers target="view"}}>{{t _responsible_users}}</a></li>
+                                                        {{#if view.showResponsibleUsers}}
+                                                            <div>
+                                                                <ul class="responsibleUsers">
+                                                                    {{#each user in FLOW.router.userListController}}
+                                                                        {{#view FLOW.ApprovalResponsibleUserView
+                                                                                userBinding="user"
+                                                                                stepBinding="view.step"}}
+                                                                            <li>
+                                                                                {{view Ember.Checkbox
+                                                                                       checkedBinding="view.isResponsibleUser"}}
+                                                                                {{view.user.userName}}
+                                                                            </li>
+                                                                        {{/view}}
+                                                                    {{/each}}
+                                                                </ul>
+                                                            </div>
+                                                        {{/if}}
+                                                    {{/view}}
+                                                {{/each}}
+                                            </ul>
+                                        </div>
+                                    {{/view}}
+                                {{else}}
+                                    <div class="hideShow">
+                                        <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                                    </div>
+                                {{/if}}
                             {{/if}}
                         {{/if}}
                     {{/if}}
-                  {{/if}}
+                    <p>
+                        <label for="markAsTemplate" class="labelcheckbox">
+                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="markAsTemplate" disabledBinding="view.disableFolderSurveyInputField"}} {{t _mark_as_template}} {{tooltip _mark_as_template_tooltip}}
+                        </label>
+                    </p>
                 {{/if}}
               </form>
             {{/if}}

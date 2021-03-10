@@ -83,8 +83,7 @@ FLOW.QuestionView = FLOW.View.extend(
     }).property('FLOW.selectedControl.publishingErrors'),
 
     isTemplate: Ember.computed(function() {
-      const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      return JSON.parse(FLOW.Env.templateIds).indexOf(surveyId) >= 0;
+      return FLOW.selectedControl.selectedSurveyGroup.get('isTemplate');
     })
       .property('FLOW.selectedControl.selectedSurveyGroup')
       .cacheable(),
