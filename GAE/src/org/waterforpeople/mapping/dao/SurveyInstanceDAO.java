@@ -27,7 +27,6 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -544,14 +543,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
-        final Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
 
-        deleteSurveyInstanceContent(surveyInstanceId, surveyedLocaleId);
+        deleteSurveyInstanceContent(surveyInstanceId);
 
         super.delete(surveyInstance);
     }
 
-    public void deleteSurveyInstanceContent(Long surveyInstanceId, Long surveyedLocaleId) {
+    public void deleteSurveyInstanceContent(Long surveyInstanceId) {
 
         // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();

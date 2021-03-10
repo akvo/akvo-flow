@@ -229,7 +229,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getSurveyedLocaleId() != null) {
-                deleteSurveyResponses(dpReq.getSurveyInstanceId(), dpReq.getSurveyedLocaleId());
+                siDao = new SurveyInstanceDAO();
+                siDao.deleteSurveyInstanceContent(dpReq.getSurveyInstanceId());
             }
         } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
@@ -1069,9 +1070,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      *
      * @param surveyInstanceId
      */
-    private void deleteSurveyResponses(Long surveyInstanceId, Long surveyedLocaleId) {
+    private void deleteSurveyResponses(Long surveyInstanceId) {
         siDao = new SurveyInstanceDAO();
-        siDao.deleteSurveyInstanceContent(surveyInstanceId, surveyedLocaleId);
+        siDao.deleteSurveyInstanceContent(surveyInstanceId);
     }
 
     /**
