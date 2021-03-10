@@ -69,7 +69,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String PARENT_NODE_ID = "parentNodeId";
     public static final String POPULATE_MONITORING_FIELDS_LOCALE_ACTION = "populateMonitoringFieldsLocale";
     public static final String CREATE_NEW_IDENTIFIERS_LOCALES_ACTION = "createNewIdentifiersLocales";
-    public static final String DELETE_SURVEY_INSTANCE_ACTION = "deleteSurveyInstance";
+    public static final String DELETE_SURVEY_INSTANCE_RESPONSES_ACTION = "deleteSurveyInstanceResponses";
     public static final String DELETE_CHILD_CASCADE_NODES = "deleteCascadeNodes";
     public static final String UPDATE_SURVEY_INSTANCE_SUMMARIES = "updateSurveyInstanceSummaries";
     public static final int MAX_TASK_RETRIES = 3;

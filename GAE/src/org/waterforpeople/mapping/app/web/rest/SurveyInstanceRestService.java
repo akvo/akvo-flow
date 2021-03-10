@@ -252,9 +252,8 @@ public class SurveyInstanceRestService {
         TaskOptions to = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
                 .param(DataProcessorRequest.ACTION_PARAM,
-                        DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION)
-                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, Long.toString(id))
-                .param(DataProcessorRequest.LOCALE_ID_PARAM, Long.toString(surveyedLocaleId));
+                        DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION)
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, Long.toString(id));
 
         QueueFactory.getQueue("deletequeue").add(to);
 

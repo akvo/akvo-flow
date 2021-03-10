@@ -226,7 +226,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
-        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getSurveyedLocaleId() != null) {
                 deleteSurveyResponses(dpReq.getSurveyInstanceId(), dpReq.getSurveyedLocaleId());
