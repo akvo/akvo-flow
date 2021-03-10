@@ -1066,16 +1066,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * Delete the specified survey instance
-     *
-     * @param surveyInstanceId
-     */
-    private void deleteSurveyResponses(Long surveyInstanceId) {
-        siDao = new SurveyInstanceDAO();
-        siDao.deleteSurveyInstanceContent(surveyInstanceId);
-    }
-
-    /**
      * Update a single survey response counter according to the provided delta. This method should be
      * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
      *
