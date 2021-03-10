@@ -247,6 +247,12 @@ public class SurveyInstanceRestService {
         ids.add(surveyId);
 
         Long surveyedLocaleId = si.getSurveyedLocaleId();
+        SurveyedLocale dataPoint = surveyedLocaleDao.getById(surveyedLocaleId);
+        List<SurveyInstance> relatedSurveyInstances = surveyInstanceDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+        if (relatedSurveyInstances.size() == 1
+                && relatedSurveyInstances.get(0).getKey().getId() == id) {
+            surveyedLocaleDao.delete(dataPoint);
+        }
         surveyInstanceDao.delete(si);
 
         TaskOptions to = TaskOptions.Builder
