@@ -50,6 +50,7 @@ public class SurveyGroupDto extends BaseDto {
     private ArrayList<Long> surveyList = null;
 
     private SurveyGroup surveyGroup;
+    private Boolean isTemplate;
 
     public SurveyGroupDto() {
     }
@@ -245,5 +246,13 @@ public class SurveyGroupDto extends BaseDto {
             return surveyGroup.getKey().getId();
         }
         return super.getKeyId();
+    }
+
+    public Boolean getTemplate() {
+        return isTemplate;
+    }
+
+    public void setTemplate(Boolean template) {
+        isTemplate = template;
     }
 }
