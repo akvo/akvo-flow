@@ -127,6 +127,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   surveyList: DS.attr('array', {
     defaultValue: null,
   }),
+  template: DS.attr('boolean', {
+    defaultValue: false,
+  }),
 });
 
 FLOW.Survey = FLOW.BaseModel.extend({

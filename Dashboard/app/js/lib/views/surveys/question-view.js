@@ -83,14 +83,14 @@ FLOW.QuestionView = FLOW.View.extend(
     }).property('FLOW.selectedControl.publishingErrors'),
 
     isTemplate: Ember.computed(function() {
-      return FLOW.selectedControl.selectedSurveyGroup.get('isTemplate');
+      return FLOW.selectedControl.selectedSurveyGroup.get('template');
     })
       .property('FLOW.selectedControl.selectedSurveyGroup')
       .cacheable(),
 
     editable: Ember.computed(function() {
       const immutable = this.get('content').get('immutable');
-      const isTemplate = this.get('isTemplate');
+      const isTemplate = this.get('template');
       return isTemplate || !immutable;
     })
       .property('this.isTemplate')

@@ -115,11 +115,10 @@
                             {{/if}}
                         {{/if}}
                     {{/if}}
-                    <p>
-                        <label for="markAsTemplate" class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="markAsTemplate" disabledBinding="view.disableFolderSurveyInputField"}} {{t _mark_as_template}} {{tooltip _mark_as_template_tooltip}}
-                        </label>
-                    </p>
+                    <br/>
+                    <label for="markAsTemplate" class="labelcheckbox">
+                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.template" id="markAsTemplate" disabledBinding="view.disableFolderSurveyInputField"}} {{t _mark_as_template}} {{tooltip _mark_as_template_tooltip}}
+                    </label>
                 {{/if}}
               </form>
             {{/if}}
