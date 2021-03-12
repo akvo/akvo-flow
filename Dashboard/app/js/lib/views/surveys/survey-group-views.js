@@ -1,6 +1,5 @@
 /* eslint-disable no-extend-native */
 
-import { trackEvent } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
@@ -194,14 +193,12 @@ FLOW.ProjectMainView = FLOW.View.extend({
 
   surveyTemplatesList: Ember.computed(() => {
     const projects = FLOW.projectControl.get('content');
-    const templateSurveyIds = JSON.parse(FLOW.Env.templateIds);
-    return projects.filter(project => templateSurveyIds.indexOf(project.get("keyId")) >= 0);
+    return projects.filter(project => project.get("template"));
   }).property('FLOW.projectControl.content.@each'),
 
   createSurveyFromTemplate() {
     this.set('showTemplates', false);
-    trackEvent('Survey list view', 'Creating survey from template');
-    FLOW.projectControl.copySurvey(this.get('selectedSurveyTemplate'));
+    FLOW.projectControl.copyTemplate(this.get('selectedSurveyTemplate'));
   },
 
   hideTemplateList() {
