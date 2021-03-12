@@ -280,14 +280,15 @@ public class ActionRestService {
     }
 
     /**
-     * Copy a survey via "copy" -> the copied survey will also be template
-     * or via the "Create survey / from template" -> the copied survey will not be a template
+     * Copy a survey via "copy" -> the copied survey will keep all the original properties. If the original survey is
+     * a template, the copy will also be a template
+     * or via the "Create survey / from template" -> the copied survey will NOT be a template
      * @param targetId
      * @param folderId
-     * @param copyingTemplate if the copied survey will be a template or no
+     * @param createFromTemplate if it's a "Create survey / from template" action
      * @return
      */
-    private String copyProject(Long targetId, Long folderId, boolean copyingTemplate) {
+    private String copyProject(Long targetId, Long folderId, boolean createFromTemplate) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
         SurveyGroup projectParent = null;
@@ -314,7 +315,7 @@ public class ActionRestService {
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
         projectCopy.setParentId(folderId);
-        if (copyingTemplate) {
+        if (createFromTemplate) {
             //the survey created from a template is never a template
             projectCopy.setTemplate(false);
         }
