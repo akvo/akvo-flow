@@ -1,6 +1,5 @@
 /* eslint-disable no-extend-native */
 
-import { trackEvent } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
@@ -199,8 +198,7 @@ FLOW.ProjectMainView = FLOW.View.extend({
 
   createSurveyFromTemplate() {
     this.set('showTemplates', false);
-    trackEvent('Survey list view', 'Creating survey from template');
-    FLOW.projectControl.copySurvey(this.get('selectedSurveyTemplate'));
+    FLOW.projectControl.copyTemplate(this.get('selectedSurveyTemplate'));
   },
 
   hideTemplateList() {
