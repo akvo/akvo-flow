@@ -194,8 +194,7 @@ FLOW.ProjectMainView = FLOW.View.extend({
 
   surveyTemplatesList: Ember.computed(() => {
     const projects = FLOW.projectControl.get('content');
-    const templateSurveyIds = JSON.parse(FLOW.Env.templateIds);
-    return projects.filter(project => templateSurveyIds.indexOf(project.get("keyId")) >= 0);
+    return projects.filter(project => project.get("template"));
   }).property('FLOW.projectControl.content.@each'),
 
   createSurveyFromTemplate() {

@@ -51,7 +51,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     private Boolean published;
     private Boolean requireDataApproval = false;
     private Long dataApprovalGroupId;
-    private Boolean isTemplate;
+    private Boolean template;
 
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
@@ -187,11 +187,11 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     }
 
     public Boolean getTemplate() {
-        return isTemplate;
+        return template;
     }
 
     public void setTemplate(Boolean template) {
-        isTemplate = template;
+        this.template = template;
     }
 
     @Override
