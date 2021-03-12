@@ -74,7 +74,6 @@ public class EnvServlet extends HttpServlet {
         properties.add("extraMapboxTileLayerLabel");
         properties.add(WEBFORM_REDIRECTION_URL);
         properties.add(CADDISFLY_TESTS_FILE_URL_KEY);
-        properties.add("templateIds");
     }
 
     @Override
@@ -133,10 +132,6 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("extraMapboxTileLayerLabel") == null) {
             props.put("extraMapboxTileLayerLabel", "");
-        }
-
-        if (props.get("templateIds") == null) {
-            props.put("templateIds", "[]");
         }
 
         props.put("appId", SystemProperty.applicationId.get());
