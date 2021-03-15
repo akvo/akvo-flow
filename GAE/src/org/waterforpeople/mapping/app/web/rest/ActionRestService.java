@@ -113,7 +113,9 @@ public class ActionRestService {
         } else if ("publishCascade".equals(action)) {
             status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
-            status = copyProject(targetId, folderId);
+            status = copyProject(targetId, folderId, false);
+        } else if ("copyTemplate".equals(action)) {
+            status = copyProject(targetId, folderId, true);
         }
 
         statusDto.setStatus(status);
@@ -277,7 +279,16 @@ public class ActionRestService {
         }
     }
 
-    private String copyProject(Long targetId, Long folderId) {
+    /**
+     * Copy a survey via "copy" -> the copied survey will keep all the original properties. If the original survey is
+     * a template, the copy will also be a template
+     * or via the "Create survey / from template" -> the copied survey will NOT be a template
+     * @param targetId
+     * @param folderId
+     * @param createFromTemplate if it's a "Create survey / from template" action
+     * @return
+     */
+    private String copyProject(Long targetId, Long folderId, boolean createFromTemplate) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
         SurveyGroup projectParent = null;
@@ -304,6 +315,11 @@ public class ActionRestService {
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
         projectCopy.setParentId(folderId);
+        if (createFromTemplate) {
+            //the survey created from a template is never a template
+            projectCopy.setTemplate(false);
+        }
+        //else: when using a regular "copy" we maintain the original state of the survey either template or not
 
         boolean isCopiedToDifferentFolder = projectSource.getParentId() != null && folderId != null
                 && !projectSource.getParentId().equals(folderId);

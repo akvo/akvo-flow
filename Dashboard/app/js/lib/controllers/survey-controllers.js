@@ -536,6 +536,27 @@ FLOW.projectControl = Ember.ArrayController.create({
 
     this.set('copyTarget', null);
   },
+
+  copyTemplate(targetId) {
+    trackEvent('Survey list view', 'Creating survey from template');
+    const currentFolder = this.get('currentProject');
+
+    FLOW.store.findQuery(FLOW.Action, {
+      action: 'copyTemplate',
+      targetId: targetId,
+      folderId: currentFolder ? currentFolder.get('keyId') : 0,
+    });
+
+    FLOW.store.commit();
+
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_template'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_template_text'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+
+    this.set('copyTarget', null);
+  },
 });
 
 

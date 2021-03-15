@@ -4904,6 +4904,7 @@ table.surveyDetails {
         margin-bottom: 20px;
         display: inline-block;
       }
+      label[for='markAsTemplate'],
       label[for='enableMonitoring'],
       label[for='enableDataApproval'] {
         input {
@@ -4916,6 +4917,9 @@ table.surveyDetails {
       }
       label[for='enableMonitoring'] {
         margin: 10px 0 0 5px;
+      }
+      label[for='markAsTemplate'] {
+        margin: 6px 6px 6px 6px;
       }
       .projectDetailForm,
       .surveyDetailForm {
