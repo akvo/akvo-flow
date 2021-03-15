@@ -108,8 +108,6 @@ public class ActionRestService {
             }
         } else if ("populateGeocellsForLocale".equals(action)) {
             status = computeGeocellsForLocales();
-        } else if ("createTestLocales".equals(action)) {
-            status = createTestLocales();
         } else if ("publishCascade".equals(action)) {
             status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
@@ -120,51 +118,6 @@ public class ActionRestService {
         response.put("actions", "[]");
         response.put("meta", statusDto);
         return response;
-    }
-
-    /**
-     * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
-     * used only to test clustering during development in order to speed this up, it is advisable to
-     * comment out the code in SurveyalRestServlet which computes the geoplace while running this
-     * method.
-     **/
-    private String createTestLocales() {
-        double latc;
-        double lonc;
-        double lat;
-        double lon;
-
-        SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-        Random generator = new Random();
-        // create random points, in clusters.
-        for (int i = 0; i < 1; i++) {
-            latc = generator.nextDouble() * 120 - 60;
-            lonc = generator.nextDouble() * 360 - 180;
-            for (int j = 0; j < 100; j++) {
-                SurveyInstance newSI = new SurveyInstance();
-                newSI.setSurveyId(1L);
-                newSI.setCollectionDate(new Date());
-                newSI = sDao.save(newSI);
-                QuestionAnswerStore newQAS = new QuestionAnswerStore();
-                newQAS.setSurveyInstanceId(newSI.getKey().getId());
-                newQAS.setType("GEO");
-                newQAS.setCollectionDate(new Date());
-                lat = latc + generator.nextDouble() * 10 - 5;
-                lon = lonc + generator.nextDouble() * 10 - 5;
-                String geoloc = lat + "|" + lon + "|" + 0 + "|" + "aaaaaa";
-                newQAS.setValue(geoloc);
-                newQAS = sDao.save(newQAS);
-
-                Queue queue = QueueFactory.getDefaultQueue();
-                queue.add(TaskOptions.Builder
-                        .withUrl("/app_worker/surveyalservlet")
-                        .param(SurveyalRestRequest.ACTION_PARAM,
-                                SurveyalRestRequest.INGEST_INSTANCE_ACTION)
-                        .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-                                newSI.getKey().getId() + ""));
-            }
-        }
-        return "ok";
     }
 
     /**
