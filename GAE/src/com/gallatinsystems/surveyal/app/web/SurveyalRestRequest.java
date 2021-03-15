@@ -35,9 +35,7 @@ public class SurveyalRestRequest extends RestRequest {
     public static final String POP_GEOCELLS_FOR_LOCALE_ACTION = "populateGeocellsForLocale";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
     public static final String SURVEY_ID_PARAM = "surveyId";
-    public static final String ADAPT_CLUSTER_DATA_ACTION = "adaptClusterData";
     public static final String SURVEYED_LOCALE_PARAM = "surveyedLocaleId";
-    public static final String DECREMENT_CLUSTER_COUNT_PARAM = "decrement";
 
     private Long surveyInstanceId;
     private Long surveyId;
@@ -72,11 +70,6 @@ public class SurveyalRestRequest extends RestRequest {
 
         if (req.getParameter(SURVEYED_LOCALE_PARAM) != null) {
             setSurveyedLocaleId(Long.parseLong(req.getParameter(SURVEYED_LOCALE_PARAM).trim()));
-        }
-
-        if (req.getParameter(DECREMENT_CLUSTER_COUNT_PARAM) != null) {
-            setDecrementClusterCount(Boolean.valueOf(req
-                    .getParameter(DECREMENT_CLUSTER_COUNT_PARAM)));
         }
     }
 
