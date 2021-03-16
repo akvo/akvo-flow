@@ -138,12 +138,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                 .equalsIgnoreCase(req.getAction())) {
             log.log(Level.INFO, "Creating geocells");
             populateGeocellsForLocale(req.getCursor());
-        } else if (SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION
-                .equalsIgnoreCase(req.getAction())) {
-            log.log(Level.INFO, "adapting cluster data");
-            Boolean decrement = sReq.getDecrementClusterCount();
-            int delta = decrement ? -1 : 1; // increment by default
-            adaptClusterData(sReq.getSurveyedLocaleId(), delta);
         }
         return resp;
     }
@@ -285,59 +279,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             surveyInstance.setSurveyedLocaleId(savedLocale.getKey().getId());
             surveyedLocaleDao.save(savedLocale);
             surveyInstanceDao.save(surveyInstance);
-        }
-
-        // finally fire off adapt cluster data task
-        // TODO: consider firing this task after ALL survey instances are processed
-        // instead of a single survey instance
-        // TODO: when surveyedLocales are deleted, it needs to be substracted from the clusters
-        if (adaptClusterData) {
-            Queue defaultQueue = QueueFactory.getDefaultQueue();
-            TaskOptions adaptClusterTaskOptions = TaskOptions.Builder
-                    .withUrl("/app_worker/surveyalservlet")
-                    .param(SurveyalRestRequest.ACTION_PARAM,
-                            SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
-                    .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
-                            Long.toString(locale.getKey().getId()));
-            defaultQueue.add(adaptClusterTaskOptions);
-        }
-    }
-
-    // this method is synchronised, because we are changing counts.
-    private synchronized void adaptClusterData(Long surveyedLocaleId, Integer delta) {
-        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
-
-        if (locale == null) {
-            log.log(Level.SEVERE,
-                    "Couldn't find surveyedLocale with id: " + surveyedLocaleId);
-            return;
-        }
-
-        // initialize cache
-        Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
-
-        if (cache == null) {
-            // reschedule task to run in 5 mins
-            Queue queue = QueueFactory.getDefaultQueue();
-            TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/surveyalservlet")
-                    .param(SurveyalRestRequest.ACTION_PARAM,
-                            SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
-                    .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
-                            surveyedLocaleId + "")
-                    .countdownMillis(5 * 1000 * 60); // 5 minutes
-            if (delta < 0) {
-                to.param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
-                        Boolean.TRUE.toString());
-            }
-            queue.add(to);
-            return;
-        }
-
-        // delete locale if the Delta was a subtraction
-        if (delta < 0) {
-            slDao.delete(locale);
         }
     }
 
