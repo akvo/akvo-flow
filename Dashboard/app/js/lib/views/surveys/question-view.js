@@ -89,8 +89,8 @@ FLOW.QuestionView = FLOW.View.extend(
       .cacheable(),
 
     editable: Ember.computed(function() {
-      const immutable = this.get('content').get('immutable');
-      const isTemplate = this.get('template');
+      const immutable = this.content.get('immutable');
+      const isTemplate = this.get('isTemplate');
       return isTemplate || !immutable;
     })
       .property('this.isTemplate')
