@@ -16,9 +16,12 @@
 
 package org.akvo.flow.rest.handler;
 
+import java.util.logging.Logger;
+
 public class FormInstanceRequestHandler {
-    //TODO: Implement other request types
-    public void deleteFormInstances() {
+    private static final Logger log = Logger.getLogger(FormInstanceRequestHandler.class.getSimpleName());
+
+    public void deleteFormInstance(Long formInstanceId) {
 
     }
 }
