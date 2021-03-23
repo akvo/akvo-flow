@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import org.akvo.flow.rest.handler.FormInstanceRequestHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -246,14 +247,9 @@ public class SurveyInstanceRestService {
         List<Long> ids = new ArrayList<>();
         ids.add(surveyId);
 
-        Long surveyedLocaleId = si.getSurveyedLocaleId();
-        SurveyedLocale dataPoint = surveyedLocaleDao.getById(surveyedLocaleId);
-        List<SurveyInstance> relatedSurveyInstances = surveyInstanceDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
-        if (relatedSurveyInstances.size() == 1
-                && relatedSurveyInstances.get(0).getKey().getId() == id) {
-            surveyedLocaleDao.delete(dataPoint);
-        }
-        surveyInstanceDao.delete(si);
+
+        FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
+        requestHandler.deleteFormInstance(si);
 
         TaskOptions to = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")

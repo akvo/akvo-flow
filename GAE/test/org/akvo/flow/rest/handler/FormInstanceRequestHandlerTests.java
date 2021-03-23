@@ -16,6 +16,7 @@
 
 package org.akvo.flow.rest.handler;
 
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -30,6 +31,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class FormInstanceRequestHandlerTests {
 
@@ -55,10 +57,26 @@ public class FormInstanceRequestHandlerTests {
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 2);
 
         FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
-        requestHandler.deleteFormInstance(formInstances.get(1).getObjectId());
+        requestHandler.deleteFormInstance(formInstances.get(1));
 
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(singleDataPointList.get(0).getKey().getId(), null, null, null);
         assertEquals(1, remainingFormInstance.size(), "Expecting one form instance to remain");
+    }
+
+    @Test
+    public void testDeleteRegistrationFormInstance() {
+        Long surveyId = dataStoreTestUtil.randomId();
+        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, 1);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 1);
+
+        long dataPointId = singleDataPointList.get(0).getKey().getId();
+        FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
+        requestHandler.deleteFormInstance(formInstances.get(0));
+
+        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(dataPointId, null, null, null);
+        assertEquals(0, remainingFormInstance.size(), "Expecting no form instance to remain");
+        assertNull(new SurveyedLocaleDao().getByKey(dataPointId));
     }
 }
