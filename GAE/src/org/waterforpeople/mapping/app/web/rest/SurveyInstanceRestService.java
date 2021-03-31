@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015,2017,2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015,2017,2020,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
