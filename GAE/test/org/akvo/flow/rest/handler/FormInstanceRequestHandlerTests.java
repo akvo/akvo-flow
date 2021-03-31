@@ -77,6 +77,6 @@ public class FormInstanceRequestHandlerTests {
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(dataPointId, null, null, null);
         assertEquals(0, remainingFormInstance.size(), "Expecting no form instance to remain");
-        assertNull(new SurveyedLocaleDao().getByKey(dataPointId));
+        assertNull(new SurveyedLocaleDao().getByKey(dataPointId), "Expect datapoint to have been deleted");
     }
 }
