@@ -43,14 +43,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class FlowXmlObjectWriterTests {
-    private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
-    private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
-    private static final String EXPECTED_QUESTIONLESS_XML_WITH_TRANSLATIONS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><altText type=\"translation\" language=\"es\">Formulario</altText><questionGroup><altText type=\"translation\" language=\"es\">Grupo</altText><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_QUESTIONLESS_XML_WITH_TRANSLATIONS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\"><altText type=\"translation\" language=\"es\">Formulario</altText><questionGroup><altText type=\"translation\" language=\"es\">Grupo</altText><heading>This is a group</heading></questionGroup></survey>";
 
     private static final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
-            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\">" +
             "<questionGroup>" +
             "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
             "<text>This is question one</text>" +
@@ -65,14 +65,14 @@ class FlowXmlObjectWriterTests {
 
     private static final String EXPECTED_REPEATABLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
-            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\">" +
             "<questionGroup repeatable=\"true\">" +
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
     private static final String EXPECTED_OPTIONS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" " +
-            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\">" +
             "<questionGroup>" +
             "<question id=\"1001\" order=\"1\" type=\"option\" mandatory=\"false\" localeNameFlag=\"false\">" +
             "<options allowOther=\"true\" allowMultiple=\"true\"><option value=\"1\" code=\"1\"><text>1</text></option><option value=\"2\" code=\"2\"><text>2</text></option></options>" +
@@ -85,7 +85,7 @@ class FlowXmlObjectWriterTests {
 
     private static final String EXPECTED_BARCODE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
-            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup>" +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\" alias=\"akvoflowsandbox.appspot.com\"><questionGroup>" +
             "<question id=\"1001\" order=\"1\" locked=\"true\" allowMultiple=\"true\" type=\"scan\" mandatory=\"false\" localeNameFlag=\"false\">" +
             "<text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
@@ -127,7 +127,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -206,7 +206,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -280,7 +280,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -344,7 +344,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -453,7 +453,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -506,7 +506,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -548,7 +548,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());

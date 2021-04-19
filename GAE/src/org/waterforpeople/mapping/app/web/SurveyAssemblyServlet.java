@@ -175,7 +175,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         SurveyGroup survey = surveyGroupDao.getByKey(form.getSurveyGroupId());
         Long transactionId = randomNumber.nextLong();
 
-        XmlForm jacksonForm = new XmlForm(form, survey, SystemProperty.applicationId.get());
+        Properties props = System.getProperties();
+        String alias = props.getProperty("alias");
+
+        XmlForm jacksonForm = new XmlForm(form, survey, SystemProperty.applicationId.get(), alias);
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);
