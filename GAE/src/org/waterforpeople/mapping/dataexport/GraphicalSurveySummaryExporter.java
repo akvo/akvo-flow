@@ -440,10 +440,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
                 if (safeTrue(q.getCollapseable())) {
-                    if (collapseIdMap.get(q.getText()) == null) {
-                        collapseIdMap.put(q.getText(), q.getKeyId().toString());
+                    if (collapseIdMap.get(safeQuestionText(q)) == null) {
+                        collapseIdMap.put(safeQuestionText(q), q.getKeyId().toString());
                     }
-                    nameToIdMap.put(q.getKeyId().toString(), q.getText());
+                    nameToIdMap.put(q.getKeyId().toString(), safeQuestionText(q));
                 }
             }
         }
@@ -1427,7 +1427,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (String level : q.getLevelNames()) {
                     String levelName = useVarName ? varName + "_"
                             + level.replaceAll(" ", "_")
-                            : q.getText() + " - " + level;
+                            : safeQuestionText(q) + " - " + level;
                     createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
@@ -1437,11 +1437,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (useVarName) {
                     header = varName;
                 } else if (variableNamesInHeaders) { //fall back to sanitised text
-                    header = q.getText().replaceAll("\n", "").trim();
+                    String text = safeQuestionText(q);
+                    header = text.replaceAll("\n", "").trim();
                 } else {
+                    String text = safeQuestionText(q);
+                    String replaced = text.replaceAll("\n", "");
                     header = q.getKeyId().toString()
                             + "|"
-                            + q.getText().replaceAll("\n", "").trim();
+                            + replaced.trim();
                 }
 
                 createHeaderCell(row, offset++, header);
@@ -1468,6 +1471,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
+    private String safeQuestionText(QuestionDto q) {
+        String text = q.getText();
+        if (text == null) {
+            text = "";
+        }
+        return text;
+    }
+
 
     @SuppressWarnings("unchecked")
     private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, final int originalOffset,
@@ -1479,7 +1490,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
         }
-        caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText()).append("|");
+        caddisflyFirstResultColumnHeaderPrefix.append("|").append(safeQuestionText(q)).append("|");
 
         if (caddisflyResourceMap == null) { //retrieve this only once
             caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
@@ -1531,7 +1542,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(
                         row,
                         offset++,
-                        "--CADDISFLY--|" + q.getText()
+                        "--CADDISFLY--|" + safeQuestionText(q)
                                 + "--"
                                 + IMAGE_LABEL);
             }
@@ -1559,11 +1570,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         if (useVariableName) {
             header = variableName;
         } else if (analysisFormat) {
-            header = q.getText().replaceAll("\n", "").trim();
+            header = safeQuestionText(q).replaceAll("\n", "").trim();
         } else {
             header = q.getKeyId().toString()
                     + "|"
-                    + q.getText().replaceAll("\n", "").trim();
+                    + safeQuestionText(q).replaceAll("\n", "").trim();
         }
         createHeaderCell(row, offset++, header);
         if (analysisFormat) {
@@ -1599,9 +1610,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, variableName + "_" + LON_LABEL);
                 createHeaderCell(row, offset++, variableName + "_" + ELEV_LABEL);
             } else {
-                createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
-                createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
-                createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
+                createHeaderCell(row, offset++, safeQuestionText(q) + " - " + LAT_LABEL);
+                createHeaderCell(row, offset++, safeQuestionText(q) + " - " + LON_LABEL);
+                createHeaderCell(row, offset++, safeQuestionText(q) + " - " + ELEV_LABEL);
             }
         } else { //Import currently relies on the --GEO header prefix
             createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
