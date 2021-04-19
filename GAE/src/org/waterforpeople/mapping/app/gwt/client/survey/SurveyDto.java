@@ -40,6 +40,7 @@ public class SurveyDto extends BaseDto {
     private Date lastUpdateDateTime;
     private Long sourceId = null;
     private List<Long> ancestorIds;
+    private String alias;
 
     private Map<String, TranslationDto> translationMap;
 
@@ -168,5 +169,13 @@ public class SurveyDto extends BaseDto {
 
     public void setTranslationMap(Map<String, TranslationDto> translationMap) {
         this.translationMap = translationMap;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }
