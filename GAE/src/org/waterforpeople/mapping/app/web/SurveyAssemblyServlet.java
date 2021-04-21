@@ -178,7 +178,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         Properties props = System.getProperties();
         String alias = props.getProperty("alias");
 
-        XmlForm jacksonForm = new XmlForm(form, survey, SystemProperty.applicationId.get(), alias);
+        String appId = props.getProperty("s3Bucket");
+        XmlForm jacksonForm = new XmlForm(form, survey, appId, alias);
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);
