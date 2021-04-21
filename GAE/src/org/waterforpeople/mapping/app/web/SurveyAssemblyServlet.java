@@ -178,7 +178,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         Properties props = System.getProperties();
         String alias = props.getProperty("alias");
 
-        XmlForm jacksonForm = new XmlForm(form, survey, SystemProperty.applicationId.get(), alias);
+        String previousAppId = props.getProperty("previousAppId");
+        String appStr = (previousAppId != null && !previousAppId.isEmpty()) ? previousAppId : SystemProperty.applicationId.get();
+        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);
