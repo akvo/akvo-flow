@@ -226,11 +226,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
-        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION.equalsIgnoreCase(req
-                .getAction())) {
-            if (dpReq.getSurveyInstanceId() != null && dpReq.getSurveyedLocaleId() != null) {
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_RESPONSES_ACTION.equalsIgnoreCase(req.getAction())) {
+            Long surveyInstanceId = dpReq.getSurveyInstanceId();
+            if (surveyInstanceId != null) {
                 siDao = new SurveyInstanceDAO();
-                siDao.deleteSurveyInstanceContent(dpReq.getSurveyInstanceId());
+                siDao.deleteSurveyInstanceContent(surveyInstanceId);
             }
         } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
