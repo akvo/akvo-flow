@@ -114,7 +114,13 @@ public class DataStoreTestUtil {
                 si.setSurveyedLocaleId(dataPoint.getKey().getId());
                 si.setSubmitterName(mockedSubmitter);
                 si.setUuid(mockedUUID);
-                si.setSurveyId(mockedTime*2);
+                if (i == 0) {
+                    long registrationFormId = mockedTime * 4;
+                    si.setSurveyId(registrationFormId);
+                } else {
+                    long monitoringFormId = mockedTime * 2;
+                    si.setSurveyId(monitoringFormId);
+                }
                 Date date = new Date();
                 date.setTime(mockedTime);
                 si.setCollectionDate(date);
