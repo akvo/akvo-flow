@@ -67,7 +67,8 @@ public class FormInstanceRequestHandlerTests {
     @Test
     public void testDeleteRegistrationFormInstance() {
         Long surveyId = dataStoreTestUtil.randomId();
-        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, 1);
+        Long registrationFormId = dataStoreTestUtil.randomId();
+        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, registrationFormId, 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 3);
 
         long dataPointId = singleDataPointList.get(0).getKey().getId();

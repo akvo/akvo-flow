@@ -115,7 +115,7 @@ public class DataStoreTestUtil {
                 si.setSubmitterName(mockedSubmitter);
                 si.setUuid(mockedUUID);
                 if (i == 0) {
-                    long registrationFormId = mockedTime * 4;
+                    long registrationFormId = dataPoint.getCreationSurveyId();
                     si.setSurveyId(registrationFormId);
                 } else {
                     long monitoringFormId = mockedTime * 2;
@@ -131,6 +131,11 @@ public class DataStoreTestUtil {
     }
 
     public List<SurveyedLocale> createDataPoints(Long surveyId, int howMany) {
+        long defaultRegistrationForm = mockedTime*4;
+        return createDataPoints(surveyId, defaultRegistrationForm, howMany);
+    }
+
+    public List<SurveyedLocale> createDataPoints(Long surveyId, Long registrationFormId, int howMany) {
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
         final List<SurveyedLocale> datapoints = new ArrayList<>();
         for (int i = 0; i < howMany; i++) {
@@ -138,6 +143,7 @@ public class DataStoreTestUtil {
             dataPoint.setIdentifier("identifier-" + String.valueOf(i));
             dataPoint.setSurveyGroupId(surveyId);
             dataPoint.setDisplayName("dataPoint: " + i);
+            dataPoint.setCreationSurveyId(registrationFormId);
             datapoints.add(dataPoint);
         }
         return new ArrayList<>(dpDao.save(datapoints));
