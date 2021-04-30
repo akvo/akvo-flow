@@ -17,10 +17,8 @@ import java.util.stream.Collectors;
 public class FixOrphanedSubmissions implements Process {
 
     /**
-     * if true, make the changes
+     * if true, delete the orphaned instances
      * if false, only list
-     * <p>
-     * usage:
      */
     private boolean doIt = false;
 
