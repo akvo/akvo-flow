@@ -224,8 +224,7 @@ public class DataPointUtil {
      */
     private Map<Long, List<SurveyInstance>> getSurveyInstances(List<SurveyedLocale> dataPointList) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
-        SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
-        List<SurveyInstance> values = surveyInstanceDAO.getMonitoringData(dataPointList);
+        List<SurveyInstance> values = surveyInstanceDAO.getRegistrationFormData(dataPointList);
         return values.stream().collect(Collectors.groupingBy(SurveyInstance::getSurveyedLocaleId));
     }
 
