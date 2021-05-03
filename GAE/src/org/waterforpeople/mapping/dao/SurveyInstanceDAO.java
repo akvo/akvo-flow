@@ -745,7 +745,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         return null;
     }
 
-    public List<SurveyInstance> getMonitoringData(@Nonnull List<SurveyedLocale> surveyedLocales) {
+    public List<SurveyInstance> getRegistrationFormData(@Nonnull List<SurveyedLocale> surveyedLocales) {
 
         if (surveyedLocales.isEmpty()) {
             return Collections.emptyList();

@@ -67,12 +67,14 @@ public class FormInstanceRequestHandlerTests {
     @Test
     public void testDeleteRegistrationFormInstance() {
         Long surveyId = dataStoreTestUtil.randomId();
-        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, 1);
-        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 1);
+        Long registrationFormId = dataStoreTestUtil.randomId();
+        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, registrationFormId, 1);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 3);
 
         long dataPointId = singleDataPointList.get(0).getKey().getId();
         FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
-        requestHandler.deleteFormInstance(formInstances.get(0));
+        SurveyInstance registrationFormInstance = formInstances.get(0);
+        requestHandler.deleteFormInstance(registrationFormInstance);
 
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(dataPointId, null, null, null);
