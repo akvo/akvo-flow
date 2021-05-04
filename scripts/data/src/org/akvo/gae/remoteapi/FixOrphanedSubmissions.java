@@ -73,7 +73,7 @@ public class FixOrphanedSubmissions implements Process {
         Set<Long> dataPointsFound = fetchExistingDataPointInstances(ds, mappedBySurveyId);
         dataPointIds.removeAll(dataPointsFound);
 
-        List<Entity> instances = getSurveyInstances(ds, new ArrayList<>(dataPointIds));
+        List<Entity> instances = getSurveyInstancesToDelete(ds, new ArrayList<>(dataPointIds));
 
         final StringBuilder sb = new StringBuilder();
         if (instances != null) {
