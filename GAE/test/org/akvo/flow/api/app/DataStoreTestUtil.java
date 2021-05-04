@@ -58,6 +58,7 @@ public class DataStoreTestUtil {
     public static long mockedTime = 1601983649l;
     public static String mockedUUID = "TheMockedUuid";
     public static String mockedSubmitter = "TheHappySubmitter";
+    public static long DEFAULT_REGISTRATION_FORM_ID = mockedTime*4;
 
     public Device createDevice(Long deviceId, String androidId) {
         final DeviceDAO dao = new DeviceDAO();
@@ -131,8 +132,7 @@ public class DataStoreTestUtil {
     }
 
     public List<SurveyedLocale> createDataPoints(Long surveyId, int howMany) {
-        long defaultRegistrationForm = mockedTime*4;
-        return createDataPoints(surveyId, defaultRegistrationForm, howMany);
+        return createDataPoints(surveyId, DEFAULT_REGISTRATION_FORM_ID, howMany);
     }
 
     public List<SurveyedLocale> createDataPoints(Long surveyId, Long registrationFormId, int howMany) {
