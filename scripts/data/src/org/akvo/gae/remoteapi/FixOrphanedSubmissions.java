@@ -73,7 +73,8 @@ public class FixOrphanedSubmissions implements Process {
         Set<Long> dataPointsFound = fetchExistingDataPointInstances(ds, mappedBySurveyId);
         dataPointIds.removeAll(dataPointsFound);
 
-        List<Entity> instances = getSurveyInstances(ds, new ArrayList<>(dataPointIds));
+        ArrayList<Long> surveyedLocaleIds = new ArrayList<>(dataPointIds);
+        List<Entity> instances = getSurveyInstances(ds, surveyedLocaleIds);
 
         final StringBuilder sb = new StringBuilder();
         if (instances != null) {
@@ -90,6 +91,7 @@ public class FixOrphanedSubmissions implements Process {
             System.out.printf("Found a total of %d orphaned instances\n", surveyInstances.size());
             if (doIt) {
                 batchDelete(ds, surveyInstances);
+                batchDelete(ds, surveyedLocaleIds, "SurveyedLocale");
             }
         } else {
             System.out.println("No orphaned SurveyInstances found");
