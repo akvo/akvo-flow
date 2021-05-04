@@ -96,7 +96,7 @@ public class FixOrphanedSubmissions implements Process {
         }
     }
 
-    private Set<Long> fetchExistingDataPointInstances(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
+    private Set<Long> findDataPointsIdsWithExistingRegistrationForm(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
         Set<Long> dataPointIds = new HashSet<>();
         Set<Entity> allDataPoints = new HashSet<>();
         for (Long surveyId : mappedBySurveyId.keySet()) {
