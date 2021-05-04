@@ -54,24 +54,20 @@ public class FixOrphanedSubmissions implements Process {
                 .map(entity -> entity.getKey().getId())
                 .collect(Collectors.toSet());
 
-        Map<Long, Set<Long>> mappedBySurveyId = new HashMap<>();
+        Set<Long> surveyIds = new HashSet<>();
         for (Entity entity: dataPoints) {
             Long surveyId = (Long) entity.getProperty("creationSurveyId");
-            Long dataPointId = entity.getKey().getId();
-            if (mappedBySurveyId.get(surveyId) == null) {
-                Set<Long> datapoints = new HashSet<>();
-                datapoints.add(dataPointId);
-                mappedBySurveyId.put(surveyId, datapoints);
-            } else {
-                mappedBySurveyId.get(surveyId).add(dataPointId);
+            if (surveyId != null) {
+                surveyIds.add(surveyId);
             }
         }
 
-        Set<Long> dataPointsFound = findDataPointsIdsWithExistingRegistrationSurveyInstance(ds, mappedBySurveyId);
+
+        Set<Long> dataPointsFound = findDataPointsIdsWithExistingRegistrationSurveyInstance(ds, surveyIds);
         dataPointIds.removeAll(dataPointsFound);
 
-        ArrayList<Long> surveyedLocaleIds = new ArrayList<>(dataPointIds);
-        List<Entity> instances = getSurveyInstancesToDelete(ds, surveyedLocaleIds);
+        ArrayList<Long> listOfDataPointIds = new ArrayList<>(dataPointIds);
+        List<Entity> instances = getSurveyInstancesToDelete(ds, listOfDataPointIds);
 
         final StringBuilder sb = new StringBuilder();
         if (instances != null) {
@@ -88,7 +84,7 @@ public class FixOrphanedSubmissions implements Process {
             System.out.printf("Found a total of %d orphaned instances\n", surveyInstances.size());
             if (doIt) {
                 batchDelete(ds, surveyInstances);
-                batchDelete(ds, surveyedLocaleIds, "SurveyedLocale");
+                batchDelete(ds, listOfDataPointIds, "SurveyedLocale");
             }
         } else {
             System.out.println("No orphaned SurveyInstances found");
@@ -102,22 +98,26 @@ public class FixOrphanedSubmissions implements Process {
      * which we know have an existing SurveyInstance for them
      *
      * @param ds
-     * @param mappedBySurveyId
+     * @param surveyIds
      * @return
      */
-    private Set<Long> findDataPointsIdsWithExistingRegistrationSurveyInstance(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
+    private Set<Long> findDataPointsIdsWithExistingRegistrationSurveyInstance(DatastoreService ds, Set<Long> surveyIds) {
         Set<Long> dataPointIds = new HashSet<>();
-        Set<Entity> allDataPoints = new HashSet<>();
-        for (Long surveyId : mappedBySurveyId.keySet()) {
+        Set<Entity> surveyInstances = new HashSet<>();
+        for (Long surveyId : surveyIds) {
             Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.EQUAL, surveyId);
-            Query instanceQuery = new Query("SurveyInstance").setFilter(f);
+            Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.NOT_EQUAL, null);
+            Query instanceQuery = new Query("SurveyInstance").setFilter(Query.CompositeFilterOperator.and(f, f2));
             List<Entity> entities = ds.prepare(instanceQuery).asList(FetchOptions.Builder.withChunkSize(1000));
             if (entities != null) {
-                allDataPoints.addAll(entities);
+                surveyInstances.addAll(entities);
             }
         }
-        for (Entity e: allDataPoints) {
-            dataPointIds.add((Long) e.getProperty("surveyedLocaleId"));
+        for (Entity e: surveyInstances) {
+            Long surveyedLocaleId = (Long) e.getProperty("surveyedLocaleId");
+            if (surveyedLocaleId != null) {
+                dataPointIds.add(surveyedLocaleId);
+            }
         }
         return dataPointIds;
     }
