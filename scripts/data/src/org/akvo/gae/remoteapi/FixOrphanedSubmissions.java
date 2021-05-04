@@ -92,14 +92,10 @@ public class FixOrphanedSubmissions implements Process {
     }
 
     /**
-     * Returns a list of datapoint ids, fetching by surveyId
+     * Returns a list of datapoint ids
      *
-     * We fetch all survey instances for given form and use their surveyedLocaleId to create the list of datapoints
-     * which we know have an existing SurveyInstance for them
-     *
-     * @param ds
-     * @param surveyIds
-     * @return
+     * We fetch all survey instances for given form (surveyId) and use their surveyedLocaleId to create the list of
+     * datapoints which we know have an existing SurveyInstance for them
      */
     private Set<Long> findDataPointsIdsWithExistingRegistrationSurveyInstance(DatastoreService ds, Set<Long> surveyIds) {
         Set<Long> dataPointIds = new HashSet<>();
