@@ -67,11 +67,11 @@ public class FixOrphanedSubmissions implements Process {
             }
         }
 
-        Set<Long> dataPointsFound = fetchExistingDataPointInstances(ds, mappedBySurveyId);
+        Set<Long> dataPointsFound = findDataPointsIdsWithExistingRegistrationSurveyInstance(ds, mappedBySurveyId);
         dataPointIds.removeAll(dataPointsFound);
 
         ArrayList<Long> surveyedLocaleIds = new ArrayList<>(dataPointIds);
-        List<Entity> instances = getSurveyInstances(ds, surveyedLocaleIds);
+        List<Entity> instances = getSurveyInstancesToDelete(ds, surveyedLocaleIds);
 
         final StringBuilder sb = new StringBuilder();
         if (instances != null) {
@@ -95,13 +95,22 @@ public class FixOrphanedSubmissions implements Process {
         }
     }
 
-    private Set<Long> fetchExistingDataPointInstances(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
+    /**
+     * Returns a list of datapoint ids, fetching by surveyId
+     *
+     * We fetch all survey instances for given form and use their surveyedLocaleId to create the list of datapoints
+     * which we know have an existing SurveyInstance for them
+     *
+     * @param ds
+     * @param mappedBySurveyId
+     * @return
+     */
+    private Set<Long> findDataPointsIdsWithExistingRegistrationSurveyInstance(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
         Set<Long> dataPointIds = new HashSet<>();
         Set<Entity> allDataPoints = new HashSet<>();
         for (Long surveyId : mappedBySurveyId.keySet()) {
             Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.EQUAL, surveyId);
-            Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.IN, mappedBySurveyId.get(surveyId));
-            Query instanceQuery = new Query("SurveyInstance").setFilter(Query.CompositeFilterOperator.and(f2, f));
+            Query instanceQuery = new Query("SurveyInstance").setFilter(f);
             List<Entity> entities = ds.prepare(instanceQuery).asList(FetchOptions.Builder.withChunkSize(1000));
             if (entities != null) {
                 allDataPoints.addAll(entities);
@@ -113,7 +122,7 @@ public class FixOrphanedSubmissions implements Process {
         return dataPointIds;
     }
 
-    private List<Entity> getSurveyInstances(DatastoreService ds, List<Long> surveyedLocaleIds) {
+    private List<Entity> getSurveyInstancesToDelete(DatastoreService ds, List<Long> surveyedLocaleIds) {
         if (!surveyedLocaleIds.isEmpty()) {
             Query.Filter f1 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.IN, surveyedLocaleIds);
             Query q = new Query("SurveyInstance");
