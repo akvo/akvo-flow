@@ -10,11 +10,16 @@ import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static org.akvo.gae.remoteapi.DataUtils.batchDelete;
 
 public class FixOrphanedSubmissions implements Process {
 
@@ -47,36 +52,36 @@ public class FixOrphanedSubmissions implements Process {
         List<Entity> dataPoints = getDataPoints(ds, surveyGroupIds);
         System.out.printf("Found %d monitoring datapoints\n", dataPoints.size());
 
-    /*    List<Entity> filteredDataPoints = dataPoints
-                .stream()
-                .filter(entity -> entity.getProperty("creationSurveyId") != null)
-                .collect(Collectors.toList());
-        List<Long> datapointsIds = filteredDataPoints
+        Set<Long> dataPointIds = dataPoints
                 .stream()
                 .map(entity -> entity.getKey().getId())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        List<Long> dataPointIdsWithSurveyInstance = getRegistrationSurveyInstances(ds, filteredDataPoints);
+        Map<Long, Set<Long>> mappedBySurveyId = new HashMap<>();
+        for (Entity entity: dataPoints) {
+            Long surveyId = (Long) entity.getProperty("creationSurveyId");
+            Long dataPointId = entity.getKey().getId();
+            if (mappedBySurveyId.get(surveyId) == null) {
+                Set<Long> datapoints = new HashSet<>();
+                datapoints.add(dataPointId);
+                mappedBySurveyId.put(surveyId, datapoints);
+            } else {
+                mappedBySurveyId.get(surveyId).add(dataPointId);
+            }
+        }
 
-        datapointsIds.removeAll(dataPointIdsWithSurveyInstance);
+        Set<Long> dataPointsFound = fetchExistingDataPointInstances(ds, mappedBySurveyId);
+        dataPointIds.removeAll(dataPointsFound);
 
-        List<Entity> instances = getSurveyInstances(ds, datapointsIds);*/
-
-        List<Long> dataPointIdsToCleanup = dataPoints
-                .stream()
-                .filter(entity -> entity.getProperty("creationSurveyId") != null)
-                .map(entity -> getDataPointIdToDelete(ds, entity))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<Entity> instances = getSurveyInstances(ds, dataPointIdsToCleanup);
+        List<Entity> instances = getSurveyInstances(ds, new ArrayList<>(dataPointIds));
 
         final StringBuilder sb = new StringBuilder();
         if (instances != null) {
             for (Entity instance : instances) {
-                surveyInstances.add(instance.getKey());
+                Key key = instance.getKey();
+                surveyInstances.add(key);
                 sb.append(
-                        String.format("%s,%s,%s", instance.getProperty("surveyId"), instance.getProperty("surveyedLocaleIdentifier"), instance.getKey().getId()))
+                        String.format("%s,%s,%s", instance.getProperty("surveyId"), instance.getProperty("surveyedLocaleIdentifier"), key.getId()))
                         .append("\n");
             }
             FileUtils.write(f, sb.toString(), true);
@@ -84,69 +89,29 @@ public class FixOrphanedSubmissions implements Process {
         if (surveyInstances.size() > 0) {
             System.out.printf("Found a total of %d orphaned instances\n", surveyInstances.size());
             if (doIt) {
-                //batchDelete(ds, surveyInstances); for now we just count them
+                batchDelete(ds, surveyInstances);
             }
         } else {
             System.out.println("No orphaned SurveyInstances found");
         }
     }
 
-/*    private List<Long> getRegistrationSurveyInstances(DatastoreService ds, List<Entity> datapoints) {
-        List<Long> dataPointsThatAreOk = new ArrayList<>();
-        Query instanceQuery = new Query("SurveyInstance");
-        List<Query.CompositeFilter> filters = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            Entity entity = datapoints.get(i);
-            Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.EQUAL, entity.getKey().getId());
-            Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.EQUAL, (Long) entity.getProperty("creationSurveyId"));
-            Query.CompositeFilter compositeFilter = Query.CompositeFilterOperator.and(f2, f);
-           filters.add(compositeFilter);
-        }
-        System.out.println("Filters: " + filters.size());
-        if (!filters.isEmpty()) {
-            instanceQuery.setFilter(Query.CompositeFilterOperator.or(filters.toArray(new Query.CompositeFilter[0])));
-            instanceQuery.setKeysOnly();
+    private Set<Long> fetchExistingDataPointInstances(DatastoreService ds, Map<Long, Set<Long>> mappedBySurveyId) {
+        Set<Long> dataPointIds = new HashSet<>();
+        Set<Entity> allDataPoints = new HashSet<>();
+        for (Long surveyId : mappedBySurveyId.keySet()) {
+            Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.EQUAL, surveyId);
+            Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.IN, mappedBySurveyId.get(surveyId));
+            Query instanceQuery = new Query("SurveyInstance").setFilter(Query.CompositeFilterOperator.and(f2, f));
             List<Entity> entities = ds.prepare(instanceQuery).asList(FetchOptions.Builder.withChunkSize(1000));
             if (entities != null) {
-                for (Entity e: entities) {
-                    dataPointsThatAreOk.add(e.getKey().getId());
-                }
+                allDataPoints.addAll(entities);
             }
         }
-        return dataPointsThatAreOk;
-    }*/
-
-    private List<Long> getRegistrationSurveyInstances(DatastoreService ds, List<Entity> datapoints) {
-        List<Long> dataPointsThatAreOk = new ArrayList<>();
-        Query instanceQuery = new Query("SurveyInstance");
-        List<Long> dataPointIds = new ArrayList<>();
-        List<Long> surveyIds = new ArrayList<>();
-        for (Entity entity : datapoints) {
-            dataPointIds.add(entity.getKey().getId());
-            surveyIds.add((Long) entity.getProperty("creationSurveyId"));
+        for (Entity e: allDataPoints) {
+            dataPointIds.add((Long) e.getProperty("surveyedLocaleId"));
         }
-
-        Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.IN, dataPointIds);
-        Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.IN, surveyIds);
-        Query.CompositeFilter compositeFilter = Query.CompositeFilterOperator.and(f2, f);
-        instanceQuery.setFilter(compositeFilter);
-        instanceQuery.setKeysOnly();
-        List<Entity> entities = ds.prepare(instanceQuery).asList(FetchOptions.Builder.withChunkSize(1000));
-        if (entities != null) {
-            for (Entity e : entities) {
-                dataPointsThatAreOk.add(e.getKey().getId());
-            }
-        }
-        return dataPointsThatAreOk;
-    }
-
-    private Long getDataPointIdToDelete(DatastoreService ds, Entity entity) {
-        long dataPointId = entity.getKey().getId();
-        Entity registrationFormInstance = getRegistrationSurveyInstance(ds, (Long) entity.getProperty("creationSurveyId"), dataPointId);
-        if (registrationFormInstance == null) {
-            return dataPointId;
-        }
-        return null;
+        return dataPointIds;
     }
 
     private List<Entity> getSurveyInstances(DatastoreService ds, List<Long> surveyedLocaleIds) {
@@ -159,15 +124,6 @@ public class FixOrphanedSubmissions implements Process {
         } else {
             return Collections.EMPTY_LIST;
         }
-    }
-
-    private Entity getRegistrationSurveyInstance(DatastoreService ds, Long surveyId, Long dataPointId) {
-        Query.Filter f2 = new Query.FilterPredicate("surveyedLocaleId", Query.FilterOperator.EQUAL, dataPointId);
-        Query.Filter f = new Query.FilterPredicate("surveyId", Query.FilterOperator.EQUAL, surveyId);
-        Query instanceQuery = new Query("SurveyInstance").setFilter(Query.CompositeFilterOperator.and(f2, f)).setKeysOnly();
-        //unfortunately using asSingleInstance does not work here as sometimes more than one result is returned!
-        List<Entity> entities = ds.prepare(instanceQuery).asList(FetchOptions.Builder.withLimit(1));
-        return (entities == null || entities.isEmpty()) ? null : entities.get(0);
     }
 
     private List<Long> getMonitoringSurveys(DatastoreService ds) {
