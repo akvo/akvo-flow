@@ -166,6 +166,12 @@ FLOW.dialogControl = Ember.Object.create({
 
       case 'delSI2':
         this.set('header', Ember.String.loc('_delete_record_header'));
+        this.set('message', undefined);
+
+        const instanceDeleted = event.contexts && event.contexts[1];
+        if (this.isRegistrationFormInstance(instanceDeleted)) {
+            this.set('message', Ember.String.htmlSafe('_delete_all_monitoring_forms'));
+        }
         this.set('showDialog', true);
         break;
 
@@ -183,6 +189,12 @@ FLOW.dialogControl = Ember.Object.create({
 
       default:
     }
+  },
+
+  isRegistrationFormInstance(instanceDeleted) {
+    const registrationFormId = FLOW.selectedControl.selectedSurvey && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    const instanceFormId = instanceDeleted.get('surveyId');
+    return registrationFormId && instanceFormId && registrationFormId === instanceFormId;
   },
 
   doOK() {
