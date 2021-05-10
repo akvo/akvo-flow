@@ -22,15 +22,14 @@ public class FixOrphanedQuestionAnswers implements Process {
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
-        String formId = args[0];
-        System.out.printf("Will do cleanup for form %s\n", formId);
 
-        long formId1 = Long.parseLong(formId);
-        ds.delete(KeyFactory.createKey("QuestionAnswerStore", 119950001));
-        List<Entity> questionAnswers = fetchQuestionAnswers(ds, formId1);
+        long formId = Long.parseLong(args[0]);
+        System.out.printf("Will do cleanup for form %d\n", formId);
+
+        List<Entity> questionAnswers = fetchQuestionAnswers(ds, formId);
         Map<Long, List<Key>> mappedQAByInstanceId = mapQuestionAnswers(questionAnswers);
         System.out.printf("Found %d questionAnswersStore in total\n", questionAnswers.size());
-        List<Key> questionAnswersToDelete = getQuestionAnswersToDelete(ds, mappedQAByInstanceId, formId1);
+        List<Key> questionAnswersToDelete = getQuestionAnswersToDelete(ds, mappedQAByInstanceId, formId);
         System.out.printf("Found %d question answers to delete\n", questionAnswersToDelete.size());
 
         if (questionAnswersToDelete.size() > 0) {
