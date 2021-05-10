@@ -169,7 +169,7 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('message', undefined);
 
         if (this.isRegistrationFormInstance(event.contexts[1])) {
-            this.set('message', Ember.String.htmlSafe('_delete_all_monitoring_forms'));
+            this.set('message', Ember.String.loc('_delete_all_monitoring_forms'));
         }
         this.set('showDialog', true);
         break;
