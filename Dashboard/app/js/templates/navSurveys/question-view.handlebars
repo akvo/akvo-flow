@@ -24,8 +24,8 @@
                 {{/if}}
                 {{view Ember.TextField valueBinding="view.variableName" size=100}}
             </label>
-            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t
-                    _mandatory}}</label>
+            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}
+{{t _mandatory}}</label>
 
             <label class="selectinLabel">
     <span>
@@ -46,19 +46,19 @@
 
             {{#if view.showMetaConfig}}
                 {{#if view.showLocaleName}}
-                    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t
-                            _use_in_record_display}} {{tooltip _use_in_record_display_tooltip}}</p></label>
+                    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}
+{{t _use_in_record_display}} {{tooltip _use_in_record_display_tooltip}}</p></label>
                 {{else}}
                     {{#if view.amGeoType}}
                         <label class="labelcheckbox"> {{view Ember.Checkbox
-                                                             checkedBinding="view.localeLocationFlag"}}{{t
-                                _use_as_record_location}} {{tooltip _use_as_record_location_tooltip}}</label><br/>
+                                                             checkedBinding="view.localeLocationFlag"}}
+{{t _use_as_record_location}} {{tooltip _use_as_record_location_tooltip}}</label><br/>
                     {{/if}}
                 {{/if}}
             {{/if}}
 
-            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.personalData"}}{{t
-                    _hold_personal_data}} {{tooltip _personal_data_tooltip}}</label>
+            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.personalData"}}
+{{t _hold_personal_data}} {{tooltip _personal_data_tooltip}}</label>
 
             <!-- Question specific material -->
             {{#if view.hasExtraSettings}}
@@ -68,11 +68,11 @@
                         <h1 class="answerNbr">{{t _settings}}: </h1>
                         <ul>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowMultipleFlag"}}{{t
-                                    _allow_multiple}} </label></li>
+                                                                     checkedBinding="view.allowMultipleFlag"}}
+{{t _allow_multiple}} </label></li>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowOtherFlag"}}{{t
-                                    _allow_other}} </label>
+                                                                     checkedBinding="view.allowOtherFlag"}}
+{{t _allow_other}} </label>
                             </li>
                         </ul>
                         <p class="optionTitle">
@@ -104,37 +104,37 @@
                         </p>
                         <div class="optionListView">
                             {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
-                            <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">{{t
-                                    _add_option}}</a>
+                            <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">
+{{t _add_option}}</a>
                         </div>
                     {{/if}}
                     {{#if view.amFreeTextType}}
                         <h1 class="answerNbr">{{t _settings}}:</h1>
                         <label class="labelcheckbox"> {{view Ember.Checkbox
-                                                             checkedBinding="view.requireDoubleEntry"}}{{t
-                                _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
+                                                             checkedBinding="view.requireDoubleEntry"}}
+{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
                     {{/if}}
                     {{#if view.amBarcodeType}}
                         <h1 class="answerNbr">{{t _settings}}: </h1>
                         <ul>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowMultipleFlag"}}{{t
-                                    _enable_bulk_barcode_scan}} </label></li>
-                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t
-                                    _disable_manual_geo_edit}} </label></li>
+                                                                     checkedBinding="view.allowMultipleFlag"}}
+{{t _enable_bulk_barcode_scan}} </label></li>
+                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}
+{{t _disable_manual_geo_edit}} </label></li>
                         </ul>
                     {{/if}}
                     {{#if view.amNumberType}}
                         <h1 class="answerNbr">{{t _settings}}: </h1>
                         <ul>
-                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t
-                                    _allow_sign}} </label></li>
+                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}
+{{t _allow_sign}} </label></li>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowDecimal"}}{{t
-                                    _allow_decimal_point}} </label></li>
+                                                                     checkedBinding="view.allowDecimal"}}
+{{t _allow_decimal_point}} </label></li>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.requireDoubleEntry"}}{{t
-                                    _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label></li>
+                                                                     checkedBinding="view.requireDoubleEntry"}}
+{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label></li>
                         </ul>
 
                         <ul className="twoColumns">
@@ -148,15 +148,15 @@
                     {{/if}}
                     {{#if view.amGeoType}}
                         <h1 class="answerNbr">{{t _settings}}: </h1>
-                        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t
-                                _disable_manual_geo_edit}} </label>
+                        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}
+{{t _disable_manual_geo_edit}} </label>
                     {{/if}}
 
                     {{#if view.amTextType}}
                         {{#if FLOW.Env.showExternalSourcesFeature}}
                             <label class="labelcheckbox">{{view Ember.Checkbox
-                                                                checkedBinding="view.allowExternalSources"}}{{t
-                                    _allow_external_sources}}</label>
+                                                                checkedBinding="view.allowExternalSources"}}
+{{t _allow_external_sources}}</label>
                         {{/if}}
                     {{/if}}
 
@@ -221,15 +221,15 @@
                         <h1 class="answerNbr">{{t _settings}}: </h1>
                         <ul>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowPoints"}}{{t
-                                    _allow_points}} </label></li>
-                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}{{t
-                                    _allow_line}} </label></li>
+                                                                     checkedBinding="view.allowPoints"}}
+{{t _allow_points}} </label></li>
+                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}
+{{t _allow_line}} </label></li>
                             <li><label class="labelcheckbox"> {{view Ember.Checkbox
-                                                                     checkedBinding="view.allowPolygon"}}{{t
-                                    _allow_polygon}} </label></li>
-                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t
-                                    _disable_manual_geo_edit}} </label></li>
+                                                                     checkedBinding="view.allowPolygon"}}
+{{t _allow_polygon}} </label></li>
+                            <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}
+{{t _disable_manual_geo_edit}} </label></li>
                         </ul>
                     {{/if}}
                 </div>
@@ -260,8 +260,8 @@
             </div>
             {{#if view.isTemplate}}
                 <div class="dependencyBlock">
-                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.immutable"}}{{t
-                            _make_copy_immutable}}
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.immutable"}}
+{{t _make_copy_immutable}}
                     </label>
                 </div>
             {{/if}}
@@ -287,28 +287,28 @@
                                             </li>
                                         {{else}}
                                             {{#if FLOW.questionOptionsControl.partialOptionCodes}}
-                                                <li><a class="button noChanges" id="standardBtn_01">{{t
-                                                        _save_question}}</a></li>
+                                                <li><a class="button noChanges" id="standardBtn_01">
+{{t _save_question}}</a></li>
                                             {{else}}
                                                 {{#if FLOW.questionOptionsControl.duplicateOptionCodes}}
-                                                    <li><a class="button noChanges" id="standardBtn_01">{{t
-                                                            _save_question}}</a></li>
+                                                    <li><a class="button noChanges" id="standardBtn_01">
+{{t _save_question}}</a></li>
                                                 {{else}}
                                                     {{#if FLOW.questionOptionsControl.disallowedCharacters}}
-                                                        <li><a class="button noChanges" id="standardBtn_01">{{t
-                                                                _save_question}}</a></li>
+                                                        <li><a class="button noChanges" id="standardBtn_01">
+{{t _save_question}}</a></li>
                                                     {{else}}
                                                         {{#if FLOW.questionOptionsControl.reservedCode}}
-                                                            <li><a class="button noChanges" id="standardBtn_01">{{t
-                                                                    _save_question}}</a></li>
+                                                            <li><a class="button noChanges" id="standardBtn_01">
+{{t _save_question}}</a></li>
                                                         {{else}}
                                                             {{#if FLOW.questionOptionsControl.maxLength}}
-                                                                <li><a class="button noChanges" id="standardBtn_01">{{t
-                                                                        _save_question}}</a></li>
+                                                                <li><a class="button noChanges" id="standardBtn_01">
+{{t _save_question}}</a></li>
                                                             {{else}}
                                                                 <li><a class="button" id="standardBtn_01" {{action
-                                                                        "doSaveEditQuestion" target="this"}}>{{t
-                                                                        _save_question}}</a></li>
+                                                                        "doSaveEditQuestion" target="this"}}>
+{{t _save_question}}</a></li>
                                                             {{/if}}
                                                         {{/if}}
                                                     {{/if}}
@@ -324,19 +324,19 @@
                                         </li>
                                     {{else}}
                                         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion"
-                                                                                           target="this"}}>{{t
-                                                _save_question}}</a></li>
+                                                                                           target="this"}}>
+{{t _save_question}}</a></li>
                                     {{/unless}}
                                 {{else}}
                                     <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion"
-                                                                                       target="this"}}>{{t
-                                            _save_question}}</a></li>
+                                                                                       target="this"}}>
+{{t _save_question}}</a></li>
                                 {{/if}}
                             {{/if}}
                         {{/if}}
                     {{/if}}
-                    <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t
-                            _cancel}}</a></li>
+                    <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>
+{{t _cancel}}</a></li>
                 </ul>
             </nav>
         {{else}}
@@ -376,8 +376,8 @@
         {{#if view.oneSelectedForMove}}
             <nav class="moveQMenu questionActionMenu">
                 <ul>
-                    <li><a {{action "doQuestionMoveHere" target="this"}} class="button smallButton">{{t
-                            _move_question_here}}</a></li>
+                    <li><a {{action "doQuestionMoveHere" target="this"}} class="button smallButton">
+{{t _move_question_here}}</a></li>
                     <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
                 </ul>
             </nav>
@@ -385,8 +385,8 @@
             {{#if view.oneSelectedForCopy}}
                 <nav class="copyQMenu questionActionMenu">
                     <ul>
-                        <li><a {{action "doQuestionCopyHere" target="this"}} class="button smallButton">{{t
-                                _paste_question_here}}</a></li>
+                        <li><a {{action "doQuestionCopyHere" target="this"}} class="button smallButton">
+{{t _paste_question_here}}</a></li>
                         <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
                     </ul>
                 </nav>
