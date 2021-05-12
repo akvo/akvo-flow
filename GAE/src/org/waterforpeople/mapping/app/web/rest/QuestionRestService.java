@@ -387,7 +387,7 @@ public class QuestionRestService {
 
         boolean isMonitoringGroup = surveyGroup.getMonitoringGroup();
 
-        List<Survey> surveys = new ArrayList<Survey>();
+        List<Survey> surveys = new ArrayList<>();
 
         if (isMonitoringGroup) {
             surveys = surveyDao.listSurveysByGroup(surveyGroupId);
@@ -395,13 +395,13 @@ public class QuestionRestService {
             surveys.add(survey);
         }
 
-        List<Question> questions = new ArrayList<Question>();
+        List<Question> questions = new ArrayList<>();
 
         for (Survey s : surveys) {
-            questions.addAll(questionDao.listQuestionsBySurvey(s.getKey().getId()));
+            questions.addAll(questionDao.getBySurveyAndVariableName(s.getKey().getId(), variableName));
         }
 
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
 
         for (Question q : questions) {
             if (variableName.equalsIgnoreCase(q.getVariableName())
