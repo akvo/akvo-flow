@@ -688,6 +688,19 @@ public class QuestionDao extends BaseDAO<Question> {
         }
     }
 
+    public List<Question> getBySurveyAndVariableName(long surveyId, String variableName) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Question.class);
+        query.setFilter(" surveyId == surveyIdParam && variableName == variableNameParam");
+        query.declareParameters("Long surveyIdParam, String variableNameParam");
+        List<Question> results = (List<Question>) query.execute(surveyId, variableName);
+        if (results != null) {
+            return results;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     /**
      * finds a question within a group by matching on the questionText passed in
      *
