@@ -39,10 +39,3 @@ mvn appengine:stage
 	   --promote --quiet --version="${FLOW_VERSION}" \
 	   --project="${PROJECT_ID}"
 )
-
-archive_name="${FLOW_VERSION}.zip"
-(
-    cd target
-    rm -rf appengine-staging/WEB-INF/appengine-web.xml
-    zip "${archive_name}" -q -r appengine-staging/*
-)
