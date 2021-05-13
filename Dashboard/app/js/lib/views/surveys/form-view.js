@@ -53,4 +53,10 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
     const form = this.get('form');
     return FLOW.permControl.canEditForm(form);
   }).property('this.form'),
+
+  enableFormPublishButton: Ember.computed(function () {
+    const form = this.get('form');
+    console.log(form.get('status'))
+    return !(form.get('status') === 'PUBLISHED')
+  }).property('this.form'),
 });
