@@ -208,6 +208,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 if (form.getWebForm()){
                     boolean webForm = WebForm.validWebForm(surveyGroupDao.getByKey(form.getSurveyGroupId()), form, questionDao.listQuestionsBySurvey(form.getObjectId()));
                     form.setWebForm(webForm);
+                    log.info("Finishing webform validated to: " + webForm);
                 }
                 surveyDao.save(form); //remember PUBLISHED status
                 String messageText = "Published.  Please check: " + uc.getUrl();
@@ -216,11 +217,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
                 uploadOk = true;
-
+                log.info("Message saved");
                 //invalidate any cached reports in flow-services
                 List<Long> ids = new ArrayList<>();
                 ids.add(formId);
                 SurveyUtils.notifyReportService(ids, "invalidate");
+                log.info("Report notified");
             } else {
                 String messageText = "Failed to publish: " + formId + "\n" + uc.getMessage();
                 message.setTransactionUUID(Long.toString(transactionId));
