@@ -201,7 +201,15 @@
         <version>1.7.30</version>
     </dependency>
 
-    <!-- test dependencies -->
+    <dependency>
+        <groupId>com.beoui</groupId>
+        <artifactId>geocell</artifactId>
+        <version>0.0.10.1</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/war/geocell-0.0.10.1.jar</systemPath>
+    </dependency>
+
+      <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -268,13 +276,11 @@
         <version>1.0.8</version>
      </dependency>
 
-     <!-- TODO REMOVE AND SEE WHAT DEPENDS-->
     <dependency>
         <groupId>com.vividsolutions</groupId>
         <artifactId>jts</artifactId>
         <version>1.13</version>
     </dependency>
-
 
     <dependency>
         <groupId>com.google.gwt</groupId>
