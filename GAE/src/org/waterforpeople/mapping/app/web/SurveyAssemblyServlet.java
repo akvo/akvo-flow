@@ -162,81 +162,82 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     }
 
     /*
-     * NEW! Assembly through Jackson classes.
+     * Assembly through Jackson classes.
      *
      */
     private boolean assembleFormWithJackson(Long formId) {
         log.info("Starting Jackson assembly of form " + formId);
-        boolean uploadOk = false;
+        boolean uploadOk;
+        SurveyDAO surveyDao = new SurveyDAO();
+        Survey form = surveyDao.loadFullForm(formId);
+
+        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+        QuestionDao questionDao = new QuestionDao();
+
+        SurveyGroup survey = surveyGroupDao.getByKey(form.getSurveyGroupId());
+        long transactionId = randomNumber.nextLong();
+
+        Properties props = System.getProperties();
+        String alias = props.getProperty("alias");
+
+        String xmlAppId = props.getProperty("xmlAppId");
+        String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
+        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
+        String formXML;
         try {
-            SurveyDAO surveyDao = new SurveyDAO();
-            Survey form = surveyDao.loadFullForm(formId);
+            formXML = PublishedForm.generate(jacksonForm);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
+            String messageText = "Failed to publish: " + formId + "\n" + "Failed to convert form to XML";
+            saveMessage(formId, survey.getCode(), form.getName(), transactionId, messageText);
+            return false;
+        }
 
-            SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-            QuestionDao questionDao = new QuestionDao();
-
-            SurveyGroup survey = surveyGroupDao.getByKey(form.getSurveyGroupId());
-            long transactionId = randomNumber.nextLong();
-
-            Properties props = System.getProperties();
-            String alias = props.getProperty("alias");
-
-            String xmlAppId = props.getProperty("xmlAppId");
-            String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
-            XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
-            String formXML;
-            try {
-                formXML = PublishedForm.generate(jacksonForm);
-            } catch (IOException e) {
-                log.log(Level.SEVERE, "Failed to convert form to XML: "+ e.getMessage());
-                return false;
+        uploadOk = false;
+        log.info("Uploading " + formId);
+        UploadStatusContainer uc = uploadFormXML(
+                Long.toString(formId), //latest version in plain filename
+                formId + "v" + form.getVersion(), //archive copy
+                formXML);
+        Message message = new Message();
+        message.setActionAbout("surveyAssembly");
+        message.setObjectId(formId);
+        message.setObjectTitle(survey.getCode() + " / " + form.getName());
+        if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
+            log.info("Finishing assembly of " + formId);
+            form.setStatus(Survey.Status.PUBLISHED);
+            if (form.getWebForm()) {
+                boolean webForm = WebForm.validWebForm(surveyGroupDao.getByKey(form.getSurveyGroupId()), form, questionDao.listQuestionsBySurvey(form.getObjectId()));
+                form.setWebForm(webForm);
             }
+            surveyDao.save(form); //remember PUBLISHED status
+            String messageText = "Published.  Please check: " + uc.getUrl();
+            saveMessage(formId, survey.getCode(), form.getName(), transactionId, messageText);
+            uploadOk = true;
 
-            uploadOk = false;
-            log.info("Uploading " + formId);
-            UploadStatusContainer uc = uploadFormXML(
-                    Long.toString(formId), //latest version in plain filename
-                    formId + "v" + form.getVersion(), //archive copy
-                    formXML);
-            Message message = new Message();
-            message.setActionAbout("surveyAssembly");
-            message.setObjectId(formId);
-            message.setObjectTitle(survey.getCode() + " / " + form.getName());
-            if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
-                log.info("Finishing assembly of " + formId);
-                form.setStatus(Survey.Status.PUBLISHED);
-                if (form.getWebForm()){
-                    boolean webForm = WebForm.validWebForm(surveyGroupDao.getByKey(form.getSurveyGroupId()), form, questionDao.listQuestionsBySurvey(form.getObjectId()));
-                    form.setWebForm(webForm);
-                    log.info("Finishing webform validated to: " + webForm);
-                }
-                surveyDao.save(form); //remember PUBLISHED status
-                String messageText = "Published.  Please check: " + uc.getUrl();
-                message.setShortMessage(messageText);
-                message.setTransactionUUID(Long.toString(transactionId));
-                MessageDao messageDao = new MessageDao();
-                messageDao.save(message);
-                uploadOk = true;
-                log.info("Message saved");
-                //invalidate any cached reports in flow-services
-                List<Long> ids = new ArrayList<>();
-                ids.add(formId);
-                SurveyUtils.notifyReportService(ids, "invalidate");
-                log.info("Report notified");
-            } else {
-                String messageText = "Failed to publish: " + formId + "\n" + uc.getMessage();
-                message.setTransactionUUID(Long.toString(transactionId));
-                message.setShortMessage(messageText);
-                MessageDao messageDao = new MessageDao();
-                messageDao.save(message);
-                log.warning("Failed to upload assembled form, id " + formId + "\n"
-                        + uc.getMessage());
-            }
+            //invalidate any cached reports in flow-services
+            List<Long> ids = new ArrayList<>();
+            ids.add(formId);
+            SurveyUtils.notifyReportService(ids, "invalidate");
             log.info("Completed form assembly for " + formId);
-        } catch (Exception e) {
-            log.severe("Error assembleFormWithJackson: " + e.toString());
+        } else {
+            String messageText = "Failed to publish: " + formId + "\n" + uc.getMessage();
+            saveMessage(formId, survey.getCode(), form.getName(), transactionId, messageText);
+            log.warning("Failed to upload assembled form, id " + formId + "\n"
+                    + uc.getMessage());
         }
         return uploadOk;
+    }
+
+    private void saveMessage(long formId, String surveyCode, String formName, long transactionId, String messageText) {
+        Message message = new Message();
+        message.setActionAbout("surveyAssembly");
+        message.setObjectId(formId);
+        message.setObjectTitle(surveyCode + " / " + formName);
+        message.setTransactionUUID(Long.toString(transactionId));
+        message.setShortMessage(messageText);
+        MessageDao messageDao = new MessageDao();
+        messageDao.save(message);
     }
 
     /**  Upload a zipped form file twice to S3 under different filenames.
