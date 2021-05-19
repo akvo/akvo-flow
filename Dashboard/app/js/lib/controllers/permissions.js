@@ -169,7 +169,16 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('message', undefined);
 
         if (this.isRegistrationFormInstance(event.contexts[1])) {
-            this.set('message', Ember.String.loc('_delete_all_monitoring_forms'));
+          const self = this;
+          const instanceDeleted = event.contexts[1];
+          const submissions = FLOW.SurveyInstance.find({surveyedLocaleId: instanceDeleted.get('surveyedLocaleId')});
+          submissions.on('didLoad', () => {
+            const numberOfSubmissions = submissions.get('content').length;
+            const numberMonitoringSubmissions = numberOfSubmissions - 1;
+            if(numberMonitoringSubmissions > 0) {
+              self.set('message', Ember.String.loc('_delete_all_monitoring_forms', [numberMonitoringSubmissions]));
+            }
+          });
         }
         this.set('showDialog', true);
         break;
