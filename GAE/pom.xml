@@ -8,22 +8,6 @@
   <groupId>org.akvo.flow</groupId>
   <artifactId>akvo-flow</artifactId>
 
-  <!--
-      Adding these repositories to be able to download the geocell
-      jars. After code cleanup when they are no longer needed,
-      we can remove this.
-  -->
-  <repositories>
-    <repository>
-      <id>DN_M2_Repo</id>
-      <url>https://repo1.maven.org/maven2/</url>
-    </repository>
-      <repository>
-        <id>bintray.com</id>
-        <url>https://dl.bintray.com/meetup/maven/</url>
-      </repository>
-  </repositories>
-
   <distributionManagement>
     <repository>
       <id>clojars</id>
@@ -285,11 +269,6 @@
      </dependency>
 
      <!-- TODO REMOVE AND SEE WHAT DEPENDS-->
-    <dependency>
-        <groupId>com.beoui</groupId>
-        <artifactId>geocell</artifactId>
-        <version>0.0.10.1</version>
-    </dependency>
     <dependency>
         <groupId>com.vividsolutions</groupId>
         <artifactId>jts</artifactId>

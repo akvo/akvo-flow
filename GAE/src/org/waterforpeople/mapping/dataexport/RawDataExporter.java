@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -43,7 +44,7 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
  */
 public class RawDataExporter extends AbstractDataExporter {
 
-    private static final Logger log = Logger.getLogger(RawDataExporter.class);
+    private static final Logger log = Logger.getLogger(RawDataExporter.class.getName());
     private static final String IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
     private String serverBase;
@@ -65,7 +66,7 @@ public class RawDataExporter extends AbstractDataExporter {
         apiKey = criteria.get("apiKey");
 
         Writer pw = null;
-        log.debug("In CSV exporter");
+        log.finest("In CSV exporter");
         final String apiKey = criteria.get("apiKey");
         try {
             Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
@@ -78,16 +79,16 @@ public class RawDataExporter extends AbstractDataExporter {
                 writeHeader(pw, questionMap);
                 exportInstances(pw, keyList);
             } else {
-                log.error("Error getting questions");
+                log.severe("Error getting questions");
             }
         } catch (Exception e) {
-            log.error("Error exporting CSV:" + e.getMessage(), e);
+            log.log(Level.SEVERE, "Error exporting CSV:" + e.getMessage(), e);
         } finally {
             if (pw != null) {
                 try {
                     pw.close();
                 } catch (IOException e) {
-                    log.error("Could not close writer: " + e.getMessage(), e);
+                    log.log(Level.SEVERE, "Could not close writer: " + e.getMessage(), e);
                 }
             }
         }
@@ -106,10 +107,10 @@ public class RawDataExporter extends AbstractDataExporter {
                 writeHeader(pw, questionMap);
                 exportInstances(pw, keyList);
             } else {
-                log.error("Error getting questions");
+                log.severe("Error getting questions");
             }
         } catch (Exception e) {
-            log.error("Error exporting: " + e.getMessage(), e);
+            log.log(Level.SEVERE, "Error exporting: " + e.getMessage(), e);
         }
     }
 
@@ -224,11 +225,11 @@ public class RawDataExporter extends AbstractDataExporter {
                             pw.write("\n");
                             pw.flush();
                             i++;
-                            log.debug("Row: " + i);
+                            log.finest("Row: " + i);
                             responses = null;
                         }
                     } catch (Exception ex) {
-                        log.error("Swallow the exception for now and continue", ex);
+                        log.log(Level.SEVERE, "Swallow the exception for now and continue", ex);
                     }
                 }
             }

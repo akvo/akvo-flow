@@ -45,6 +45,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.Nonnull;
@@ -54,10 +56,6 @@ import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
 import org.akvo.flow.xml.PublishedForm;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -103,7 +101,7 @@ import static com.gallatinsystems.common.Constants.*;
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final Logger log = Logger
-            .getLogger(GraphicalSurveySummaryExporter.class);
+            .getLogger(GraphicalSurveySummaryExporter.class.getName());
 
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
     private static final String TYPE_OPT = "exportMode";
@@ -215,7 +213,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String apiKey = criteria.get("apiKey").trim(); //To access cloud datastore
         final String s3formDir = options.get(UPLOAD_URL_OPT) + options.get(UPLOAD_DIR_OPT);
 
-        log.debug("### Export criteria=" + criteria.toString() +
+        log.finest("### Export criteria=" + criteria.toString() +
         		" filename=" + fileName.toString() +
         		" options=" + options.toString() );
         if (!processOptions(options)) {
@@ -288,10 +286,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         + " - instance: " + serverBaseUrl);
             }
         } catch (Exception e) {
-            log.error("Error generating report: " + e.getMessage(), e);
-            for (StackTraceElement ste: e.getStackTrace()) {
-                log.debug(ste);
-            }
+            log.log(Level.SEVERE,"Error generating report: " + e.getMessage(), e);
             //TODO: return info to user
         }
     }
@@ -350,7 +345,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String fileName = s3FormDir + "/" + surveyId + ".zip"; //no "v2.0" etc at end
             String formXml = null;
             final URL url = new URL(fileName);
-            log.debug("Getting form XML from " + url);
+            log.finest("Getting form XML from " + url);
             final URLConnection conn = url.openConnection();
             final BufferedInputStream deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
             final ZipInputStream formFileStream = new ZipInputStream(deviceZipFileInputStream);
@@ -485,7 +480,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
 
                         } catch (Exception e) {
-                            log.error("Error fetching instance data ", e);
+                            log.log(Level.SEVERE, "Error fetching instance data ", e);
                         } finally {
                             synchronized (lock) {
                                 threadsCompleted.getAndIncrement();
@@ -499,10 +494,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         while (!jobQueue.isEmpty() || threadPool.getActiveCount() > 0
                 || started > threadsCompleted.get()) {
             try {
-                log.debug("Sleeping, Queue has: " + jobQueue.size());
+                log.finest("Sleeping, Queue has: " + jobQueue.size());
                 Thread.sleep(5000);
             } catch (Exception e) {
-                log.debug("Error thread sleep", e);
+                log.finest("Error thread sleep: " + e.getMessage());
             }
         }
 
@@ -557,7 +552,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private void sortDataOnCollectionDate(final List<InstanceData> allData) {
-        log.debug("Starting data sort");
+        log.fine("Starting data sort");
         Collections.sort(allData, new Comparator<InstanceData>() {
             @Override
             public int compare(InstanceData o1, InstanceData o2) {
@@ -574,7 +569,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 return date1.compareTo(date2);
             }
         });
-        log.debug("Finished data sort");
+        log.fine("Finished data sort");
     }
 
     //gather some statistics on the data collection
@@ -858,7 +853,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (questionDto.getLevelNames() != null) {
                     cells.addAll(cascadeCellValues(value, questionDto.getLevelNames().size()));
                 } else {
-                    log.warn("No CASCADE resource for question '" + questionDto.getText() + "'");
+                    log.warning("No CASCADE resource for question '" + questionDto.getText() + "'");
                 }
 
                 break;
@@ -1065,7 +1060,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             try {
                 cascadeNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
-                log.warn("Unable to parse CASCADE response - " + value, e);
+                log.log(Level.WARNING, "Unable to parse CASCADE response - " + value, e);
             }
         } else if (!value.isEmpty()) {
             for (String name : value.split("\\|")) {
@@ -1171,7 +1166,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             try {
                 optionNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
-                log.warn("Could not parse option response: " + value, e);
+                log.log(Level.WARNING, "Could not parse option response: " + value, e);
             }
         } else {
             String[] texts = value.split("\\|");
@@ -2099,12 +2094,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         variableNamesInHeaders = false;
 
         if (options != null) {
-            log.debug(options);
+            for (String key : options.keySet()) {
+                log.finest(key + ": " + options.get(key));
+            }
 
             //What kind of report?
             reportType = options.get(TYPE_OPT);
             if (reportType == null || reportType.isEmpty()) {
-                log.error(TYPE_OPT + " was not set.");
+                log.severe(TYPE_OPT + " was not set.");
                 return false;
             } else
             if (DATA_CLEANING_TYPE.equalsIgnoreCase(reportType)) {
@@ -2129,7 +2126,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 splitIntoColumns = true;
                 justCodes = true;
             } else {
-                log.error("Unknown value " + reportType + " for " + TYPE_OPT);
+                log.severe("Unknown value " + reportType + " for " + TYPE_OPT);
                 return false;
             }
 
@@ -2197,13 +2194,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * [5] usePublishedForm, true or false
      */
     public static void main(String[] args) {
-        // Log4j stuff - http://stackoverflow.com/a/9003191
-        ConsoleAppender console = new ConsoleAppender();
-        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
-        console.setThreshold(Level.DEBUG);
-        console.activateOptions();
-        Logger.getRootLogger().addAppender(console);
-
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
