@@ -552,7 +552,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private void sortDataOnCollectionDate(final List<InstanceData> allData) {
-        log.fine("Starting data sort");
+        log.finest("Starting data sort");
         Collections.sort(allData, new Comparator<InstanceData>() {
             @Override
             public int compare(InstanceData o1, InstanceData o2) {
@@ -569,7 +569,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 return date1.compareTo(date2);
             }
         });
-        log.fine("Finished data sort");
+        log.finest("Finished data sort");
     }
 
     //gather some statistics on the data collection
