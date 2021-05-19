@@ -25,10 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -56,7 +54,7 @@ import com.gallatinsystems.framework.dataexport.applet.DataExporter;
  */
 public class SurveyFormExporter implements DataExporter {
 
-    private static final Logger log = Logger.getLogger(SurveyFormExporter.class);
+    private static final Logger log = Logger.getLogger(SurveyFormExporter.class.getName());
 
     private static final String PAPER_SHEET_NAME = "Paper Survey";
     private static final String FULL_SHEET_NAME = "Full Survey";
@@ -95,7 +93,7 @@ public class SurveyFormExporter implements DataExporter {
 
             writeSurvey(surveyTitle, fileName, groupList, questionMap);
         } catch (Exception e) {
-            log.error("Could not write survey", e);
+            log.log(Level.SEVERE, "Could not write survey", e);
         }
     }
 
@@ -578,13 +576,6 @@ public class SurveyFormExporter implements DataExporter {
     // This main() method is only used for debugging;
     // when deployed on server, export() is called from Clojure code
     public static void main(String[] args) {
-
-        // Log4j stuff - http://stackoverflow.com/a/9003191
-        ConsoleAppender console = new ConsoleAppender();
-        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
-        console.setThreshold(Level.DEBUG);
-        console.activateOptions();
-        Logger.getRootLogger().addAppender(console);
 
         SurveyFormExporter exporter = new SurveyFormExporter();
         Map<String, String> criteria = new HashMap<String, String>();
