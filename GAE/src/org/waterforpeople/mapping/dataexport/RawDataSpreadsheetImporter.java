@@ -37,9 +37,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.akvo.flow.util.FlowJsonObjectWriter;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -58,7 +58,7 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 
-    private static final Logger log = Logger.getLogger(RawDataSpreadsheetImporter.class);
+    private static final Logger log = Logger.getLogger(RawDataSpreadsheetImporter.class.getName());
 
     private static final String SERVLET_URL = "/rawdatarestapi";
     public static final String SURVEY_CONFIG_KEY = "surveyId";
@@ -102,7 +102,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             wb = WorkbookFactory.create(stream);
             return wb.getSheetAt(0); //Assumes raw data sheet is first
         } catch (Exception e) {
-            log.error("Workbook creation exception:" + e);
+            log.severe("Workbook creation exception:" + e);
         }
         return null;
     }
@@ -181,14 +181,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Thread.sleep(5000);
             }
             if (errorIds.size() > 0) {
-                log.error("There were ERRORS: ");
+                log.severe("There were ERRORS: ");
                 for (String line : errorIds) {
-                    log.error(line);
+                    log.severe(line);
                 }
             }
 
             Thread.sleep(5000);
-            log.debug("Updating summaries");
+            log.finest("Updating summaries");
             invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
                     + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                     criteria.get(KEY_PARAM));
@@ -197,7 +197,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     criteria.get(KEY_PARAM));
 
         } catch (Exception e) {
-            log.error("Failed to import raw data report", e);
+            log.log(Level.SEVERE,"Failed to import raw data report", e);
         } finally {
             if (threadPool != null) {
                 threadPool.shutdown();
@@ -329,7 +329,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             } else if (header.equalsIgnoreCase(FORM_VER_LABEL)) {
                 index.put(FORM_VER_COLUMN_KEY, i);
             } else  {
-                log.warn("Unknown column header '" + header + "'");
+                log.warning("Unknown column header '" + header + "'");
             }
         }
         return index;
@@ -337,7 +337,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     private boolean checkCol(Map<String, Integer> index, String name) {
         if (!index.containsKey(name)) {
-            log.warn("Required column '" + name + "' not found!");
+            log.warning("Required column '" + name + "' not found!");
             return false;
         }
         return true;
@@ -425,7 +425,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         //TODO: Abort on overlap error? Some of this data will be lost.
         if (!instanceData.addResponses(responseMap)) {
-            log.warn("Some questions have answers on more than one sheet!");
+            log.warning("Some questions have answers on more than one sheet!");
         }
 
         return rowIx;
@@ -634,14 +634,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             cascadeMap.put("code", codeAndName[0]);
                             cascadeMap.put("name", codeAndName[1]);
                         } else {
-                            log.warn("Invalid cascade node: " + cascadeNode);
+                            log.warning("Invalid cascade node: " + cascadeNode);
                         }
                         cascadeList.add(cascadeMap);
                     }
                     try {
                         val = JSON_OBJECT_WRITER.writeAsString(cascadeList);
                     } catch (IOException e) {
-                        log.warn("Could not parse cascade string: " + cascadeString);
+                        log.warning("Could not parse cascade string: " + cascadeString);
                     }
                     break;
 
@@ -694,7 +694,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             val = JSON_OBJECT_WRITER.writeAsString(optionList);
                         }
                     } catch (IOException e) {
-                        log.warn("Could not parse option string: " + optionString, e);
+                        log.log(Level.SEVERE, "Could not parse option string: " + optionString, e);
                     }
 
                     break;
@@ -705,7 +705,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (date != null) {
                         val = String.valueOf(date.getTime());
                     } else {
-                        log.warn("Could not parse date string: " + dateString);
+                        log.warning("Could not parse date string: " + dateString);
                     }
                     break;
 
@@ -778,7 +778,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * Return a map of column index -> question id on a sheet.
      * Metadata headers are assumed to never contain a "|".
-     * @param baseSheet
      * @return A map from column index to question id.
      */
     public static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
@@ -1204,11 +1203,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     //This main() method is only for testing and debugging.
     //executeImport() is called from Clojure code in live deployment.
     public static void main(String[] args) throws Exception {
-        // Set up a simple configuration that logs on the console.
-        BasicConfigurator.configure();
 
         if (args.length != 4) {
-            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
+            log.severe("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);
         }
         File file = new File(args[0].trim());
