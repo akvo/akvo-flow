@@ -8,9 +8,9 @@ if [ -z "${ZULIP_CLI_TOKEN}" ]; then
   exit 1
 fi
 
-slack_txt=$(git --no-pager log --oneline --no-merges 403c49fce56fadeb468b4897d5482d91b42ada5c..d080c9dd5396f9c203b05985d39e5d9ac6357f90 | cut -f 2- -d\  | sed 's/\[#\([0-9]*\)\]/\[#\1\]\(https:\/\/github.com\/akvo\/akvo-flow\/issues\/\1\)/' | tr \" \')
+zulip_txt=$(git --no-pager log --reverse --oneline --no-merges 20210508t163928..0233d84d5ca2f3db34608c7857b49a523a23822b | cut -f 2- -d\  | sed 's/\[#\([0-9]*\)\]/\[#\1\]\(https:\/\/github.com\/akvo\/akvo-flow\/issues\/\1\)/' | tr \" \')
 
-curl -X POST https://akvo.zulipchat.com/api/v1/messages     -u "${ZULIP_CLI_TOKEN}"     -d "type=stream"     -d "to=K2 Engine"     -d "topic=Releases"     -d "content=Flipping *FLOW PROD!!!*. [Full diff](https://github.com/akvo/akvo-flow/compare/403c49fce56fadeb468b4897d5482d91b42ada5c..d080c9dd5396f9c203b05985d39e5d9ac6357f90).
+curl --request POST https://akvo.zulipchat.com/api/v1/messages     --user "${ZULIP_CLI_TOKEN}"     --data "type=stream"     --data "to=K2 Engine"     --data "topic=Releases"     --data-urlencode "content=Promoting akvo-flow to dark production (aka https://uat1.akvoflow.org). [Full diff](https://github.com/akvo/akvo-flow/compare/20210508t163928..0233d84d5ca2f3db34608c7857b49a523a23822b).
 
-$slack_txt"
+${zulip_txt}"
 
