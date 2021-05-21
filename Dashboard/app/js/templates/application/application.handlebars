@@ -28,8 +28,7 @@
       <br/><br/>
       <div class="buttons menuCentre">
         <ul>
-          {{#if FLOW.dialogControl.showOK}} <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">{{t _ok}}</a></li>{{/if}}
-          {{#if FLOW.dialogControl.showOKDisabled}} <li><a class="ok smallBtn disabled">{{t _ok}}</a></li>{{/if}}
+          {{#if FLOW.dialogControl.showOK}} <li><a {{bindAttr class="FLOW.dialogControl.showOKDisabled:disabled :ok :smallBtn"}} {{action "doOK" target="FLOW.dialogControl"}}>{{t _ok}}</a></li>{{/if}}
           {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action "doCANCEL" target="FLOW.dialogControl"}} class="cancel">{{t _cancel}}</a></li>{{/if}}
         </ul>
       </div>
