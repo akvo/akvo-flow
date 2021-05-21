@@ -112,6 +112,7 @@ FLOW.dialogControl = Ember.Object.create({
   activeAction: null,
   showOK: true,
   showCANCEL: true,
+  showOKDisabled: false,
 
   confirm(event) {
     this.set('activeView', event.view);
@@ -169,12 +170,12 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('message', undefined);
 
         if (this.isRegistrationFormInstance(event.contexts[1])) {
-          this.set('showOK', false);
+          this.set('showOKDisabled', true);
           const self = this;
           const instanceDeleted = event.contexts[1];
           const submissions = FLOW.SurveyInstance.find({surveyedLocaleId: instanceDeleted.get('surveyedLocaleId')});
           submissions.on('didLoad', () => {
-            self.set('showOK', true);
+            this.set('showOKDisabled', false);
             const numberOfSubmissions = submissions.get('content').length;
             const numberMonitoringSubmissions = numberOfSubmissions - 1;
             if (numberMonitoringSubmissions > 0) {
