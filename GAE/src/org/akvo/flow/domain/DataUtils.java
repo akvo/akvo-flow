@@ -22,15 +22,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.logging.Logger;
 import org.akvo.flow.util.FlowJsonObjectReader;
-import org.apache.log4j.Logger;
 
 /**
  * Utilities class for performing transformations on survey data, i.e. response values
  */
 public class DataUtils {
 
-    private static final Logger log = Logger.getLogger(DataUtils.class);
+    private static final Logger log = Logger.getLogger(DataUtils.class.getName());
 
     public static String[] optionResponsesTextArray(String optionResponse) {
         String[] responseArray = null;
@@ -156,7 +156,7 @@ public class DataUtils {
         try {
             caddisflyResponseMap = jsonReader.readObject(caddisflyValue, typeReference);
         } catch (IOException e) {
-            log.warn("Failed to parse the caddisfly response");
+            log.warning("Failed to parse the caddisfly response");
         }
         if (caddisflyResponseMap != null) {
             return caddisflyResponseMap;
