@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.util.Pair;
 import javax.annotation.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +36,7 @@ public class ImageUploadRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Pair<Integer, String> uploadImage(@RequestParam(value = "formInstanceId", defaultValue = "") String formInstanceId,
+    public Response uploadImage(@RequestParam(value = "formInstanceId", defaultValue = "") String formInstanceId,
                                              @RequestParam(value = "questionId", defaultValue = "") String questionId,
                                              @RequestParam(value = "formId", defaultValue = "") String formId,
                                              @RequestParam(value = "image") MultipartFile file) {
@@ -45,35 +44,35 @@ public class ImageUploadRestService {
         String errorMessage = "";
         Survey form = getForm(formId);
         if (form == null) {
-            return new Pair<>(400, "Form not found");
+            return new Response(400, "Form not found");
         }
         Question question = getQuestion(questionId);
         if (question == null) {
-            return new Pair<>(400, "Question not found");
+            return new Response(400, "Question not found");
         }
         if (question.getSurveyId() == null || !question.getSurveyId().equals(form.getObjectId())) {
-            return new Pair<>(400, "Question does not belong to that form");
+            return new Response(400, "Question does not belong to that form");
         }
         SurveyInstance formInstance = getFormInstance(formInstanceId);
         if (formInstance == null) {
-            return new Pair<>(400, "FormInstance not found");
+            return new Response(400, "FormInstance not found");
         }
         if (formInstance.getSurveyId()== null || !formInstance.getSurveyId().equals(form.getObjectId())) {
-            return new Pair<>(400, "FormInstance does not belong to that form");
+            return new Response(400, "FormInstance does not belong to that form");
         }
         if (file == null || file.isEmpty()) {
-            return new Pair<>(400, "File is not valid");
+            return new Response(400, "File is not valid");
         }
         String fileExtension = getFileType(file);
         if (fileExtension == null) {
-            return new Pair<>(400, "File type is not valid: only jpg and png are accepted");
+            return new Response(400, "File type is not valid: only jpg and png are accepted");
         }
         String filename = uploadImageToS3(file, generateFileName(fileExtension));
         if (filename == null) {
-            return new Pair<>(400, "Upload to s3 failed for: " + filename);
+            return new Response(400, "Upload to s3 failed for: " + filename);
         }
         saveQuestionAnswer(question, formInstance, filename);
-        return new Pair<>(responseCode, errorMessage);
+        return new Response(responseCode, errorMessage);
     }
 
     @Nullable
@@ -105,8 +104,8 @@ public class ImageUploadRestService {
 
     private void saveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
-        List<QuestionAnswerStore> existingStores = questionAnswerStoreDao.listByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
         int iteration = 0;
+        List<QuestionAnswerStore> existingStores = questionAnswerStoreDao.listByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
         if (existingStores != null && !existingStores.isEmpty()) {
             List<QuestionAnswerStore> sorted = existingStores.stream().sorted(Comparator.comparing(QuestionAnswerStore::getIteration)).collect(Collectors.toList());
             Collections.reverse(sorted);
@@ -152,5 +151,23 @@ public class ImageUploadRestService {
             return null;
         }
         return new SurveyDAO().getByKey(formId);
+    }
+
+    public static class Response {
+        private final int code;
+        private final String message;
+
+        public Response(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }
