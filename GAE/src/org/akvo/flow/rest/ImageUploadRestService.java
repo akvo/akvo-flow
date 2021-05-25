@@ -6,10 +6,15 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.util.Pair;
 import javax.annotation.Nullable;
 import org.springframework.stereotype.Controller;
@@ -61,7 +66,7 @@ public class ImageUploadRestService {
         }
         String fileExtension = getFileType(file);
         if (fileExtension == null) {
-            return new Pair<>(400, "File type is not valid: only jpg and png are accepted"); //TODO: shall we accept other formats?
+            return new Pair<>(400, "File type is not valid: only jpg and png are accepted");
         }
         String filename = uploadImageToS3(file, generateFileName(fileExtension));
         if (filename == null) {
@@ -73,6 +78,7 @@ public class ImageUploadRestService {
 
     @Nullable
     private String getFileType(MultipartFile file) {
+        //TODO: shall we accept other formats?
         String contentType = file.getContentType() != null? file.getContentType(): "";
         switch (contentType) {
             case "image/jpeg":
@@ -98,7 +104,14 @@ public class ImageUploadRestService {
     }
 
     private void saveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
-        //TODO: what if the question is from repeatable group?
+        QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
+        List<QuestionAnswerStore> existingStores = questionAnswerStoreDao.listByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
+        int iteration = 0;
+        if (existingStores != null && !existingStores.isEmpty()) {
+            List<QuestionAnswerStore> sorted = existingStores.stream().sorted(Comparator.comparing(QuestionAnswerStore::getIteration)).collect(Collectors.toList());
+            Collections.reverse(sorted);
+            iteration = sorted.get(0).getIteration();
+        }
         QuestionAnswerStore store = new QuestionAnswerStore();
         store.setSurveyId(formInstance.getSurveyId());
         store.setSurveyInstanceId(formInstance.getKey().getId());
@@ -110,16 +123,13 @@ public class ImageUploadRestService {
 
         store.setValue(fileName);
 
-        //store.setIteration(iteration); ????
-        //TODO: fetch other answers for that question and add one iteration if needed
+        store.setIteration(iteration);
         //TODO: where do we put the geolocation data?
-        new QuestionAnswerStoreDao().save(store);
+        questionAnswerStoreDao.save(store);
     }
 
     private String generateFileName(String fileExtension) {
         //in the app this is how we create the filename
-        //TODO: what if image is not JPG but PNG
-        //maybe pass this as param?
         return UUID.randomUUID().toString() + fileExtension;
     }
 
