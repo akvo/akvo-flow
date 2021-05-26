@@ -181,21 +181,21 @@ public class ImageUploadRestService {
         if (formInstanceId == null || formInstanceId.isEmpty()) {
             return null;
         }
-        return new SurveyInstanceDAO().getByKey(formInstanceId);
+        return new SurveyInstanceDAO().getByKey(Long.parseLong(formInstanceId));
     }
 
     private Question getQuestion(String questionId) {
         if (questionId == null || questionId.isEmpty()) {
             return null;
         }
-        return new QuestionDao().getByKey(questionId);
+        return new QuestionDao().getByKey(Long.parseLong(questionId));
     }
 
     private Survey getForm(String formId) {
         if (formId == null || formId.isEmpty()) {
             return null;
         }
-        return new SurveyDAO().getByKey(formId);
+        return new SurveyDAO().getByKey(Long.parseLong(formId));
     }
 
     public static class Response {
