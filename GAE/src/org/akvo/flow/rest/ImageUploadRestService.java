@@ -17,11 +17,12 @@ package org.akvo.flow.rest;
 
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -82,6 +83,7 @@ public class ImageUploadRestService {
         if (fileExtension == null) {
             return new Response(400, "File type is not valid: only jpg and png are accepted");
         }
+        //TODO: shall we resize? does the calling task handle resize
         String filename = uploadImageToS3(file, generateFileName(fileExtension));
         if (filename == null) {
             return new Response(400, "Upload to s3 failed for: " + filename);
@@ -118,6 +120,30 @@ public class ImageUploadRestService {
     }
 
     private void saveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
+        Long questionGroupId = question.getQuestionGroupId();
+        QuestionGroup group = new QuestionGroupDao().getByKey(questionGroupId);
+        boolean repeatable = group.getRepeatable();
+        if (repeatable) {
+            saveRepeatedQuestionAnswer(question, formInstance, fileName);
+        } else {
+            saveSingleQuestionAnswer(question, formInstance, fileName);
+        }
+    }
+
+    private void saveSingleQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
+        QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
+        QuestionAnswerStore existingStore = questionAnswerStoreDao.getByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
+        if (existingStore == null) {
+            createAndSaveQuestionAnswer(question, formInstance, fileName, questionAnswerStoreDao, 0);
+        } else {
+            existingStore.setValue(fileName);
+            questionAnswerStoreDao.save(existingStore);
+        }
+    }
+
+    //TODO: here we do not check if the image already exists
+    //we don't know how many repetitions a given question should have
+    private void saveRepeatedQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
         int iteration = 0;
         List<QuestionAnswerStore> existingStores = questionAnswerStoreDao.listByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
@@ -126,6 +152,10 @@ public class ImageUploadRestService {
             Collections.reverse(sorted);
             iteration = sorted.get(0).getIteration();
         }
+        createAndSaveQuestionAnswer(question, formInstance, fileName, questionAnswerStoreDao, iteration);
+    }
+
+    private void createAndSaveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName, QuestionAnswerStoreDao questionAnswerStoreDao, int iteration) {
         QuestionAnswerStore store = new QuestionAnswerStore();
         store.setSurveyId(formInstance.getSurveyId());
         store.setSurveyInstanceId(formInstance.getKey().getId());
