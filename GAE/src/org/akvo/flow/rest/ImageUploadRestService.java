@@ -84,11 +84,12 @@ public class ImageUploadRestService {
             return new Response(400, "File type is not valid: only jpg and png are accepted");
         }
         //TODO: shall we resize? does the calling task handle resize
-        String filename = uploadImageToS3(file, generateFileName(fileExtension));
-        if (filename == null) {
+        String filename = generateFileName(fileExtension);
+        String resultFilename = uploadImageToS3(file, filename);
+        if (resultFilename == null) {
             return new Response(400, "Upload to s3 failed for: " + filename);
         }
-        saveQuestionAnswer(question, formInstance, filename);
+        saveQuestionAnswer(question, formInstance, resultFilename);
         return new Response(responseCode, errorMessage);
     }
 
@@ -113,7 +114,7 @@ public class ImageUploadRestService {
             String directory = props.getProperty("images");
             S3Util.put(bucketName, directory + "/" + fileName, file.getBytes(), file.getContentType(), true);
             return fileName;
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.log(Level.SEVERE, "Error uploading image", e);
             return null;
         }

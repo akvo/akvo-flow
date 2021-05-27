@@ -207,6 +207,7 @@ public class DataStoreTestUtil {
         qg.setName("question group");
         qg.setSurveyId(newSurvey.getKey().getId());
         qg.setOrder(order);
+        qg.setRepeatable(false);
         qg.setImmutable(immutable);
         return new QuestionGroupDao().save(qg);
     }

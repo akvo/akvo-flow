@@ -15,6 +15,7 @@
  */
 package org.akvo.flow.rest;
 
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -23,12 +24,25 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.io.IOException;
+import java.util.Properties;
 import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.MockedStatic;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import org.springframework.mock.web.MockMultipartFile;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 class ImageUploadRestServiceTest {
@@ -122,4 +136,69 @@ class ImageUploadRestServiceTest {
         assertEquals(400, response.getCode());
         assertEquals("File is not valid", response.getMessage());
     }
+
+    @Test
+    void testUploadImageWhenFileInvalid() throws IOException {
+        SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
+        Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
+        String formId = form.getObjectId() + "";
+        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
+        new SurveyedLocaleDao().save(dataPoint);
+        SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
+        new SurveyInstanceDAO().save(surveyInstance);
+        String formInstanceId = surveyInstance.getKey().getId() + "";
+
+        ImageUploadRestService service = new ImageUploadRestService();
+        ImageUploadRestService.Response response = service.uploadImage(formInstanceId, questionId, formId, new MockMultipartFile("file.txt", "new_file.txt", "image/text", new byte[2]));
+
+        assertEquals(400, response.getCode());
+        assertEquals("File type is not valid: only jpg and png are accepted", response.getMessage());
+    }
+
+    @Test
+    void testUploadImageWhenS3UploadFails() throws IOException {
+        SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
+        Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
+        String formId = form.getObjectId() + "";
+        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
+        new SurveyedLocaleDao().save(dataPoint);
+        SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
+        new SurveyInstanceDAO().save(surveyInstance);
+        String formInstanceId = surveyInstance.getKey().getId() + "";
+
+        ImageUploadRestService service = new ImageUploadRestService();
+        //upload to s3 will fail because we do not have any keys setup
+        ImageUploadRestService.Response response = service.uploadImage(formInstanceId, questionId, formId, new MockMultipartFile("file.jpg", "new_image.jpg", "image/jpeg", new byte[2]));
+
+        assertEquals(400, response.getCode());
+        assertTrue(response.getMessage().contains("Upload to s3 failed"));
+    }
+
+    @Test
+    void testUploadImageWhenS3UploadSuccess() throws IOException {
+        SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
+        Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
+        String formId = form.getObjectId() + "";
+        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
+        new SurveyedLocaleDao().save(dataPoint);
+        SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
+        new SurveyInstanceDAO().save(surveyInstance);
+        String formInstanceId = surveyInstance.getKey().getId() + "";
+
+        ImageUploadRestService service = new ImageUploadRestService();
+
+        try (MockedStatic mockedS3 = mockStatic(S3Util.class)) {
+            // Mocking put on S3
+            mockedS3.when(() -> S3Util.put(anyString(), anyString(), any(), anyString(), anyBoolean())).thenReturn(true);
+
+            ImageUploadRestService.Response response = service.uploadImage(formInstanceId, questionId, formId, new MockMultipartFile("file.jpg", "new_image.jpg", "image/jpeg", new byte[2]));
+            assertEquals(200, response.getCode());
+            assertEquals("", response.getMessage());
+            assertNotNull(new QuestionAnswerStoreDao().getByQuestionAndSurveyInstance(Long.parseLong(questionId), Long.parseLong(formInstanceId)));
+        }
+    }
+
 }
