@@ -17,22 +17,16 @@ package org.akvo.flow.rest;
 
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,14 +44,18 @@ public class ImageUploadRestService {
     private static final Logger log = Logger
             .getLogger(ImageUploadRestService.class.getName());
 
-    @RequestMapping(method = RequestMethod.POST, value = "")
+    @RequestMapping(method = RequestMethod.POST, value = "/question/{questionId}/instance/{instanceId}")
     @ResponseBody
-    public Response uploadImage(@RequestParam(value = "formInstanceId", defaultValue = "") String formInstanceId,
-                                             @RequestParam(value = "questionId", defaultValue = "") String questionId,
-                                             @RequestParam(value = "formId", defaultValue = "") String formId,
-                                             @RequestParam(value = "image") MultipartFile file) {
+    public Response uploadImage(@PathVariable("questionId") String questionId,
+                                @PathVariable("instanceId") String formInstanceId,
+                                @RequestParam(value = "image") MultipartFile file) {
         int responseCode = 200;
         String errorMessage = "";
+        SurveyInstance formInstance = getFormInstance(formInstanceId);
+        if (formInstance == null) {
+            return new Response(400, "FormInstance not found");
+        }
+        long formId = formInstance.getSurveyId();
         Survey form = getForm(formId);
         if (form == null) {
             return new Response(400, "Form not found");
@@ -69,13 +67,7 @@ public class ImageUploadRestService {
         if (question.getSurveyId() == null || !question.getSurveyId().equals(form.getObjectId())) {
             return new Response(400, "Question does not belong to that form");
         }
-        SurveyInstance formInstance = getFormInstance(formInstanceId);
-        if (formInstance == null) {
-            return new Response(400, "FormInstance not found");
-        }
-        if (formInstance.getSurveyId()== null || !formInstance.getSurveyId().equals(form.getObjectId())) {
-            return new Response(400, "FormInstance does not belong to that form");
-        }
+
         if (file == null || file.isEmpty()) {
             return new Response(400, "File is not valid");
         }
@@ -84,10 +76,11 @@ public class ImageUploadRestService {
             return new Response(400, "File type is not valid: only jpg and png are accepted");
         }
         //TODO: shall we resize? does the calling task handle resize
+        String originalFileName = file.getName();
         String filename = generateFileName(fileExtension);
         String resultFilename = uploadImageToS3(file, filename);
         if (resultFilename == null) {
-            return new Response(400, "Upload to s3 failed for: " + filename);
+            return new Response(400, "Upload to s3 failed for: " + originalFileName);
         }
         saveQuestionAnswer(question, formInstance, resultFilename);
         return new Response(responseCode, errorMessage);
@@ -95,7 +88,6 @@ public class ImageUploadRestService {
 
     @Nullable
     private String getFileType(MultipartFile file) {
-        //TODO: shall we accept other formats?
         String contentType = file.getContentType() != null? file.getContentType(): "";
         switch (contentType) {
             case "image/jpeg":
@@ -121,17 +113,6 @@ public class ImageUploadRestService {
     }
 
     private void saveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
-        Long questionGroupId = question.getQuestionGroupId();
-        QuestionGroup group = new QuestionGroupDao().getByKey(questionGroupId);
-        boolean repeatable = group.getRepeatable();
-        if (repeatable) {
-            saveRepeatedQuestionAnswer(question, formInstance, fileName);
-        } else {
-            saveSingleQuestionAnswer(question, formInstance, fileName);
-        }
-    }
-
-    private void saveSingleQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
         QuestionAnswerStore existingStore = questionAnswerStoreDao.getByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
         if (existingStore == null) {
@@ -140,20 +121,6 @@ public class ImageUploadRestService {
             existingStore.setValue(fileName);
             questionAnswerStoreDao.save(existingStore);
         }
-    }
-
-    //TODO: here we do not check if the image already exists
-    //we don't know how many repetitions a given question should have
-    private void saveRepeatedQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
-        QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
-        int iteration = 0;
-        List<QuestionAnswerStore> existingStores = questionAnswerStoreDao.listByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
-        if (existingStores != null && !existingStores.isEmpty()) {
-            List<QuestionAnswerStore> sorted = existingStores.stream().sorted(Comparator.comparing(QuestionAnswerStore::getIteration)).collect(Collectors.toList());
-            Collections.reverse(sorted);
-            iteration = sorted.get(0).getIteration();
-        }
-        createAndSaveQuestionAnswer(question, formInstance, fileName, questionAnswerStoreDao, iteration);
     }
 
     private void createAndSaveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName, QuestionAnswerStoreDao questionAnswerStoreDao, int iteration) {
@@ -192,11 +159,8 @@ public class ImageUploadRestService {
         return new QuestionDao().getByKey(Long.parseLong(questionId));
     }
 
-    private Survey getForm(String formId) {
-        if (formId == null || formId.isEmpty()) {
-            return null;
-        }
-        return new SurveyDAO().getByKey(Long.parseLong(formId));
+    private Survey getForm(long formId) {
+        return new SurveyDAO().getByKey(formId);
     }
 
     public static class Response {
