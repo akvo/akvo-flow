@@ -61,7 +61,7 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenFormInstanceNotFound() throws IOException {
         ImageUploadRestService service = new ImageUploadRestService();
 
-        ImageUploadRestService.Response response = service.uploadImage("123", "123", null);
+        ImageUploadRestService.Response response = service.uploadImage(123L, 123L, null);
 
         assertEquals(400, response.getCode());
         assertEquals("FormInstance not found", response.getMessage());
@@ -76,10 +76,10 @@ class ImageUploadRestServiceTest {
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         surveyInstance.setSurveyId(123333L);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
-        ImageUploadRestService.Response response = service.uploadImage("123", formInstanceId, null);
+        ImageUploadRestService.Response response = service.uploadImage(123L, formInstanceId, null);
 
         assertEquals(400, response.getCode());
         assertEquals("Form not found", response.getMessage());
@@ -93,10 +93,10 @@ class ImageUploadRestServiceTest {
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
-        ImageUploadRestService.Response response = service.uploadImage("123", formInstanceId, null);
+        ImageUploadRestService.Response response = service.uploadImage(123L, formInstanceId, null);
 
         assertEquals(400, response.getCode());
         assertEquals("Question not found", response.getMessage());
@@ -107,12 +107,12 @@ class ImageUploadRestServiceTest {
         SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
         Survey form2 = dataStoreTestUtil.createSurvey(surveyGroup);
-        String questionId = dataStoreTestUtil.createQuestion(form2, dataStoreTestUtil.createQuestionGroup(form2, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        Long questionId = dataStoreTestUtil.createQuestion(form2, dataStoreTestUtil.createQuestionGroup(form2, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId();
         SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
         ImageUploadRestService.Response response = service.uploadImage(questionId, formInstanceId, null);
@@ -125,12 +125,12 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenFileIsNull() throws IOException {
         SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
-        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        Long questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId();
         SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
         ImageUploadRestService.Response response = service.uploadImage(questionId, formInstanceId, null);
@@ -143,12 +143,12 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenFileInvalid() throws IOException {
         SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
-        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        Long questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId();
         SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
         ImageUploadRestService.Response response = service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.txt", "new_file.txt", "image/text", new byte[2]));
@@ -161,12 +161,12 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenS3UploadFails() throws IOException {
         SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
-        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        Long questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId();
         SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
         //upload to s3 will fail because we do not have any keys setup
@@ -180,12 +180,12 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenS3UploadSuccess() throws IOException {
         SurveyGroup surveyGroup = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(surveyGroup);
-        String questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId() + "";
+        long questionId = dataStoreTestUtil.createQuestion(form, dataStoreTestUtil.createQuestionGroup(form, 0, false).getKey().getId(), Question.Type.DATE, false).getKey().getId();
         SurveyedLocale dataPoint = dataStoreTestUtil.createDataPoint(surveyGroup.getObjectId(), form.getObjectId(), 0);
         new SurveyedLocaleDao().save(dataPoint);
         SurveyInstance surveyInstance = dataStoreTestUtil.createSurveyInstance(dataPoint, 0);
         new SurveyInstanceDAO().save(surveyInstance);
-        String formInstanceId = surveyInstance.getKey().getId() + "";
+        Long formInstanceId = surveyInstance.getKey().getId();
 
         ImageUploadRestService service = new ImageUploadRestService();
 
@@ -196,7 +196,7 @@ class ImageUploadRestServiceTest {
             ImageUploadRestService.Response response = service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.jpg", "new_image.jpg", "image/jpeg", new byte[2]));
             assertEquals(200, response.getCode());
             assertEquals("", response.getMessage());
-            assertNotNull(new QuestionAnswerStoreDao().getByQuestionAndSurveyInstance(Long.parseLong(questionId), Long.parseLong(formInstanceId)));
+            assertNotNull(new QuestionAnswerStoreDao().getByQuestionAndSurveyInstance(questionId, formInstanceId));
         }
     }
 
