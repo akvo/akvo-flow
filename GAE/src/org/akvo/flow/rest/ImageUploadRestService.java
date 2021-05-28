@@ -46,8 +46,8 @@ public class ImageUploadRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "/question/{questionId}/instance/{instanceId}")
     @ResponseBody
-    public Response uploadImage(@PathVariable("questionId") String questionId,
-                                @PathVariable("instanceId") String formInstanceId,
+    public Response uploadImage(@PathVariable("questionId") Long questionId,
+                                @PathVariable("instanceId") Long formInstanceId,
                                 @RequestParam(value = "image") MultipartFile file) {
         int responseCode = 200;
         String errorMessage = "";
@@ -75,7 +75,6 @@ public class ImageUploadRestService {
         if (fileExtension == null) {
             return new Response(400, "File type is not valid: only jpg and png are accepted");
         }
-        //TODO: shall we resize? does the calling task handle resize
         String originalFileName = file.getName();
         String filename = generateFileName(fileExtension);
         String resultFilename = uploadImageToS3(file, filename);
@@ -145,18 +144,18 @@ public class ImageUploadRestService {
         return UUID.randomUUID().toString() + fileExtension;
     }
 
-    private SurveyInstance getFormInstance(String formInstanceId) {
-        if (formInstanceId == null || formInstanceId.isEmpty()) {
+    private SurveyInstance getFormInstance(Long formInstanceId) {
+        if (formInstanceId == null) {
             return null;
         }
-        return new SurveyInstanceDAO().getByKey(Long.parseLong(formInstanceId));
+        return new SurveyInstanceDAO().getByKey(formInstanceId);
     }
 
-    private Question getQuestion(String questionId) {
-        if (questionId == null || questionId.isEmpty()) {
+    private Question getQuestion(Long questionId) {
+        if (questionId == null) {
             return null;
         }
-        return new QuestionDao().getByKey(Long.parseLong(questionId));
+        return new QuestionDao().getByKey(questionId);
     }
 
     private Survey getForm(long formId) {
