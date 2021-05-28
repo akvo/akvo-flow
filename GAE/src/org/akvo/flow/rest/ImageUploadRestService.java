@@ -44,7 +44,7 @@ public class ImageUploadRestService {
     private static final Logger log = Logger
             .getLogger(ImageUploadRestService.class.getName());
 
-    @RequestMapping(method = RequestMethod.POST, value = "/question/{questionId}/instance/{instanceId}")
+    @RequestMapping(method = RequestMethod.POST, headers = "content-type=multipart/*", value = "/question/{questionId}/instance/{instanceId}")
     @ResponseBody
     public Response uploadImage(@PathVariable("questionId") Long questionId,
                                 @PathVariable("instanceId") Long formInstanceId,
