@@ -231,6 +231,13 @@
         <scope>test</scope>
     </dependency>
 
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>3.4.6</version>
+        <scope>test</scope>
+    </dependency>
+
       <!-- datastore unit tests -->
     <dependency>
       <groupId>com.google.appengine</groupId>

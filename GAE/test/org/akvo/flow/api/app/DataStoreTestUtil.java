@@ -111,24 +111,29 @@ public class DataStoreTestUtil {
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
         for (SurveyedLocale dataPoint: dataPoints) {
             for(int i = 0; i < howMany; i++) {
-                SurveyInstance si = new SurveyInstance();
-                si.setSurveyedLocaleId(dataPoint.getKey().getId());
-                si.setSubmitterName(mockedSubmitter);
-                si.setUuid(mockedUUID);
-                if (i == 0) {
-                    long registrationFormId = dataPoint.getCreationSurveyId();
-                    si.setSurveyId(registrationFormId);
-                } else {
-                    long monitoringFormId = mockedTime * 2;
-                    si.setSurveyId(monitoringFormId);
-                }
-                Date date = new Date();
-                date.setTime(mockedTime);
-                si.setCollectionDate(date);
+                SurveyInstance si = createSurveyInstance(dataPoint, i);
                 surveyInstances.add(si);
             }
         }
         return (List<SurveyInstance>) siDAO.save(surveyInstances);
+    }
+
+    public SurveyInstance createSurveyInstance(SurveyedLocale dataPoint, int i) {
+        SurveyInstance si = new SurveyInstance();
+        si.setSurveyedLocaleId(dataPoint.getKey().getId());
+        si.setSubmitterName(mockedSubmitter);
+        si.setUuid(mockedUUID);
+        if (i == 0) {
+            long registrationFormId = dataPoint.getCreationSurveyId();
+            si.setSurveyId(registrationFormId);
+        } else {
+            long monitoringFormId = mockedTime * 2;
+            si.setSurveyId(monitoringFormId);
+        }
+        Date date = new Date();
+        date.setTime(mockedTime);
+        si.setCollectionDate(date);
+        return si;
     }
 
     public List<SurveyedLocale> createDataPoints(Long surveyId, int howMany) {
@@ -139,14 +144,19 @@ public class DataStoreTestUtil {
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
         final List<SurveyedLocale> datapoints = new ArrayList<>();
         for (int i = 0; i < howMany; i++) {
-            SurveyedLocale dataPoint = new SurveyedLocale();
-            dataPoint.setIdentifier("identifier-" + String.valueOf(i));
-            dataPoint.setSurveyGroupId(surveyId);
-            dataPoint.setDisplayName("dataPoint: " + i);
-            dataPoint.setCreationSurveyId(registrationFormId);
+            SurveyedLocale dataPoint = createDataPoint(surveyId, registrationFormId, i);
             datapoints.add(dataPoint);
         }
         return new ArrayList<>(dpDao.save(datapoints));
+    }
+
+    public SurveyedLocale createDataPoint(Long surveyId, Long registrationFormId, int i) {
+        SurveyedLocale dataPoint = new SurveyedLocale();
+        dataPoint.setIdentifier("identifier-" + String.valueOf(i));
+        dataPoint.setSurveyGroupId(surveyId);
+        dataPoint.setDisplayName("dataPoint: " + i);
+        dataPoint.setCreationSurveyId(registrationFormId);
+        return dataPoint;
     }
 
     public Set<Long> getEntityIds(List<? extends BaseDomain> entities) {
@@ -197,6 +207,7 @@ public class DataStoreTestUtil {
         qg.setName("question group");
         qg.setSurveyId(newSurvey.getKey().getId());
         qg.setOrder(order);
+        qg.setRepeatable(false);
         qg.setImmutable(immutable);
         return new QuestionGroupDao().save(qg);
     }
