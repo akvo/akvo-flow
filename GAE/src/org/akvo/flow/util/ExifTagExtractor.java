@@ -1,3 +1,18 @@
+/*
+ *  Copyright (C) 2021 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
 package org.akvo.flow.util;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
@@ -7,8 +22,6 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.GpsDirectory;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -22,8 +35,7 @@ import org.waterforpeople.mapping.domain.response.value.Location;
 
 public class ExifTagExtractor {
 
-    private static final Logger log = Logger
-            .getLogger(ExifTagExtractor.class.getName());
+    private static final Logger log = Logger.getLogger(ExifTagExtractor.class.getName());
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
 

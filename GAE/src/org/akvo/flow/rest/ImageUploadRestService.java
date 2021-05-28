@@ -20,7 +20,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
@@ -47,8 +46,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 @RequestMapping("/image_upload")
 public class ImageUploadRestService {
 
-    private static final Logger log = Logger
-            .getLogger(ImageUploadRestService.class.getName());
+    private static final Logger log = Logger.getLogger(ImageUploadRestService.class.getName());
 
     @RequestMapping(method = RequestMethod.POST, value = "/question/{questionId}/instance/{instanceId}")
     @ResponseBody
