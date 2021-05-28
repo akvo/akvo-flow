@@ -20,11 +20,17 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
+import org.akvo.flow.util.ExifTagExtractor;
+import org.akvo.flow.util.ExifTagInfo;
+import org.akvo.flow.util.FileResponse;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +88,9 @@ public class ImageUploadRestService {
         if (resultFilename == null) {
             return new Response(400, "Upload to s3 failed for: " + originalFileName);
         }
-        saveQuestionAnswer(question, formInstance, resultFilename);
+        ExifTagExtractor exifTagExtractor = new ExifTagExtractor();
+        ExifTagInfo exifTag = exifTagExtractor.fetchExifTags(file);
+        createOrUpdateQuestionAnswer(question, formInstance, resultFilename, exifTag);
         return new Response(responseCode, errorMessage);
     }
 
@@ -112,32 +120,40 @@ public class ImageUploadRestService {
         }
     }
 
-    private void saveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName) {
+    private void createOrUpdateQuestionAnswer(Question question, SurveyInstance formInstance, String fileName, ExifTagInfo exifTag) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
-        QuestionAnswerStore existingStore = questionAnswerStoreDao.getByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
-        if (existingStore == null) {
-            createAndSaveQuestionAnswer(question, formInstance, fileName, questionAnswerStoreDao, 0);
-        } else {
-            existingStore.setValue(fileName);
-            questionAnswerStoreDao.save(existingStore);
+        QuestionAnswerStore questionAnswerStore = questionAnswerStoreDao.getByQuestionAndSurveyInstance(question.getKey().getId(), formInstance.getKey().getId());
+        if (questionAnswerStore == null) {
+            questionAnswerStore = createQuestionAnswer(question, formInstance);
         }
+        saveQuestionAnswer(formInstance, fileName, exifTag, questionAnswerStoreDao, questionAnswerStore);
     }
 
-    private void createAndSaveQuestionAnswer(Question question, SurveyInstance formInstance, String fileName, QuestionAnswerStoreDao questionAnswerStoreDao, int iteration) {
+    private void saveQuestionAnswer(SurveyInstance formInstance, String fileName, ExifTagInfo exifTag, QuestionAnswerStoreDao questionAnswerStoreDao, QuestionAnswerStore store) {
+        try {
+            FileResponse fileResponse = new FileResponse(fileName, exifTag.getLocation());
+            store.setValue(new FlowJsonObjectWriter().writeAsString(fileResponse));
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error generating filename json");
+            store.setValue(fileName);
+        }
+        Date collectionDate = exifTag != null? exifTag.getCollectionDate(): null;
+        if (collectionDate != null) {
+            store.setCollectionDate(collectionDate);
+        } else {
+            store.setCollectionDate(formInstance.getCollectionDate());
+        }
+        questionAnswerStoreDao.save(store);
+    }
+
+    private QuestionAnswerStore createQuestionAnswer(Question question, SurveyInstance formInstance) {
         QuestionAnswerStore store = new QuestionAnswerStore();
         store.setSurveyId(formInstance.getSurveyId());
         store.setSurveyInstanceId(formInstance.getKey().getId());
         store.setQuestionID(question.getKey().getId() + "");
-
-        //TODO: should the date be same as collection date on the form Instance??
-        store.setCollectionDate(formInstance.getCollectionDate());
         store.setType("IMAGE");
-
-        store.setValue(fileName);
-
-        store.setIteration(iteration);
-        //TODO: where do we put the geolocation data?
-        questionAnswerStoreDao.save(store);
+        store.setIteration(0);
+        return store;
     }
 
     private String generateFileName(String fileExtension) {
