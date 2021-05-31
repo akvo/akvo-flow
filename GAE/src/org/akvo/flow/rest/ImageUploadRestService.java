@@ -44,6 +44,8 @@ public class ImageUploadRestService {
     private static final Logger log = Logger
             .getLogger(ImageUploadRestService.class.getName());
 
+    public static final String IMAGES_DIRECTORY = "images";
+
     @RequestMapping(method = RequestMethod.POST, headers = "content-type=multipart/*", value = "/question/{questionId}/instance/{instanceId}")
     @ResponseBody
     public Response uploadImage(@PathVariable("questionId") Long questionId,
@@ -102,8 +104,7 @@ public class ImageUploadRestService {
         try {
             Properties props = System.getProperties();
             String bucketName = props.getProperty("s3bucket");
-            String directory = props.getProperty("images");
-            S3Util.put(bucketName, directory + "/" + fileName, file.getBytes(), file.getContentType(), true);
+            S3Util.put(bucketName, IMAGES_DIRECTORY + "/" + fileName, file.getBytes(), file.getContentType(), true);
             return fileName;
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error uploading image", e);
