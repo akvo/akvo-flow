@@ -20,6 +20,9 @@
     </bean>
 
     <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
 
     <bean name="/actions" class="org.waterforpeople.mapping.app.web.rest.ActionRestService" lazy-init="true" />
     <bean name="/approval_groups" class="org.waterforpeople.mapping.app.web.rest.ApprovalGroupRestService" lazy-init="true" />
