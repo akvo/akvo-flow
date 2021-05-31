@@ -132,7 +132,7 @@ public class ImageUploadRestService {
             FileResponse fileResponse = new FileResponse(fileName, exifTag.getLocation());
             store.setValue(new FlowJsonObjectWriter().writeAsString(fileResponse));
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Error generating filename json");
+            log.log(Level.SEVERE, "Error generating filename json", e);
             store.setValue(fileName);
         }
         Date collectionDate = exifTag != null? exifTag.getCollectionDate(): null;

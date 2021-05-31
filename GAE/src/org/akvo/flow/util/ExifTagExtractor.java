@@ -15,8 +15,8 @@
  */
 package org.akvo.flow.util;
 
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.lang.Rational;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -42,7 +42,7 @@ public class ExifTagExtractor {
     public ExifTagInfo fetchExifTags(MultipartFile file) {
         try {
             InputStream s = file.getInputStream();
-            Metadata metadata = JpegMetadataReader.readMetadata(s);
+            Metadata metadata = ImageMetadataReader.readMetadata(s);
             Directory directoryBase = metadata.getFirstDirectoryOfType(ExifDirectoryBase.class);
             Date parsedDate = null;
             if (directoryBase != null) {
@@ -73,8 +73,8 @@ public class ExifTagExtractor {
                 location.setAltitude(alt);
             }
             return new ExifTagInfo(parsedDate, location);
-        } catch (JpegProcessingException | IOException e) {
-            log.log(Level.SEVERE, "Error extracting exif information", e);
+        } catch (IOException | ImageProcessingException e) {
+            log.log(Level.SEVERE, "Error extracting exif information from jpeg file", e);
             return null;
         }
     }
