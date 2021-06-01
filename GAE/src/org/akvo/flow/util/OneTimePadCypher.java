@@ -15,6 +15,7 @@
  */
 package org.akvo.flow.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class OneTimePadCypher {
@@ -24,11 +25,7 @@ public class OneTimePadCypher {
     }
 
     public static String decrypt(final String secretKey, final String hash) {
-      try {
-        return new String(xor(secretKey, Base64.getDecoder().decode(hash.getBytes())), "UTF-8");
-      } catch (java.io.UnsupportedEncodingException ex) {
-        throw new IllegalStateException(ex);
-      }
+        return new String(xor(secretKey, Base64.getUrlDecoder().decode(hash.getBytes())), StandardCharsets.UTF_8);
     }
     private static byte[] xor(final String secretKey, final byte[] input) {
       final byte[] output = new byte[input.length];
