@@ -15,6 +15,7 @@ require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/surveys/form-view');
 require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/bulk-upload-view');
+require('akvo-flow/views/data/bulk-upload-images-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/data/cascade-resources-view');
 require('akvo-flow/views/data/data-approval-views');
@@ -846,6 +847,8 @@ FLOW.InspectDataView = Ember.View.extend(template('navData/inspect-data'));
 
 FLOW.BulkUploadView = Ember.View.extend(template('navData/bulk-upload'));
 
+FLOW.BulkUploadImagesView = Ember.View.extend(template('navData/bulk-upload-images'));
+
 FLOW.CascadeResourcesView = Ember.View.extend(
   template('navData/cascade-resources')
 );
@@ -885,10 +888,8 @@ FLOW.DatasubnavView = FLOW.View.extend(template('navData/data-subnav'), {
     classNameBindings: 'isActive:active'.w(),
 
     isActive: Ember.computed(function() {
-      if (
-        this.get('item') === this.get('parentView.selected') &&
-        this.get('parentView.selected') === 'bulkUpload'
-      ) {
+      const parentView = this.get('parentView.selected');
+      if (this.get('item') === parentView && (parentView === 'bulkUpload' || parentView === 'bulkUploadImages')) {
         FLOW.uploader.set('bulkUpload', true);
       } else if (this.get('parentView.selected') !== 'bulkUpload') {
         FLOW.uploader.set('bulkUpload', false);
