@@ -1,35 +1,23 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.bulkUploadImagesAppletView}}
     <div id="gdprSwitch" style="display : block;">
-      <h3>{{t _gdpr_wakthrough_title}}</h3>
+        <br>
+      <h3>{{t _images_wakthrough_title}}</h3>
       <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn" class="hidden">{{t _close}}</a>
+        <br>
       <ul class="gdprSwitchSteps">
-        <li class="gdprStep">
-            <div class="innerFrame gdpr01">
-              <div class="wrap">
-                <img src="images/gdpr01.svg">
-              </div>
-            </div>
-              <h3>{{t _locate_the_data}}</h3>
-              <p>{{t _gdpr_walkthrough_step1}}</p>
-        </li>
-        <li class="gdprStep">
-            <div class="innerFrame gdpr02">
-              <div class="wrap">
-                <img src="images/gdpr02.svg">
-              </div>
-            </div>
-              <h3>{{t _copy_the_data}}</h3>
-              <p>{{t _gdpr_walkthrough_step2}}</p>
-        </li>
-        <li class="gdprStep">
-            <div class="innerFrame gdpr03">
-                <div class="wrap">
-                  <img src="images/gdpr03.svg">
-                </div>
-              </div>
-              <h3>{{t _upload_zip}}</h3>
-        </li>
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step1_title}}</h3>
+              <p>{{t _images_walkthrough_step1}}</p>
+          </li>
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step2}}</h3>
+          </li>
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step3_title}}</h3>
+              <p>{{t _images_walkthrough_step3_1}}</p>
+              <p>{{t _images_walkthrough_step3_2}}</p>
+          </li>
       </ul>
       <script type="text/javascript">
         window.onresize = function(){

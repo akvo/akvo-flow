@@ -6,6 +6,7 @@ FLOW.uuid = function () {
 
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
+    //TODO: update the service url here
     target: `${FLOW.Env.flowServices}/upload`,
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
     simultaneousUploads: 1,
@@ -94,6 +95,7 @@ FLOW.uploader = Ember.Object.create({
     });
 
     r.on('complete', () => {
+      console.log("Sending images complete")
       // Hide pause/resume when the upload has completed
       $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
 
