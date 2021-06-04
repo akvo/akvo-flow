@@ -15,7 +15,6 @@
     <http pattern="/publicmap/css/**" security="none" />
     <http pattern="/publicmap/js/**" security="none" />
     <http pattern="/webforms/**" security="none" />
-<!--    <http pattern="/webapp/testharness**" security="none" />-->
 
    <b:bean id="oidcConfig" class="org.akvo.flow.rest.security.oidc.AppConfig"/>
    <b:bean id="oidcLogout" class="org.akvo.flow.rest.security.LogoutController">
@@ -31,6 +30,7 @@
             <frame-options policy="SAMEORIGIN" />
         </headers>
         <intercept-url pattern="/remote_api**" access="permitAll"/>
+        <intercept-url pattern="/rest/image_upload**" method="POST" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/callback**" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
