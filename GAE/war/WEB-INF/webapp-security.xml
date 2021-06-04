@@ -30,7 +30,7 @@
             <frame-options policy="SAMEORIGIN" />
         </headers>
         <intercept-url pattern="/remote_api**" access="permitAll"/>
-        <intercept-url pattern="/rest/image_upload**" method="POST" access="permitAll"/>
+        <intercept-url pattern="/rest/image_upload/**" method="POST" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/callback**" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
