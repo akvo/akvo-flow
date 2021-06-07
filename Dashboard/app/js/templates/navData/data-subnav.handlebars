@@ -15,7 +15,10 @@
     {{/view}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
-    {{/view}} 
+    {{/view}}
+    {{#view view.NavItemView item="bulkUploadImages" }}
+        <a {{action doBulkUploadImages}}>{{t _bulk_upload_images}}</a>
+    {{/view}}
     {{#view view.NavItemView item="dataCleaning" }}
         {{#if view.showDataCleaningButton}}
         <a {{action doDataCleaning}}>{{t _data_cleaning}}</a>
