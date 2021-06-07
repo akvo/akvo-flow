@@ -51,6 +51,7 @@ public class EnvServlet extends HttpServlet {
     public static final String SHOW_MAPS_PROPERTY_KEY = "showMapsTab";
     public static final String CADDISFLY_TESTS_FILE_URL_KEY = "caddisflyTestsFileUrl";
     public static final String WEBFORM_REDIRECTION_URL = "webFormRedirectionUrl";
+    public static final String SHOW_BULK_IMAGE_UPLOAD = "showBulkImageUpload";
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
@@ -74,6 +75,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("extraMapboxTileLayerLabel");
         properties.add(WEBFORM_REDIRECTION_URL);
         properties.add(CADDISFLY_TESTS_FILE_URL_KEY);
+        properties.add(SHOW_BULK_IMAGE_UPLOAD);
     }
 
     @Override
@@ -132,6 +134,10 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("extraMapboxTileLayerLabel") == null) {
             props.put("extraMapboxTileLayerLabel", "");
+        }
+
+        if (!props.get(SHOW_BULK_IMAGE_UPLOAD).equals("true")) {
+            props.put(SHOW_BULK_IMAGE_UPLOAD, "false");
         }
 
         props.put("appId", SystemProperty.applicationId.get());
