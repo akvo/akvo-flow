@@ -889,11 +889,18 @@ FLOW.DatasubnavView = FLOW.View.extend(template('navData/data-subnav'), {
 
     isActive: Ember.computed(function() {
       const parentView = this.get('parentView.selected');
-      if (this.get('item') === parentView && (parentView === 'bulkUpload' || parentView === 'bulkUploadImages')) {
-        FLOW.uploader.set('bulkUpload', true);
-      } else if (this.get('parentView.selected') !== 'bulkUpload') {
+
+      if (this.get('item') === parentView) {
         FLOW.uploader.set('bulkUpload', false);
+        FLOW.imageUploader.set('bulkUpload', false);
+
+        if (parentView === 'bulkUpload') {
+          FLOW.uploader.set('bulkUpload', true);
+        } else if (parentView === 'bulkUploadImages') {
+          FLOW.imageUploader.set('bulkUpload', true);
+        }
       }
+
       return this.get('item') === this.get('parentView.selected');
     })
       .property('item', 'parentView.selected')

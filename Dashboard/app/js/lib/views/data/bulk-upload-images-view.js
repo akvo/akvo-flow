@@ -1,10 +1,6 @@
 /* global Resumable, FLOW, $, Ember */
 
-FLOW.uuid = function () {
-  return Math.uuidFast();
-};
-
-FLOW.uploader = Ember.Object.create({
+FLOW.imageUploader = Ember.Object.create({
   r: new Resumable({
     target: `${FLOW.Env.flowServices}/bulk_image_upload`,
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -56,7 +52,7 @@ FLOW.uploader = Ember.Object.create({
     // Handle file add event
     r.on('fileAdded', (file) => {
       const li = $(`#resumable-file-${file.uniqueIdentifier}`);
-      FLOW.uploader.set('cancelled', false);
+      FLOW.imageUploader.set('cancelled', false);
 
       // Show progress pabr
       $('.resumable-list').show();
@@ -64,7 +60,7 @@ FLOW.uploader = Ember.Object.create({
         $('.resumable-list').append(`<li id='resumable-file-${file.uniqueIdentifier}'></li>`).scrollTop($('.resumable-list').outerHeight(true));
       }
       // Add the file to the list
-      if (file.file.type !== 'application/zip' && file.file.type !== 'application/x-zip-compressed' && FLOW.uploader.get('bulkUpload')) {
+      if (file.file.type !== 'application/zip' && file.file.type !== 'application/x-zip-compressed' && FLOW.imageUploader.get('bulkUpload')) {
         $(`#resumable-file-${file.uniqueIdentifier}`).html(
           `<span class='resumable-file-name'>${file.fileName}</span>${
             Ember.String.loc('_unsupported_file_type')
@@ -98,8 +94,8 @@ FLOW.uploader = Ember.Object.create({
       // Hide pause/resume when the upload has completed
       $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
 
-      if (!FLOW.uploader.get('bulkUpload') && !FLOW.uploader.get('cancelled')) {
-        FLOW.uploader.showCompleteMessage();
+      if (!FLOW.imageUploader.get('bulkUpload') && !FLOW.imageUploader.get('cancelled')) {
+        FLOW.imageUploader.showCompleteMessage();
       }
     });
 
@@ -174,13 +170,13 @@ FLOW.uploader = Ember.Object.create({
 
 FLOW.bulkUploadImagesAppletView = FLOW.View.extend({
   didInsertElement() {
-    FLOW.uploader.assignDrop($('.resumable-drop')[0]);
-    FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
-    FLOW.uploader.registerEvents();
+    FLOW.imageUploader.assignDrop($('.resumable-drop')[0]);
+    FLOW.imageUploader.assignBrowse($('.resumable-browse')[0]);
+    FLOW.imageUploader.registerEvents();
   },
   willDestroyElement() {
-    FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
-    FLOW.uploader.cancel();
+    FLOW.imageUploader.set('cancelled', FLOW.imageUploader.isUploading());
+    FLOW.imageUploader.cancel();
     this._super();
   },
 });
@@ -189,7 +185,7 @@ FLOW.bulkUploadImagesAppletView = FLOW.View.extend({
 window.onbeforeunload = function (e) {
   const confirmationMessage = Ember.String.loc('_upload_in_progress');
 
-  if (FLOW.uploader.isUploading()) {
+  if (FLOW.imageUploader.isUploading()) {
     (e || window.event).returnValue = confirmationMessage;
     return confirmationMessage;
   }
