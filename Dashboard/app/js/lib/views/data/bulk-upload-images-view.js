@@ -6,7 +6,7 @@ FLOW.uuid = function () {
 
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
-    target: `${FLOW.Env.flowServices}/bulk-image-upload`,
+    target: `${FLOW.Env.flowServices}/bulk_image_upload`,
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
     simultaneousUploads: 1,
     testChunks: false,
