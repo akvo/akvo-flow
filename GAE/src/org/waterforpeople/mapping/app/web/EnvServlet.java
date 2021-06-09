@@ -136,7 +136,7 @@ public class EnvServlet extends HttpServlet {
             props.put("extraMapboxTileLayerLabel", "");
         }
 
-        if (!props.get(SHOW_BULK_IMAGE_UPLOAD).equals("true")) {
+        if (!"true".equals(props.get(SHOW_BULK_IMAGE_UPLOAD))) {
             props.put(SHOW_BULK_IMAGE_UPLOAD, "false");
         }
 
