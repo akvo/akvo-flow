@@ -2094,10 +2094,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         variableNamesInHeaders = false;
 
         if (options != null) {
-            for (String key : options.keySet()) {
-                log.finest(key + ": " + options.get(key));
-            }
-
             //What kind of report?
             reportType = options.get(TYPE_OPT);
             if (reportType == null || reportType.isEmpty()) {
