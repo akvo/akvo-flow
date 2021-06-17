@@ -206,14 +206,6 @@
         <version>1.7.30</version>
     </dependency>
 
-    <dependency>
-        <groupId>com.beoui</groupId>
-        <artifactId>geocell</artifactId>
-        <version>0.0.10.1</version>
-        <scope>system</scope>
-        <systemPath>${project.basedir}/war/geocell-0.0.10.1.jar</systemPath>
-    </dependency>
-
       <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
