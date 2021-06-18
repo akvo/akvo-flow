@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2020,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -58,6 +58,7 @@ public class DataStoreTestUtil {
     public static long mockedTime = 1601983649l;
     public static String mockedUUID = "TheMockedUuid";
     public static String mockedSubmitter = "TheHappySubmitter";
+    public static long DEFAULT_REGISTRATION_FORM_ID = mockedTime*4;
 
     public Device createDevice(Long deviceId, String androidId) {
         final DeviceDAO dao = new DeviceDAO();
@@ -110,31 +111,52 @@ public class DataStoreTestUtil {
         SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
         for (SurveyedLocale dataPoint: dataPoints) {
             for(int i = 0; i < howMany; i++) {
-                SurveyInstance si = new SurveyInstance();
-                si.setSurveyedLocaleId(dataPoint.getKey().getId());
-                si.setSubmitterName(mockedSubmitter);
-                si.setUuid(mockedUUID);
-                si.setSurveyId(mockedTime*2);
-                Date date = new Date();
-                date.setTime(mockedTime);
-                si.setCollectionDate(date);
+                SurveyInstance si = createSurveyInstance(dataPoint, i);
                 surveyInstances.add(si);
             }
         }
         return (List<SurveyInstance>) siDAO.save(surveyInstances);
     }
 
+    public SurveyInstance createSurveyInstance(SurveyedLocale dataPoint, int i) {
+        SurveyInstance si = new SurveyInstance();
+        si.setSurveyedLocaleId(dataPoint.getKey().getId());
+        si.setSubmitterName(mockedSubmitter);
+        si.setUuid(mockedUUID);
+        if (i == 0) {
+            long registrationFormId = dataPoint.getCreationSurveyId();
+            si.setSurveyId(registrationFormId);
+        } else {
+            long monitoringFormId = mockedTime * 2;
+            si.setSurveyId(monitoringFormId);
+        }
+        Date date = new Date();
+        date.setTime(mockedTime);
+        si.setCollectionDate(date);
+        return si;
+    }
+
     public List<SurveyedLocale> createDataPoints(Long surveyId, int howMany) {
+        return createDataPoints(surveyId, DEFAULT_REGISTRATION_FORM_ID, howMany);
+    }
+
+    public List<SurveyedLocale> createDataPoints(Long surveyId, Long registrationFormId, int howMany) {
         final SurveyedLocaleDao dpDao = new SurveyedLocaleDao();
         final List<SurveyedLocale> datapoints = new ArrayList<>();
         for (int i = 0; i < howMany; i++) {
-            SurveyedLocale dataPoint = new SurveyedLocale();
-            dataPoint.setIdentifier("identifier-" + String.valueOf(i));
-            dataPoint.setSurveyGroupId(surveyId);
-            dataPoint.setDisplayName("dataPoint: " + i);
+            SurveyedLocale dataPoint = createDataPoint(surveyId, registrationFormId, i);
             datapoints.add(dataPoint);
         }
         return new ArrayList<>(dpDao.save(datapoints));
+    }
+
+    public SurveyedLocale createDataPoint(Long surveyId, Long registrationFormId, int i) {
+        SurveyedLocale dataPoint = new SurveyedLocale();
+        dataPoint.setIdentifier("identifier-" + String.valueOf(i));
+        dataPoint.setSurveyGroupId(surveyId);
+        dataPoint.setDisplayName("dataPoint: " + i);
+        dataPoint.setCreationSurveyId(registrationFormId);
+        return dataPoint;
     }
 
     public Set<Long> getEntityIds(List<? extends BaseDomain> entities) {
@@ -185,6 +207,7 @@ public class DataStoreTestUtil {
         qg.setName("question group");
         qg.setSurveyId(newSurvey.getKey().getId());
         qg.setOrder(order);
+        qg.setRepeatable(false);
         qg.setImmutable(immutable);
         return new QuestionGroupDao().save(qg);
     }

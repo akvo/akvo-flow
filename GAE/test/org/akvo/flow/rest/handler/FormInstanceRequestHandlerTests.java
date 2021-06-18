@@ -30,6 +30,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.List;
 
+import static org.akvo.flow.api.app.DataStoreTestUtil.DEFAULT_REGISTRATION_FORM_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -60,19 +61,22 @@ public class FormInstanceRequestHandlerTests {
         requestHandler.deleteFormInstance(formInstances.get(1));
 
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(singleDataPointList.get(0).getKey().getId(), null, null, null);
-        assertEquals(1, remainingFormInstance.size(), "Expecting one form instance to remain");
+        List<SurveyInstance> remainingFormInstances = siDao.listInstancesByLocale(singleDataPointList.get(0).getKey().getId(), null, null, null);
+        assertEquals(1, remainingFormInstances.size(), "Expecting one form instance to remain");
+        assertEquals(DEFAULT_REGISTRATION_FORM_ID, remainingFormInstances.get(0).getSurveyId());
     }
 
     @Test
     public void testDeleteRegistrationFormInstance() {
         Long surveyId = dataStoreTestUtil.randomId();
-        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, 1);
-        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 1);
+        Long registrationFormId = dataStoreTestUtil.randomId();
+        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, registrationFormId, 1);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 3);
 
         long dataPointId = singleDataPointList.get(0).getKey().getId();
         FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
-        requestHandler.deleteFormInstance(formInstances.get(0));
+        SurveyInstance registrationFormInstance = formInstances.get(0);
+        requestHandler.deleteFormInstance(registrationFormInstance);
 
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         List<SurveyInstance> remainingFormInstance = siDao.listInstancesByLocale(dataPointId, null, null, null);

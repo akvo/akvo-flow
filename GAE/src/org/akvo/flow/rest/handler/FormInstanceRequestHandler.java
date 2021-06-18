@@ -34,13 +34,18 @@ public class FormInstanceRequestHandler {
         Long surveyedLocaleId = formInstance.getSurveyedLocaleId();
         SurveyedLocale dataPoint = surveyedLocaleDao.getById(surveyedLocaleId);
         List<SurveyInstance> relatedSurveyInstances = siDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
-        if (relatedSurveyInstances.size() == 1
-                && relatedSurveyInstances.get(0).getKey().getId() == formInstance.getKey().getId()) {
-            // we need to consider what happens when a registration form is deleted even when there are
-            // other existing monitoring forms. Should we delete the registration form *and* the monitoring forms
-            // i.e. all the data?
+
+        if (isRegistrationForm(dataPoint, formInstance)) {
             surveyedLocaleDao.delete(dataPoint);
+            siDao.delete(relatedSurveyInstances);
+        } else {
+            siDao.delete(formInstance);
         }
-        siDao.delete(formInstance);
+    }
+
+    private boolean isRegistrationForm(SurveyedLocale dataPoint, SurveyInstance formInstance) {
+        return dataPoint.getCreationSurveyId() != null
+                && formInstance.getSurveyId() != null
+                && dataPoint.getCreationSurveyId().equals(formInstance.getSurveyId());
     }
 }
