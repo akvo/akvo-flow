@@ -86,7 +86,7 @@ To switch back to the dev setup:
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
 
-    docker-compose exec -u akvo akvo-flow ./dev-deploy.sh
+    docker-compose exec -u akvo akvo-flow ./dev-deploy.sh akvoflowsandbox $FLOW_GH_TOKEN
     
 ### Running Flow Services and Flow together locally
 

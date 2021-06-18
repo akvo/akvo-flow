@@ -112,6 +112,7 @@ FLOW.dialogControl = Ember.Object.create({
   activeAction: null,
   showOK: true,
   showCANCEL: true,
+  showOKDisabled: false,
 
   confirm(event) {
     this.set('activeView', event.view);
@@ -166,6 +167,22 @@ FLOW.dialogControl = Ember.Object.create({
 
       case 'delSI2':
         this.set('header', Ember.String.loc('_delete_record_header'));
+        this.set('message', undefined);
+
+        if (this.isRegistrationFormInstance(event.contexts[1])) {
+          this.set('showOKDisabled', true);
+          const self = this;
+          const instanceDeleted = event.contexts[1];
+          const submissions = FLOW.SurveyInstance.find({surveyedLocaleId: instanceDeleted.get('surveyedLocaleId')});
+          submissions.on('didLoad', () => {
+            this.set('showOKDisabled', false);
+            const numberOfSubmissions = submissions.get('content').length;
+            const numberMonitoringSubmissions = numberOfSubmissions - 1;
+            if (numberMonitoringSubmissions > 0) {
+              self.set('message', Ember.String.loc('_delete_all_monitoring_forms', [numberMonitoringSubmissions]));
+            }
+          });
+        }
         this.set('showDialog', true);
         break;
 
@@ -183,6 +200,12 @@ FLOW.dialogControl = Ember.Object.create({
 
       default:
     }
+  },
+
+  isRegistrationFormInstance(instanceDeleted) {
+    const registrationFormId = FLOW.selectedControl.selectedSurvey && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    const instanceFormId = instanceDeleted && instanceDeleted.get('surveyId');
+    return registrationFormId && instanceFormId && registrationFormId === instanceFormId;
   },
 
   doOK() {

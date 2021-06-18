@@ -1,0 +1,61 @@
+<section class="fullWidth reportTools" id="reportBlocks">
+  {{#view FLOW.bulkUploadImagesAppletView}}
+    <div id="gdprSwitch" style="display : block;">
+        <br>
+      <h3>{{t _images_wakthrough_title}}</h3>
+      <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn" class="hidden">{{t _close}}</a>
+        <br>
+      <ul class="gdprSwitchSteps">
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step1_title}}</h3>
+              <p>{{t _images_walkthrough_step1}}</p>
+          </li>
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step2}}</h3>
+          </li>
+          <li class="gdprStep">
+              <h3>{{t _images_walkthrough_step3_title}}</h3>
+              <p>{{t _images_walkthrough_step3_1}}</p>
+              <p>{{t _images_walkthrough_step3_2}}</p>
+          </li>
+      </ul>
+      <script type="text/javascript">
+        window.onresize = function(){
+          $('.innerFrame img').css({
+            maxWidth: $('.innerFrame').width() * 0.9,
+            maxHeight: $('.innerFrame').height() * 0.9,
+          });
+        };
+        function showHideDiv(ele) {
+          var srcElement = document.getElementById(ele);
+          if (srcElement != null) {
+            if (srcElement.style.display == "block") {
+              srcElement.style.display = 'none';
+              document.getElementById('gdprBtn').innerHTML = 'open';
+            }
+            else {
+              srcElement.style.display = 'block';
+              document.getElementById('gdprBtn').innerHTML = 'close';
+            }
+            return false;
+          }
+        }
+      </script>
+    </div>
+    <div class="bulkUpload">
+      {{#if FLOW.uploader.support}}
+        <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
+          <div class="dragTxt">
+            <div class="zipIcn"></div>
+            <p>{{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a></p>
+          </div>
+          <ul class="resumable-list"></ul>
+        </div>
+      {{else}}
+        <div class="resumable-error">
+          {{t _bulk_upload_unsupported_browser}}
+        </div>
+      {{/if}}
+    </div>
+{{/view}}
+</section>

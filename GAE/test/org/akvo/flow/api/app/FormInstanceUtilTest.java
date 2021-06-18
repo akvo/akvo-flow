@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2020,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -122,7 +122,7 @@ public class FormInstanceUtilTest {
         siDTO.setQasList(null);
         assertEquals(new FlowJsonObjectWriter().withExcludeNullValues().writeAsString(siDTO),
                 "{\"collectionDate\":"+ DataStoreTestUtil.mockedTime + ","+
-                        "\"surveyId\":"+DataStoreTestUtil.mockedTime * 2 +"," +
+                        "\"surveyId\":"+DataStoreTestUtil.mockedTime * 4 +"," +
                         "\"surveyalTime\":0," +
                         "\"uuid\":\""+DataStoreTestUtil.mockedUUID+"\"," +
                         "\"submitter\":\""+DataStoreTestUtil.mockedSubmitter+"\"}");

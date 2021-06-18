@@ -65,7 +65,7 @@
                         </a>
                         {{#if view.showSurveyInstanceDeleteButton }}
                             {{#view FLOW.DataItemView contentBinding="SI"}}
-                                <a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                                <a {{action confirm FLOW.dialogControl.delSI2 SI target="FLOW.dialogControl" }}>
                                     {{t _delete}}
                                 </a>
                             {{/view}}

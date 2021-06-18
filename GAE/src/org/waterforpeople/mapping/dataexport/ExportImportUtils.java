@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,7 +35,7 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 import com.gallatinsystems.common.util.StringUtil;
 
 public class ExportImportUtils {
-    private static final Logger log = Logger.getLogger(ExportImportUtils.class);
+    private static final Logger log = Logger.getLogger(ExportImportUtils.class.getName());
 
     private static final ThreadLocal<DataFormatter> DATA_FORMATTER = new ThreadLocal<DataFormatter>() {
         @Override
@@ -160,7 +160,7 @@ public class ExportImportUtils {
             // Date is not ISO 8601
         }
 
-        log.warn("Response is not in a valid date format: " + dateString);
+        log.warning("Response is not in a valid date format: " + dateString);
         return null;
     }
 

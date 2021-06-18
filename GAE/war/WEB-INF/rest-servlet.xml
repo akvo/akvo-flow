@@ -20,6 +20,9 @@
     </bean>
 
     <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
 
     <bean name="/actions" class="org.waterforpeople.mapping.app.web.rest.ActionRestService" lazy-init="true" />
     <bean name="/approval_groups" class="org.waterforpeople.mapping.app.web.rest.ApprovalGroupRestService" lazy-init="true" />
@@ -31,6 +34,7 @@
     <bean name="/device_groups" class="org.waterforpeople.mapping.app.web.rest.DeviceGroupRestService" lazy-init="true" />
     <bean name="/devices" class="org.waterforpeople.mapping.app.web.rest.DeviceRestService" lazy-init="true" />
     <bean name="/messages" class="org.akvo.flow.rest.MessageRestService" lazy-init="true" />
+    <bean name="/image_upload" class="org.akvo.flow.rest.ImageUploadRestService" lazy-init="true" />
     <bean name="/notification_subscriptions" class="org.waterforpeople.mapping.app.web.rest.NotificationSubscriptionRestService" lazy-init="true" />
     <bean name="/placemarks" class="org.waterforpeople.mapping.app.web.rest.PlacemarkRestService" lazy-init="true" />
     <bean name="/question_answers" class="org.waterforpeople.mapping.app.web.rest.QuestionAnswerRestService" lazy-init="true" />

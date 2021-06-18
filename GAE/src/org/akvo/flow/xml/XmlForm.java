@@ -63,11 +63,14 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "surveyId", isAttribute = true)
     private long surveyId;
 
+    @JacksonXmlProperty(localName = "alias", isAttribute = true)
+    private String alias;
+
     public XmlForm() {
     }
 
     //Create a form XML object from a form and the name of the containing survey
-    public XmlForm(Survey form, SurveyGroup survey, String appStr) {
+    public XmlForm(Survey form, SurveyGroup survey, String appStr, String alias) {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
         surveyGroupName = survey.getCode();
@@ -81,6 +84,7 @@ public final class XmlForm {
         }
         version = form.getVersion().toString();
         app = appStr;
+        this.alias = alias;
         // Translations, if any
         // Initializing an empty list prevents empty <altText/> tag when there are no translations
         altText = new ArrayList<>();
@@ -205,5 +209,13 @@ public final class XmlForm {
         return "Form{" +
                 "questionGroups=" + questionGroup.toString() +
                 '}';
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }
