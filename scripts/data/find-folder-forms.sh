@@ -12,4 +12,4 @@ java -cp bin:"lib/*" \
      $APP_ID \
      $SERVICE_ACCOUNT \
      $P12_FILE_PATH \
-     $2
+     "$2"
