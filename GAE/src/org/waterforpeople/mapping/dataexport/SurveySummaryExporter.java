@@ -30,9 +30,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -53,7 +54,7 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
  */
 public class SurveySummaryExporter extends AbstractDataExporter {
 
-    private static final Logger log = Logger.getLogger(SurveySummaryExporter.class);
+    private static final Logger log = Logger.getLogger(SurveySummaryExporter.class.getName());
 
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SERVLET_URL = "/surveyrestapi";
@@ -375,7 +376,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
+                        log.log(Level.SEVERE, "Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -402,7 +403,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * converts the string into a JSON array object.
      */
     protected JSONArray getJsonArray(String response) throws Exception {
-        log.debug("response: " + response);
+        log.finest("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
             if (json != null) {

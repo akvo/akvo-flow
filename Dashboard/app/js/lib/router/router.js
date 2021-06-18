@@ -257,6 +257,9 @@ FLOW.Router = Ember.Router.extend({
       doBulkUpload(router) {
         router.transitionTo('navData.bulkUpload');
       },
+      doBulkUploadImages(router) {
+        router.transitionTo('navData.bulkUploadImages');
+      },
       doDataCleaning(router) {
         router.transitionTo('navData.dataCleaning');
       },
@@ -295,6 +298,14 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navDataController').connectOutlet('bulkUpload');
           router.set('datasubnavController.selected', 'bulkUpload');
+        },
+      }),
+
+      bulkUploadImages: Ember.Route.extend({
+        route: '/bulkuploadimages',
+        connectOutlets(router) {
+          router.get('navDataController').connectOutlet('bulkUploadImages');
+          router.set('datasubnavController.selected', 'bulkUploadImages');
         },
       }),
 

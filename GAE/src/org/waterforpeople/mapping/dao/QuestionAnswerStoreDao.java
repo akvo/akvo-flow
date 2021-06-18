@@ -253,6 +253,15 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
     }
 
     @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByQuestionAndSurveyInstance(Long questionId, Long surveyInstanceId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+        query.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+        query.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+        return (List<QuestionAnswerStore>) query.execute(surveyInstanceId, questionId.toString());
+    }
+
+    @SuppressWarnings("unchecked")
     public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long surveyInstanceId) {
         String cacheKey;
         try {

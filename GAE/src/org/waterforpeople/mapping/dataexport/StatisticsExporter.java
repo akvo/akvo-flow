@@ -26,10 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -51,7 +49,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
  */
 public class StatisticsExporter implements DataExporter {
 
-    private static final Logger log = Logger.getLogger(StatisticsExporter.class);
+    private static final Logger log = Logger.getLogger(StatisticsExporter.class.getName());
 
     private static final String INSTANCE_COUNT_SHEET_NAME = "Form submissions";
     private static final String SURVEY_STATS_SHEET_NAME = "Survey statistics";
@@ -106,9 +104,9 @@ public class StatisticsExporter implements DataExporter {
                 }
             }
 
-            log.debug("Surveys and Groups: " + groupMap.size());
-            log.debug("Surveys: " + formMap.size());
-            log.debug("Instance Counts: " + instanceCounts.size());
+            log.finest("Surveys and Groups: " + groupMap.size());
+            log.finest("Surveys: " + formMap.size());
+            log.finest("Instance Counts: " + instanceCounts.size());
             String title = "Form submissions";
             if (from != null && !"".equals(from.trim())) {
                 Date fromDate = idf.parse(from);  //Removes any ISO8601 "time" part
@@ -120,7 +118,7 @@ public class StatisticsExporter implements DataExporter {
             }
             writeStats(title, fileName, groupMap, formMap, instanceCounts);
         } catch (Exception e) {
-            log.error("Could not write stats", e);
+            log.log(Level.SEVERE, "Could not write stats", e);
         }
     }
 
@@ -192,7 +190,7 @@ public class StatisticsExporter implements DataExporter {
                     parent = groupMap.get(parent.getParentId());
                 }
                 if (loops == 100) {
-                    log.error("Infinite Survey Group loop for " + s.getKeyId());
+                    log.severe("Infinite Survey Group loop for " + s.getKeyId());
                     name = "### structure error - infinite loop ###";
                 }
                 surveyMap.put(name, s);
@@ -339,13 +337,6 @@ public class StatisticsExporter implements DataExporter {
     // This main() method is only used for debugging;
     // when deployed on server, export() is called from Clojure code
     public static void main(String[] args) {
-
-        // Log4j stuff - http://stackoverflow.com/a/9003191
-        ConsoleAppender console = new ConsoleAppender();
-        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
-        console.setThreshold(Level.DEBUG); //Show everything
-        console.activateOptions();
-        Logger.getRootLogger().addAppender(console);
 
         StatisticsExporter exporter = new StatisticsExporter();
         Map<String, String> criteria = new HashMap<String, String>();
