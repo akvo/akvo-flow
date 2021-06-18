@@ -2,8 +2,8 @@ package com.beoui.geocell.model;
 
 public class Tuple<A, B> {
 
-    private A first;
-    private B second;
+    private final A first;
+    private final B second;
 
     public Tuple(A first, B second) {
         this.first = first;
