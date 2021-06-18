@@ -37,7 +37,6 @@ public class FindFormsInFolder implements Process {
         List<Entity> forms = findFormsInFolder(ds, folderId);
         Map<Long, Entity> surveys = findAssociatedSurveys(ds, forms);
         printFormIds(forms, surveys);
-        Entity one = new Entity("Survey");
     }
 
     private void printFormIds(List<Entity> forms, Map<Long, Entity> surveys) {
