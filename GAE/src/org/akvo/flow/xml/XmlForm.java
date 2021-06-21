@@ -16,13 +16,11 @@
 
 package org.akvo.flow.xml;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
@@ -70,10 +68,10 @@ public final class XmlForm {
     }
 
     //Create a form XML object from a form and the name of the containing survey
-    public XmlForm(Survey form, SurveyGroup survey, String appStr, String alias) {
+    public XmlForm(Survey form, String appStr, String alias, String code) {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
-        surveyGroupName = survey.getCode();
+        surveyGroupName = code;
         defaultLanguageCode = form.getDefaultLanguageCode();
         if (defaultLanguageCode == null) {
             defaultLanguageCode = "en";
