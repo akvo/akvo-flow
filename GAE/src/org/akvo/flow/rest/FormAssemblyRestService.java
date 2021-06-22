@@ -36,6 +36,7 @@ public class FormAssemblyRestService {
     private static final Logger log = Logger.getLogger(FormAssemblyRestService.class.getName());
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
+    public static final String BUCKET = "s3bucket";
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
@@ -47,6 +48,8 @@ public class FormAssemblyRestService {
         long formId = form.getObjectId();
         String xmlAppId = props.getProperty("xmlAppId");
         String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
+        //TODO: fetch translations
+        //TODO: fetch cascades
         XmlForm jacksonForm = new XmlForm(form, appStr, alias, survey.getCode());
         String formXML;
         try {
@@ -86,23 +89,19 @@ public class FormAssemblyRestService {
                 .stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    /**  Upload a zipped form file twice to S3 under different filenames.
-     * @param fileName1
-     * @param fileName2
-     * @param formXML
-     * @return
+    /**
+     * Upload a zipped form file twice to S3 under different filenames.
      */
     public UploadStatusContainer uploadFormXML(String fileName1, String fileName2, String formXML) {
         Properties props = System.getProperties();
-        String bucketName = props.getProperty("s3bucket");
+        String bucketName = props.getProperty(BUCKET);
         String directory = props.getProperty(SURVEY_UPLOAD_DIR);
+        String uploadUrl = props.getProperty(SURVEY_UPLOAD_URL);
 
         UploadStatusContainer uc = new UploadStatusContainer();
         uc.setUploadedZip1(uploadZippedXml(formXML, bucketName, directory, fileName1));
         uc.setUploadedZip2(uploadZippedXml(formXML, bucketName, directory, fileName2));
-        uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
-                + props.getProperty(SURVEY_UPLOAD_DIR)
-                + "/" + fileName1 + ".zip");
+        uc.setUrl(uploadUrl + directory + "/" + fileName1 + ".zip");
         return uc;
     }
 
