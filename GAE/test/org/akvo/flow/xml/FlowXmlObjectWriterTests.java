@@ -127,7 +127,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -206,7 +206,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -280,7 +280,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -344,7 +344,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -453,7 +453,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -506,7 +506,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -548,7 +548,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "akvoflowsandbox", "akvoflowsandbox.appspot.com", survey.getCode());
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox", "akvoflowsandbox.appspot.com");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());

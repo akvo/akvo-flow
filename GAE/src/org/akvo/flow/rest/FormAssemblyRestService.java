@@ -50,7 +50,7 @@ public class FormAssemblyRestService {
         String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
         //TODO: fetch translations
         //TODO: fetch cascades
-        XmlForm jacksonForm = new XmlForm(form, appStr, alias, survey.getCode());
+        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);
