@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -361,8 +362,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 //An alternative solution (since this is the only use of this map *anywhere*),
                 //  would be to change the map in the dto to a list...
                 List<QuestionDto> qList = new ArrayList<>();
-                if (qgd.getQuestionMap() != null) {
-                    for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
+                List<QuestionDto> questionList = qgd.getQuestionList();
+
+                if (questionList != null) {
+                    //make sure the questions are ordered correctly
+                    TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
+                    for (QuestionDto q : questionList) {
+                        qMap.put(q.getOrder(), q);
+                    }
+                    questionList = new ArrayList<>(qMap.values());
+                    for (QuestionDto dto : questionList) { //Ordered by key
                         qList.add(dto);
                         if (dto.getVariableName() == null) {
                             anyQuestionsWithoutVariableNames = true;
