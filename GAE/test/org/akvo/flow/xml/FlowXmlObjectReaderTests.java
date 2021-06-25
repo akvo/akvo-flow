@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FlowXmlObjectReaderTests {
 
-    private String MINIMAL_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    private final String MINIMAL_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
             + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
             + "<questionGroup><heading>The Only Group</heading>"
@@ -37,18 +37,18 @@ class FlowXmlObjectReaderTests {
             + "<text>The Only Question</text>"
             + "</question></questionGroup></survey>";
 
-    private String GROUPLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    private final String GROUPLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
             + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
             + "</survey>";
 
-    private String QUESTIONLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    private final String QUESTIONLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
             + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
             + "<questionGroup><heading>The Empty Group</heading>"
             + "</questionGroup></survey>";
 
-    private String COMPATIBLE_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    private final String COMPATIBLE_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
             + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
             + "<altText type=\"translation\" language=\"sv\">Formuläret</altText>"
@@ -60,7 +60,7 @@ class FlowXmlObjectReaderTests {
             + "</question></questionGroup></survey>";
 
     //Everything but the kitchen sink
-    private String BIG_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    private final String BIG_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Malang VERIF Tahap 2\" defaultLanguageCode=\"en\" version='10.0' app=\"akvoflowsandbox\" surveyGroupId=\"20923121\" surveyGroupName=\"Malang VERIF Tahap 2\" surveyId=\"42842453\">"
             + "<questionGroup><heading>A. Data Responden</heading>"
             + "<question order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\" id=\"9823003\"><text>New question - please change name</text></question>"
@@ -104,29 +104,29 @@ class FlowXmlObjectReaderTests {
     void testParseValidForm() throws IOException {
 
         SurveyDto testFormDto = PublishedForm.parse(MINIMAL_XML_FORM, true).toDto(); //be strict
-        assertNotEquals(null, testFormDto);
+        assertNotNull(testFormDto);
 
         assertEquals("Foo", testFormDto.getName());
         assertEquals("1.0", testFormDto.getVersion());
-        assertNotEquals(null, testFormDto.getQuestionGroupList());
+        assertNotNull(testFormDto.getQuestionGroupList());
         assertEquals(1, testFormDto.getQuestionGroupList().size());
 
         QuestionGroupDto qg = testFormDto.getQuestionGroupList().get(0);
         assertEquals(1, qg.getOrder());
         assertEquals("The Only Group", qg.getName());
-        assertNotEquals(null, qg.getQuestionMap());
-        assertEquals(1, qg.getQuestionMap().size());
+        assertNotNull(qg.getQuestionList());
+        assertEquals(1, qg.getQuestionList().size());
 
-        QuestionDto q = qg.getQuestionMap().get(1);
-        assertNotEquals(null, q);
+        QuestionDto q = qg.getQuestionList().get(0);
+        assertNotNull(q);
         assertEquals("The Only Question", q.getText());
         assertEquals(QuestionType.FREE_TEXT, q.getType());
         assertTrue(q.getMandatoryFlag());
         assertFalse(q.getLocaleNameFlag());
         assertEquals(24680, q.getKeyId());
-        assertNotEquals(null, q.getTranslationMap());
-        assertEquals(null, q.getTranslationMap().get("fr")); //Should NOT be a French translation
-        assertNotEquals(null, q.getTranslationMap().get("sv")); //Should be a Swedish translation
+        assertNotNull(q.getTranslationMap());
+        assertNull(q.getTranslationMap().get("fr")); //Should NOT be a French translation
+        assertNotNull(q.getTranslationMap().get("sv")); //Should be a Swedish translation
         assertEquals("Den enda frågan", q.getTranslationMap().get("sv").getText());
     }
 
@@ -134,40 +134,40 @@ class FlowXmlObjectReaderTests {
     void testParseGrouplessForm() throws IOException {
 
         SurveyDto testFormDto = PublishedForm.parse(GROUPLESS_XML_FORM, true).toDto(); //be strict
-        assertNotEquals(null, testFormDto);
+        assertNotNull(testFormDto);
 
         assertEquals("Foo", testFormDto.getName());
         assertEquals("1.0", testFormDto.getVersion());
-        assertEquals(null, testFormDto.getQuestionGroupList());
+        assertNull(testFormDto.getQuestionGroupList());
     }
 
     @Test
     void testParseQuestionlessForm() throws IOException {
 
         SurveyDto testFormDto = PublishedForm.parse(QUESTIONLESS_XML_FORM, true).toDto(); //be strict
-        assertNotEquals(null, testFormDto);
+        assertNotNull(testFormDto);
 
         assertEquals("Foo", testFormDto.getName());
         assertEquals("1.0", testFormDto.getVersion());
-        assertNotEquals(null, testFormDto.getQuestionGroupList());
+        assertNotNull(testFormDto.getQuestionGroupList());
         assertEquals(1, testFormDto.getQuestionGroupList().size());
 
         QuestionGroupDto qg = testFormDto.getQuestionGroupList().get(0);
         assertEquals(1, qg.getOrder());
         assertEquals("The Empty Group", qg.getName());
-        assertEquals(null, qg.getQuestionMap());
+        assertNull(qg.getQuestionList());
     }
 
     @Test
     void testParseBigForm() throws IOException {
 
         XmlForm testForm = PublishedForm.parse(BIG_XML_FORM, false); //be strict?
-        assertNotEquals(null, testForm);
+        assertNotNull(testForm);
 
         SurveyDto testFormDto = testForm.toDto();
-        assertNotEquals(null, testFormDto);
+        assertNotNull(testFormDto);
 
-        assertNotEquals(null, testFormDto.getQuestionGroupList());
+        assertNotNull(testFormDto.getQuestionGroupList());
         assertEquals(4, testFormDto.getQuestionGroupList().size());
 
         QuestionGroupDto qg1 = testFormDto.getQuestionGroupList().get(0);
@@ -192,31 +192,29 @@ class FlowXmlObjectReaderTests {
     void testParseCompatibleForm() throws IOException {
 
         SurveyDto testFormDto = PublishedForm.parse(COMPATIBLE_XML_FORM, false).toDto(); //not strict
-        assertNotEquals(null, testFormDto);
+        assertNotNull(testFormDto);
 
         assertEquals("Foo", testFormDto.getName());
         assertEquals("1.0", testFormDto.getVersion());
-        assertNotEquals(null, testFormDto.getQuestionGroupList());
+        assertNotNull(testFormDto.getQuestionGroupList());
         assertEquals(1, testFormDto.getQuestionGroupList().size());
 
         QuestionGroupDto qg = testFormDto.getQuestionGroupList().get(0);
         assertEquals(1, qg.getOrder());
         assertEquals("The Only Group", qg.getName());
-        assertNotEquals(null, qg.getQuestionMap());
-        assertEquals(1, qg.getQuestionMap().size());
+        assertNotNull(qg.getQuestionList());
+        assertEquals(1, qg.getQuestionList().size());
 
-        QuestionDto q = qg.getQuestionMap().get(1);
-        assertNotEquals(null, q);
+        QuestionDto q = qg.getQuestionList().get(0);
+        assertNotNull(q);
         assertEquals("The Only Question", q.getText());
         assertEquals(QuestionType.FREE_TEXT, q.getType());
         assertTrue(q.getMandatoryFlag());
         assertFalse(q.getLocaleNameFlag());
         assertEquals(24680, q.getKeyId());
-        assertNotEquals(null, q.getTranslationMap());
-        assertEquals(null, q.getTranslationMap().get("fr")); //Should NOT be a French translation
-        assertNotEquals(null, q.getTranslationMap().get("sv")); //Should be a Swedish translation
+        assertNotNull(q.getTranslationMap());
+        assertNull(q.getTranslationMap().get("fr")); //Should NOT be a French translation
+        assertNotNull(q.getTranslationMap().get("sv")); //Should be a Swedish translation
         assertEquals("Den enda frågan", q.getTranslationMap().get("sv").getText());
     }
-
-
 }

@@ -16,12 +16,9 @@
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class SurveyDto extends BaseDto {
@@ -66,13 +63,6 @@ public class SurveyDto extends BaseDto {
 
     public void setLastUpdateDateTime(Date lastUpdateDateTime) {
         this.lastUpdateDateTime = lastUpdateDateTime;
-    }
-
-    public void addQuestionGroup(QuestionGroupDto questionGroup) {
-        if (questionGroupList == null) {
-            questionGroupList = new ArrayList<QuestionGroupDto>();
-        }
-        questionGroupList.add(questionGroup);
     }
 
     public List<QuestionGroupDto> getQuestionGroupList() {
