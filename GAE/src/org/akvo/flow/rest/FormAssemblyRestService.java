@@ -16,12 +16,10 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.QUESTION_GROUP_DESC;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.QUESTION_GROUP_NAME;
 import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_DESC;
 import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_NAME;
 import com.gallatinsystems.survey.domain.WebForm;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.utils.SystemProperty;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,6 +40,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 @Controller
 @RequestMapping("/form_assembly")
@@ -54,11 +56,12 @@ public class FormAssemblyRestService {
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
-    public String assembleForm(@RequestBody Survey form) {
+    public String assembleForm(@RequestBody SurveyDto surveyDto) {
         Properties props = System.getProperties();
         String alias = props.getProperty("alias");
         //TODO: do we need to fetch this?
-        SurveyGroup survey = new SurveyGroupDAO().getByKey(form.getSurveyGroupId());
+        SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
+        Survey form = getSurveyFromDto(surveyDto);
         long formId = form.getObjectId();
         String xmlAppId = props.getProperty("xmlAppId");
         String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
@@ -97,6 +100,127 @@ public class FormAssemblyRestService {
             log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
             return "Error";
         }
+    }
+
+    private Survey getSurveyFromDto(SurveyDto surveyDto) {
+        Survey form = new Survey();
+        form.setKey(KeyFactory.createKey("Survey", surveyDto.getKeyId()));
+        form.setCode(surveyDto.getCode());
+        form.setName(surveyDto.getName());
+        form.setVersion(Double.parseDouble(surveyDto.getVersion()));
+        form.setDesc(surveyDto.getDescription());
+        form.setStatus(Survey.Status.NOT_PUBLISHED); //TODO: should it be not published?
+        form.setPath(surveyDto.getPath());
+        form.setSurveyGroupId(surveyDto.getSurveyGroupId());
+        form.setDefaultLanguageCode(surveyDto.getDefaultLanguageCode());
+        form.setRequireApproval(surveyDto.getRequireApproval());
+        form.setCreatedDateTime(surveyDto.getCreatedDateTime());
+        form.setLastUpdateDateTime(surveyDto.getLastUpdateDateTime());
+        form.setAncestorIds(surveyDto.getAncestorIds());
+        TreeMap<Integer, QuestionGroup> groupMap = getGroupMap(surveyDto);
+        form.setQuestionGroupMap(groupMap);
+        return form;
+    }
+
+    private TreeMap<Integer, QuestionGroup> getGroupMap(SurveyDto surveyDto) {
+        TreeMap<Integer, QuestionGroup> groupMap = new TreeMap<>();
+        List<QuestionGroupDto> groupDtos = surveyDto.getQuestionGroupList();
+        if (groupDtos != null) {
+            int i = 1;
+            for (QuestionGroupDto groupDto : groupDtos) {
+                QuestionGroup group = mapToGroup(groupDto);
+                if (groupMap.containsKey(groupDto.getOrder())) {
+                    groupMap.put(i, group);
+                    groupDto.setOrder(i);
+                } else {
+                    int order = groupDto.getOrder() != null ? groupDto.getOrder() : i;
+                    groupMap.put(order, group);
+                }
+                i++;
+            }
+        }
+        return groupMap;
+    }
+
+    private QuestionGroup mapToGroup(QuestionGroupDto groupDto) {
+        QuestionGroup group = new QuestionGroup();
+        group.setKey(KeyFactory.createKey("QuestionGroup", groupDto.getKeyId()));
+        group.setCode(groupDto.getCode());
+        group.setSurveyId(groupDto.getSurveyId());
+        group.setOrder(groupDto.getOrder());
+        group.setPath(groupDto.getPath());
+        group.setName(groupDto.getName());
+        group.setRepeatable(groupDto.getRepeatable());
+        group.setStatus(QuestionGroup.Status.valueOf(groupDto.getStatus()));
+        group.setImmutable(groupDto.getImmutable());
+        group.setQuestionMap(mapQuestions(groupDto));
+        return group;
+    }
+
+    private TreeMap<Integer, Question> mapQuestions(QuestionGroupDto groupDto) {
+        TreeMap<Integer, Question> mappedQuestions = new TreeMap<>();
+        for (QuestionDto questionDto : groupDto.getQuestionList()) {
+            mappedQuestions.put(questionDto.getOrder(), mapToQuestion(questionDto));
+        }
+        return mappedQuestions;
+    }
+
+    private Question mapToQuestion(QuestionDto questionDto) {
+        Question question = new Question();
+        question.setKey(KeyFactory.createKey("Question", questionDto.getKeyId()));
+        question.setType(Question.Type.valueOf(questionDto.getType().toString()));
+        question.setTip(questionDto.getTip());
+        question.setText(questionDto.getText());
+        question.setDependentFlag(questionDto.getDependentFlag());
+        question.setAllowMultipleFlag(questionDto.getAllowMultipleFlag());
+        question.setAllowOtherFlag(questionDto.getAllowOtherFlag());
+        question.setCollapseable(questionDto.getCollapseable());
+        question.setGeoLocked(questionDto.getGeoLocked());
+        question.setRequireDoubleEntry(questionDto.getRequireDoubleEntry());
+        question.setImmutable(questionDto.getImmutable());
+        question.setDependentQuestionId(questionDto.getDependentQuestionId());
+        question.setDependentQuestionAnswer(questionDto.getDependentQuestionAnswer());
+        question.setCascadeResourceId(questionDto.getCascadeResourceId());
+        question.setCaddisflyResourceUuid(questionDto.getCaddisflyResourceUuid());
+        question.setQuestionGroupId(question.getQuestionGroupId());
+        question.setSurveyId(questionDto.getSurveyId());
+        question.setVariableName(questionDto.getVariableName());
+        question.setOrder(questionDto.getOrder());
+        question.setMandatoryFlag(questionDto.getMandatoryFlag());
+        question.setPath(questionDto.getPath());
+        question.setAllowDecimal(questionDto.getAllowDecimal());
+        question.setAllowSign(questionDto.getAllowSign());
+        question.setMinVal(questionDto.getMinVal());
+        question.setMaxVal(question.getMaxVal());
+        question.setAllowExternalSources(questionDto.getAllowExternalSources());
+        question.setLocaleNameFlag(questionDto.getLocaleNameFlag());
+        question.setLocaleLocationFlag(questionDto.getLocaleLocationFlag());
+        question.setPersonalData(questionDto.getPersonalData());
+        question.setAllowPoints(questionDto.getAllowPoints());
+        question.setAllowLine(questionDto.getAllowLine());
+        question.setAllowPolygon(questionDto.getAllowPolygon());
+        question.setSourceQuestionId(questionDto.getSourceId());
+        question.setQuestionOptionMap(mapToOptions(questionDto));
+        return question;
+    }
+
+    private TreeMap<Integer, QuestionOption> mapToOptions(QuestionDto questionDto) {
+        TreeMap<Integer, QuestionOption> mappedOptions = new TreeMap<>();
+        List<QuestionOptionDto> dtoList = questionDto.getOptionList();
+        for (QuestionOptionDto questionOptionDto: dtoList) {
+            mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
+        }
+        return mappedOptions;
+    }
+
+    private QuestionOption mapToQuestionOption(QuestionOptionDto questionOptionDto) {
+        QuestionOption questionOption = new QuestionOption();
+        questionOption.setKey(KeyFactory.createKey("QuestionOption", questionOptionDto.getKeyId()));
+        questionOption.setText(questionOptionDto.getText());
+        questionOption.setCode(questionOptionDto.getCode());
+        questionOption.setOrder(questionOptionDto.getOrder());
+        questionOption.setQuestionId(questionOptionDto.getQuestionId());
+        return questionOption;
     }
 
     private void attachCascadeResources(List<Question> questions) {
