@@ -639,9 +639,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       const id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       // this content is actualy not used, the data ends up in the store
       // and is accessed through the filtered content above
-      this.set('content', FLOW.store.findQuery(FLOW.Survey, {
-        surveyGroupId: id,
-      }));
+      this.set('content', FLOW.store.filter(FLOW.Survey, (form) => form.get('surveyGroupId') === id));
     } else {
       this.set('content', null);
     }
