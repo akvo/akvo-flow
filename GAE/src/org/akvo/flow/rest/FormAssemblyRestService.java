@@ -33,6 +33,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.springframework.stereotype.Controller;
@@ -56,50 +58,69 @@ public class FormAssemblyRestService {
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
-    public String assembleForm(@RequestBody SurveyDto surveyDto) {
-        Properties props = System.getProperties();
-        String alias = props.getProperty("alias");
-        //TODO: do we need to fetch this?
+    public String publishForm(@RequestBody SurveyDto surveyDto) {
         SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
-        Survey form = getSurveyFromDto(surveyDto);
-        long formId = form.getObjectId();
-        String xmlAppId = props.getProperty("xmlAppId");
-        String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
-        attachFormTranslations(form);
-        List<Question> questions = getQuestionList((List<QuestionGroup>) form.getQuestionGroupMap().values());
-        attachCascadeResources(questions);
-        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
-        String formXML;
-        try {
-            formXML = PublishedForm.generate(jacksonForm);
+        long formId = surveyDto.getKeyId();
+        Survey form = assembleForm(surveyDto);
+        FormUploadXml formUploadXml = assembleXmlForm(survey, form);
+
+        if (!formUploadXml.getXmlContent().isEmpty()) {
             log.info("Uploading " + formId);
             UploadStatusContainer uc = uploadFormXML(
-                    Long.toString(formId), //latest version in plain filename
-                    formId + "v" + form.getVersion(), //archive copy
-                    formXML);
+                    formUploadXml.getFormIdFilename(),
+                    formUploadXml.getFormIdVersionFilename(),
+                    formUploadXml.getXmlContent());
             if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
-                log.info("Finishing assembly of " + formId);
-                form.setStatus(Survey.Status.PUBLISHED);
-                if (form.getWebForm()) {
-                    boolean webForm = WebForm.validWebForm(survey, form, questions);
-                    form.setWebForm(webForm);
-                }
-                new SurveyDAO().save(form); //remember PUBLISHED status
-                //invalidate any cached reports in flow-services
-                //TODO: shall this be done in another service?
-                List<Long> ids = new ArrayList<>();
-                ids.add(formId);
-                SurveyUtils.notifyReportService(ids, "invalidate");
+                formUploadSuccess(survey, form);
                 log.info("Completed form assembly for " + formId);
                 return "OK";
             } else {
-                log.warning("Failed to upload assembled form, id " + formId + "\n" + uc.getMessage());
+                log.severe("Failed to upload assembled form, id " + formId + "\n" + uc.getMessage());
                 return "Error";
             }
+        }
+        return "Error";
+    }
+
+    @Nonnull
+    private FormUploadXml assembleXmlForm(SurveyGroup survey, Survey form) {
+        Properties props = System.getProperties();
+        String alias = props.getProperty("alias");
+        String xmlAppId = props.getProperty("xmlAppId");
+        String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
+        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
+        try {
+            Long formId = form.getObjectId();
+            return new FormUploadXml(Long.toString(formId), //latest version in plain filename
+                    formId + "v" + form.getVersion(), //archive copy
+                    PublishedForm.generate(jacksonForm));
         } catch (IOException e) {
             log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
-            return "Error";
+            return new FormUploadXml("", "", "");
         }
+    }
+
+    private Survey assembleForm(SurveyDto surveyDto) {
+        Survey form = getSurveyFromDto(surveyDto);
+        attachFormTranslations(form);
+        List<Question> questions = getQuestionList(form.getQuestionGroupMap());
+        attachCascadeResources(questions);
+        return form;
+    }
+
+    private void formUploadSuccess(SurveyGroup survey, Survey form) {
+        List<Question> questions = getQuestionList(form.getQuestionGroupMap());
+        form.setStatus(Survey.Status.PUBLISHED);
+        if (form.getWebForm()) {
+            boolean webForm = WebForm.validWebForm(survey, form, questions);
+            form.setWebForm(webForm);
+        }
+        new SurveyDAO().save(form);
+        //invalidate any cached reports in flow-services
+        //TODO: shall this be done in another service?
+        List<Long> ids = new ArrayList<>();
+        ids.add(form.getObjectId());
+        SurveyUtils.notifyReportService(ids, "invalidate");
     }
 
     private Survey getSurveyFromDto(SurveyDto surveyDto) {
@@ -109,7 +130,7 @@ public class FormAssemblyRestService {
         form.setName(surveyDto.getName());
         form.setVersion(Double.parseDouble(surveyDto.getVersion()));
         form.setDesc(surveyDto.getDescription());
-        form.setStatus(Survey.Status.NOT_PUBLISHED); //TODO: should it be not published?
+        form.setStatus(Survey.Status.NOT_PUBLISHED);
         form.setPath(surveyDto.getPath());
         form.setSurveyGroupId(surveyDto.getSurveyGroupId());
         form.setDefaultLanguageCode(surveyDto.getDefaultLanguageCode());
@@ -122,6 +143,7 @@ public class FormAssemblyRestService {
         return form;
     }
 
+    @Nonnull
     private TreeMap<Integer, QuestionGroup> getGroupMap(SurveyDto surveyDto) {
         TreeMap<Integer, QuestionGroup> groupMap = new TreeMap<>();
         List<QuestionGroupDto> groupDtos = surveyDto.getQuestionGroupList();
@@ -157,10 +179,14 @@ public class FormAssemblyRestService {
         return group;
     }
 
+    @Nonnull
     private TreeMap<Integer, Question> mapQuestions(QuestionGroupDto groupDto) {
         TreeMap<Integer, Question> mappedQuestions = new TreeMap<>();
-        for (QuestionDto questionDto : groupDto.getQuestionList()) {
-            mappedQuestions.put(questionDto.getOrder(), mapToQuestion(questionDto));
+        List<QuestionDto> questionList = groupDto.getQuestionList();
+        if (questionList != null) {
+            for (QuestionDto questionDto : questionList) {
+                mappedQuestions.put(questionDto.getOrder(), mapToQuestion(questionDto));
+            }
         }
         return mappedQuestions;
     }
@@ -204,11 +230,14 @@ public class FormAssemblyRestService {
         return question;
     }
 
+    @Nonnull
     private TreeMap<Integer, QuestionOption> mapToOptions(QuestionDto questionDto) {
         TreeMap<Integer, QuestionOption> mappedOptions = new TreeMap<>();
         List<QuestionOptionDto> dtoList = questionDto.getOptionList();
-        for (QuestionOptionDto questionOptionDto: dtoList) {
-            mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
+        if (dtoList != null) {
+            for (QuestionOptionDto questionOptionDto: dtoList) {
+                mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
+            }
         }
         return mappedOptions;
     }
@@ -242,24 +271,32 @@ public class FormAssemblyRestService {
         if (formTranslationMap.size() > 0) {
             form.setTranslationMap(formTranslationMap);
         }
-        List<QuestionGroup> groups = (List<QuestionGroup>) form.getQuestionGroupMap().values();
-        for (QuestionGroup group: groups) {
-            HashMap<String, Translation> map = getGroupTranslationsMap(translations, group.getKey().getId());
-            if (map.size() > 0) {
-                group.setTranslations(map);
-            }
-            List<Question> questions = (List<Question>) group.getQuestionMap().values();
-            for (Question question: questions) {
-                List<Translation> questionTranslations = getQuestionTranslations(translations, question.getKey().getId());
-                if (questionTranslations != null && questionTranslations.size() > 0) {
-                    question.setTranslations(questionTranslations);
+        TreeMap<Integer, QuestionGroup> questionGroupMap = form.getQuestionGroupMap();
+        if (questionGroupMap != null) {
+            List<QuestionGroup> groups = new ArrayList<>(questionGroupMap.values());
+            for (QuestionGroup group: groups) {
+                HashMap<String, Translation> map = getGroupTranslationsMap(translations, group.getKey().getId());
+                if (map.size() > 0) {
+                    group.setTranslations(map);
                 }
-                TreeMap<Integer, QuestionOption> questionOptionMap = question.getQuestionOptionMap();
-                List<QuestionOption> options = questionOptionMap == null ? Collections.emptyList() : (List<QuestionOption>) questionOptionMap.values();
-                for (QuestionOption option : options) {
-                    HashMap<String, Translation> optionTranslationsMap = getOptionTranslations(translations, option.getKey().getId());
-                    if (optionTranslationsMap.size() > 0) {
-                        option.setTranslationMap(optionTranslationsMap);
+                TreeMap<Integer, Question> questionMap = group.getQuestionMap();
+                if (questionMap != null) {
+                    List<Question> questions = new ArrayList<>(questionMap.values());
+                    for (Question question: questions) {
+                        List<Translation> questionTranslations = getQuestionTranslations(translations, question.getKey().getId());
+                        if (questionTranslations.size() > 0) {
+                            question.setTranslations(questionTranslations);
+                        }
+                        TreeMap<Integer, QuestionOption> questionOptionMap = question.getQuestionOptionMap();
+                        if (questionOptionMap != null) {
+                            List<QuestionOption> options = new ArrayList<>(questionOptionMap.values());
+                            for (QuestionOption option : options) {
+                                HashMap<String, Translation> optionTranslationsMap = getOptionTranslations(translations, option.getKey().getId());
+                                if (optionTranslationsMap.size() > 0) {
+                                    option.setTranslationMap(optionTranslationsMap);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -271,7 +308,11 @@ public class FormAssemblyRestService {
         return mapTranslations(translationsForForm);
     }
 
-    private List<Translation> getTranslationsForParent(List<Translation> translations, long id) {
+    @Nonnull
+    private List<Translation> getTranslationsForParent(@Nullable List<Translation> translations, long id) {
+        if (translations == null) {
+            return Collections.emptyList();
+        }
         return translations
                 .stream()
                 .filter(it -> id == it.getParentId())
@@ -287,12 +328,14 @@ public class FormAssemblyRestService {
         return mapTranslations(translationsForForm);
     }
 
-    private HashMap<String, Translation> mapTranslations(List<Translation> translationsForForm) {
-        HashMap<String, Translation> translationHashMap = new HashMap<>();
-        for (Translation t : translationsForForm) {
-            translationHashMap.put(t.getLanguageCode(), t);
+    private HashMap<String, Translation> mapTranslations(@Nullable List<Translation> translations) {
+        HashMap<String, Translation> mappedTranslations = new HashMap<>();
+        if (translations != null) {
+            for (Translation t : translations) {
+                mappedTranslations.put(t.getLanguageCode(), t);
+            }
         }
-        return translationHashMap;
+        return mappedTranslations;
     }
 
     private HashMap<String, Translation> getFormTranslationMap(List<Translation> translations) {
@@ -303,9 +346,22 @@ public class FormAssemblyRestService {
         return mapTranslations(translationsForForm);
     }
 
-    private List<Question> getQuestionList(List<QuestionGroup> values) {
-        return values.stream().map(it -> (List<Question>) it.getQuestionMap().values()).collect(Collectors.toList())
-                .stream().flatMap(Collection::stream).collect(Collectors.toList());
+    @Nonnull
+    private List<Question> getQuestionList(@Nullable TreeMap<Integer, QuestionGroup> questionGroupTreeMap) {
+        if (questionGroupTreeMap != null) {
+            List<QuestionGroup> groups = new ArrayList<>(questionGroupTreeMap.values());
+            return groups.stream().filter(it -> it.getQuestionMap() != null).map(this::getValues).collect(Collectors.toList())
+                    .stream().flatMap(Collection::stream).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    private List<Question> getValues(QuestionGroup questionGroup) {
+        TreeMap<Integer, Question> questionMap = questionGroup.getQuestionMap();
+        if (questionMap == null) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(questionMap.values());
     }
 
     /**
@@ -334,8 +390,32 @@ public class FormAssemblyRestService {
                     "application/zip",
                     true);
         } catch (IOException e) {
-            log.severe("Error uploading zipfile: " + e.toString());
+            log.severe("Error uploading zip file: " + e.toString());
             return false;
+        }
+    }
+
+    public static class FormUploadXml {
+        private final String formIdFilename;
+        private final String formIdVersionFilename;
+        private final String xmlContent;
+
+        public FormUploadXml(String formIdFilename, String formIdVersionFilename, String xmlContent) {
+            this.formIdFilename = formIdFilename;
+            this.formIdVersionFilename = formIdVersionFilename;
+            this.xmlContent = xmlContent;
+        }
+
+        public String getFormIdFilename() {
+            return formIdFilename;
+        }
+
+        public String getFormIdVersionFilename() {
+            return formIdVersionFilename;
+        }
+
+        public String getXmlContent() {
+            return xmlContent;
         }
     }
 }
