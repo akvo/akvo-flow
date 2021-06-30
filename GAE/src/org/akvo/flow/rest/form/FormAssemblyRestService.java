@@ -17,7 +17,7 @@
  * along with Akvo Flow.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.akvo.flow.rest;
+package org.akvo.flow.rest.form;
 
 import com.gallatinsystems.common.domain.UploadStatusContainer;
 import com.gallatinsystems.common.util.S3Util;
@@ -39,7 +39,6 @@ import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_DE
 import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_NAME;
 import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.utils.SystemProperty;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,13 +48,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.akvo.flow.xml.PublishedForm;
-import org.akvo.flow.xml.XmlForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,6 +70,7 @@ public class FormAssemblyRestService {
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     public static final String BUCKET = "s3bucket";
+    private final XmlFormAssembler xmlFormAssembler = new XmlFormAssembler();
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
@@ -81,7 +78,7 @@ public class FormAssemblyRestService {
         SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
         long formId = surveyDto.getKeyId();
         Survey form = assembleForm(surveyDto);
-        FormUploadXml formUploadXml = assembleXmlForm(survey, form);
+        FormUploadXml formUploadXml = xmlFormAssembler.assembleXmlForm(survey, form);
 
         if (!formUploadXml.getXmlContent().isEmpty()) {
             log.info("Uploading " + formId);
@@ -99,24 +96,6 @@ public class FormAssemblyRestService {
             }
         }
         return "Error";
-    }
-
-    @Nonnull
-    private FormUploadXml assembleXmlForm(SurveyGroup survey, Survey form) {
-        Properties props = System.getProperties();
-        String alias = props.getProperty("alias");
-        String xmlAppId = props.getProperty("xmlAppId");
-        String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
-        XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
-        try {
-            Long formId = form.getObjectId();
-            return new FormUploadXml(Long.toString(formId), //latest version in plain filename
-                    formId + "v" + form.getVersion(), //archive copy
-                    PublishedForm.generate(jacksonForm));
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
-            return new FormUploadXml("", "", "");
-        }
     }
 
     private Survey assembleForm(SurveyDto surveyDto) {
@@ -414,27 +393,4 @@ public class FormAssemblyRestService {
         }
     }
 
-    public static class FormUploadXml {
-        private final String formIdFilename;
-        private final String formIdVersionFilename;
-        private final String xmlContent;
-
-        public FormUploadXml(String formIdFilename, String formIdVersionFilename, String xmlContent) {
-            this.formIdFilename = formIdFilename;
-            this.formIdVersionFilename = formIdVersionFilename;
-            this.xmlContent = xmlContent;
-        }
-
-        public String getFormIdFilename() {
-            return formIdFilename;
-        }
-
-        public String getFormIdVersionFilename() {
-            return formIdVersionFilename;
-        }
-
-        public String getXmlContent() {
-            return xmlContent;
-        }
-    }
 }
