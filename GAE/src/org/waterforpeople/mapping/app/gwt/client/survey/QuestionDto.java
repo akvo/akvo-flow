@@ -72,7 +72,7 @@ public class QuestionDto extends BaseDto {
     private Boolean allowPoints;
     private Boolean allowLine;
     private Boolean allowPolygon;
-    private String optionList = null;
+    private List<QuestionOptionDto> optionList;
     private List<Long> questionOptions = null;
     private QuestionDependencyDto questionDependency = null;
     private Long sourceId = null;
@@ -108,14 +108,6 @@ public class QuestionDto extends BaseDto {
 
     public void setMaxVal(Double maxVal) {
         this.maxVal = maxVal;
-    }
-
-    public String getOptionList() {
-        return optionList;
-    }
-
-    public void setOptionList(String optionList) {
-        this.optionList = optionList;
     }
 
     public Boolean getName() {
@@ -288,6 +280,14 @@ public class QuestionDto extends BaseDto {
 
     public Boolean getAllowOtherFlag() {
         return allowOtherFlag;
+    }
+
+    public List<QuestionOptionDto> getOptionList() {
+        return optionList;
+    }
+
+    public void setOptionList(List<QuestionOptionDto> optionList) {
+        this.optionList = optionList;
     }
 
     @Override
