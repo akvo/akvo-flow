@@ -35,6 +35,7 @@
     <bean name="/devices" class="org.waterforpeople.mapping.app.web.rest.DeviceRestService" lazy-init="true" />
     <bean name="/messages" class="org.akvo.flow.rest.MessageRestService" lazy-init="true" />
     <bean name="/image_upload" class="org.akvo.flow.rest.ImageUploadRestService" lazy-init="true" />
+    <bean name="/form_assembly" class="org.akvo.flow.rest.FormAssemblyRestService" lazy-init="true" />
     <bean name="/notification_subscriptions" class="org.waterforpeople.mapping.app.web.rest.NotificationSubscriptionRestService" lazy-init="true" />
     <bean name="/placemarks" class="org.waterforpeople.mapping.app.web.rest.PlacemarkRestService" lazy-init="true" />
     <bean name="/question_answers" class="org.waterforpeople.mapping.app.web.rest.QuestionAnswerRestService" lazy-init="true" />
