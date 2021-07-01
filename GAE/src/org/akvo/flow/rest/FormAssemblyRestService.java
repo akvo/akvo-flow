@@ -142,7 +142,7 @@ public class FormAssemblyRestService {
         SurveyUtils.notifyReportService(ids, "invalidate");
     }
 
-    private Survey getSurveyFromDto(SurveyDto surveyDto) {
+    private Survey getFormFromDto(SurveyDto surveyDto) {
         Survey form = new Survey();
         form.setKey(KeyFactory.createKey("Survey", surveyDto.getKeyId()));
         form.setCode(surveyDto.getCode());
