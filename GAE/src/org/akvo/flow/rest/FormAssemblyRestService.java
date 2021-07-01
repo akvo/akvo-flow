@@ -120,7 +120,7 @@ public class FormAssemblyRestService {
     }
 
     private Survey assembleForm(SurveyDto surveyDto) {
-        Survey form = getSurveyFromDto(surveyDto);
+        Survey form = getFormFromDto(surveyDto);
         attachFormTranslations(form);
         List<Question> questions = getQuestionList(form.getQuestionGroupMap());
         attachCascadeResources(questions);
