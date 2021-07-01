@@ -67,7 +67,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 @Controller
-@RequestMapping("/form_assembly")
+@RequestMapping("/form_publish")
 public class FormAssemblyRestService {
 
     private static final Logger log = Logger.getLogger(FormAssemblyRestService.class.getName());
