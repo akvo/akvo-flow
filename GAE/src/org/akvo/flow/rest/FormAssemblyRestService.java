@@ -35,8 +35,6 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_DESC;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_NAME;
 import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.utils.SystemProperty;
@@ -47,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -285,24 +284,24 @@ public class FormAssemblyRestService {
     }
 
     private void attachFormTranslations(Survey form) {
-        List<Translation> translations = new TranslationDao().listByFormId(form.getObjectId());
-        HashMap<String, Translation> formTranslationMap = getFormTranslationMap(translations);
+        Map<Long, List<Translation>> translations = new TranslationDao().mappedTranslationsByParentId(form.getObjectId());
+        HashMap<String, Translation> formTranslationMap = getMappedTranslationsForParent(translations, form.getObjectId());
         if (formTranslationMap.size() > 0) {
             form.setTranslationMap(formTranslationMap);
         }
         TreeMap<Integer, QuestionGroup> questionGroupMap = form.getQuestionGroupMap();
         if (questionGroupMap != null) {
             List<QuestionGroup> groups = new ArrayList<>(questionGroupMap.values());
-            for (QuestionGroup group: groups) {
-                HashMap<String, Translation> map = getGroupTranslationsMap(translations, group.getKey().getId());
+            for (QuestionGroup group : groups) {
+                HashMap<String, Translation> map = getMappedTranslationsForParent(translations, group.getKey().getId());
                 if (map.size() > 0) {
                     group.setTranslations(map);
                 }
                 TreeMap<Integer, Question> questionMap = group.getQuestionMap();
                 if (questionMap != null) {
                     List<Question> questions = new ArrayList<>(questionMap.values());
-                    for (Question question: questions) {
-                        List<Translation> questionTranslations = getQuestionTranslations(translations, question.getKey().getId());
+                    for (Question question : questions) {
+                        List<Translation> questionTranslations = translations.get(question.getKey().getId());
                         if (questionTranslations.size() > 0) {
                             question.setTranslations(questionTranslations);
                         }
@@ -310,7 +309,7 @@ public class FormAssemblyRestService {
                         if (questionOptionMap != null) {
                             List<QuestionOption> options = new ArrayList<>(questionOptionMap.values());
                             for (QuestionOption option : options) {
-                                HashMap<String, Translation> optionTranslationsMap = getOptionTranslations(translations, option.getKey().getId());
+                                HashMap<String, Translation> optionTranslationsMap = getMappedTranslationsForParent(translations, option.getKey().getId());
                                 if (optionTranslationsMap.size() > 0) {
                                     option.setTranslationMap(optionTranslationsMap);
                                 }
@@ -322,28 +321,8 @@ public class FormAssemblyRestService {
         }
     }
 
-    private HashMap<String, Translation> getOptionTranslations(List<Translation> translations, long id) {
-        List<Translation> translationsForForm = getTranslationsForParent(translations, id);
-        return mapTranslations(translationsForForm);
-    }
-
-    @Nonnull
-    private List<Translation> getTranslationsForParent(@Nullable List<Translation> translations, long id) {
-        if (translations == null) {
-            return Collections.emptyList();
-        }
-        return translations
-                .stream()
-                .filter(it -> id == it.getParentId())
-                .collect(Collectors.toList());
-    }
-
-    private List<Translation> getQuestionTranslations(List<Translation> translations, long id) {
-        return getTranslationsForParent(translations, id);
-    }
-
-    private HashMap<String, Translation> getGroupTranslationsMap(List<Translation> translations, long id) {
-        List<Translation> translationsForForm = getTranslationsForParent(translations, id);
+    private HashMap<String, Translation> getMappedTranslationsForParent(Map<Long, List<Translation>> translations, Long parentId) {
+        List<Translation> translationsForForm = translations.get(parentId);
         return mapTranslations(translationsForForm);
     }
 
@@ -355,14 +334,6 @@ public class FormAssemblyRestService {
             }
         }
         return mappedTranslations;
-    }
-
-    private HashMap<String, Translation> getFormTranslationMap(List<Translation> translations) {
-        List<Translation> translationsForForm = translations
-                .stream()
-                .filter(it -> SURVEY_DESC.equals(it.getParentType()) || SURVEY_NAME.equals(it.getParentType()))
-                .collect(Collectors.toList());
-        return mapTranslations(translationsForForm);
     }
 
     @Nonnull
