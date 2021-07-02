@@ -51,7 +51,7 @@ class XmlFormAssemblerTest {
         helper.tearDown();
     }
 
-    @Test()
+    @Test
     public void assembleXmlFormShouldReturnEmptyIfException() throws IOException {
         SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
         Survey form = dataStoreTestUtil.createSurvey(survey);
