@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -145,4 +146,21 @@ public class TranslationDao extends BaseDAO<Translation> {
     public List<Translation> listByFormId(long id) {
         return listByProperty("surveyId", id, "Long");
     }
-}
+
+    public Map<Long, List<Translation>> mappedTranslationsByParentId(long surveyId) {
+        List<Translation> translations = listByFormId(surveyId);
+        Map<Long, List<Translation>> mappedTranslations = new HashMap<>();
+        if (translations != null) {
+            for (Translation t: translations) {
+                Long parentId = t.getParentId();
+                List<Translation> parentTranslations = mappedTranslations.get(parentId);
+                if (parentTranslations == null) {
+                    parentTranslations = new ArrayList<>();
+                }
+                parentTranslations.add(t);
+                mappedTranslations.put(parentId, parentTranslations);
+            }
+        }
+        return mappedTranslations;
+    }
+ }
