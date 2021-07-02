@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,10 +18,12 @@ package org.akvo.flow.xml;
 
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
+import java.util.stream.Collectors;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
@@ -106,7 +108,7 @@ public class XmlQuestionGroup {
             for (XmlQuestion q : question) {
                 qMap.put(q.getOrder(), q.toDto());
             }
-            dto.setQuestionMap(qMap);
+            dto.setQuestionList(new ArrayList<>(qMap.values()));
         }
 
         return dto;
