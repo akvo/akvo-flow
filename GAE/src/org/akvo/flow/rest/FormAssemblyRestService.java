@@ -55,11 +55,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -76,13 +78,12 @@ public class FormAssemblyRestService {
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
-    public String publishForm(@RequestBody SurveyDto surveyDto) {
+    public SurveyDto publishForm(@RequestBody SurveyDto surveyDto) {
         SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
         long formId = surveyDto.getKeyId();
         Survey form = assembleForm(surveyDto);
-        FormUploadXml formUploadXml = assembleXmlForm(survey, form);
-
-        if (!formUploadXml.getXmlContent().isEmpty()) {
+        try {
+            FormUploadXml formUploadXml = assembleXmlForm(survey, form);
             log.info("Uploading " + formId);
             UploadStatusContainer uc = uploadFormXML(
                     formUploadXml.getFormIdFilename(),
@@ -91,31 +92,30 @@ public class FormAssemblyRestService {
             if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
                 formUploadSuccess(survey, form);
                 log.info("Completed form assembly for " + formId);
-                return "OK";
+                surveyDto.setStatus(Survey.Status.PUBLISHED.toString());
+                return surveyDto;
             } else {
-                log.severe("Failed to upload assembled form, id " + formId + "\n" + uc.getMessage());
-                return "Error";
+                String message = "Failed to upload assembled form, id " + formId;
+                log.severe(message + "\n" + uc.getMessage());
+                throw new ResponseStatusException(INTERNAL_SERVER_ERROR, message, new Exception(uc.getMessage()));
             }
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Failed to assemble form, id " + formId, e);
         }
-        return "Error";
     }
 
     @Nonnull
-    private FormUploadXml assembleXmlForm(SurveyGroup survey, Survey form) {
+    private FormUploadXml assembleXmlForm(SurveyGroup survey, Survey form) throws IOException {
         Properties props = System.getProperties();
         String alias = props.getProperty("alias");
         String xmlAppId = props.getProperty("xmlAppId");
         String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
         XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
-        try {
-            Long formId = form.getObjectId();
-            return new FormUploadXml(Long.toString(formId), //latest version in plain filename
-                    formId + "v" + form.getVersion(), //archive copy
-                    PublishedForm.generate(jacksonForm));
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
-            return new FormUploadXml("", "", "");
-        }
+        Long formId = form.getObjectId();
+        return new FormUploadXml(Long.toString(formId), //latest version in plain filename
+                formId + "v" + form.getVersion(), //archive copy
+                PublishedForm.generate(jacksonForm));
     }
 
     private Survey assembleForm(SurveyDto surveyDto) {
@@ -253,7 +253,7 @@ public class FormAssemblyRestService {
         TreeMap<Integer, QuestionOption> mappedOptions = new TreeMap<>();
         List<QuestionOptionDto> dtoList = questionDto.getOptionList();
         if (dtoList != null) {
-            for (QuestionOptionDto questionOptionDto: dtoList) {
+            for (QuestionOptionDto questionOptionDto : dtoList) {
                 mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
             }
         }
@@ -272,7 +272,7 @@ public class FormAssemblyRestService {
 
     private void attachCascadeResources(List<Question> questions) {
         CascadeResourceDao cascadeResourceDao = new CascadeResourceDao();
-        for (Question question: questions) {
+        for (Question question : questions) {
             if (CASCADE.equals(question.getType())) {
                 CascadeResource cascadeResource = cascadeResourceDao.getByKey(question.getCascadeResourceId());
                 if (cascadeResource != null) {
