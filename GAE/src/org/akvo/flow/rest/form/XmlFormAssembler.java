@@ -24,34 +24,25 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.appengine.api.utils.SystemProperty;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 
 public class XmlFormAssembler {
 
-    private static final Logger log = Logger.getLogger(XmlFormAssembler.class.getName());
-
     public XmlFormAssembler() {
     }
 
     @Nonnull
-    FormUploadXml assembleXmlForm(@Nonnull SurveyGroup survey, @Nonnull Survey form) {
+    FormUploadXml assembleXmlForm(SurveyGroup survey, Survey form) throws IOException {
         Properties props = System.getProperties();
         String alias = props.getProperty("alias");
         String xmlAppId = props.getProperty("xmlAppId");
         String appStr = (xmlAppId != null && !xmlAppId.isEmpty()) ? xmlAppId : SystemProperty.applicationId.get();
         XmlForm jacksonForm = new XmlForm(form, survey, appStr, alias);
-        try {
-            Long formId = form.getObjectId();
-            return new FormUploadXml(Long.toString(formId), //latest version in plain filename
-                    formId + "v" + form.getVersion(), //archive copy
-                    PublishedForm.generate(jacksonForm));
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
-            return new FormUploadXml("", "", "");
-        }
+        Long formId = form.getObjectId();
+        return new FormUploadXml(Long.toString(formId), //latest version in plain filename
+                formId + "v" + form.getVersion(), //archive copy
+                PublishedForm.generate(jacksonForm));
     }
 }

@@ -35,8 +35,6 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_DESC;
-import static com.gallatinsystems.survey.domain.Translation.ParentType.SURVEY_NAME;
 import com.gallatinsystems.survey.domain.WebForm;
 import com.google.appengine.api.datastore.KeyFactory;
 import java.io.ByteArrayOutputStream;
@@ -46,24 +44,28 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 @Controller
-@RequestMapping("/form_assembly")
+@RequestMapping("/form_publish")
 public class FormAssemblyRestService {
 
     private static final Logger log = Logger.getLogger(FormAssemblyRestService.class.getName());
@@ -74,13 +76,12 @@ public class FormAssemblyRestService {
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
-    public String publishForm(@RequestBody SurveyDto surveyDto) {
+    public SurveyDto publishForm(@RequestBody SurveyDto surveyDto) {
         SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
         long formId = surveyDto.getKeyId();
         Survey form = assembleForm(surveyDto);
-        FormUploadXml formUploadXml = xmlFormAssembler.assembleXmlForm(survey, form);
-
-        if (!formUploadXml.getXmlContent().isEmpty()) {
+        try {
+            FormUploadXml formUploadXml = xmlFormAssembler.assembleXmlForm(survey, form);
             log.info("Uploading " + formId);
             UploadStatusContainer uc = uploadFormXML(
                     formUploadXml.getFormIdFilename(),
@@ -89,17 +90,21 @@ public class FormAssemblyRestService {
             if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
                 formUploadSuccess(survey, form);
                 log.info("Completed form assembly for " + formId);
-                return "OK";
+                surveyDto.setStatus(Survey.Status.PUBLISHED.toString());
+                return surveyDto;
             } else {
-                log.severe("Failed to upload assembled form, id " + formId + "\n" + uc.getMessage());
-                return "Error";
+                String message = "Failed to upload assembled form, id " + formId;
+                log.severe(message + "\n" + uc.getMessage());
+                throw new ResponseStatusException(INTERNAL_SERVER_ERROR, message, new Exception(uc.getMessage()));
             }
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Failed to assemble form, id " + formId, e);
         }
-        return "Error";
     }
 
     private Survey assembleForm(SurveyDto surveyDto) {
-        Survey form = getSurveyFromDto(surveyDto);
+        Survey form = getFormFromDto(surveyDto);
         attachFormTranslations(form);
         List<Question> questions = getQuestionList(form.getQuestionGroupMap());
         attachCascadeResources(questions);
@@ -121,7 +126,7 @@ public class FormAssemblyRestService {
         SurveyUtils.notifyReportService(ids, "invalidate");
     }
 
-    private Survey getSurveyFromDto(SurveyDto surveyDto) {
+    private Survey getFormFromDto(SurveyDto surveyDto) {
         Survey form = new Survey();
         form.setKey(KeyFactory.createKey("Survey", surveyDto.getKeyId()));
         form.setCode(surveyDto.getCode());
@@ -233,7 +238,7 @@ public class FormAssemblyRestService {
         TreeMap<Integer, QuestionOption> mappedOptions = new TreeMap<>();
         List<QuestionOptionDto> dtoList = questionDto.getOptionList();
         if (dtoList != null) {
-            for (QuestionOptionDto questionOptionDto: dtoList) {
+            for (QuestionOptionDto questionOptionDto : dtoList) {
                 mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
             }
         }
@@ -252,7 +257,7 @@ public class FormAssemblyRestService {
 
     private void attachCascadeResources(List<Question> questions) {
         CascadeResourceDao cascadeResourceDao = new CascadeResourceDao();
-        for (Question question: questions) {
+        for (Question question : questions) {
             if (CASCADE.equals(question.getType())) {
                 CascadeResource cascadeResource = cascadeResourceDao.getByKey(question.getCascadeResourceId());
                 if (cascadeResource != null) {
@@ -264,24 +269,24 @@ public class FormAssemblyRestService {
     }
 
     private void attachFormTranslations(Survey form) {
-        List<Translation> translations = new TranslationDao().listByFormId(form.getObjectId());
-        HashMap<String, Translation> formTranslationMap = getFormTranslationMap(translations);
+        Map<Long, List<Translation>> translations = new TranslationDao().mappedTranslationsByParentId(form.getObjectId());
+        HashMap<String, Translation> formTranslationMap = getMappedTranslationsForParent(translations, form.getObjectId());
         if (formTranslationMap.size() > 0) {
             form.setTranslationMap(formTranslationMap);
         }
         TreeMap<Integer, QuestionGroup> questionGroupMap = form.getQuestionGroupMap();
         if (questionGroupMap != null) {
             List<QuestionGroup> groups = new ArrayList<>(questionGroupMap.values());
-            for (QuestionGroup group: groups) {
-                HashMap<String, Translation> map = getGroupTranslationsMap(translations, group.getKey().getId());
+            for (QuestionGroup group : groups) {
+                HashMap<String, Translation> map = getMappedTranslationsForParent(translations, group.getKey().getId());
                 if (map.size() > 0) {
                     group.setTranslations(map);
                 }
                 TreeMap<Integer, Question> questionMap = group.getQuestionMap();
                 if (questionMap != null) {
                     List<Question> questions = new ArrayList<>(questionMap.values());
-                    for (Question question: questions) {
-                        List<Translation> questionTranslations = getQuestionTranslations(translations, question.getKey().getId());
+                    for (Question question : questions) {
+                        List<Translation> questionTranslations = translations.get(question.getKey().getId());
                         if (questionTranslations.size() > 0) {
                             question.setTranslations(questionTranslations);
                         }
@@ -289,7 +294,7 @@ public class FormAssemblyRestService {
                         if (questionOptionMap != null) {
                             List<QuestionOption> options = new ArrayList<>(questionOptionMap.values());
                             for (QuestionOption option : options) {
-                                HashMap<String, Translation> optionTranslationsMap = getOptionTranslations(translations, option.getKey().getId());
+                                HashMap<String, Translation> optionTranslationsMap = getMappedTranslationsForParent(translations, option.getKey().getId());
                                 if (optionTranslationsMap.size() > 0) {
                                     option.setTranslationMap(optionTranslationsMap);
                                 }
@@ -301,28 +306,8 @@ public class FormAssemblyRestService {
         }
     }
 
-    private HashMap<String, Translation> getOptionTranslations(List<Translation> translations, long id) {
-        List<Translation> translationsForForm = getTranslationsForParent(translations, id);
-        return mapTranslations(translationsForForm);
-    }
-
-    @Nonnull
-    private List<Translation> getTranslationsForParent(@Nullable List<Translation> translations, long id) {
-        if (translations == null) {
-            return Collections.emptyList();
-        }
-        return translations
-                .stream()
-                .filter(it -> id == it.getParentId())
-                .collect(Collectors.toList());
-    }
-
-    private List<Translation> getQuestionTranslations(List<Translation> translations, long id) {
-        return getTranslationsForParent(translations, id);
-    }
-
-    private HashMap<String, Translation> getGroupTranslationsMap(List<Translation> translations, long id) {
-        List<Translation> translationsForForm = getTranslationsForParent(translations, id);
+    private HashMap<String, Translation> getMappedTranslationsForParent(Map<Long, List<Translation>> translations, Long parentId) {
+        List<Translation> translationsForForm = translations.get(parentId);
         return mapTranslations(translationsForForm);
     }
 
@@ -334,14 +319,6 @@ public class FormAssemblyRestService {
             }
         }
         return mappedTranslations;
-    }
-
-    private HashMap<String, Translation> getFormTranslationMap(List<Translation> translations) {
-        List<Translation> translationsForForm = translations
-                .stream()
-                .filter(it -> SURVEY_DESC.equals(it.getParentType()) || SURVEY_NAME.equals(it.getParentType()))
-                .collect(Collectors.toList());
-        return mapTranslations(translationsForForm);
     }
 
     @Nonnull
