@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,9 +16,8 @@
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
@@ -27,7 +26,7 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     private static final long serialVersionUID = -7253934961271624253L;
 
-    private TreeMap<Integer, QuestionDto> questionMap = null;
+    private List<QuestionDto> questionList = null;
 
     private String code;
     private Long surveyId;
@@ -71,24 +70,6 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
-        this.questionMap = questionMap;
-    }
-
-    public TreeMap<Integer, QuestionDto> getQuestionMap() {
-        return questionMap;
-    }
-
-    public void addQuestion(QuestionDto item, Integer position) {
-        if (questionMap == null) {
-            questionMap = new TreeMap<Integer, QuestionDto>();
-            questionMap.put(position, item);
-        } else {
-            questionMap.put(position, item);
-
-        }
     }
 
     @Override
@@ -147,5 +128,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public void setTranslationMap(Map<String, TranslationDto> translationMap) {
         this.translationMap = translationMap;
+    }
+
+    public List<QuestionDto> getQuestionList() {
+        return questionList;
+    }
+
+    public void setQuestionList(List<QuestionDto> questionList) {
+        this.questionList = questionList;
     }
 }
