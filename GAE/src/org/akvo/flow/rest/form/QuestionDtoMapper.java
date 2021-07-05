@@ -36,7 +36,7 @@ public class QuestionDtoMapper {
 
     @Nonnull
     TreeMap<Integer, Question> mapQuestions(QuestionGroupDto groupDto) {
-        TreeMap<Integer, Question> mappedQuestions = new TreeMap<Integer, Question>();
+        TreeMap<Integer, Question> mappedQuestions = new TreeMap<>();
         List<QuestionDto> questionList = groupDto.getQuestionList();
         if (questionList != null) {
             for (QuestionDto questionDto : questionList) {

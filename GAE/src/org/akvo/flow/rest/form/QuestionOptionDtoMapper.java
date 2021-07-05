@@ -41,7 +41,7 @@ public class QuestionOptionDtoMapper {
         return mappedOptions;
     }
 
-    QuestionOption mapToQuestionOption(QuestionOptionDto questionOptionDto) {
+    private QuestionOption mapToQuestionOption(QuestionOptionDto questionOptionDto) {
         QuestionOption questionOption = new QuestionOption();
         questionOption.setKey(KeyFactory.createKey("QuestionOption", questionOptionDto.getKeyId()));
         questionOption.setText(questionOptionDto.getText());

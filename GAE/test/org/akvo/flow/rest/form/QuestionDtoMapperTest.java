@@ -19,7 +19,7 @@
 
 package org.akvo.flow.rest.form;
 
-import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
-class QuestionOptionDtoMapperTest {
+class QuestionDtoMapperTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
@@ -47,33 +47,35 @@ class QuestionOptionDtoMapperTest {
     }
 
     @Test
-    public void mapToOptionsShouldReturnEmptyMapForNullList() {
-        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
+    public void mapQuestionsShouldReturnEmptyMapForNullList() {
+        QuestionDtoMapper mapper = new QuestionDtoMapper(new QuestionOptionDtoMapper());
 
-        TreeMap<Integer, QuestionOption> result = mapper.mapToOptions(new QuestionDto());
+        TreeMap<Integer, Question> result = mapper.mapQuestions(new QuestionGroupDto());
 
         assertEquals(0, result.size());
     }
 
     @Test
-    public void mapToOptionsShouldReturnOrderedOptions() {
-        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
+    public void mapQuestionsShouldReturnOrderedOptions() {
+        QuestionDtoMapper mapper = new QuestionDtoMapper(new QuestionOptionDtoMapper());
+        QuestionGroupDto groupDto = new QuestionGroupDto();
+        List<QuestionDto> questionList = new ArrayList<>(2);
         QuestionDto questionDto = new QuestionDto();
-        List<QuestionOptionDto> optionList = new ArrayList<>();
-        QuestionOptionDto optionDto = new QuestionOptionDto();
-        optionDto.setKeyId(12345L);
-        optionDto.setOrder(2);
-        optionList.add(optionDto);
-        QuestionOptionDto optionDto2 = new QuestionOptionDto();
-        optionDto2.setKeyId(123456L);
-        optionDto2.setOrder(1);
-        optionList.add(optionDto2);
-        questionDto.setOptionList(optionList);
+        questionDto.setType(QuestionDto.QuestionType.DATE);
+        questionDto.setKeyId(12345L);
+        questionDto.setOrder(2);
+        questionList.add(questionDto);
+        QuestionDto questionDto1 = new QuestionDto();
+        questionDto1.setKeyId(123456L);
+        questionDto1.setOrder(1);
+        questionDto1.setType(QuestionDto.QuestionType.DATE);
+        questionList.add(questionDto1);
+        groupDto.setQuestionList(questionList);
 
-        TreeMap<Integer, QuestionOption> result = mapper.mapToOptions(questionDto);
+        TreeMap<Integer, Question> result = mapper.mapQuestions(groupDto);
 
-        assertEquals(1, new ArrayList<>(result.values()).get(0).getOrder());
+        assertEquals(2, result.size());
         assertEquals(2, new ArrayList<>(result.values()).get(1).getOrder());
+        assertEquals(Question.Type.DATE, new ArrayList<>(result.values()).get(1).getType());
     }
-
 }
