@@ -805,10 +805,6 @@ FLOW.NavSurveysMainView = Ember.View.extend(
   template('navSurveys/nav-surveys-main')
 );
 
-FLOW.NavSurveysEditView = Ember.View.extend(
-  template('navSurveys/nav-surveys-edit')
-);
-
 FLOW.ManageNotificationsView = Ember.View.extend(
   template('navSurveys/manage-notifications')
 );
