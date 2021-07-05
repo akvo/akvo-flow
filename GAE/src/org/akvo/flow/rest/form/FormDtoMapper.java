@@ -68,7 +68,7 @@ public class FormDtoMapper {
         form.setCreatedDateTime(surveyDto.getCreatedDateTime());
         form.setLastUpdateDateTime(surveyDto.getLastUpdateDateTime());
         form.setAncestorIds(surveyDto.getAncestorIds());
-        TreeMap<Integer, QuestionGroup> groupMap = questionGroupDtoMapper.getGroupMap(surveyDto);
+        TreeMap<Integer, QuestionGroup> groupMap = questionGroupDtoMapper.mapGroups(surveyDto);
         form.setQuestionGroupMap(groupMap);
         return form;
     }

@@ -56,7 +56,7 @@ class QuestionDtoMapperTest {
     }
 
     @Test
-    public void mapQuestionsShouldReturnOrderedOptions() {
+    public void mapQuestionsShouldReturnOrderedQuestions() {
         QuestionDtoMapper mapper = new QuestionDtoMapper(new QuestionOptionDtoMapper());
         QuestionGroupDto groupDto = new QuestionGroupDto();
         List<QuestionDto> questionList = new ArrayList<>(2);
