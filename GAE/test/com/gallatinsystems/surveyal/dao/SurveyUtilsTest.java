@@ -131,7 +131,7 @@ public class SurveyUtilsTest {
         question.setSurveyId(newSurvey.getKey().getId());
         question.setImmutable(false);
         question = new QuestionDao().save(question);
-        QuestionOption option = dataStoreTestUtil.createQuestionOption(question, "1", "1");
+        QuestionOption option = dataStoreTestUtil.createQuestionOption(question, "1", "1", 1);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), option.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
 
         QuestionGroup newQg2 = dataStoreTestUtil.createQuestionGroup(newSurvey, 1, false);
@@ -149,7 +149,7 @@ public class SurveyUtilsTest {
 
         QuestionGroup newQuestionGroup = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 7, false);
         Question newQuestion = dataStoreTestUtil.createQuestion(sourceSurvey, newQuestionGroup.getKey().getId(), Question.Type.OPTION, false);
-        dataStoreTestUtil.createQuestionOption(newQuestion, "1", "1");
+        dataStoreTestUtil.createQuestionOption(newQuestion, "1", "1", 1);
         dataStoreTestUtil.createDependentQuestion(sourceSurvey, newQuestion);
 
         SurveyUtils.copySurvey(copiedSurvey.getKey().getId(), sourceSurvey.getKey().getId());
@@ -181,11 +181,11 @@ public class SurveyUtilsTest {
         QuestionGroup newQg2 = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 2, false);
         QuestionGroup newQg = dataStoreTestUtil.createQuestionGroup(sourceSurvey, 1, false);
         Question question1 = dataStoreTestUtil.createQuestion(sourceSurvey, newQg.getKey().getId(), Question.Type.OPTION, false);
-        dataStoreTestUtil.createQuestionOption(question1, "1", "1");
-        dataStoreTestUtil.createQuestionOption(question1, "2", "2");
+        dataStoreTestUtil.createQuestionOption(question1, "1", "1", 1);
+        dataStoreTestUtil.createQuestionOption(question1, "2", "2", 1);
         Question question2 = dataStoreTestUtil.createQuestion(sourceSurvey, newQg2.getKey().getId(), Question.Type.OPTION, false);
-        dataStoreTestUtil.createQuestionOption(question2, "3", "3");
-        dataStoreTestUtil.createQuestionOption(question2, "4", "4");
+        dataStoreTestUtil.createQuestionOption(question2, "3", "3", 1);
+        dataStoreTestUtil.createQuestionOption(question2, "4", "4", 1);
 
         //setup dependencies: question2 from group2 is dependent on option1 of question1 from group1
         question2.setDependentFlag(true);
@@ -276,7 +276,7 @@ public class SurveyUtilsTest {
         Question question = dataStoreTestUtil.createQuestion(newSurvey, questionGroupId, Question.Type.OPTION, false);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "hola", "es");
 
-        QuestionOption saved = dataStoreTestUtil.createQuestionOption(question, "1", "1");
+        QuestionOption saved = dataStoreTestUtil.createQuestionOption(question, "1", "1", 1);
         dataStoreTestUtil.createTranslation(newSurvey.getObjectId(), saved.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
         return newSurvey;
     }

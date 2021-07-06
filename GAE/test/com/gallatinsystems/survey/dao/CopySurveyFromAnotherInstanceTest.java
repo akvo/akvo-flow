@@ -104,7 +104,7 @@ public class CopySurveyFromAnotherInstanceTest {
         addTranslation(survey, dependantQuestion, Translation.ParentType.QUESTION_TEXT, "dependant hola", "es");
         addTranslation(survey, dependantQuestion, Translation.ParentType.QUESTION_TEXT, "dependant ciao", "it");
 
-        QuestionOption questionOption = dataStoreTestUtil.createQuestionOption(question, "1", "1");
+        QuestionOption questionOption = dataStoreTestUtil.createQuestionOption(question, "1", "1", 1);
         addTranslation(survey, questionOption, Translation.ParentType.QUESTION_OPTION, "primero", "es");
         addTranslation(survey, questionOption, Translation.ParentType.QUESTION_OPTION, "primo", "it");
 

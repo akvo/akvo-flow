@@ -224,12 +224,12 @@ public class DataStoreTestUtil {
         return new QuestionDao().save(q);
     }
 
-    public QuestionOption createQuestionOption(Question question, String code, String text) {
+    public QuestionOption createQuestionOption(Question question, String code, String text, int order) {
         QuestionOption questionOption = new QuestionOption();
         questionOption.setCode(code);
         questionOption.setText(text);
         questionOption.setQuestionId(question.getKey().getId());
-        questionOption.setOrder(1);
+        questionOption.setOrder(order);
         return new QuestionOptionDao().save(questionOption);
     }
 
