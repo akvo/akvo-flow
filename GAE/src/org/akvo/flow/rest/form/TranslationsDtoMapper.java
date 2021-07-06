@@ -57,7 +57,7 @@ public class TranslationsDtoMapper {
                     List<Question> questions = new ArrayList<>(questionMap.values());
                     for (Question question : questions) {
                         List<Translation> questionTranslations = translations.get(question.getKey().getId());
-                        if (questionTranslations.size() > 0) {
+                        if (questionTranslations != null && questionTranslations.size() > 0) {
                             question.setTranslations(questionTranslations);
                         }
                         TreeMap<Integer, QuestionOption> questionOptionMap = question.getQuestionOptionMap();

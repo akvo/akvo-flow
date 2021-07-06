@@ -75,5 +75,4 @@ class QuestionOptionDtoMapperTest {
         assertEquals(1, new ArrayList<>(result.values()).get(0).getOrder());
         assertEquals(2, new ArrayList<>(result.values()).get(1).getOrder());
     }
-
 }
