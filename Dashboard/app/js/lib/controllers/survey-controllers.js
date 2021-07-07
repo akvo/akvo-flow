@@ -777,7 +777,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('showDialog', true);
 
       form.set('status', "PUBLISHED");
-      // FLOW.store.commit();
+      FLOW.store.commit();
      },
 
      error(json) {
