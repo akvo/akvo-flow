@@ -60,7 +60,10 @@ public class FormDtoMapper {
         form.setName(surveyDto.getName());
         form.setVersion(Double.parseDouble(surveyDto.getVersion()));
         form.setDesc(surveyDto.getDescription());
-        form.setStatus(Survey.Status.NOT_PUBLISHED);
+        String status = surveyDto.getStatus();
+        if (status != null) {
+            form.setStatus(Survey.Status.valueOf(status));
+        }
         form.setPath(surveyDto.getPath());
         form.setSurveyGroupId(surveyDto.getSurveyGroupId());
         form.setDefaultLanguageCode(surveyDto.getDefaultLanguageCode());
