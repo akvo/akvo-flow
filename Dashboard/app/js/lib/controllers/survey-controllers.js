@@ -710,54 +710,85 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
+      return;
+    }
+
+    if (FLOW.Env.publishAssembledSurvey) {
+      this.publishAssembledSurvey(surveyId);
     } else {
-      FLOW.store.findQuery(FLOW.Action, {
-        action: 'publishSurvey',
-        surveyId,
+      this.publishSurveyUsingBackend(surveyId);
+    }
+  },
+
+  publishSurveyUsingBackend(surveyId) {
+    FLOW.store.findQuery(FLOW.Action, {
+      action: 'publishSurvey',
+      surveyId,
       });
 
-      const form = FLOW.Survey.find(surveyId);
-      const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, qg => qg.get('surveyId') === surveyId);
-      const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') === surveyId);
-      let assembledForm = form._data.attributes;
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
 
-      const groups = questionGroups.map(group => {
-        const groupQuestions = questions.filter(q => q.get('questionGroupId') === group.get('keyId'));
-        groupQuestions.sort((q1, q2) => q1.get('order') - q2.get('order'));
-        let qList = groupQuestions.map(q => {
-          let questionData = q._data.attributes;
-          if (q.get('type') === 'OPTION') {
-            let options = FLOW.store.filter(FLOW.QuestionOption, qo => qo.get('questionId') === q.get('keyId'));
-            questionData.questionOptions = options.map(o => o._data.attributes) || [];
-          }
-          return questionData;
-        });
+  publishAssembledSurvey(surveyId) {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_assembled_form'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_form_publishing_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showOK', false);
+    FLOW.dialogControl.set('showDialog', true);
 
-        let groupData = group._data.attributes;
-        groupData.questionList = qList;
-        return groupData;
-     });
+    const form = FLOW.Survey.find(surveyId);
+    const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, qg => qg.get('surveyId') === surveyId);
+    const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') === surveyId);
+    let assembledForm = form._data.attributes;
 
-     assembledForm.questionGroupList = groups;
+    const groups = questionGroups.map(group => {
+      const groupQuestions = questions.filter(q => q.get('questionGroupId') === group.get('keyId'));
+      groupQuestions.sort((q1, q2) => q1.get('order') - q2.get('order'));
+      let qList = groupQuestions.map(q => {
+        let questionData = q._data.attributes;
+        if (q.get('type') === 'OPTION') {
+          let options = FLOW.store.filter(FLOW.QuestionOption, qo => qo.get('questionId') === q.get('keyId'));
+          questionData.optionList = options.map(o => o._data.attributes) || [];
+        }
+        return questionData;
+      });
 
-     FLOW.store.adapter.ajax("/rest/form_publish", "POST", {
-       data: assembledForm,
+      let groupData = group._data.attributes;
+      groupData.questionList = qList;
+      return groupData;
+   });
 
-       success(json) {
-         console.log("Form published successfully");
-       },
+   assembledForm.questionGroupList = groups;
 
-       error(json) {
-         console.log("Error publishing");
-       },
-     })
+   FLOW.store.adapter.ajax("/rest/form_publish", "POST", {
+     data: assembledForm,
 
+     success(json) {
       FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+      FLOW.dialogControl.set('header', Ember.String.loc('_successfuly_published_form'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_form_successful_publish_text_'));
       FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
-    }
+
+      form.set('status', "PUBLISHED");
+      // FLOW.store.commit();
+     },
+
+     error(json) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('message', Ember.String.loc('_form_failed_publish_text_'));
+      FLOW.dialogControl.set('header', Ember.String.loc('_failed_publish_form'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showOK', true);
+      FLOW.dialogControl.set('showDialog', true);
+     },
+   })
   },
 
   createForm() {
