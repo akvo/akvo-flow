@@ -713,14 +713,14 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       return;
     }
 
-    if (FLOW.Env.publishAssembledSurvey) {
-      this.publishAssembledSurvey(surveyId);
+    if (FLOW.Env.publishAssembledForm) {
+      this.publishAssembledForm(surveyId);
     } else {
-      this.publishSurveyUsingBackend(surveyId);
+      this.publishFormUsingBackend(surveyId);
     }
   },
 
-  publishSurveyUsingBackend(surveyId) {
+  publishFormUsingBackend(surveyId) {
     FLOW.store.findQuery(FLOW.Action, {
       action: 'publishSurvey',
       surveyId,
@@ -733,7 +733,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  publishAssembledSurvey(surveyId) {
+  publishAssembledForm(surveyId) {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_publishing_assembled_form'));
     FLOW.dialogControl.set('message', Ember.String.loc('_form_publishing_text_'));
