@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
-class QuestionDtoMapperTest {
+class QuestionMapperTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
@@ -48,16 +48,17 @@ class QuestionDtoMapperTest {
 
     @Test
     public void mapQuestionsShouldReturnEmptyMapForNullList() {
-        QuestionDtoMapper mapper = new QuestionDtoMapper(new QuestionOptionDtoMapper());
+        QuestionMapper mapper = new QuestionMapper(new QuestionOptionMapper());
 
-        TreeMap<Integer, Question> result = mapper.mapQuestions(new QuestionGroupDto());
+        final QuestionGroupDto groupDto = new QuestionGroupDto();
+        TreeMap<Integer, Question> result = mapper.mapQuestions(groupDto.getQuestionList());
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void mapQuestionsShouldReturnOrderedQuestions() {
-        QuestionDtoMapper mapper = new QuestionDtoMapper(new QuestionOptionDtoMapper());
+        QuestionMapper mapper = new QuestionMapper(new QuestionOptionMapper());
         QuestionGroupDto groupDto = new QuestionGroupDto();
         List<QuestionDto> questionList = new ArrayList<>(2);
         QuestionDto questionDto = new QuestionDto();
@@ -72,7 +73,7 @@ class QuestionDtoMapperTest {
         questionList.add(questionDto1);
         groupDto.setQuestionList(questionList);
 
-        TreeMap<Integer, Question> result = mapper.mapQuestions(groupDto);
+        TreeMap<Integer, Question> result = mapper.mapQuestions(groupDto.getQuestionList());
 
         assertEquals(2, result.size());
         assertEquals(2, new ArrayList<>(result.values()).get(1).getOrder());

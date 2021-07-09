@@ -55,15 +55,15 @@ public class FormAssemblyRestService {
     private static final String BUCKET = "s3bucket";
 
     private final XmlFormAssembler xmlFormAssembler = new XmlFormAssembler();
-    private final FormDtoMapper formDtoMapper = new FormDtoMapper(new QuestionGroupDtoMapper(new QuestionDtoMapper(new QuestionOptionDtoMapper())),
-            new TranslationsDtoMapper());
+    private final FormAssembler formAssembler = new FormAssembler(new FormMapper(new QuestionGroupMapper(new QuestionMapper(new QuestionOptionMapper()))),
+            new TranslationsAppender());
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
     public SurveyDto publishForm(@RequestBody SurveyDto surveyDto) {
         SurveyGroup survey = new SurveyGroupDAO().getByKey(surveyDto.getSurveyGroupId());
         long formId = surveyDto.getKeyId();
-        Survey form = formDtoMapper.assembleForm(surveyDto);
+        Survey form = formAssembler.assembleForm(surveyDto);
         try {
             FormUploadXml formUploadXml = xmlFormAssembler.assembleXmlForm(survey, form);
             log.info("Uploading " + formId);
@@ -88,7 +88,7 @@ public class FormAssemblyRestService {
     }
 
     private void formUploadSuccess(SurveyGroup survey, Survey form) {
-        List<Question> questions = formDtoMapper.getQuestionList(form.getQuestionGroupMap());
+        List<Question> questions = formAssembler.getQuestionList(form.getQuestionGroupMap());
         form.setStatus(Survey.Status.PUBLISHED);
         if (form.getWebForm()) {
             boolean webForm = WebForm.validWebForm(survey, form, questions);

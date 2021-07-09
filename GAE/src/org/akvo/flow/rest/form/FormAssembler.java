@@ -25,7 +25,6 @@ import com.gallatinsystems.survey.domain.Question;
 import static com.gallatinsystems.survey.domain.Question.Type.CASCADE;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import com.google.appengine.api.datastore.KeyFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,47 +35,29 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
-public class FormDtoMapper {
-    private final QuestionGroupDtoMapper questionGroupDtoMapper;
-    private final TranslationsDtoMapper translationsDtoMapper;
+/**
+ * Assembles a form
+ */
+public class FormAssembler {
 
-    public FormDtoMapper(QuestionGroupDtoMapper questionGroupDtoMapper, TranslationsDtoMapper translationsDtoMapper) {
-        this.questionGroupDtoMapper = questionGroupDtoMapper;
-        this.translationsDtoMapper = translationsDtoMapper;
+    private final FormMapper formMapper;
+    private final TranslationsAppender translationsAppender;
+
+    public FormAssembler(FormMapper formMapper, TranslationsAppender translationsAppender) {
+        this.formMapper = formMapper;
+        this.translationsAppender = translationsAppender;
     }
 
     Survey assembleForm(SurveyDto surveyDto) {
-        Survey form = mapFormFromDto(surveyDto);
-        translationsDtoMapper.attachFormTranslations(form);
+        Survey form = formMapper.mapFormFromDto(surveyDto);
+        translationsAppender.attachFormTranslations(form);
         List<Question> questions = getQuestionList(form.getQuestionGroupMap());
         attachCascadeResources(questions);
         return form;
     }
 
-    Survey mapFormFromDto(SurveyDto surveyDto) {
-        Survey form = new Survey();
-        form.setKey(KeyFactory.createKey("Survey", surveyDto.getKeyId()));
-        form.setCode(surveyDto.getCode());
-        form.setName(surveyDto.getName());
-        form.setVersion(Double.parseDouble(surveyDto.getVersion()));
-        form.setDesc(surveyDto.getDescription());
-        String status = surveyDto.getStatus();
-        if (status != null) {
-            form.setStatus(Survey.Status.valueOf(status));
-        }
-        form.setPath(surveyDto.getPath());
-        form.setSurveyGroupId(surveyDto.getSurveyGroupId());
-        form.setDefaultLanguageCode(surveyDto.getDefaultLanguageCode());
-        form.setRequireApproval(surveyDto.getRequireApproval());
-        form.setCreatedDateTime(surveyDto.getCreatedDateTime());
-        form.setLastUpdateDateTime(surveyDto.getLastUpdateDateTime());
-        form.setAncestorIds(surveyDto.getAncestorIds());
-        TreeMap<Integer, QuestionGroup> groupMap = questionGroupDtoMapper.mapGroups(surveyDto);
-        form.setQuestionGroupMap(groupMap);
-        return form;
-    }
 
-    void attachCascadeResources(List<Question> questions) {
+    private void attachCascadeResources(List<Question> questions) {
         CascadeResourceDao cascadeResourceDao = new CascadeResourceDao();
         for (Question question : questions) {
             if (CASCADE.equals(question.getType())) {
@@ -101,7 +82,7 @@ public class FormDtoMapper {
         return Collections.emptyList();
     }
 
-    List<Question> getListOfQuestions(QuestionGroup questionGroup) {
+    private List<Question> getListOfQuestions(QuestionGroup questionGroup) {
         TreeMap<Integer, Question> questionMap = questionGroup.getQuestionMap();
         if (questionMap == null) {
             return Collections.emptyList();

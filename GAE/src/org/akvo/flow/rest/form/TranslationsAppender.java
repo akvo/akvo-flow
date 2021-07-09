@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 
-public class TranslationsDtoMapper {
+public class TranslationsAppender {
 
-    public TranslationsDtoMapper() {
+    public TranslationsAppender() {
     }
 
     void attachFormTranslations(Survey form) {
@@ -76,12 +76,12 @@ public class TranslationsDtoMapper {
         }
     }
 
-    HashMap<String, Translation> getMappedTranslationsForParent(Map<Long, List<Translation>> translations, Long parentId) {
+    private HashMap<String, Translation> getMappedTranslationsForParent(Map<Long, List<Translation>> translations, Long parentId) {
         List<Translation> translationsForForm = translations.get(parentId);
         return mapTranslations(translationsForForm);
     }
 
-    HashMap<String, Translation> mapTranslations(@Nullable List<Translation> translations) {
+    private HashMap<String, Translation> mapTranslations(@Nullable List<Translation> translations) {
         HashMap<String, Translation> mappedTranslations = new HashMap<>();
         if (translations != null) {
             for (Translation t : translations) {

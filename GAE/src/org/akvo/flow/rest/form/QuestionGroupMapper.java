@@ -25,23 +25,24 @@ import java.util.List;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
-public class QuestionGroupDtoMapper {
-    private final QuestionDtoMapper questionDtoMapper;
+/**
+ * Maps a questionGroup from a questionGroupDto
+ */
+public class QuestionGroupMapper {
+    private final QuestionMapper questionMapper;
 
-    public QuestionGroupDtoMapper(QuestionDtoMapper questionDtoMapper) {
-        this.questionDtoMapper = questionDtoMapper;
+    public QuestionGroupMapper(QuestionMapper questionMapper) {
+        this.questionMapper = questionMapper;
     }
 
     @Nonnull
-    TreeMap<Integer, QuestionGroup> mapGroups(SurveyDto surveyDto) {
+    TreeMap<Integer, QuestionGroup> mapGroups(List<QuestionGroupDto> groupDtos) {
         TreeMap<Integer, QuestionGroup> groupMap = new TreeMap<>();
-        List<QuestionGroupDto> groupDtos = surveyDto.getQuestionGroupList();
         if (groupDtos != null) {
             int i = 1;
             for (QuestionGroupDto groupDto : groupDtos) {
-                QuestionGroup group = mapToGroup(groupDto);
+                QuestionGroup group = mapGroup(groupDto);
                 Integer groupDtoOrder = groupDto.getOrder();
                 if (groupDtoOrder != null && groupMap.containsKey(groupDtoOrder)) {
                     group.setOrder(i);
@@ -57,7 +58,7 @@ public class QuestionGroupDtoMapper {
         return groupMap;
     }
 
-    private QuestionGroup mapToGroup(QuestionGroupDto groupDto) {
+    private QuestionGroup mapGroup(QuestionGroupDto groupDto) {
         QuestionGroup group = new QuestionGroup();
         group.setKey(KeyFactory.createKey("QuestionGroup", groupDto.getKeyId()));
         group.setCode(groupDto.getCode());
@@ -71,7 +72,7 @@ public class QuestionGroupDtoMapper {
             group.setStatus(QuestionGroup.Status.valueOf(status));
         }
         group.setImmutable(groupDto.getImmutable());
-        group.setQuestionMap(questionDtoMapper.mapQuestions(groupDto));
+        group.setQuestionMap(questionMapper.mapQuestions(groupDto.getQuestionList()));
         return group;
     }
 }
