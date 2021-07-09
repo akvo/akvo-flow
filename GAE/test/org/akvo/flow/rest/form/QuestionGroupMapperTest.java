@@ -19,7 +19,6 @@
 
 package org.akvo.flow.rest.form;
 
-import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -30,11 +29,10 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
-class QuestionGroupDtoMapperTest {
+class QuestionGroupMapperTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
@@ -50,16 +48,17 @@ class QuestionGroupDtoMapperTest {
 
     @Test
     public void mapGroupsShouldReturnEmptyMapForNullList() {
-        QuestionGroupDtoMapper mapper = new QuestionGroupDtoMapper(new QuestionDtoMapper(new QuestionOptionDtoMapper()));
+        QuestionGroupMapper mapper = new QuestionGroupMapper(new QuestionMapper(new QuestionOptionMapper()));
 
-        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(new SurveyDto());
+        final SurveyDto surveyDto = new SurveyDto();
+        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(surveyDto.getQuestionGroupList());
 
         assertEquals(0, result.size());
     }
 
     @Test
     public void mapGroupsShouldReturnOrderedGroups() {
-        QuestionGroupDtoMapper mapper = new QuestionGroupDtoMapper(new QuestionDtoMapper(new QuestionOptionDtoMapper()));
+        QuestionGroupMapper mapper = new QuestionGroupMapper(new QuestionMapper(new QuestionOptionMapper()));
         SurveyDto groupDto = new SurveyDto();
         List<QuestionGroupDto> groupDtos = new ArrayList<>(2);
         QuestionGroupDto groupDto1 = new QuestionGroupDto();
@@ -72,7 +71,7 @@ class QuestionGroupDtoMapperTest {
         groupDtos.add(groupDto2);
         groupDto.setQuestionGroupList(groupDtos);
 
-        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(groupDto);
+        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(groupDto.getQuestionGroupList());
 
         assertEquals(2, result.size());
         assertEquals(2, new ArrayList<>(result.values()).get(1).getOrder());
@@ -80,7 +79,7 @@ class QuestionGroupDtoMapperTest {
 
     @Test
     public void mapGroupsShouldReturnOrderedGroupsEvenIfMissingOrder() {
-        QuestionGroupDtoMapper mapper = new QuestionGroupDtoMapper(new QuestionDtoMapper(new QuestionOptionDtoMapper()));
+        QuestionGroupMapper mapper = new QuestionGroupMapper(new QuestionMapper(new QuestionOptionMapper()));
         SurveyDto groupDto = new SurveyDto();
         List<QuestionGroupDto> groupDtos = new ArrayList<>(2);
         QuestionGroupDto groupDto1 = new QuestionGroupDto();
@@ -91,7 +90,7 @@ class QuestionGroupDtoMapperTest {
         groupDtos.add(groupDto2);
         groupDto.setQuestionGroupList(groupDtos);
 
-        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(groupDto);
+        TreeMap<Integer, QuestionGroup> result = mapper.mapGroups(groupDto.getQuestionGroupList());
 
         assertEquals(2, result.size());
         assertEquals(2, new ArrayList<>(result.values()).get(1).getOrder());

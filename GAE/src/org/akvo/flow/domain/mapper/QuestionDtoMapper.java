@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017-2018,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,13 +17,16 @@ package org.akvo.flow.domain.mapper;
 
 import com.gallatinsystems.survey.domain.Question;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 
 import javax.annotation.Nullable;
 
-import java.util.*;
-
+/**
+ * Maps Question into QuestionDto
+ */
 public class QuestionDtoMapper {
 
     @Nullable
@@ -49,10 +52,9 @@ public class QuestionDtoMapper {
             BeanUtils.copyProperties(question, questionDto,
                     questionPropertiesNonExistingInQuestionDto);
             if (question.getType() != null) {
-                questionDto.setType(QuestionDto.QuestionType.valueOf(question.getType()
-                        .toString()));
+                questionDto.setType(QuestionDto.QuestionType.valueOf(question.getType().toString()));
             }
-            if (question.getVariableName() == null) { //Fall back to legacy field
+            if (question.getVariableName() == null) {
                 questionDto.setVariableName(question.getVariableName());
             }
             questionDto.setKeyId(question.getKey().getId());

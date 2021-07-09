@@ -24,24 +24,25 @@ import com.google.appengine.api.datastore.KeyFactory;
 import java.util.List;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
-public class QuestionOptionDtoMapper {
+/**
+ * Maps QuestionOption from QuestionOptionDto
+ */
+public class QuestionOptionMapper {
 
     @Nonnull
-    TreeMap<Integer, QuestionOption> mapToOptions(QuestionDto questionDto) {
+    TreeMap<Integer, QuestionOption> mapOptions(List<QuestionOptionDto> dtoList) {
         TreeMap<Integer, QuestionOption> mappedOptions = new TreeMap<>();
-        List<QuestionOptionDto> dtoList = questionDto.getOptionList();
         if (dtoList != null) {
             for (QuestionOptionDto questionOptionDto : dtoList) {
-                mappedOptions.put(questionOptionDto.getOrder(), mapToQuestionOption(questionOptionDto));
+                mappedOptions.put(questionOptionDto.getOrder(), mapOption(questionOptionDto));
             }
         }
         return mappedOptions;
     }
 
-    private QuestionOption mapToQuestionOption(QuestionOptionDto questionOptionDto) {
+    private QuestionOption mapOption(QuestionOptionDto questionOptionDto) {
         QuestionOption questionOption = new QuestionOption();
         questionOption.setKey(KeyFactory.createKey("QuestionOption", questionOptionDto.getKeyId()));
         questionOption.setText(questionOptionDto.getText());

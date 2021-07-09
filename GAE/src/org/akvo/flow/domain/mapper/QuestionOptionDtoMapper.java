@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,16 +20,14 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
-import javax.annotation.Nullable;
-
+/**
+ * Maps QuestionOption into QuestionOptionDto
+ */
 public class QuestionOptionDtoMapper {
 
-    @Nullable
     public static QuestionOptionDto transform(QuestionOption questionOption) {
         QuestionOptionDto qoDto = new QuestionOptionDto();
-        BeanUtils.copyProperties(questionOption, qoDto, new String[] {
-                "translationMap"
-        });
+        BeanUtils.copyProperties(questionOption, qoDto, "translationMap");
         qoDto.setKeyId(questionOption.getKeyId());
         return qoDto;
     }
