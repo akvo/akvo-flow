@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TranslationsDtoMapperTest {
+class TranslationsAppenderTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
     private DataStoreTestUtil dataStoreTestUtil;
@@ -57,7 +57,7 @@ class TranslationsDtoMapperTest {
         dataStoreTestUtil.createTranslation(form.getObjectId(), form.getObjectId(), Translation.ParentType.SURVEY_NAME, "uno", "es");
         dataStoreTestUtil.createTranslation(form.getObjectId(), form.getObjectId(), Translation.ParentType.SURVEY_NAME, "un", "fr");
 
-        TranslationsDtoMapper mapper = new TranslationsDtoMapper();
+        TranslationsAppender mapper = new TranslationsAppender();
 
         mapper.attachFormTranslations(form);
 
@@ -75,7 +75,7 @@ class TranslationsDtoMapperTest {
         form.setQuestionGroupMap(questionGroupMap);
         dataStoreTestUtil.createTranslation(form.getObjectId(), group.getKey().getId(), Translation.ParentType.QUESTION_GROUP_NAME, "uno", "es");
 
-        TranslationsDtoMapper mapper = new TranslationsDtoMapper();
+        TranslationsAppender mapper = new TranslationsAppender();
 
         mapper.attachFormTranslations(form);
 
@@ -98,7 +98,7 @@ class TranslationsDtoMapperTest {
         dataStoreTestUtil.createTranslation(form.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TEXT, "uno", "es");
         dataStoreTestUtil.createTranslation(form.getObjectId(), question.getKey().getId(), Translation.ParentType.QUESTION_TIP, "tipo", "es");
 
-        TranslationsDtoMapper mapper = new TranslationsDtoMapper();
+        TranslationsAppender mapper = new TranslationsAppender();
 
         mapper.attachFormTranslations(form);
 
@@ -127,7 +127,7 @@ class TranslationsDtoMapperTest {
         dataStoreTestUtil.createTranslation(form.getObjectId(), option1.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "uno", "es");
         dataStoreTestUtil.createTranslation(form.getObjectId(), option2.getKey().getId(), Translation.ParentType.QUESTION_OPTION, "dos", "es");
 
-        TranslationsDtoMapper mapper = new TranslationsDtoMapper();
+        TranslationsAppender mapper = new TranslationsAppender();
 
         mapper.attachFormTranslations(form);
 

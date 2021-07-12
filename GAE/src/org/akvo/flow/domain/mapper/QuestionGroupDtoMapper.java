@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017,2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,31 +20,18 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
-import javax.annotation.Nullable;
-
 /**
- * @author stellan
+ * Maps QuestionGroup into QuestionGroupDto
  */
 public class QuestionGroupDtoMapper {
 
-    /**
-     * transforms a QuestionGroup to a QuestionGroupDto
-     * @param questionGroup
-     * @return
-     */
-    @Nullable
     public static QuestionGroupDto transform(QuestionGroup questionGroup) {
         QuestionGroupDto qgDto = new QuestionGroupDto();
-        BeanUtils.copyProperties(questionGroup, qgDto, new String[] {
-                "questionMap",
-                "translationMap",
-                "status"
-        });
+        BeanUtils.copyProperties(questionGroup, qgDto, "questionMap", "translationMap", "status");
         qgDto.setKeyId(questionGroup.getKey().getId());
         if (questionGroup.getStatus() != null) {
             qgDto.setStatus(questionGroup.getStatus().toString());
         }
-
         return qgDto;
     }
 }

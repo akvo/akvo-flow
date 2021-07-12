@@ -25,28 +25,29 @@ import java.util.List;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
-public class QuestionDtoMapper {
-    private final QuestionOptionDtoMapper questionOptionDtoMapper;
+/**
+ * maps a Question from QuestionGroup
+ */
+public class QuestionMapper {
+    private final QuestionOptionMapper questionOptionMapper;
 
-    public QuestionDtoMapper(QuestionOptionDtoMapper questionOptionDtoMapper) {
-        this.questionOptionDtoMapper = questionOptionDtoMapper;
+    public QuestionMapper(QuestionOptionMapper questionOptionMapper) {
+        this.questionOptionMapper = questionOptionMapper;
     }
 
     @Nonnull
-    TreeMap<Integer, Question> mapQuestions(QuestionGroupDto groupDto) {
+    TreeMap<Integer, Question> mapQuestions(List<QuestionDto> questionList) {
         TreeMap<Integer, Question> mappedQuestions = new TreeMap<>();
-        List<QuestionDto> questionList = groupDto.getQuestionList();
         if (questionList != null) {
             for (QuestionDto questionDto : questionList) {
-                mappedQuestions.put(questionDto.getOrder(), mapToQuestion(questionDto));
+                mappedQuestions.put(questionDto.getOrder(), mapQuestion(questionDto));
             }
         }
         return mappedQuestions;
     }
 
-    private Question mapToQuestion(QuestionDto questionDto) {
+    private Question mapQuestion(QuestionDto questionDto) {
         Question question = new Question();
         question.setKey(KeyFactory.createKey("Question", questionDto.getKeyId()));
         question.setType(Question.Type.valueOf(questionDto.getType().toString()));
@@ -81,7 +82,7 @@ public class QuestionDtoMapper {
         question.setAllowLine(questionDto.getAllowLine());
         question.setAllowPolygon(questionDto.getAllowPolygon());
         question.setSourceQuestionId(questionDto.getSourceId());
-        question.setQuestionOptionMap(questionOptionDtoMapper.mapToOptions(questionDto));
+        question.setQuestionOptionMap(questionOptionMapper.mapOptions(questionDto.getOptionList()));
         return question;
     }
 }
