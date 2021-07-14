@@ -775,8 +775,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
-
-      form.set('status', "PUBLISHED");
+      console.log("form assembled will now save to store")
+      FLOW.Survey.find(surveyId).set('status', "PUBLISHED")
       FLOW.store.commit();
      },
 
