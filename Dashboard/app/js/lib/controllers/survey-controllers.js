@@ -1,4 +1,4 @@
-import { trackEvent } from 'akvo-flow/analytics';
+import {trackEvent} from 'akvo-flow/analytics';
 import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
@@ -778,6 +778,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       console.log("form assembled will now save to store")
       form.set('status', "PUBLISHED");
       FLOW.selectedControl.selectedSurvey.set('status', 'PUBLISHED');
+      FLOW.selectedControl.get('selectedSurvey').set('status', "PUBLISHED");
       FLOW.store.commit();
      },
 
