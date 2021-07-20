@@ -768,17 +768,16 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
    FLOW.store.adapter.ajax("/rest/form_publish", "POST", {
      data: assembledForm,
 
-     success() {
+     success(responseJson) {
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_successfuly_published_form'));
       FLOW.dialogControl.set('message', Ember.String.loc('_form_successful_publish_text_'));
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
-      form.set('status', "PUBLISHED");
-      FLOW.selectedControl.selectedSurvey.set('status', 'PUBLISHED');
-      FLOW.selectedControl.get('selectedSurvey').set('status', "PUBLISHED");
-     },
+
+      FLOW.store.updateRecordData(form, responseJson);
+    },
 
      error() {
       FLOW.dialogControl.set('activeAction', 'ignore');
