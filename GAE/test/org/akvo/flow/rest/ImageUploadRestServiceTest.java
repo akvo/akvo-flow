@@ -24,14 +24,11 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.io.IOException;
-import static org.akvo.flow.api.app.DataPointServlet.LIMIT_DATAPOINTS_30;
 import org.akvo.flow.api.app.DataStoreTestUtil;
-import org.akvo.flow.api.app.NoDataPointsAssignedException;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +37,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.MockedStatic;
 import static org.mockito.Mockito.mockStatic;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -64,7 +62,7 @@ class ImageUploadRestServiceTest {
     void testUploadImageWhenFormInstanceNotFound() throws IOException {
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(123L, 123L, null), "FormInstance not found");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(123L, 123L, null), "FormInstance not found");
     }
 
     @Test
@@ -80,7 +78,7 @@ class ImageUploadRestServiceTest {
 
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(123L, formInstanceId, null), "Form not found");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(123L, formInstanceId, null), "Form not found");
     }
 
     @Test
@@ -95,7 +93,7 @@ class ImageUploadRestServiceTest {
 
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(123L, formInstanceId, null), "Question not found");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(123L, formInstanceId, null), "Question not found");
     }
 
     @Test
@@ -112,7 +110,7 @@ class ImageUploadRestServiceTest {
 
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(questionId, formInstanceId, null), "Question does not belong to that form");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(questionId, formInstanceId, null), "Question does not belong to that form");
     }
 
     @Test
@@ -128,7 +126,7 @@ class ImageUploadRestServiceTest {
 
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(questionId, formInstanceId, null), "File is not valid");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(questionId, formInstanceId, null), "File is not valid");
     }
 
     @Test
@@ -144,7 +142,7 @@ class ImageUploadRestServiceTest {
 
         ImageUploadRestService service = new ImageUploadRestService();
 
-        assertThrows(Exception.class, () -> service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.txt", "new_file.txt", "image/text", new byte[2])), "File type is not valid: only jpg and png are accepted");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.txt", "new_file.txt", "image/text", new byte[2])), "File type is not valid: only jpg and png are accepted");
     }
 
     @Test
@@ -161,7 +159,7 @@ class ImageUploadRestServiceTest {
         ImageUploadRestService service = new ImageUploadRestService();
 
         //upload to s3 will fail because we do not have any keys setup
-        assertThrows(Exception.class, () -> service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.jpg", "new_image.jpg", "image/jpeg", new byte[2])), "Upload to s3 failed for: file.jpg");
+        assertThrows(ResponseStatusException.class, () -> service.uploadImage(questionId, formInstanceId, new MockMultipartFile("file.jpg", "new_image.jpg", "image/jpeg", new byte[2])), "Upload to s3 failed for: file.jpg");
     }
 
     @Test

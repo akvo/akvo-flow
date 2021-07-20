@@ -61,33 +61,33 @@ public class ImageUploadRestService {
         String errorMessage = "";
         SurveyInstance formInstance = getFormInstance(formInstanceId);
         if (formInstance == null) {
-            trowError("FormInstance not found");
+            throwError("FormInstance not found");
         }
         long formId = formInstance.getSurveyId();
         Survey form = getForm(formId);
         if (form == null) {
-            trowError("Form not found");
+            throwError("Form not found");
         }
         Question question = getQuestion(questionId);
         if (question == null) {
-            trowError("Question not found");
+            throwError("Question not found");
         }
         if (question.getSurveyId() == null || !question.getSurveyId().equals(form.getObjectId())) {
-            trowError("Question does not belong to that form");
+            throwError("Question does not belong to that form");
         }
 
         if (file == null || file.isEmpty()) {
-            trowError("File is not valid");
+            throwError("File is not valid");
         }
         String fileExtension = getFileType(file);
         if (fileExtension == null) {
-            trowError("File type is not valid: only jpg and png are accepted");
+            throwError("File type is not valid: only jpg and png are accepted");
         }
         String originalFileName = file.getName();
         String filename = generateFileName(fileExtension);
         String resultFilename = uploadImageToS3(file, filename);
         if (resultFilename == null) {
-            trowError("Upload to s3 failed for: " + originalFileName);
+            throwError("Upload to s3 failed for: " + originalFileName);
         }
         ExifTagExtractor exifTagExtractor = new ExifTagExtractor();
         ExifTagInfo exifTag = exifTagExtractor.fetchExifTags(file);
@@ -95,7 +95,7 @@ public class ImageUploadRestService {
         return new Response(responseCode, errorMessage);
     }
 
-    private void trowError(String errorMessage) {
+    private void throwError(String errorMessage) {
         throw new ResponseStatusException(BAD_REQUEST, errorMessage, new Exception(errorMessage));
     }
 
