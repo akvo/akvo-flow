@@ -30,6 +30,7 @@ import org.akvo.flow.util.ExifTagExtractor;
 import org.akvo.flow.util.ExifTagInfo;
 import org.akvo.flow.util.FileResponse;
 import org.akvo.flow.util.FlowJsonObjectWriter;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -59,38 +61,42 @@ public class ImageUploadRestService {
         String errorMessage = "";
         SurveyInstance formInstance = getFormInstance(formInstanceId);
         if (formInstance == null) {
-            return new Response(400, "FormInstance not found");
+            throwError("FormInstance not found");
         }
         long formId = formInstance.getSurveyId();
         Survey form = getForm(formId);
         if (form == null) {
-            return new Response(400, "Form not found");
+            throwError("Form not found");
         }
         Question question = getQuestion(questionId);
         if (question == null) {
-            return new Response(400, "Question not found");
+            throwError("Question not found");
         }
         if (question.getSurveyId() == null || !question.getSurveyId().equals(form.getObjectId())) {
-            return new Response(400, "Question does not belong to that form");
+            throwError("Question does not belong to that form");
         }
 
         if (file == null || file.isEmpty()) {
-            return new Response(400, "File is not valid");
+            throwError("File is not valid");
         }
         String fileExtension = getFileType(file);
         if (fileExtension == null) {
-            return new Response(400, "File type is not valid: only jpg and png are accepted");
+            throwError("File type is not valid: only jpg and png are accepted");
         }
         String originalFileName = file.getName();
         String filename = generateFileName(fileExtension);
         String resultFilename = uploadImageToS3(file, filename);
         if (resultFilename == null) {
-            return new Response(400, "Upload to s3 failed for: " + originalFileName);
+            throwError("Upload to s3 failed for: " + originalFileName);
         }
         ExifTagExtractor exifTagExtractor = new ExifTagExtractor();
         ExifTagInfo exifTag = exifTagExtractor.fetchExifTags(file);
         createOrUpdateQuestionAnswer(question, formInstance, resultFilename, exifTag);
         return new Response(responseCode, errorMessage);
+    }
+
+    private void throwError(String errorMessage) {
+        throw new ResponseStatusException(BAD_REQUEST, errorMessage, new Exception(errorMessage));
     }
 
     @Nullable
