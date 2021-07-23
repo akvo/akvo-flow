@@ -740,6 +740,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showOK', false);
     FLOW.dialogControl.set('showDialog', true);
+    FLOW.dialogControl.set('showSpin', true);
+
 
     const form = FLOW.Survey.find(surveyId);
     const questionGroups = FLOW.store.filter(FLOW.QuestionGroup, qg => qg.get('surveyId') === surveyId);
@@ -775,6 +777,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
+      FLOW.dialogControl.set('showSpin', false);
+      FLOW.dialogControl.set('showTick', true);
 
       FLOW.store.updateRecordData(form, responseJson);
     },
@@ -786,6 +790,9 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
+      FLOW.dialogControl.set('showSpin', false);
+      FLOW.dialogControl.set('showError', true);
+
      },
    })
   },

@@ -112,6 +112,9 @@ FLOW.dialogControl = Ember.Object.create({
   activeAction: null,
   showOK: true,
   showCANCEL: true,
+  showSpin: false,
+  showTick: false,
+  showError: false,
   showOKDisabled: false,
 
   confirm(event) {
@@ -213,6 +216,10 @@ FLOW.dialogControl = Ember.Object.create({
     this.set('message', null);
     this.set('showCANCEL', true);
     this.set('showDialog', false);
+    this.set('showSpin', false);
+    this.set('showTick', false);
+    this.set('showError', false);
+
     const view = this.get('activeView');
     switch (this.get('activeAction')) {
       case 'delS':
@@ -273,5 +280,8 @@ FLOW.dialogControl = Ember.Object.create({
 
   doCANCEL() {
     this.set('showDialog', false);
+    this.set('showSpin', false);
+    this.set('showTick', false);
+    this.set('showError', false);
   },
 });
