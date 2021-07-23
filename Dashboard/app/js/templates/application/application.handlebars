@@ -25,7 +25,11 @@
     <div class="confirmDialog dialog">
       <h2>{{FLOW.dialogControl.header}}</h2>
       <p class="dialogMsg">{{FLOW.dialogControl.message}}</p>
-      <br/><br/>
+      <div class="spinner tick publishError">
+        {{#if FLOW.dialogControl.showSpin}}<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>{{/if}}
+        {{#if FLOW.dialogControl.showTick}}<i class="fa fa-check-circle-o fa-3x fa-fw"></i>{{/if}}
+        {{#if FLOW.dialogControl.showError}}<i class="fa fa-exclamation-circle fa-3x fa-fw"></i>{{/if}}
+      </div>
       <div class="buttons menuCentre">
         <ul>
           {{#if FLOW.dialogControl.showOK}} <li><a {{bindAttr class="FLOW.dialogControl.showOKDisabled:disabled :ok :smallBtn"}} {{action "doOK" target="FLOW.dialogControl"}}>{{t _ok}}</a></li>{{/if}}
