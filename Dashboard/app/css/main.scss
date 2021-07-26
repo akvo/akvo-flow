@@ -533,6 +533,12 @@ input[type='submit'] {
     display: block;
     margin: 5px auto;
   }
+  .fa-check-circle-o {
+    color: green;
+  }
+  .fa-exclamation-circle {
+    color: red;
+  }
 }
 
 label[for='newDeviceGroupName'] {

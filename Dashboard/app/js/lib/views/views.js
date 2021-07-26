@@ -15,6 +15,7 @@ require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/surveys/form-view');
 require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/bulk-upload-view');
+require('akvo-flow/views/data/bulk-upload-images-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/data/cascade-resources-view');
 require('akvo-flow/views/data/data-approval-views');
@@ -804,10 +805,6 @@ FLOW.NavSurveysMainView = Ember.View.extend(
   template('navSurveys/nav-surveys-main')
 );
 
-FLOW.NavSurveysEditView = Ember.View.extend(
-  template('navSurveys/nav-surveys-edit')
-);
-
 FLOW.ManageNotificationsView = Ember.View.extend(
   template('navSurveys/manage-notifications')
 );
@@ -845,6 +842,8 @@ FLOW.NavDataView = Ember.View.extend(template('navData/nav-data'));
 FLOW.InspectDataView = Ember.View.extend(template('navData/inspect-data'));
 
 FLOW.BulkUploadView = Ember.View.extend(template('navData/bulk-upload'));
+
+FLOW.BulkUploadImagesView = Ember.View.extend(template('navData/bulk-upload-images'));
 
 FLOW.CascadeResourcesView = Ember.View.extend(
   template('navData/cascade-resources')
@@ -885,14 +884,19 @@ FLOW.DatasubnavView = FLOW.View.extend(template('navData/data-subnav'), {
     classNameBindings: 'isActive:active'.w(),
 
     isActive: Ember.computed(function() {
-      if (
-        this.get('item') === this.get('parentView.selected') &&
-        this.get('parentView.selected') === 'bulkUpload'
-      ) {
-        FLOW.uploader.set('bulkUpload', true);
-      } else if (this.get('parentView.selected') !== 'bulkUpload') {
+      const parentView = this.get('parentView.selected');
+
+      if (this.get('item') === parentView) {
         FLOW.uploader.set('bulkUpload', false);
+        FLOW.imageUploader.set('bulkUpload', false);
+
+        if (parentView === 'bulkUpload') {
+          FLOW.uploader.set('bulkUpload', true);
+        } else if (parentView === 'bulkUploadImages') {
+          FLOW.imageUploader.set('bulkUpload', true);
+        }
       }
+
       return this.get('item') === this.get('parentView.selected');
     })
       .property('item', 'parentView.selected')

@@ -8,22 +8,6 @@
   <groupId>org.akvo.flow</groupId>
   <artifactId>akvo-flow</artifactId>
 
-  <!--
-      Adding these repositories to be able to download the geocell
-      jars. After code cleanup when they are no longer needed,
-      we can remove this.
-  -->
-  <repositories>
-    <repository>
-      <id>DN_M2_Repo</id>
-      <url>https://repo1.maven.org/maven2/</url>
-    </repository>
-      <repository>
-        <id>bintray.com</id>
-        <url>https://dl.bintray.com/meetup/maven/</url>
-      </repository>
-  </repositories>
-
   <distributionManagement>
     <repository>
       <id>clojars</id>
@@ -40,7 +24,7 @@
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
     <spring.version>5.2.6.RELEASE</spring.version>
-    <spring.security.version>5.3.3.RELEASE</spring.security.version>
+    <spring.security.version>5.3.10.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.77</appengine.sdk.version>
     <jackson.version>2.10.0</jackson.version>
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
@@ -118,6 +102,11 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.4</version>
     </dependency>
     <dependency>
         <groupId>org.springframework</groupId>
@@ -198,7 +187,7 @@
     <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.4</version>
+        <version>2.7</version>
         <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -216,8 +205,22 @@
         <artifactId>sentry</artifactId>
         <version>1.7.30</version>
     </dependency>
-
-    <!-- test dependencies -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.5</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>1.7.31</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
+        <version>2.2</version>
+    </dependency>
+      <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -236,6 +239,13 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>3.4.6</version>
         <scope>test</scope>
     </dependency>
 
@@ -284,18 +294,11 @@
         <version>1.0.8</version>
      </dependency>
 
-     <!-- TODO REMOVE AND SEE WHAT DEPENDS-->
-    <dependency>
-        <groupId>com.beoui</groupId>
-        <artifactId>geocell</artifactId>
-        <version>0.0.10.1</version>
-    </dependency>
     <dependency>
         <groupId>com.vividsolutions</groupId>
         <artifactId>jts</artifactId>
         <version>1.13</version>
     </dependency>
-
 
     <dependency>
         <groupId>com.google.gwt</groupId>
