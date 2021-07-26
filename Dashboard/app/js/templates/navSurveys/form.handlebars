@@ -3,7 +3,11 @@
 	<nav class="newSurveyNav">
 		<ul>
 			{{#if view.showFormPublishButton}}
-			<li><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t _publish}}</a></li>
+			    {{#if view.enableFormPublishButton}}
+			        <li><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t _publish}}</a></li>
+			    {{else}}
+			        <li class="publish"><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t _publish}}</a></li>
+			    {{/if}}
 			{{/if}}
 			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>{{t _preview}}</a></li>
 			{{#if view.showFormDeleteButton}}
