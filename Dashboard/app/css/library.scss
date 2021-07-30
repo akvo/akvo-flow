@@ -237,6 +237,7 @@ $width-large: 1200px;
         color: white !important;
         border: none;
         border: 1px solid $flowAnchorLink;
+        cursor: pointer;
     }
 
     &.disabled {
