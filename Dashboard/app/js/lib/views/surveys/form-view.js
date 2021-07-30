@@ -55,6 +55,7 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
 
   disableFormPublishButton: Ember.computed(function () {
     const form = this.get('form');
-    return form.get('status') === 'PUBLISHED';
-  }).property('this.form'),
+    const questionsLoading = !FLOW.questionControl.content.isLoaded;
+    return questionsLoading || form.get('status') === 'PUBLISHED';
+  }).property('this.form', 'FLOW.questionControl.content.isLoaded'),
 });
