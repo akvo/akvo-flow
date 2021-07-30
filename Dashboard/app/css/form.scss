@@ -80,6 +80,10 @@ input {
   line-height: normal;
 }
 
+button[type='button'] {
+  line-height: 1.42857;
+}
+
 button,
 input[type='button'],
 input[type='reset'],
