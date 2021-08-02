@@ -21,7 +21,6 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
     return this.get('isNewForm') || this.get('showFormBasics');
   }).property('showFormBasics'),
 
-
   doManageTranslations() {
     FLOW.translationControl.populate();
     this.set('manageNotifications', false);
@@ -53,4 +52,10 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
     const form = this.get('form');
     return FLOW.permControl.canEditForm(form);
   }).property('this.form'),
+
+  disableFormPublishButton: Ember.computed(function () {
+    const form = this.get('form');
+    const questionsLoading = !FLOW.questionControl.content.isLoaded;
+    return questionsLoading || form.get('status') === 'PUBLISHED';
+  }).property('this.form', 'FLOW.questionControl.content.isLoaded'),
 });

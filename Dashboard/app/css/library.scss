@@ -237,17 +237,21 @@ $width-large: 1200px;
         color: white !important;
         border: none;
         border: 1px solid $flowAnchorLink;
+        cursor: pointer;
     }
 
     &.disabled {
+        background-color: transparent;
         cursor: not-allowed;
-        color: rgba(128, 128, 128, 0.4) !important;
-        border: 1px solid rgba(128, 128, 128, 0.4);
+        pointer-events: none;
+        color: rgba(74, 177, 207, 0.2) !important;
+        border: 1px solid rgba(74, 177, 207, 0.2);
+        border-radius: 3px;
 
         &:hover {
             cursor: not-allowed;
-            color: rgba(128, 128, 128, 0.4) !important;
-            border: 1px solid rgba(128, 128, 128, 0.4);
+            color: rgba(74, 177, 207, 0.2) !important;
+            border: 1px solid rgba(74, 177, 207, 0.2);
         }
     }
 }
