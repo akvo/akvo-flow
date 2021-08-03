@@ -675,6 +675,15 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       return;
     }
 
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_validating'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_checking_form_questions_groups_and_settings'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showOK', false);
+    FLOW.dialogControl.set('showSpin', true);
+    FLOW.dialogControl.set('showDialog', true);
+
+
     const questions = FLOW.store.filter(FLOW.Question, q => q.get('surveyId') == surveyId);
 
     const findQuestionOption = (questionId, text) => FLOW.store.filter(FLOW.QuestionOption, qo => qo.get('questionId') === questionId && qo.get('text') === text).map(x => x)[0];
@@ -697,7 +706,12 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
         return r;
     }, Object.create(null));
 
-    return questionGroupsNoName.reduce((c, o) => { if(!c[o.get('keyId')]) { c[o.get('keyId')] = [];} return c;} , data);
+    const groups = questionGroupsNoName.reduce((groupsWithErrors, group) => { if(!groupsWithErrors[group.get('keyId')]) { groupsWithErrors[group.get('keyId')] = [];} return groupsWithErrors;} , data);
+
+    FLOW.dialogControl.set('showSpin', false);
+    FLOW.dialogControl.set('showDialog', false);
+
+    return groups;
   },
 
   publishSurvey() {
