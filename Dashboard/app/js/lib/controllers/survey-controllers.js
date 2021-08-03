@@ -706,7 +706,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
         return r;
     }, Object.create(null));
 
-    const groups = questionGroupsNoName.reduce((c, o) => { if(!c[o.get('keyId')]) { c[o.get('keyId')] = [];} return c;} , data);
+    const groups = questionGroupsNoName.reduce((groupsWithErrors, group) => { if(!groupsWithErrors[group.get('keyId')]) { groupsWithErrors[group.get('keyId')] = [];} return groupsWithErrors;} , data);
 
     FLOW.dialogControl.set('showSpin', false);
     FLOW.dialogControl.set('showDialog', false);
