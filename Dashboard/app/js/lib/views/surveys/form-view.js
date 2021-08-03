@@ -57,5 +57,5 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
     const form = this.get('form');
     const questionsLoading = !FLOW.questionControl.content.isLoaded;
     return questionsLoading || form.get('status') === 'PUBLISHED';
-  }).property('this.form', 'FLOW.questionControl.content.isLoaded'),
+  }).property('this.form.status', 'FLOW.questionControl.content.isLoaded'),
 });
