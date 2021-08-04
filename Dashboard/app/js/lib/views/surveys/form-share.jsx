@@ -57,7 +57,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       const questions = FLOW.questionControl.get('content');
 
       // case 1 is form published?
-      const isPublished = selectedForm.get('status') === 'PUBLISHED';
+      const isPublished = selectedForm && selectedForm.get('status') === 'PUBLISHED';
 
       // case 2 is not monitoring survey or monitoring form
       const isNonMonitoringSurvey = selectedSurveyGroup.get('monitoringGroup') === false;
