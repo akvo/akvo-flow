@@ -32,10 +32,18 @@ public class FormInstanceRequestHandler {
     public void deleteFormInstance(SurveyInstance formInstance) {
         SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
         Long surveyedLocaleId = formInstance.getSurveyedLocaleId();
-        SurveyedLocale dataPoint = surveyedLocaleDao.getById(surveyedLocaleId);
-        List<SurveyInstance> relatedSurveyInstances = siDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
 
+        if (surveyedLocaleId == null) {
+            // we add this to catch the orphaned form
+            // instances that are not related to any
+            // datapoint. We simply delete them
+            siDao.delete(formInstance);
+            return;
+        }
+
+        SurveyedLocale dataPoint = surveyedLocaleDao.getById(surveyedLocaleId);
         if (isRegistrationForm(dataPoint, formInstance)) {
+            List<SurveyInstance> relatedSurveyInstances = siDao.listInstancesByLocale(dataPoint.getKey().getId(), null, null, null);
             surveyedLocaleDao.delete(dataPoint);
             siDao.delete(relatedSurveyInstances);
         } else {
@@ -44,7 +52,8 @@ public class FormInstanceRequestHandler {
     }
 
     private boolean isRegistrationForm(SurveyedLocale dataPoint, SurveyInstance formInstance) {
-        return dataPoint.getCreationSurveyId() != null
+        return dataPoint != null
+                && dataPoint.getCreationSurveyId() != null
                 && formInstance.getSurveyId() != null
                 && dataPoint.getCreationSurveyId().equals(formInstance.getSurveyId());
     }
