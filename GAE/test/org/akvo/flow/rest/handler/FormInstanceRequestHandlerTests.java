@@ -83,4 +83,22 @@ public class FormInstanceRequestHandlerTests {
         assertEquals(0, remainingFormInstance.size(), "Expecting no form instance to remain");
         assertNull(new SurveyedLocaleDao().getByKey(dataPointId), "Expect datapoint to have been deleted");
     }
+
+    @Test
+    public void testDeleteOrphanedInstance() {
+        Long surveyId = dataStoreTestUtil.randomId();
+        List<SurveyedLocale> singleDataPointList = dataStoreTestUtil.createDataPoints(surveyId, 1);
+        List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(singleDataPointList, 1);
+
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        slDao.deleteSurveyedLocale(singleDataPointList.get(0));
+        formInstances.get(0).setSurveyedLocaleId(null);
+
+        FormInstanceRequestHandler requestHandler = new FormInstanceRequestHandler();
+        requestHandler.deleteFormInstance(formInstances.get(0));
+
+        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        List<SurveyInstance> remainingFormInstances = siDao.listSurveyInstanceBySurvey(DEFAULT_REGISTRATION_FORM_ID, null);
+        assertEquals(0, remainingFormInstances.size(), "Expecting no form instance to remain");
+    }
 }
