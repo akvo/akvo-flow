@@ -37,6 +37,7 @@ public class FormInstanceRequestHandler {
             // we add this to catch the orphaned form
             // instances that are not related to any
             // datapoint. We simply delete them
+            log.warning("Deleting a form instance that has no associated datapoint: " + formInstance.getKey().getId());
             siDao.delete(formInstance);
             return;
         }
