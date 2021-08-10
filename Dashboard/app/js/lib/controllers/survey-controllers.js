@@ -745,6 +745,8 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
+    FLOW.dialogControl.set('showOK', true);
+
   },
 
   publishAssembledForm(surveyId) {
