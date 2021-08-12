@@ -615,6 +615,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
       FLOW.dialogControl.set('message', error);
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
+      FLOW.dialogControl.set('showOK', true);
     }
 
     return error;

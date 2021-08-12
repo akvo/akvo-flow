@@ -532,6 +532,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
     FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
     FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showOK', true);
     FLOW.dialogControl.set('showDialog', true);
 
     this.set('copyTarget', null);
@@ -723,6 +724,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
       FLOW.dialogControl.set('header', Ember.String.loc('_cannot_publish'));
       FLOW.dialogControl.set('message', Ember.String.loc('_publishing_questions_incomplete'));
       FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showOK', true);
       FLOW.dialogControl.set('showDialog', true);
       return;
     }
