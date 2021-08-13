@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -449,7 +450,7 @@ public class BaseDAO<T extends BaseDomain> {
         }
 
         PersistenceManager pm = PersistenceFilter.getManager();
-        List<Object> datastoreKeysList = new ArrayList<>();
+        Set<Object> datastoreKeysList = new LinkedHashSet<>();
         for (Long id : idsList) {
             Key key = KeyFactory.createKey(clazz.getSimpleName(), id);
             Object objectId = pm.newObjectIdInstance(clazz, key);
