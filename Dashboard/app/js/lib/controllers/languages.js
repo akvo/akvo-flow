@@ -71,7 +71,13 @@ FLOW.isoLanguagesDict = {
     name: 'Belarusian',
     nativeName: 'Беларуская',
   },
-  bem: {
+  // for bb this is not officially the 2-letter code
+  // but is the only one available at the moment
+  // to use in the langauge file without breaking the app
+  // when the issue in the app is fixed we can switch to the
+  // official 3-letter code. bem
+  // https://github.com/akvo/akvo-flow-mobile/issues/1865
+  bb: {
     name: 'Bemba',
     nativeName: 'Bemba',
   },
