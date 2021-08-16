@@ -71,6 +71,10 @@ FLOW.isoLanguagesDict = {
     name: 'Belarusian',
     nativeName: 'Беларуская',
   },
+  bem: {
+    name: 'Bemba',
+    nativeName: 'Bemba',
+  },
   bn: {
     name: 'Bengali',
     nativeName: 'বাংলা',
