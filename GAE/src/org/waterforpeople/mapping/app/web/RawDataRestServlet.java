@@ -147,6 +147,24 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 return null;
             }
 
+            SurveyedLocale dataPoint = null;
+            if (!isNewInstance && sg.getMonitoringGroup()) {
+                if (instance.getSurveyedLocaleId() == null) {
+                    String message = "Instance does not have an associated datapoint [" + importReq.getSurveyInstanceId() + "]";
+                    updateMessageBoard(importReq.getSurveyInstanceId(), message);
+                    log.warning(message);
+                    return null;
+                } else {
+                    dataPoint = slDao.getById(instance.getSurveyedLocaleId());
+                    if (dataPoint == null) {
+                        String message = "Associated datapoint is missing [" + instance.getSurveyedLocaleId() + "]";
+                        updateMessageBoard(importReq.getSurveyInstanceId(), message);
+                        log.warning(message);
+                        return null;
+                    }
+                }
+            }
+
             // questionId -> iteration -> QAS
             Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = qasDao
                     .mapByQuestionIdAndIteration(qasDao.listBySurveyInstance(instance.getKey()
@@ -217,13 +235,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             if (!isMonitoringForm && !isNewInstance) {
                 // Update datapoint name and location for this locale
-                SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
-                sl.assembleDisplayName(
+                dataPoint.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
 
-                updateDataPointLocation(sl, updatedAnswers);
+                updateDataPointLocation(dataPoint, updatedAnswers);
 
-                slDao.save(sl);
+                slDao.save(dataPoint);
             }
 
             if (isNewInstance) {
