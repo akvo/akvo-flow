@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 } else {
                     dataPoint = slDao.getById(instance.getSurveyedLocaleId());
                     if (dataPoint == null) {
-                        String message = "Associated datapoint is missing [" + instance.getSurveyedLocaleId() + "]";
+                        String message = "Associated datapoint is missing [ datapoint id = " + instance.getSurveyedLocaleId() + "]";
                         updateMessageBoard(importReq.getSurveyInstanceId(), message);
                         log.warning(message);
                         return null;
@@ -404,6 +405,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         }
         return null;
+    }
+
+    /*
+     * Validate the incoming request parameters are what is required
+     */
+    public Map<Long, String> validateImportRequest(RawDataImportRequest importRequest) {
+        return Collections.emptyMap();
     }
 
     private void updateDataPointLocation(SurveyedLocale dataPoint,
