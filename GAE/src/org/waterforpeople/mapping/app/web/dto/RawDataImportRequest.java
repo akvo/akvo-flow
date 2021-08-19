@@ -21,7 +21,6 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +35,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 public class RawDataImportRequest extends RestRequest {
     private static final Logger log = Logger.getLogger("RawDataImportRequest");
@@ -89,6 +91,12 @@ public class RawDataImportRequest extends RestRequest {
     private SurveyedLocaleDao slDao;
     private QuestionDao qDao;
 
+    private SurveyInstance formInstance;
+
+    private Survey form;
+
+    private SurveyGroup survey;
+
     public RawDataImportRequest() {
         instanceDao = new SurveyInstanceDAO();
         sDao = new SurveyDAO();
@@ -96,6 +104,18 @@ public class RawDataImportRequest extends RestRequest {
         qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
         qDao = new QuestionDao();
+    }
+
+    public Survey getForm() {
+        return form;
+    }
+
+    public SurveyGroup getSurvey() {
+        return survey;
+    }
+
+    public SurveyInstance getFormInstance() {
+        return formInstance;
     }
 
     public List<String> getFixedFieldValues() {
@@ -161,15 +181,27 @@ public class RawDataImportRequest extends RestRequest {
 
     @Override
     protected void populateErrors() {
-        // TODO handle errors
-
+        Map<Long, String> errors =  validateRequest();
     }
 
     /*
      * Validate the incoming request parameters are what is required
      */
-    public Map<Long, String> validateImportRequest(RawDataImportRequest importRequest) {
+    public Map<Long, String> validateRequest() {
         Map<Long, String> validationErrors = new HashMap<>();
+        if (SAVE_SURVEY_INSTANCE_ACTION.equals(this.getAction())) {
+            validationErrors.putAll(validateSaveSurveyInstanceRequest());
+        }
+        return validationErrors;
+    }
+
+    private Map<Long,String> validateSaveSurveyInstanceRequest() {
+        final Map<Long, String> validationErrors = new HashMap<>();
+
+        this.formInstance = instanceDao.getByKey(surveyInstanceId);
+        if (formInstance == null) {
+            validationErrors.put(surveyInstanceId, "Form instance [id=" + surveyInstanceId + "] doesn't exist");
+        }
 
         return validationErrors;
     }
@@ -243,7 +275,6 @@ public class RawDataImportRequest extends RestRequest {
     }
 
     /**
-     * @param req
      * @throws UnsupportedEncodingException
      */
     private void handleQuestionIdParam(String[] answers) throws UnsupportedEncodingException {

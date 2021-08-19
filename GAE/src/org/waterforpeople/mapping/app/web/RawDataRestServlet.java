@@ -133,12 +133,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 }
                 instance = createInstance(importReq);
             } else {
-                instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
-                if (instance == null) {
-                    updateMessageBoard(importReq.getSurveyInstanceId(), "Survey instance id ["
-                            + importReq.getSurveyInstanceId() + "] doesn't exist");
-                    return null;
-                }
+                instance = importReq.getFormInstance();
             }
 
             if (!instance.getSurveyId().equals(importReq.getSurveyId())) {
