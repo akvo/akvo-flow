@@ -202,6 +202,13 @@ public class DataStoreTestUtil {
         return new SurveyDAO().save(survey);
     }
 
+    public Survey createDefaultForm() {
+        Survey form = new Survey();
+        form.setName("Simple survey");
+        form.setKey(KeyFactory.createKey("Survey", DEFAULT_REGISTRATION_FORM_ID));
+        return new SurveyDAO().save(form);
+    }
+
     public QuestionGroup createQuestionGroup(Survey newSurvey, int order, boolean immutable) {
         QuestionGroup qg = new QuestionGroup();
         qg.setName("question group");

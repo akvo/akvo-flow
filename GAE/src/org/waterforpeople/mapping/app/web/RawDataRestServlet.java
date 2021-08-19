@@ -99,26 +99,8 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         RawDataImportRequest importReq = (RawDataImportRequest) req;
         if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq.getAction())) {
 
-            Survey s = null;
-            if (importReq.getSurveyId() != null) {
-                s = sDao.getByKey(importReq.getSurveyId());
-            }
-            if (s == null) {
-                updateMessageBoard(importReq.getSurveyId(), "Survey id [" + importReq.getSurveyId()
-                        + "] doesn't exist");
-                return null;
-            }
-
-            SurveyGroup sg = null;
-            if (s.getSurveyGroupId() != null) {
-                sg = sgDao.getByKey(s.getSurveyGroupId());
-            }
-
-            if (sg == null) {
-                updateMessageBoard(importReq.getSurveyId(), "Survey group [" + s.getSurveyGroupId()
-                        + "] doesn't exist");
-                return null;
-            }
+            Survey s = importReq.getForm();
+            SurveyGroup sg = importReq.getSurvey();
 
             boolean isNewInstance = importReq.getSurveyInstanceId() == null;
             boolean isMonitoringForm = sg.getMonitoringGroup()

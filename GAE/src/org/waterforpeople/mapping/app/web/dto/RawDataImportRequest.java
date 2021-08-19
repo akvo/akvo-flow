@@ -202,11 +202,26 @@ public class RawDataImportRequest extends RestRequest {
     private List<String> validateSaveSurveyInstanceRequest() {
         final List<String> validationErrors = new ArrayList<>();
 
-        this.formInstance = instanceDao.getByKey(surveyInstanceId);
-        if (formInstance == null) {
-            validationErrors.add("Form instance [id=" + surveyInstanceId + "] doesn't exist");
+        if (surveyInstanceId != null) {
+            this.formInstance = instanceDao.getByKey(surveyInstanceId);
+            if (this.formInstance == null) {
+                validationErrors.add("Form instance [id=" + surveyInstanceId + "] not found");
+            }
         }
 
+        if (surveyId != null) {
+            form = sDao.getByKey(surveyId);
+            if (form == null) {
+                validationErrors.add("Form [id=" + surveyId + "] not found");
+            }
+        }
+
+        if (form != null) {
+            survey = sgDao.getByKey(form.getSurveyGroupId());
+            if (survey == null) {
+                validationErrors.add("Survey [id=" + form.getSurveyGroupId() + "] not found");
+            }
+        }
         return validationErrors;
     }
 
