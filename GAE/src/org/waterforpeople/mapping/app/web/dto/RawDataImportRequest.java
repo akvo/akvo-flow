@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -182,6 +183,9 @@ public class RawDataImportRequest extends RestRequest {
     @Override
     protected void populateErrors() {
         Map<Long, String> errors =  validateRequest();
+        for (Map.Entry<Long, String> error : errors.entrySet()) {
+            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error.getValue(), error.getKey().toString()));
+        }
     }
 
     /*
