@@ -182,29 +182,29 @@ public class RawDataImportRequest extends RestRequest {
 
     @Override
     protected void populateErrors() {
-        Map<Long, String> errors =  validateRequest();
-        for (Map.Entry<Long, String> error : errors.entrySet()) {
-            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error.getValue(), error.getKey().toString()));
+        List<String> errors =  validateRequest();
+        for (String error : errors) {
+            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error, surveyInstanceId.toString()));
         }
     }
 
     /*
      * Validate the incoming request parameters are what is required
      */
-    public Map<Long, String> validateRequest() {
-        Map<Long, String> validationErrors = new HashMap<>();
+    public List<String> validateRequest() {
+        List<String> validationErrors = new ArrayList<>();
         if (SAVE_SURVEY_INSTANCE_ACTION.equals(this.getAction())) {
-            validationErrors.putAll(validateSaveSurveyInstanceRequest());
+            validationErrors.addAll(validateSaveSurveyInstanceRequest());
         }
         return validationErrors;
     }
 
-    private Map<Long,String> validateSaveSurveyInstanceRequest() {
-        final Map<Long, String> validationErrors = new HashMap<>();
+    private List<String> validateSaveSurveyInstanceRequest() {
+        final List<String> validationErrors = new ArrayList<>();
 
         this.formInstance = instanceDao.getByKey(surveyInstanceId);
         if (formInstance == null) {
-            validationErrors.put(surveyInstanceId, "Form instance [id=" + surveyInstanceId + "] doesn't exist");
+            validationErrors.add("Form instance [id=" + surveyInstanceId + "] doesn't exist");
         }
 
         return validationErrors;
