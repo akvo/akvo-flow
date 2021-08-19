@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,6 +19,7 @@ package org.waterforpeople.mapping.app.web;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -405,13 +406,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         }
         return null;
-    }
-
-    /*
-     * Validate the incoming request parameters are what is required
-     */
-    public Map<Long, String> validateImportRequest(RawDataImportRequest importRequest) {
-        return Collections.emptyMap();
     }
 
     private void updateDataPointLocation(SurveyedLocale dataPoint,

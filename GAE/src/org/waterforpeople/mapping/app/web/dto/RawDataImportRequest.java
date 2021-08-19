@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,12 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
 public class RawDataImportRequest extends RestRequest {
     private static final Logger log = Logger.getLogger("RawDataImportRequest");
@@ -74,6 +81,22 @@ public class RawDataImportRequest extends RestRequest {
     private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
 
     private List<String> fixedFieldValues;
+
+    private SurveyInstanceDAO instanceDao;
+    private SurveyDAO sDao;
+    private SurveyGroupDAO sgDao;
+    private QuestionAnswerStoreDao qasDao;
+    private SurveyedLocaleDao slDao;
+    private QuestionDao qDao;
+
+    public RawDataImportRequest() {
+        instanceDao = new SurveyInstanceDAO();
+        sDao = new SurveyDAO();
+        sgDao = new SurveyGroupDAO();
+        qasDao = new QuestionAnswerStoreDao();
+        slDao = new SurveyedLocaleDao();
+        qDao = new QuestionDao();
+    }
 
     public List<String> getFixedFieldValues() {
         return fixedFieldValues;
@@ -140,6 +163,15 @@ public class RawDataImportRequest extends RestRequest {
     protected void populateErrors() {
         // TODO handle errors
 
+    }
+
+    /*
+     * Validate the incoming request parameters are what is required
+     */
+    public Map<Long, String> validateImportRequest(RawDataImportRequest importRequest) {
+        Map<Long, String> validationErrors = new HashMap<>();
+
+        return validationErrors;
     }
 
     @Override

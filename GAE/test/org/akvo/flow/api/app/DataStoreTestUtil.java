@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
@@ -168,8 +169,7 @@ public class DataStoreTestUtil {
     }
 
     public Long randomId() {
-        Random rnd = new Random();
-        return rnd.nextLong();
+        return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }
 
     public Collection<SurveyedLocale> saveDataPoints(List<SurveyedLocale> dataPoints) {
