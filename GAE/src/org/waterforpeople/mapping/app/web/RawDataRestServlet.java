@@ -114,23 +114,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 instance = importReq.getFormInstance();
             }
 
-            SurveyedLocale dataPoint = null;
-            if (!isNewInstance && sg.getMonitoringGroup()) {
-                if (instance.getSurveyedLocaleId() == null) {
-                    String message = "Instance does not have an associated datapoint [" + importReq.getSurveyInstanceId() + "]";
-                    updateMessageBoard(importReq.getSurveyInstanceId(), message);
-                    log.warning(message);
-                    return null;
-                } else {
-                    dataPoint = slDao.getById(instance.getSurveyedLocaleId());
-                    if (dataPoint == null) {
-                        String message = "Associated datapoint is missing [ datapoint id = " + instance.getSurveyedLocaleId() + "]";
-                        updateMessageBoard(importReq.getSurveyInstanceId(), message);
-                        log.warning(message);
-                        return null;
-                    }
-                }
-            }
+            SurveyedLocale dataPoint = importReq.getDataPoint();
 
             // questionId -> iteration -> QAS
             Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = qasDao

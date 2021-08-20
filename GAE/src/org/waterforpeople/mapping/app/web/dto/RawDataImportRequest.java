@@ -39,6 +39,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -92,6 +93,8 @@ public class RawDataImportRequest extends RestRequest {
     private SurveyedLocaleDao slDao;
     private QuestionDao qDao;
 
+    private SurveyedLocale dataPoint;
+
     private SurveyInstance formInstance;
 
     private Survey form;
@@ -117,6 +120,10 @@ public class RawDataImportRequest extends RestRequest {
 
     public SurveyInstance getFormInstance() {
         return formInstance;
+    }
+
+    public SurveyedLocale getDataPoint() {
+        return dataPoint;
     }
 
     public boolean isNewFormInstance() {
@@ -244,6 +251,18 @@ public class RawDataImportRequest extends RestRequest {
             validationErrors.add("Wrong survey selected when importing instance [id=" + surveyInstanceId + "]");
         }
 
+        if (this.formInstance != null &&
+                this.survey != null &&
+                this.survey.getMonitoringGroup()) {
+            if (this.formInstance.getSurveyedLocaleId() == null) {
+                validationErrors.add("Form instance [id=" + surveyInstanceId + "] does not have an associated datapoint");
+            } else {
+                this.dataPoint = slDao.getByKey(this.formInstance.getSurveyedLocaleId());
+                if (dataPoint == null) {
+                    validationErrors.add("Associated datapoint is missing [ datapoint id = " + formInstance.getSurveyedLocaleId() + "]");
+                }
+            }
+        }
         return validationErrors;
     }
 

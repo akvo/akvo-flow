@@ -26,6 +26,7 @@ import org.akvo.flow.api.app.DataStoreTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.List;
@@ -49,17 +50,31 @@ public class RawDataImportRequestTest {
 
     @Test
     void testFormInstanceMissingDataPoint() {
-        Long surveyId = dataStoreTestUtil.randomId();
+        SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
+        Long surveyId = survey.getKey().getId();
+        survey.setMonitoringGroup(true);
+        survey.setNewLocaleSurveyId(DataStoreTestUtil.DEFAULT_REGISTRATION_FORM_ID);
+        Survey form = dataStoreTestUtil.createDefaultRegistrationForm(survey.getKey().getId());
 
         List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 1);
 
         SurveyInstance instance = formInstances.get(0);
-        new SurveyedLocaleDao().delete(dataPoints.get(0));
+        instance.setSurveyedLocaleId(null);
+        new SurveyInstanceDAO().save(instance);
 
         RawDataImportRequest importRequest = new RawDataImportRequest();
         importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
         importRequest.setSurveyInstanceId(instance.getKey().getId());
+        importRequest.setSurveyId(form.getKey().getId());
+
+        List<String> validateDataPointNotAssociated = importRequest.validateRequest();
+        assertTrue(validateDataPointNotAssociated.size() > 0, "There should be an error");
+        assertEquals("Form instance [id=" + importRequest.getSurveyInstanceId() + "] does not have an associated datapoint", validateDataPointNotAssociated.get(0));
+
+        instance.setSurveyedLocaleId(dataPoints.get(0).getKey().getId());
+        new SurveyInstanceDAO().save(instance);
+        new SurveyedLocaleDao().delete(dataPoints.get(0));
 
         List<String> validateMissingDataPoint = importRequest.validateRequest();
         assertTrue(validateMissingDataPoint.size() > 0, "There should be an error");
