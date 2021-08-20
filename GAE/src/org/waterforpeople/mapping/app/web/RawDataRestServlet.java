@@ -109,6 +109,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             SurveyedLocale dataPoint = null;
             if (importReq.isNewFormInstance()) {
                 // create new surveyed locale and launch task to complete processing
+                dataPoint = new SurveyedLocale();
                 dataPoint.setIdentifier(SurveyedLocale.generateBase32Uuid());
                 instance.setSurveyedLocaleIdentifier(dataPoint.getIdentifier());
 
