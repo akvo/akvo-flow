@@ -17,6 +17,7 @@ package org.waterforpeople.mapping.app.web.dto;
 
 
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,9 +58,11 @@ public class RawDataImportRequestTest {
         new SurveyedLocaleDao().delete(dataPoints.get(0));
 
         RawDataImportRequest importRequest = new RawDataImportRequest();
+        importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
         importRequest.setSurveyInstanceId(instance.getKey().getId());
 
         List<String> validateMissingDataPoint = importRequest.validateRequest();
+        assertTrue(validateMissingDataPoint.size() > 0, "There should be an error");
         assertEquals("Associated datapoint is missing [ datapoint id = " + instance.getSurveyedLocaleId() + "]", validateMissingDataPoint.get(0));
     }
 
@@ -82,8 +84,7 @@ public class RawDataImportRequestTest {
         assertTrue(validateMissingForm.size() > 0, "There should be an error");
         assertEquals("Form [id=" + instance.getSurveyId() + "] not found", validateMissingForm.get(0));
 
-        Survey form = dataStoreTestUtil.createDefaultForm();
-        form.setSurveyGroupId(surveyId);
+        dataStoreTestUtil.createDefaultRegistrationForm(surveyId);
 
         List<String> validateMissingSurvey = importRequest.validateRequest();
         assertTrue(validateMissingSurvey.size() > 0, "There should be an error");
@@ -92,18 +93,25 @@ public class RawDataImportRequestTest {
 
     @Test
     void testCannotImportMonitoringForm() {
-        Long surveyId = dataStoreTestUtil.randomId();
+        SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
+        survey.setMonitoringGroup(true);
+        survey.setNewLocaleSurveyId(DataStoreTestUtil.DEFAULT_REGISTRATION_FORM_ID);
+        dataStoreTestUtil.createDefaultRegistrationForm(survey.getKey().getId());
+        dataStoreTestUtil.createDefaultMonitoringForm(survey.getKey().getId());
 
-        List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 1);
+        List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(survey.getKey().getId(), 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 2);
 
         SurveyInstance monitoringFormInstance = formInstances.get(1);
 
         RawDataImportRequest importRequest = new RawDataImportRequest();
+        importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
         importRequest.setSurveyInstanceId(monitoringFormInstance.getKey().getId());
+        importRequest.setSurveyId(DataStoreTestUtil.DEFAULT_MONITORING_FORM_ID);
 
-        List<String> validateMissingDataPoint = importRequest.validateRequest();
-        assertEquals("Importing new data into a monitoring form is not supported at the moment", validateMissingDataPoint.get(0));
+        List<String> validateMonitoringFormImport = importRequest.validateRequest();
+        assertTrue(validateMonitoringFormImport.size() > 0, "There should be an error");
+        assertEquals("Importing new data into a monitoring form is not supported at the moment", validateMonitoringFormImport.get(0));
     }
 
     @Test

@@ -119,6 +119,17 @@ public class RawDataImportRequest extends RestRequest {
         return formInstance;
     }
 
+    public boolean isNewFormInstance() {
+        return surveyInstanceId != null;
+    }
+
+    public boolean isMonitoringForm() {
+        return survey != null &&
+                form != null &&
+                survey.getMonitoringGroup() &&
+                !survey.getNewLocaleSurveyId().equals(form.getKey().getId());
+    }
+
     public List<String> getFixedFieldValues() {
         return fixedFieldValues;
     }
@@ -222,6 +233,11 @@ public class RawDataImportRequest extends RestRequest {
                 validationErrors.add("Survey [id=" + form.getSurveyGroupId() + "] not found");
             }
         }
+
+        if (this.isMonitoringForm()) {
+            validationErrors.add("Importing new data into a monitoring form is not supported at the moment");
+        }
+
         return validationErrors;
     }
 

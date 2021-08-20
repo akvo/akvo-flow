@@ -100,19 +100,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq.getAction())) {
 
             Survey s = importReq.getForm();
+
             SurveyGroup sg = importReq.getSurvey();
 
-            boolean isNewInstance = importReq.getSurveyInstanceId() == null;
-            boolean isMonitoringForm = sg.getMonitoringGroup()
-                    && !sg.getNewLocaleSurveyId().equals(s.getKey().getId());
+            boolean isNewInstance = importReq.isNewFormInstance();
+
+            boolean isMonitoringForm = importReq.isMonitoringForm();
 
             SurveyInstance instance = null;
             if (isNewInstance) {
-                if (isMonitoringForm) {
-                    updateMessageBoard(s.getKey().getId(),
-                            "Importing new data into a monitoring form is not supported at the moment");
-                    return null;
-                }
                 instance = createInstance(importReq);
             } else {
                 instance = importReq.getFormInstance();
