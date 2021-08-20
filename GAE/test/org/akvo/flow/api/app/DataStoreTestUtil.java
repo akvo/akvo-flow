@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
@@ -59,6 +59,7 @@ public class DataStoreTestUtil {
     public static String mockedUUID = "TheMockedUuid";
     public static String mockedSubmitter = "TheHappySubmitter";
     public static long DEFAULT_REGISTRATION_FORM_ID = mockedTime*4;
+    public static long DEFAULT_MONITORING_FORM_ID = mockedTime*2;
 
     public Device createDevice(Long deviceId, String androidId) {
         final DeviceDAO dao = new DeviceDAO();
@@ -127,7 +128,7 @@ public class DataStoreTestUtil {
             long registrationFormId = dataPoint.getCreationSurveyId();
             si.setSurveyId(registrationFormId);
         } else {
-            long monitoringFormId = mockedTime * 2;
+            long monitoringFormId = DEFAULT_MONITORING_FORM_ID;
             si.setSurveyId(monitoringFormId);
         }
         Date date = new Date();
@@ -168,8 +169,7 @@ public class DataStoreTestUtil {
     }
 
     public Long randomId() {
-        Random rnd = new Random();
-        return rnd.nextLong();
+        return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }
 
     public Collection<SurveyedLocale> saveDataPoints(List<SurveyedLocale> dataPoints) {
@@ -200,6 +200,22 @@ public class DataStoreTestUtil {
         survey.setName("Simple survey");
         survey.setSurveyGroupId(newSg.getKey().getId());
         return new SurveyDAO().save(survey);
+    }
+
+    public Survey createDefaultRegistrationForm(long surveyId) {
+        Survey form = new Survey();
+        form.setName("Simple survey");
+        form.setKey(KeyFactory.createKey("Survey", DEFAULT_REGISTRATION_FORM_ID));
+        form.setSurveyGroupId(surveyId);
+        return new SurveyDAO().save(form);
+    }
+
+    public Survey createDefaultMonitoringForm(long surveyId) {
+        Survey form = new Survey();
+        form.setName("Simple monitoring survey");
+        form.setKey(KeyFactory.createKey("Survey", DEFAULT_MONITORING_FORM_ID));
+        form.setSurveyGroupId(surveyId);
+        return new SurveyDAO().save(form);
     }
 
     public QuestionGroup createQuestionGroup(Survey newSurvey, int order, boolean immutable) {
