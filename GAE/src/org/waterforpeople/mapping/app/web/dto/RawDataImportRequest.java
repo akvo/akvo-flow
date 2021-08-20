@@ -123,7 +123,7 @@ public class RawDataImportRequest extends RestRequest {
     }
 
     public boolean isNewFormInstance() {
-        return surveyInstanceId != null;
+        return surveyInstanceId == null;
     }
 
     public boolean isMonitoringForm() {
