@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,7 +17,9 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,16 +71,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private static final String SI_TYPE = "SurveyInstance";
 
     private SurveyInstanceDAO instanceDao;
-    private SurveyDAO sDao;
-    private SurveyGroupDAO sgDao;
     private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
     private QuestionDao qDao;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
-        sDao = new SurveyDAO();
-        sgDao = new SurveyGroupDAO();
         qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
         qDao = new QuestionDao();
@@ -97,54 +95,31 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         RawDataImportRequest importReq = (RawDataImportRequest) req;
         if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq.getAction())) {
 
-            Survey s = null;
-            if (importReq.getSurveyId() != null) {
-                s = sDao.getByKey(importReq.getSurveyId());
-            }
-            if (s == null) {
-                updateMessageBoard(importReq.getSurveyId(), "Survey id [" + importReq.getSurveyId()
-                        + "] doesn't exist");
-                return null;
-            }
+            Survey s = importReq.getForm();
 
-            SurveyGroup sg = null;
-            if (s.getSurveyGroupId() != null) {
-                sg = sgDao.getByKey(s.getSurveyGroupId());
-            }
-
-            if (sg == null) {
-                updateMessageBoard(importReq.getSurveyId(), "Survey group [" + s.getSurveyGroupId()
-                        + "] doesn't exist");
-                return null;
-            }
-
-            boolean isNewInstance = importReq.getSurveyInstanceId() == null;
-            boolean isMonitoringForm = sg.getMonitoringGroup()
-                    && !sg.getNewLocaleSurveyId().equals(s.getKey().getId());
+            SurveyGroup sg = importReq.getSurvey();
 
             SurveyInstance instance = null;
-            if (isNewInstance) {
-                if (isMonitoringForm) {
-                    updateMessageBoard(s.getKey().getId(),
-                            "Importing new data into a monitoring form is not supported at the moment");
-                    return null;
-                }
+            if (importReq.isNewFormInstance()) {
                 instance = createInstance(importReq);
             } else {
-                instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
-                if (instance == null) {
-                    updateMessageBoard(importReq.getSurveyInstanceId(), "Survey instance id ["
-                            + importReq.getSurveyInstanceId() + "] doesn't exist");
-                    return null;
-                }
+                instance = importReq.getFormInstance();
             }
 
-            if (!instance.getSurveyId().equals(importReq.getSurveyId())) {
-                updateMessageBoard(
-                        importReq.getSurveyInstanceId(),
-                        "Wrong survey selected when importing instance id ["
-                                + importReq.getSurveyInstanceId() + "]");
-                return null;
+            SurveyedLocale dataPoint = null;
+            if (importReq.isNewFormInstance()) {
+                // create new surveyed locale and launch task to complete processing
+                dataPoint.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                instance.setSurveyedLocaleIdentifier(dataPoint.getIdentifier());
+
+                dataPoint.setSurveyGroupId(sg.getKey().getId());
+                dataPoint.setCreationSurveyId(s.getKey().getId());
+
+                dataPoint = slDao.save(dataPoint);
+                instance.setSurveyedLocaleId(dataPoint.getKey().getId());
+                instanceDao.save(instance);
+            } else {
+                dataPoint = importReq.getDataPoint();
             }
 
             // questionId -> iteration -> QAS
@@ -215,42 +190,26 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
-            if (!isMonitoringForm && !isNewInstance) {
+            if (importReq.isRegistrationForm()) {
                 // Update datapoint name and location for this locale
-                SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
-                sl.assembleDisplayName(
+                dataPoint.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
 
-                updateDataPointLocation(sl, updatedAnswers);
+                updateDataPointLocation(dataPoint, updatedAnswers);
 
-                slDao.save(sl);
+                slDao.save(dataPoint);
             }
 
-            if (isNewInstance) {
-                // create new surveyed locale and launch task to complete processing
-                SurveyedLocale locale = new SurveyedLocale();
-                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
-
-                locale.setSurveyGroupId(sg.getKey().getId());
-                locale.setCreationSurveyId(s.getKey().getId());
-                locale.assembleDisplayName(
-                        qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
-
-                updateDataPointLocation(locale, updatedAnswers);
-                locale = slDao.save(locale);
-                instance.setSurveyedLocaleId(locale.getKey().getId());
-                instanceDao.save(instance);
-
+            if (importReq.isNewFormInstance()) {
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
-                TaskOptions processSurveyedLocaleOptions = TaskOptions.Builder
+                TaskOptions processNewInstanceOptions = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")
                         .param(SurveyalRestRequest.ACTION_PARAM,
                                 SurveyalRestRequest.INGEST_INSTANCE_ACTION)
                         .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
                                 Long.toString(instance.getKey().getId()))
                         .countdownMillis(Constants.TASK_DELAY);
-                defaultQueue.add(processSurveyedLocaleOptions);
+                defaultQueue.add(processNewInstanceOptions);
             }
         } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
                 .equals(importReq.getAction())) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,7 +31,18 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 public class RawDataImportRequest extends RestRequest {
     private static final Logger log = Logger.getLogger("RawDataImportRequest");
@@ -74,6 +85,60 @@ public class RawDataImportRequest extends RestRequest {
     private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
 
     private List<String> fixedFieldValues;
+
+    private SurveyInstanceDAO instanceDao;
+    private SurveyDAO sDao;
+    private SurveyGroupDAO sgDao;
+    private SurveyedLocaleDao slDao;
+
+    private SurveyedLocale dataPoint;
+
+    private SurveyInstance formInstance;
+
+    private Survey form;
+
+    private SurveyGroup survey;
+
+    public RawDataImportRequest() {
+        instanceDao = new SurveyInstanceDAO();
+        sDao = new SurveyDAO();
+        sgDao = new SurveyGroupDAO();
+        slDao = new SurveyedLocaleDao();
+    }
+
+    public Survey getForm() {
+        return form;
+    }
+
+    public SurveyGroup getSurvey() {
+        return survey;
+    }
+
+    public SurveyInstance getFormInstance() {
+        return formInstance;
+    }
+
+    public SurveyedLocale getDataPoint() {
+        return dataPoint;
+    }
+
+    public boolean isNewFormInstance() {
+        return surveyInstanceId != null;
+    }
+
+    public boolean isMonitoringForm() {
+        return survey != null &&
+                form != null &&
+                survey.getMonitoringGroup() &&
+                !survey.getNewLocaleSurveyId().equals(form.getKey().getId());
+    }
+
+    public boolean isRegistrationForm() {
+        return survey != null &&
+                form != null &&
+                survey.getMonitoringGroup() &&
+                survey.getNewLocaleSurveyId().equals(form.getKey().getId());
+    }
 
     public List<String> getFixedFieldValues() {
         return fixedFieldValues;
@@ -138,8 +203,70 @@ public class RawDataImportRequest extends RestRequest {
 
     @Override
     protected void populateErrors() {
-        // TODO handle errors
+        List<String> errors =  validateRequest();
+        for (String error : errors) {
+            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error, surveyInstanceId.toString()));
+        }
+    }
 
+    /*
+     * Validate the incoming request parameters are what is required
+     */
+    public List<String> validateRequest() {
+        List<String> validationErrors = new ArrayList<>();
+        if (SAVE_SURVEY_INSTANCE_ACTION.equals(this.getAction())) {
+            validationErrors.addAll(validateSaveSurveyInstanceRequest());
+        }
+        return validationErrors;
+    }
+
+    private List<String> validateSaveSurveyInstanceRequest() {
+        final List<String> validationErrors = new ArrayList<>();
+
+        if (surveyInstanceId != null) {
+            this.formInstance = instanceDao.getByKey(surveyInstanceId);
+            if (this.formInstance == null) {
+                validationErrors.add("Form instance [id=" + surveyInstanceId + "] not found");
+            }
+        }
+
+        if (surveyId != null) {
+            form = sDao.getByKey(surveyId);
+            if (form == null) {
+                validationErrors.add("Form [id=" + surveyId + "] not found");
+            }
+        }
+
+        if (form != null) {
+            survey = sgDao.getByKey(form.getSurveyGroupId());
+            if (survey == null) {
+                validationErrors.add("Survey [id=" + form.getSurveyGroupId() + "] not found");
+            }
+        }
+
+        if (this.isMonitoringForm()) {
+            validationErrors.add("Importing new data into a monitoring form is not supported at the moment");
+        }
+
+        if (this.formInstance != null &&
+                this.surveyId != null &&
+                !this.formInstance.getSurveyId().equals(surveyId)) {
+            validationErrors.add("Wrong survey selected when importing instance [id=" + surveyInstanceId + "]");
+        }
+
+        if (this.formInstance != null &&
+                this.survey != null &&
+                this.survey.getMonitoringGroup()) {
+            if (this.formInstance.getSurveyedLocaleId() == null) {
+                validationErrors.add("Form instance [id=" + surveyInstanceId + "] does not have an associated datapoint");
+            } else {
+                this.dataPoint = slDao.getByKey(this.formInstance.getSurveyedLocaleId());
+                if (dataPoint == null) {
+                    validationErrors.add("Associated datapoint is missing [ datapoint id = " + formInstance.getSurveyedLocaleId() + "]");
+                }
+            }
+        }
+        return validationErrors;
     }
 
     @Override
@@ -211,7 +338,6 @@ public class RawDataImportRequest extends RestRequest {
     }
 
     /**
-     * @param req
      * @throws UnsupportedEncodingException
      */
     private void handleQuestionIdParam(String[] answers) throws UnsupportedEncodingException {
