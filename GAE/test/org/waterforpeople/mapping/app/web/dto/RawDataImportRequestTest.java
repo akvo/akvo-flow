@@ -116,18 +116,22 @@ public class RawDataImportRequestTest {
 
     @Test
     void testImportingFormInstanceWrongForm() {
-        Long surveyId = dataStoreTestUtil.randomId();
-
+        SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
+        long surveyId = survey.getKey().getId();
         List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 1);
+        Survey monitoringForm = dataStoreTestUtil.createDefaultMonitoringForm(surveyId);
 
-        SurveyInstance monitoringFormInstance = formInstances.get(1);
+        SurveyInstance registrationFormInstance = formInstances.get(0);
 
         RawDataImportRequest importRequest = new RawDataImportRequest();
-        importRequest.setSurveyInstanceId(monitoringFormInstance.getKey().getId());
+        importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
+        importRequest.setSurveyInstanceId(registrationFormInstance.getKey().getId());
+        importRequest.setSurveyId(monitoringForm.getKey().getId());
 
-        List<String> validateMissingDataPoint = importRequest.validateRequest();
-        assertEquals("Wrong survey selected when importing instance id [" + importRequest.getSurveyInstanceId() + "]", validateMissingDataPoint.get(0));
+        List<String> validateImportWrongForm = importRequest.validateRequest();
+        assertTrue(validateImportWrongForm.size() > 0, "There should be an error");
+        assertEquals("Wrong survey selected when importing instance [id=" + importRequest.getSurveyInstanceId() + "]", validateImportWrongForm.get(0));
     }
 
     @Test

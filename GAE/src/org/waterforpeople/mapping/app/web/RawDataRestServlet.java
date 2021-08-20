@@ -114,14 +114,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 instance = importReq.getFormInstance();
             }
 
-            if (!instance.getSurveyId().equals(importReq.getSurveyId())) {
-                updateMessageBoard(
-                        importReq.getSurveyInstanceId(),
-                        "Wrong survey selected when importing instance id ["
-                                + importReq.getSurveyInstanceId() + "]");
-                return null;
-            }
-
             SurveyedLocale dataPoint = null;
             if (!isNewInstance && sg.getMonitoringGroup()) {
                 if (instance.getSurveyedLocaleId() == null) {

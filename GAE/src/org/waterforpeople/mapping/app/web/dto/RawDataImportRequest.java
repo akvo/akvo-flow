@@ -238,6 +238,12 @@ public class RawDataImportRequest extends RestRequest {
             validationErrors.add("Importing new data into a monitoring form is not supported at the moment");
         }
 
+        if (this.formInstance != null &&
+                this.surveyId != null &&
+                !this.formInstance.getSurveyId().equals(surveyId)) {
+            validationErrors.add("Wrong survey selected when importing instance [id=" + surveyInstanceId + "]");
+        }
+
         return validationErrors;
     }
 
