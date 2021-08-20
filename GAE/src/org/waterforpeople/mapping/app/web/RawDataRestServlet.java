@@ -395,14 +395,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
-        inst = instanceDao.save(inst);
+        SurveyInstance savedInstance = instanceDao.save(inst);
 
-        importReq.setSurveyInstanceId(inst.getKey().getId());
+        importReq.setSurveyInstanceId(savedInstance.getKey().getId());
         if (importReq.getCollectionDate() == null) {
-            importReq.setCollectionDate(inst.getCollectionDate());
+            importReq.setCollectionDate(savedInstance.getCollectionDate());
         }
 
-        return inst;
+        return savedInstance;
     }
 
     private void updateMessageBoard(long objectId, String shortMessage) {
