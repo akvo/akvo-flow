@@ -71,16 +71,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private static final String SI_TYPE = "SurveyInstance";
 
     private SurveyInstanceDAO instanceDao;
-    private SurveyDAO sDao;
-    private SurveyGroupDAO sgDao;
     private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
     private QuestionDao qDao;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
-        sDao = new SurveyDAO();
-        sgDao = new SurveyGroupDAO();
         qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
         qDao = new QuestionDao();
@@ -103,18 +99,28 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             SurveyGroup sg = importReq.getSurvey();
 
-            boolean isNewInstance = importReq.isNewFormInstance();
-
-            boolean isMonitoringForm = importReq.isMonitoringForm();
-
             SurveyInstance instance = null;
-            if (isNewInstance) {
+            if (importReq.isNewFormInstance()) {
                 instance = createInstance(importReq);
             } else {
                 instance = importReq.getFormInstance();
             }
 
-            SurveyedLocale dataPoint = importReq.getDataPoint();
+            SurveyedLocale dataPoint = null;
+            if (importReq.isNewFormInstance()) {
+                // create new surveyed locale and launch task to complete processing
+                dataPoint.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                instance.setSurveyedLocaleIdentifier(dataPoint.getIdentifier());
+
+                dataPoint.setSurveyGroupId(sg.getKey().getId());
+                dataPoint.setCreationSurveyId(s.getKey().getId());
+
+                dataPoint = slDao.save(dataPoint);
+                instance.setSurveyedLocaleId(dataPoint.getKey().getId());
+                instanceDao.save(instance);
+            } else {
+                dataPoint = importReq.getDataPoint();
+            }
 
             // questionId -> iteration -> QAS
             Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = qasDao
@@ -184,7 +190,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
-            if (!isMonitoringForm && !isNewInstance) {
+            if (importReq.isRegistrationForm()) {
                 // Update datapoint name and location for this locale
                 dataPoint.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
@@ -194,31 +200,16 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 slDao.save(dataPoint);
             }
 
-            if (isNewInstance) {
-                // create new surveyed locale and launch task to complete processing
-                SurveyedLocale locale = new SurveyedLocale();
-                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
-
-                locale.setSurveyGroupId(sg.getKey().getId());
-                locale.setCreationSurveyId(s.getKey().getId());
-                locale.assembleDisplayName(
-                        qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
-
-                updateDataPointLocation(locale, updatedAnswers);
-                locale = slDao.save(locale);
-                instance.setSurveyedLocaleId(locale.getKey().getId());
-                instanceDao.save(instance);
-
+            if (importReq.isNewFormInstance()) {
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
-                TaskOptions processSurveyedLocaleOptions = TaskOptions.Builder
+                TaskOptions processNewInstanceOptions = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")
                         .param(SurveyalRestRequest.ACTION_PARAM,
                                 SurveyalRestRequest.INGEST_INSTANCE_ACTION)
                         .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
                                 Long.toString(instance.getKey().getId()))
                         .countdownMillis(Constants.TASK_DELAY);
-                defaultQueue.add(processSurveyedLocaleOptions);
+                defaultQueue.add(processNewInstanceOptions);
             }
         } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
                 .equals(importReq.getAction())) {

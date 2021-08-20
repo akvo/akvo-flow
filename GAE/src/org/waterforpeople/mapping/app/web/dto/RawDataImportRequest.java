@@ -89,9 +89,7 @@ public class RawDataImportRequest extends RestRequest {
     private SurveyInstanceDAO instanceDao;
     private SurveyDAO sDao;
     private SurveyGroupDAO sgDao;
-    private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
-    private QuestionDao qDao;
 
     private SurveyedLocale dataPoint;
 
@@ -105,9 +103,7 @@ public class RawDataImportRequest extends RestRequest {
         instanceDao = new SurveyInstanceDAO();
         sDao = new SurveyDAO();
         sgDao = new SurveyGroupDAO();
-        qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
-        qDao = new QuestionDao();
     }
 
     public Survey getForm() {
@@ -135,6 +131,13 @@ public class RawDataImportRequest extends RestRequest {
                 form != null &&
                 survey.getMonitoringGroup() &&
                 !survey.getNewLocaleSurveyId().equals(form.getKey().getId());
+    }
+
+    public boolean isRegistrationForm() {
+        return survey != null &&
+                form != null &&
+                survey.getMonitoringGroup() &&
+                survey.getNewLocaleSurveyId().equals(form.getKey().getId());
     }
 
     public List<String> getFixedFieldValues() {
