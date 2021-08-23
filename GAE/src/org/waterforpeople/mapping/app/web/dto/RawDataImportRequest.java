@@ -235,13 +235,17 @@ public class RawDataImportRequest extends RestRequest {
             if (form == null) {
                 validationErrors.add("Form [id=" + surveyId + "] not found");
             }
+        } else {
+            validationErrors.add("Form id is missing");
         }
 
-        if (form != null) {
+        if (form != null && form.getSurveyGroupId() != null) {
             survey = sgDao.getByKey(form.getSurveyGroupId());
             if (survey == null) {
                 validationErrors.add("Survey [id=" + form.getSurveyGroupId() + "] not found");
             }
+        } else {
+            validationErrors.add("Survey id missing");
         }
 
         if (this.isMonitoringForm()) {

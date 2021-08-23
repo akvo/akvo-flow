@@ -164,7 +164,12 @@ public class RawDataImportRequestTest {
 
     @Test
     void testFormInstanceValidationOk() {
-        Long surveyId = dataStoreTestUtil.randomId();
+        SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
+        survey.setMonitoringGroup(true);
+        survey.setNewLocaleSurveyId(DataStoreTestUtil.DEFAULT_REGISTRATION_FORM_ID);
+        SurveyGroup savedSurvey = new SurveyedLocaleDao().save(survey);
+        Long surveyId = savedSurvey.getKey().getId();
+        Survey form = dataStoreTestUtil.createDefaultRegistrationForm(surveyId);
 
         List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(surveyId, 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 1);
@@ -172,7 +177,9 @@ public class RawDataImportRequestTest {
         SurveyInstance instance = formInstances.get(0);
 
         RawDataImportRequest importRequest = new RawDataImportRequest();
+        importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
         importRequest.setSurveyInstanceId(instance.getKey().getId());
+        importRequest.setSurveyId(form.getKey().getId());
 
         List<String> validateImportErrors = importRequest.validateRequest();
         assertTrue(validateImportErrors.isEmpty());
