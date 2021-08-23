@@ -396,8 +396,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
         SurveyInstance savedInstance = instanceDao.save(inst);
-
-        importReq.setSurveyInstanceId(savedInstance.getKey().getId());
         if (importReq.getCollectionDate() == null) {
             importReq.setCollectionDate(savedInstance.getCollectionDate());
         }
