@@ -29,6 +29,9 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.KeyRange;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -74,12 +77,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
     private QuestionDao qDao;
+    private DatastoreService datastore;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
         qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
         qDao = new QuestionDao();
+        datastore = DatastoreServiceFactory.getDatastoreService();
     }
 
     @Override
@@ -109,14 +114,16 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             SurveyedLocale dataPoint = null;
             if (importReq.isNewFormInstance()) {
                 // create new surveyed locale and launch task to complete processing
-                SurveyedLocale newDataPoint = new SurveyedLocale();
-                newDataPoint.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                instance.setSurveyedLocaleIdentifier(newDataPoint.getIdentifier());
+                dataPoint = new SurveyedLocale();
+                dataPoint.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                instance.setSurveyedLocaleIdentifier(dataPoint.getIdentifier());
 
-                newDataPoint.setSurveyGroupId(sg.getKey().getId());
-                newDataPoint.setCreationSurveyId(s.getKey().getId());
+                dataPoint.setSurveyGroupId(sg.getKey().getId());
+                dataPoint.setCreationSurveyId(s.getKey().getId());
 
-                dataPoint = slDao.save(newDataPoint);
+                KeyRange ids = datastore.allocateIds("SurveyedLocale", 1);
+                dataPoint.setKey(ids.getStart());
+                slDao.save(dataPoint);
                 instance.setSurveyedLocaleId(dataPoint.getKey().getId());
                 instanceDao.save(instance);
             } else {
@@ -397,12 +404,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
-        SurveyInstance savedInstance = instanceDao.save(inst);
+        KeyRange ids = datastore.allocateIds("SurveyInstance", 1);
+        inst.setKey(ids.getStart());
+        instanceDao.save(inst);
         if (importReq.getCollectionDate() == null) {
-            importReq.setCollectionDate(savedInstance.getCollectionDate());
+            importReq.setCollectionDate(inst.getCollectionDate());
         }
 
-        return savedInstance;
+        return inst;
     }
 
     private void updateMessageBoard(long objectId, String shortMessage) {
