@@ -124,17 +124,19 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
 
             // questionId -> iteration -> QAS
-            Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = qasDao
-                    .mapByQuestionIdAndIteration(qasDao.listBySurveyInstance(instance.getKey()
-                            .getId()));
-
+            final Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = new HashMap<>();
+            if (!importReq.isNewFormInstance()) {
+                existingAnswers.putAll(qasDao
+                        .mapByQuestionIdAndIteration(qasDao.listBySurveyInstance(instance.getKey()
+                                .getId())));
+            }
             Map<Long, Map<Integer, String[]>> incomingResponses = importReq.getResponseMap();
 
             if (incomingResponses.isEmpty()) {
                 log.log(Level.WARNING, "incomingResponses is empty");
             }
 
-            List<QuestionAnswerStore> updatedAnswers = new ArrayList<QuestionAnswerStore>();
+            List<QuestionAnswerStore> updatedAnswers = new ArrayList<>();
 
             for (Entry<Long, Map<Integer, String[]>> responseEntry : incomingResponses
                     .entrySet()) {
@@ -176,7 +178,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             qasDao.save(updatedAnswers);
 
             // remove entities with no updated response
-            List<QuestionAnswerStore> deletedAnswers = new ArrayList<QuestionAnswerStore>();
+            List<QuestionAnswerStore> deletedAnswers = new ArrayList<>();
 
             for (Long questionId : existingAnswers.keySet()) {
                 for (Integer iteration : existingAnswers.get(questionId).keySet()) {
