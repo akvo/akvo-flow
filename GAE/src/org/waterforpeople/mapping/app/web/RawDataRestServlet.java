@@ -65,14 +65,6 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 public class RawDataRestServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger("RawDataRestServlet");
     private static final long serialVersionUID = 2409014651721639814L;
-
-    private static final String DATA_SUMMARIZATION_QUEUE = "dataSummarization";
-    private static final String DATA_SUMMARIZATION_URL = "/app_worker/datasummarization";
-    private static final String SURVEYAL_URL = "/app_worker/surveyalservlet";
-    private static final String OBJECT_KEY_PARAM = "objectKey";
-    private static final String TYPE_PARAM = "type";
-    private static final String SI_TYPE = "SurveyInstance";
-
     private SurveyInstanceDAO instanceDao;
     private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
@@ -221,103 +213,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         .countdownMillis(Constants.TASK_DELAY);
                 defaultQueue.add(processNewInstanceOptions);
             }
-        } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-                .equals(importReq.getAction())) {
-            SurveyInstance instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
-            List<QuestionAnswerStore> oldAnswers = instanceDao
-                    .listQuestionAnswerStore(importReq.getSurveyInstanceId(), null);
-
-            if (oldAnswers != null && oldAnswers.size() > 0) {
-                instanceDao.delete(oldAnswers);
-                if (instance != null) {
-                    instance.setLastUpdateDateTime(new Date());
-                    if (importReq.getSubmitter() != null
-                            && importReq.getSubmitter().trim().length() > 0
-                            && !"null".equalsIgnoreCase(importReq
-                                    .getSubmitter().trim())) {
-                        instance.setSubmitterName(importReq.getSubmitter());
-                    }
-                    instance.setSurveyId(importReq.getSurveyId());
-                    if (importReq.getSurveyDuration() != null) {
-                        instance.setSurveyalTime(importReq.getSurveyDuration());
-                    }
-                    instanceDao.save(instance);
-                }
-            } else {
-                if (instance == null) {
-                    instance = new SurveyInstance();
-                    instance.setKey(KeyFactory.createKey(
-                            SurveyInstance.class.getSimpleName(),
-                            importReq.getSurveyInstanceId()));
-                    instance.setSurveyId(importReq.getSurveyId());
-                    instance.setCollectionDate(importReq.getCollectionDate());
-                    instance.setSubmitterName(importReq.getSubmitter());
-                    instance.setUserID(1L);
-                    instance.setUuid(UUID.randomUUID().toString());
-                    if (importReq.getSurveyDuration() != null) {
-                        instance.setSurveyalTime(importReq.getSurveyDuration());
-                    }
-                    instanceDao.save(instance);
-                } else {
-                    instance.setLastUpdateDateTime(new Date());
-                    if (importReq.getSubmitter() != null
-                            && importReq.getSubmitter().trim().length() > 0
-                            && !"null".equalsIgnoreCase(importReq
-                                    .getSubmitter().trim())) {
-                        instance.setSubmitterName(importReq.getSubmitter());
-                    }
-                    instance.setSurveyId(importReq.getSurveyId());
-                    if (importReq.getSurveyDuration() != null) {
-                        instance.setSurveyalTime(importReq.getSurveyDuration());
-                    }
-                    instanceDao.save(instance);
-                }
-            }
-        } else if (RawDataImportRequest.SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION
-                .equals(importReq.getAction())) {
-
-            if (importReq.getFixedFieldValues() != null
-                    && importReq.getFixedFieldValues().size() > 0) {
-                // this method assumes we're always creating a new instance
-                SurveyInstance inst = createInstance(importReq);
-                QuestionDao questionDao = new QuestionDao();
-                List<Question> questionList = questionDao
-                        .listQuestionsBySurvey(importReq.getSurveyId());
-
-                if (questionList != null
-                        && questionList.size() >= importReq.getFixedFieldValues().size()) {
-                    List<QuestionAnswerStore> answers = new ArrayList<QuestionAnswerStore>();
-                    for (int i = 0; i < importReq.getFixedFieldValues().size(); i++) {
-                        String val = importReq.getFixedFieldValues().get(i);
-                        if (val != null && val.trim().length() > 0) {
-                            QuestionAnswerStore ans = new QuestionAnswerStore();
-                            ans.setQuestionID(questionList.get(i).getKey().getId() + "");
-                            ans.setValue(val);
-                            Type type = questionList.get(i).getType();
-                            if (Type.GEO == type) {
-                                ans.setType(QuestionType.GEO.toString());
-                            } else if (Type.PHOTO == type) {
-                                ans.setType("IMAGE");
-                            } else {
-                                ans.setType("VALUE");
-                            }
-                            ans.setSurveyId(importReq.getSurveyId());
-                            ans.setSurveyInstanceId(importReq.getSurveyInstanceId());
-                            ans.setCollectionDate(importReq.getCollectionDate());
-                            answers.add(ans);
-                        }
-                    }
-                    if (answers.size() > 0) {
-                        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-                        qasDao.save(answers);
-                        sendProcessingMessages(inst);
-                    }
-
-                } else {
-                    log("No questions found for the survey id " + importReq.getSurveyId());
-                }
-                // todo: send processing message
-            }
         } else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
                 .equalsIgnoreCase(importReq.getAction())) {
             if (importReq.getSurveyId() == null
@@ -367,20 +262,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    private void sendProcessingMessages(SurveyInstance domain) {
-        // send async request to summarize the instance
-        QueueFactory.getQueue(DATA_SUMMARIZATION_QUEUE).add(
-                TaskOptions.Builder.withUrl(DATA_SUMMARIZATION_URL)
-                        .param(OBJECT_KEY_PARAM, domain.getKey().getId() + "")
-                        .param(TYPE_PARAM, SI_TYPE));
-        QueueFactory.getDefaultQueue().add(
-                TaskOptions.Builder.withUrl(SURVEYAL_URL)
-                        .param(SurveyalRestRequest.ACTION_PARAM,
-                                SurveyalRestRequest.INGEST_INSTANCE_ACTION)
-                        .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-                                domain.getKey().getId() + ""));
-    }
-
     /**
      * constructs and persists a new surveyInstance using the data from the import request
      *
@@ -412,16 +293,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         }
 
         return inst;
-    }
-
-    private void updateMessageBoard(long objectId, String shortMessage) {
-        MessageDao mDao = new MessageDao();
-        Message message = new Message();
-
-        message.setObjectId(objectId);
-        message.setActionAbout("importData");
-        message.setShortMessage(shortMessage);
-        mDao.save(message);
     }
 
     @Override
