@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.rest.RestError;
+import com.gallatinsystems.framework.rest.exception.RestException;
 import org.akvo.flow.api.app.FormInstanceResponse;
 import org.akvo.flow.api.app.FormInstanceUtil;
 import org.akvo.flow.util.FlowJsonObjectWriter;
@@ -126,10 +128,13 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         }
     }
 
-    private RestResponse retrieveInstanceData(Long surveyInstanceId) {
+    private RestResponse retrieveInstanceData(Long surveyInstanceId) throws Exception {
 
         SurveyInstance si = surveyInstanceDao.getByKey(surveyInstanceId);
-        
+        if (si == null) {
+            throw new RestException(new RestError("4004", "Form instance not found", "Form instance with id " + surveyInstanceId + " is missing"), "", null);
+        }
+
         //reassemble the displayname in case it has changed
         //TODO never store it at all
         si.setSurveyedLocaleDisplayName(makeDatapointName(si));
