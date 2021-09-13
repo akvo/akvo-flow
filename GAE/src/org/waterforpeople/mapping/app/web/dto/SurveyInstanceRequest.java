@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyInstanceRequest extends RestRequest {
@@ -94,6 +95,8 @@ public class SurveyInstanceRequest extends RestRequest {
             } catch (NumberFormatException e) {
                 log.warning("Could not convert survey instance id: " + req.getParameter(SURVEY_INSTANCE_ID_PARAM));
             }
+        } else {
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, RestError.MISSING_PARAM_ERROR_MESSAGE, "Missing form instance id"));
         }
 
         if (req.getParameter(DATA_POINT_IDENTIFIER_PARAM) != null) {
