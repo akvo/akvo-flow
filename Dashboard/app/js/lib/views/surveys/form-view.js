@@ -6,7 +6,9 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
   manageTranslations: false,
   manageNotifications: false,
 
-  form: Ember.computed(() => FLOW.selectedControl.get('selectedSurvey')).property('FLOW.selectedControl.selectedSurvey'),
+  form: Ember.computed(() => FLOW.selectedControl.get('selectedSurvey')).property(
+    'FLOW.selectedControl.selectedSurvey'
+  ),
 
   toggleShowFormBasics() {
     this.set('showFormBasics', !this.get('showFormBasics'));
@@ -20,6 +22,19 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
   visibleFormBasics: Ember.computed(function () {
     return this.get('isNewForm') || this.get('showFormBasics');
   }).property('showFormBasics'),
+
+  apiUrl: Ember.computed(function () {
+    const form = this.get('form');
+    const instanceName = window.location.hostname.split('.')[0];
+    return [
+      'https://api.akvo.org/flow/orgs/',
+      instanceName,
+      '/form_instances?survey_id=',
+      form.get('surveyGroupId'),
+      '&form_id=',
+      form.get('id'),
+    ].join('');
+  }),
 
   doManageTranslations() {
     FLOW.translationControl.populate();
