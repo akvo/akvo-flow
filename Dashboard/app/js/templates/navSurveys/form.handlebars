@@ -26,6 +26,10 @@
 			<form class="surveyDetailForm" {{action 'saveProject' on='submit' target="FLOW.projectControl"}}>
 				<label>{{t _form_title}}</label>
 				{{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
+				<label>{{t _form_api_url}}
+                {{tooltip _form_api_url_tooltip}}
+                </label>
+				{{view Ember.TextField valueBinding="view.apiUrl" disabled="true"}}
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
 					{{#if view.showFormTranslationsButton}}
