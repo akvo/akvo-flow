@@ -24,7 +24,21 @@ public class FixOrphanedQuestionAnswers implements Process {
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
         long formId = Long.parseLong(args[0]);
-        System.out.printf("Will do cleanup for form %d\n", formId);
+
+        boolean doIt = false;
+        for (String arg : args) {
+            System.out.println(arg);
+            if (arg.equalsIgnoreCase("--doit")) {
+                doIt = true;
+                break;
+            }
+        }
+
+        if (doIt) {
+            System.out.printf("Will cleanup question answers of form %d\n", formId);
+        } else {
+            System.out.printf("Will do dry run scan for cleanup of form %d\n", formId);
+        }
 
         List<Entity> questionAnswers = fetchQuestionAnswers(ds, formId);
         Map<Long, List<Key>> mappedQAByInstanceId = mapQuestionAnswers(questionAnswers);
@@ -34,13 +48,6 @@ public class FixOrphanedQuestionAnswers implements Process {
 
         if (questionAnswersToDelete.size() > 0) {
             System.out.printf("Found a total of %d orphaned QuestionAnswerStore that need cleanup\n", questionAnswersToDelete.size());
-            boolean doIt = false;
-            for (String arg : args) {
-                if (arg.equalsIgnoreCase("--doit")) {
-                    doIt = true;
-                    break;
-                }
-            }
 
             if (doIt) {
                 batchDelete(ds, questionAnswersToDelete);
