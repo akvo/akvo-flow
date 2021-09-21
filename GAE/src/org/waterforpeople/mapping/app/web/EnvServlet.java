@@ -53,6 +53,7 @@ public class EnvServlet extends HttpServlet {
     public static final String WEBFORM_REDIRECTION_URL = "webFormRedirectionUrl";
     public static final String SHOW_BULK_IMAGE_UPLOAD = "showBulkImageUpload";
     public static final String PUBLISH_ASSEMBLED_FORM = "publishAssembledForm";
+    public static final String SHOW_FORM_INSTANCE_API_URL = "showFormInstanceApiUrl";
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
@@ -78,6 +79,7 @@ public class EnvServlet extends HttpServlet {
         properties.add(CADDISFLY_TESTS_FILE_URL_KEY);
         properties.add(SHOW_BULK_IMAGE_UPLOAD);
         properties.add(PUBLISH_ASSEMBLED_FORM);
+        properties.add(SHOW_FORM_INSTANCE_API_URL);
     }
 
     @Override
@@ -144,6 +146,10 @@ public class EnvServlet extends HttpServlet {
 
         if (!"true".equals(props.get(PUBLISH_ASSEMBLED_FORM))) {
             props.put(PUBLISH_ASSEMBLED_FORM, "false");
+        }
+
+        if (!"true".equals(props.get(SHOW_FORM_INSTANCE_API_URL))) {
+            props.put(SHOW_FORM_INSTANCE_API_URL, "false");
         }
 
         props.put("appId", SystemProperty.applicationId.get());
