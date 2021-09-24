@@ -979,8 +979,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     invokeUrl(serverBase, saveUrlString, true, key);
                 } catch (Exception e) {
                     errorIds.add(saveUrlString);
-                    System.err.println("Could not invoke rest services: " + e);
-                    e.printStackTrace(System.err);
+                    log.log(Level.SEVERE, "Could not invoke rest services: ", e);
                 }
             }
         });

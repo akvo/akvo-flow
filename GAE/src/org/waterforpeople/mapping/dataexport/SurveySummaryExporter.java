@@ -272,8 +272,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
 
         } catch (Exception e) {
-            System.err.println("Could not fetch question variableNames");
-            e.printStackTrace(System.err);
+            log.log(Level.SEVERE, "Could not fetch question variableNames", e);
         }
     }
 
@@ -317,8 +316,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Could not fetch question options");
-            e.printStackTrace(System.err);
+            log.log(Level.SEVERE, "Could not fetch question options", e);
         }
     }
 

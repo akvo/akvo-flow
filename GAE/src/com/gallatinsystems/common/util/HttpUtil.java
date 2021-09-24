@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,8 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Simple utility that can handle making http requests using the java HttpURLConnection class.
@@ -29,6 +31,8 @@ import java.net.URL;
  */
 public class HttpUtil {
     private static final int BUF_SIZE = 1024;
+
+    private static final Logger log = Logger.getLogger(HttpUtil.class.getName());
 
     /**
      * executes a post to the targetURL. The urlParmeters will be sent as POST data rather than on
@@ -73,7 +77,7 @@ public class HttpUtil {
             return bos.toByteArray();
 
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            log.log(Level.SEVERE, "Error posting HTTP request", e);
             return null;
         } finally {
             if (connection != null) {

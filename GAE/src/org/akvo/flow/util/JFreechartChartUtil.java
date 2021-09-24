@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018, 2021 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,7 +17,10 @@
 package org.akvo.flow.util;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -40,7 +43,8 @@ import org.akvo.AkvoColours;
 
 public class JFreechartChartUtil {
 
-
+    private static final Logger log = Logger
+            .getLogger(JFreechartChartUtil.class.getName());
     /**
      * generates a pie chart with the set of labels and values passed in (the labels and values
      * arrays must both be non-null and contain the same number of elements). The chart is returned
@@ -121,8 +125,8 @@ public class JFreechartChartUtil {
         
         try {
             return ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Failed to generate chart", e);
             return null;
         }
 
