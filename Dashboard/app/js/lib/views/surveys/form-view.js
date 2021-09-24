@@ -27,7 +27,7 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
     const form = this.get('form');
     const instanceName = window.location.hostname.split('.')[0];
     return [
-      'https://api.akvo.org/flow/orgs/',
+      'https://api-auth0.akvo.org/flow/orgs/',
       instanceName,
       '/form_instances?survey_id=',
       form.get('surveyGroupId'),
