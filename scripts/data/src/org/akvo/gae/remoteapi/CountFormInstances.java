@@ -25,24 +25,28 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /*
  */
-public class GetDatapointCounts implements Process {
+public class CountFormInstances implements Process {
 
   private Map<Long, String> sgName = new HashMap<>();
   private Map<Long, String> sgType = new HashMap<>();
   private Map<Long, Long> sgParents = new HashMap<>();
 
   private Map<Long, String> surveyNames = new HashMap<>();
+  private Map<Long, String> surveyDates = new HashMap<>();
   private Map<Long, Long> surveyParents = new HashMap<>();
   private Map<Long, Long> surveyCounts = new HashMap<>();
   private Map<Long, List<Long>> surveyToGroups = new HashMap<>();
@@ -59,17 +63,20 @@ public class GetDatapointCounts implements Process {
     iName = args[0];
     System.out.printf("Processing %s\n", iName);
 
-    String fileName = String.format("/tmp/surveys-%s.csv", iName);
+    String fileName = String.format("/tmp/form-instance-counts_%s.csv", iName);
     final File file = new File(fileName);
     final StringBuffer sb = new StringBuffer();
     FileUtils.write(
-        file, "Instance Name, Form ID, Form Name, Survey Name, Total Form Instance, Path", true);
+        file,
+        "Instance Name, Form ID, Form Name, Survey Name, Total Form Instances, Last Submission"
+            + " Date, Path",
+        true);
     sb.append("\n");
     fetchSurveyGroups(ds);
     fetchSurveys(ds);
     drawSurveyGroupsIn(0L, "", sb);
     FileUtils.write(file, sb.toString(), true);
-    System.out.printf("%s data written, filename: %s\n", iName, fileName);
+    System.out.printf("%s form instance counts written\n # filename: %s\n", iName, fileName);
   }
 
   private void drawSurveyGroupsIn(Long parent, String parentName, StringBuffer sb) {
@@ -93,12 +100,13 @@ public class GetDatapointCounts implements Process {
       if (surveyParents.get(survey).equals(parent)) {
         sb.append(
                 String.format(
-                    "%s,%d,%s,%s,%d,%s",
+                    "%s,%d,%s,%s,%d,%s,%s",
                     iName,
                     survey,
                     surveyName,
                     surveyNames.get(survey),
                     surveyCounts.get(survey),
+                    surveyDates.get(survey),
                     parentName))
             .append("\n");
       }
@@ -143,16 +151,29 @@ public class GetDatapointCounts implements Process {
         Filter fdt =
             new FilterPredicate("createdDateTime", FilterOperator.GREATER_THAN_OR_EQUAL, dt);
         Filter fmrg = CompositeFilterOperator.and(fsi, fdt);
-        // END FILTER
-        Query si = new Query("SurveyInstance").setFilter(fmrg).setKeysOnly();
+        /* END FILTER
+        / We should consider that not using setKeysOnly will return full entities
+        / Documentation :
+        / https://cloud.google.com/appengine/docs/standard/java/javadoc/com/google/appengine/api/datastore/Query.html#setKeysOnly
+        */
+        Query si =
+            new Query("SurveyInstance")
+                .setFilter(fmrg)
+                .addSort("createdDateTime", SortDirection.ASCENDING);
+        //  Query si = new Query("SurveyInstance").setFilter(fmrg).setKeysOnly();
         long count = 0;
+        Date surveyDate = null;
         for (@SuppressWarnings("unused")
         Entity sie : ds.prepare(si).asIterable(FetchOptions.Builder.withChunkSize(500))) {
+          surveyDate = (Date) sie.getProperty("createdDateTime");
           count++;
         }
         if (count > 0) {
+          DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+          String strDate = dateFormat.format(surveyDate);
           surveyCounts.put(surveyId, count);
           surveyNames.put(surveyId, surveyName);
+          surveyDates.put(surveyId, strDate);
           surveyParents.put(surveyId, surveyGroup);
           surveyToGroups.put(surveyId, new ArrayList<Long>());
         }

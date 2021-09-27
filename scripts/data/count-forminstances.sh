@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# USAGE: ./get-datapoint-counts.sh akvoflowsandbox
+# USAGE: ./count-forminstances.sh akvoflowsandbox
 
 APP_ID=$1
 SERVICE_ACCOUNT="sa-$APP_ID@$APP_ID.iam.gserviceaccount.com"
@@ -14,7 +14,7 @@ INSTANCE_NAME=$(grep "alias" $APP_ENGINE_FILE \
 
 java -cp bin:"lib/*" \
      org.akvo.gae.remoteapi.RemoteAPI \
-     GetDatapointCounts \
+     CountFormInstances \
      $APP_ID \
      $SERVICE_ACCOUNT \
      $P12_FILE_PATH \
