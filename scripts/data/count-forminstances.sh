@@ -32,8 +32,9 @@ then
 fi
 
 if [ "$1" == "--all" ]; then
-    read -p "Are you sure want to fetch all the data ? [yes/no] " answer
-    if [ "$answer" == "yes" ]; then
+    RANDOMCODE=$(echo "${RANDOM}" | md5sum | head -c 10)
+    read -p "Please type the process code ${RANDOMCODE} " answer
+    if [ "$answer" == "${RANDOMCODE}" ]; then
         list=$(find ../../../akvo-flow-server-config -type f -name appengine-web.xml \
         -maxdepth 2 -mindepth 2 \
         -exec echo {} \; 2>/dev/null)
