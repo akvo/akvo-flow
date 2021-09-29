@@ -161,7 +161,7 @@ public class SurveyInstanceRestService {
                     surveyId, deviceId, submitterName, countryCode, level1, level2, since);
         } else if (surveyedLocaleId != null) {
             SurveyedLocale sl = surveyedLocaleDao.getByKey(surveyedLocaleId);
-            if (sl.getSurveyGroupId() == null) {
+            if (sl == null || sl.getSurveyGroupId() == null) {
                 log.warning("No surveyGroupId found for surveyedLocale=" + sl.getKey());
                 response.put("survey_instances", Collections.emptyList());
                 return response;
