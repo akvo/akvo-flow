@@ -203,7 +203,7 @@ public class RawDataImportRequest extends RestRequest {
     protected void populateErrors() {
         List<String> errors =  validateRequest();
         for (String error : errors) {
-            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error, surveyInstanceId.toString()));
+            this.addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE, error, surveyInstanceId + ""));
         }
     }
 
