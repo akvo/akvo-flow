@@ -246,7 +246,7 @@ public class RawDataImportRequest extends RestRequest {
             validationErrors.add("Survey id missing");
         }
 
-        if (this.isMonitoringForm()) {
+        if (this.isNewFormInstance() && this.isMonitoringForm()) {
             validationErrors.add("Importing new data into a monitoring form is not supported at the moment");
         }
 
@@ -283,12 +283,13 @@ public class RawDataImportRequest extends RestRequest {
         }
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
             try {
-                setSurveyInstanceId(new Long(
+                setSurveyInstanceId(Long.parseLong(
                         req.getParameter(SURVEY_INSTANCE_ID_PARAM)));
             } catch (Exception e) {
-                log.info(SURVEY_INSTANCE_ID_PARAM + " is missing");
+                log.warning(SURVEY_INSTANCE_ID_PARAM + " is missing");
             }
         }
+
         if (req.getParameter(FIXED_FIELD_VALUE_PARAM) != null) {
             fixedFieldValues = new ArrayList<String>();
             String[] vals = URLDecoder.decode(req.getParameter(FIXED_FIELD_VALUE_PARAM), "UTF-8")

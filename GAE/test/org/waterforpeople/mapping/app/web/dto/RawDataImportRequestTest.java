@@ -114,6 +114,23 @@ public class RawDataImportRequestTest {
         dataStoreTestUtil.createDefaultRegistrationForm(survey.getKey().getId());
         dataStoreTestUtil.createDefaultMonitoringForm(survey.getKey().getId());
 
+        RawDataImportRequest importRequest = new RawDataImportRequest();
+        importRequest.setAction(RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION);
+        importRequest.setSurveyId(DataStoreTestUtil.DEFAULT_MONITORING_FORM_ID);
+
+        List<String> validateMonitoringFormImport = importRequest.validateRequest();
+        assertTrue(validateMonitoringFormImport.size() > 0, "There should be an error");
+        assertEquals("Importing new data into a monitoring form is not supported at the moment", validateMonitoringFormImport.get(0));
+    }
+
+    @Test
+    void testImportMonitoringFormExistingInstances() {
+        SurveyGroup survey = dataStoreTestUtil.createSurveyGroup();
+        survey.setMonitoringGroup(true);
+        survey.setNewLocaleSurveyId(DataStoreTestUtil.DEFAULT_REGISTRATION_FORM_ID);
+        dataStoreTestUtil.createDefaultRegistrationForm(survey.getKey().getId());
+        dataStoreTestUtil.createDefaultMonitoringForm(survey.getKey().getId());
+
         List<SurveyedLocale> dataPoints = dataStoreTestUtil.createDataPoints(survey.getKey().getId(), 1);
         List<SurveyInstance> formInstances = dataStoreTestUtil.createFormInstances(dataPoints, 2);
 
@@ -124,9 +141,8 @@ public class RawDataImportRequestTest {
         importRequest.setSurveyInstanceId(monitoringFormInstance.getKey().getId());
         importRequest.setSurveyId(DataStoreTestUtil.DEFAULT_MONITORING_FORM_ID);
 
-        List<String> validateMonitoringFormImport = importRequest.validateRequest();
-        assertTrue(validateMonitoringFormImport.size() > 0, "There should be an error");
-        assertEquals("Importing new data into a monitoring form is not supported at the moment", validateMonitoringFormImport.get(0));
+        List<String> validateImportErrors = importRequest.validateRequest();
+        assertTrue(validateImportErrors.isEmpty());
     }
 
     @Test
