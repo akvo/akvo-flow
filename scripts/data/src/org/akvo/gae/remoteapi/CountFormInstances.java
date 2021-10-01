@@ -25,7 +25,6 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.time.ZonedDateTime;
@@ -46,7 +45,7 @@ public class CountFormInstances implements Process {
   private Map<Long, Long> sgParents = new HashMap<>();
 
   private Map<Long, String> surveyNames = new HashMap<>();
-  private Map<Long, String> surveyDates = new HashMap<>();
+  // private Map<Long, String> surveyDates = new HashMap<>();
   private Map<Long, Long> surveyParents = new HashMap<>();
   private Map<Long, Long> surveyCounts = new HashMap<>();
   private Map<Long, List<Long>> surveyToGroups = new HashMap<>();
@@ -68,8 +67,7 @@ public class CountFormInstances implements Process {
     final StringBuffer sb = new StringBuffer();
     FileUtils.write(
         file,
-        "Instance Name, Form ID, Form Name, Survey Name, Total Form Instances, Last Submission"
-            + " Date, Path",
+        "Instance Name, Form ID, Form Name, Survey Name, Total Form Instances, Path",
         true);
     sb.append("\n");
     fetchSurveyGroups(ds);
@@ -100,13 +98,12 @@ public class CountFormInstances implements Process {
       if (surveyParents.get(survey).equals(parent)) {
         sb.append(
                 String.format(
-                    "%s,%d,%s,%s,%d,%s,%s",
+                    "%s,%d,%s,%s,%d,%s",
                     iName,
                     survey,
                     surveyName,
                     surveyNames.get(survey),
                     surveyCounts.get(survey),
-                    surveyDates.get(survey),
                     parentName))
             .append("\n");
       }
@@ -155,25 +152,25 @@ public class CountFormInstances implements Process {
         / We should consider that not using setKeysOnly will return full entities
         / Documentation :
         / https://cloud.google.com/appengine/docs/standard/java/javadoc/com/google/appengine/api/datastore/Query.html#setKeysOnly
-        */
         Query si =
             new Query("SurveyInstance")
                 .setFilter(fmrg)
                 .addSort("createdDateTime", SortDirection.ASCENDING);
-        //  Query si = new Query("SurveyInstance").setFilter(fmrg).setKeysOnly();
+        */
+        Query si = new Query("SurveyInstance").setFilter(fmrg).setKeysOnly();
         long count = 0;
-        Date surveyDate = null;
+        // Date surveyDate = null;
         for (@SuppressWarnings("unused")
         Entity sie : ds.prepare(si).asIterable(FetchOptions.Builder.withChunkSize(500))) {
-          surveyDate = (Date) sie.getProperty("createdDateTime");
+          // surveyDate = (Date) sie.getProperty("createdDateTime");
           count++;
         }
         if (count > 0) {
-          DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-          String strDate = dateFormat.format(surveyDate);
+          // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+          // String strDate = dateFormat.format(surveyDate);
+          // surveyDates.put(surveyId, strDate);
           surveyCounts.put(surveyId, count);
           surveyNames.put(surveyId, surveyName);
-          surveyDates.put(surveyId, strDate);
           surveyParents.put(surveyId, surveyGroup);
           surveyToGroups.put(surveyId, new ArrayList<Long>());
         }
