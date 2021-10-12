@@ -140,8 +140,8 @@ export default function DevicesList() {
                   <td className="deviceGroup">{device.deviceGroupName}</td>
                   <td>
                     <div
-                      onClick={() => alert(`${device.deviceIdentifier} is deleted`)}
-                      onKeyDown={() => alert(`${device.deviceIdentifier} is deleted`)}
+                      onClick={() => alert(`${device.deviceGroupName} is deleted`)}
+                      onKeyDown={() => alert(`${device.deviceGroupName} is deleted`)}
                     >
                       Delete
                     </div>
