@@ -48,9 +48,8 @@ export default function DevicesList() {
   return (
     <>
       <div className="deviceControls">
-        {/* <a {{action "showManageDeviceGroupsDialog" target="this"}} className="btnOutline">{{t _manage_device_groups}}</a> */}
         <button type="button" className="btnOutline" onClick={() => setSwitchTable(!switchTable)}>
-          Manage device groups
+          {!switchTable ? 'Manage device groups' : 'Manage devices'}
         </button>
         <nav className="dataTabMenu">
           <ul>
@@ -58,21 +57,26 @@ export default function DevicesList() {
               <button
                 type="button"
                 className={devicesGroup.length === 0 ? 'disabled' : ''}
-                // {{action "showAddToGroupDialog" target="this"}}
+                onClick={
+                  !switchTable && devicesGroup.length !== 0
+                    ? () => alert('Added to device group')
+                    : () => alert('add a group')
+                }
               >
                 {!switchTable ? 'Add to device group' : 'add a group'}
-                {/* {{t _add_to_device_group}} */}
               </button>
             </li>
             <li>
               <button
                 type="button"
                 className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={() => devicesGroup.length !== 0 && setShowRemoveFromGroupDialogBool(true)}
-                // {{action "showRemoveFromGroupDialog" target="this"}}
+                onClick={
+                  !switchTable && devicesGroup.length !== 0
+                    ? () => setShowRemoveFromGroupDialogBool(true)
+                    : () => alert('a group is removed')
+                }
               >
                 {!switchTable ? '  Remove from device group' : 'Remove a group'}
-                {/* {{t _remove_from_device_group}} */}
               </button>
             </li>
           </ul>
@@ -97,12 +101,6 @@ export default function DevicesList() {
               <th id="device_table_header">Last contact</th>
               <th id="device_table_header">Version</th>
               <th id="device_table_header">Action</th>
-              {/* {{#view FLOW.ColumnView item="select" className="noArrows"}}{{/view}}
-            {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}} */}
-              {/* {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
-            {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
-            {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _last_contact}}</a> {{/view}}
-            {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _version}}</a> {{/view}} </tr> */}
             </tr>
           ) : (
             <tr>
@@ -116,7 +114,6 @@ export default function DevicesList() {
           {!switchTable
             ? devices.map(device => (
                 <tr key={device.keyId}>
-                  {/* <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td> */}
                   <td className="selection">
                     <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
                   </td>
@@ -137,7 +134,6 @@ export default function DevicesList() {
               ))
             : devices.map(device => (
                 <tr key={device.keyId}>
-                  {/* <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td> */}
                   <td className="selection">
                     <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
                   </td>
