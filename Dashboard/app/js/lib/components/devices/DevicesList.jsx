@@ -57,9 +57,9 @@ export default function DevicesList() {
               <button
                 type="button"
                 className={devicesGroup.length !== 0 ? '' : 'disabled'}
-                onClick={
+                onClick={() =>
                   devicesGroup.length !== 0 &&
-                  (!switchTable ? () => alert('Added to device group') : () => alert('add a group'))
+                  (!switchTable ? alert('Added to device group') : alert('add a group'))
                 }
               >
                 {!switchTable ? 'Add to device group' : 'add a group'}
