@@ -764,7 +764,7 @@ FLOW.EditQuestionsView = Ember.View.extend(template('navSurveys/edit-questions')
 // devices views
 FLOW.NavDevicesView = Ember.View.extend(template('navDevices/nav-devices'));
 
-FLOW.CurrentDevicesView = FLOW.View.extend(template('navDevices/devices-list-tab/devices-list'));
+FLOW.CurrentDevicesView = FLOW.CurrentDevicesTabView;
 
 FLOW.AssignSurveysOverviewView = FLOW.View.extend(
   template('navDevices/assignment-list-tab/assignment-list')
