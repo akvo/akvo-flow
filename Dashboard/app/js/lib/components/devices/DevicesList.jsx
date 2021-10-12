@@ -70,11 +70,7 @@ export default function DevicesList() {
               <button
                 type="button"
                 className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={
-                  !switchTable && devicesGroup.length !== 0
-                    ? () => setShowRemoveFromGroupDialogBool(true)
-                    : () => alert('a group is removed')
-                }
+                onClick={() => devicesGroup.length !== 0 && setShowRemoveFromGroupDialogBool(true)}
               >
                 {!switchTable ? '  Remove from device group' : 'Remove a group'}
               </button>
