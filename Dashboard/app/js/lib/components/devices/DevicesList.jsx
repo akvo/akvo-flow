@@ -81,10 +81,10 @@ export default function DevicesList() {
         <thead>
           {!switchTable ? (
             <tr>
-              <th className="noArrows ember-view" />
-              <th className="ember-view" id="device_table_header">
+              <th className="noArrows" />
+              <th id="device_table_header">
                 <div
-                  className="ember-view helpIcon tooltip"
+                  className="helpIcon tooltip"
                   data-title="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number."
                 >
                   ?
@@ -99,7 +99,7 @@ export default function DevicesList() {
             </tr>
           ) : (
             <tr>
-              <th className="noArrows ember-view" />
+              <th className="noArrows" />
               <th id="device_table_header">Device Group</th>
               <th id="device_table_header">Action</th>
             </tr>
