@@ -46,7 +46,7 @@ export default function DevicesList() {
   }
 
   return (
-    <>
+    <section id="devicesList">
       <div className="deviceControls">
         <button type="button" className="btnOutline" onClick={() => setSwitchTable(!switchTable)}>
           {!switchTable ? 'Manage device groups' : 'Manage devices'}
@@ -56,11 +56,10 @@ export default function DevicesList() {
             <li>
               <button
                 type="button"
-                className={devicesGroup.length === 0 ? 'disabled' : ''}
+                className={devicesGroup.length !== 0 ? '' : 'disabled'}
                 onClick={
-                  !switchTable && devicesGroup.length !== 0
-                    ? () => alert('Added to device group')
-                    : () => alert('add a group')
+                  devicesGroup.length !== 0 &&
+                  (!switchTable ? () => alert('Added to device group') : () => alert('add a group'))
                 }
               >
                 {!switchTable ? 'Add to device group' : 'add a group'}
@@ -151,7 +150,7 @@ export default function DevicesList() {
         cancelRemoveFromGroup={() => setShowRemoveFromGroupDialogBool(false)}
         warningText={!switchTable ? 'Remove devices from device group?' : 'Remove group?'}
       />
-    </>
+    </section>
   );
 }
 
