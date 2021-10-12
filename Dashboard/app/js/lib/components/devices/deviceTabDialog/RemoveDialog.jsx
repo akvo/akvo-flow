@@ -8,39 +8,21 @@ export default function RemoveDialog({
   doRemoveFromGroup,
 }) {
   return (
-    <div
-      className={className}
-      // {{bindAttr className="view.showRemoveFromGroupDialogBool:display :overlay"}}
-    >
+    <div className={className}>
       <div className="blanket" />
       <div className="dialogWrap">
         <div className="confirmDialog dialog">
-          <h2>
-            {/* {{t _remove_devices_from_device_group}} */}
-            {warningText}
-          </h2>
+          <h2>{warningText}</h2>
           <div className="buttons menuCentre">
             <ul>
               <li>
-                <button
-                  type="button"
-                  // {{action "doRemoveFromGroup" target="this"}}
-                  onClick={doRemoveFromGroup}
-                  className="ok smallBtn"
-                >
+                <button type="button" onClick={doRemoveFromGroup} className="ok smallBtn">
                   OK
-                  {/* {{t _ok}} */}
                 </button>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={cancelRemoveFromGroup}
-                  // {{action "cancelRemoveFromGroup" target="this"}}
-                  className="cancel"
-                >
+                <button type="button" onClick={cancelRemoveFromGroup} className="cancel">
                   Cancel
-                  {/* {{t _cancel}} */}
                 </button>
               </li>
             </ul>
