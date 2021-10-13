@@ -121,13 +121,17 @@ export default function DevicesList() {
               <th id="device_table_header">Device Group</th>
               <th id="device_table_header">Last contact</th>
               <th id="device_table_header">Version</th>
-              <th id="device_table_header">Action</th>
+              <th id="device_table_header" className="noArrows">
+                Action
+              </th>
             </tr>
           ) : (
             <tr>
               <th className="noArrows" />
               <th id="device_table_header">Device Group</th>
-              <th id="device_table_header">Action</th>
+              <th id="device_table_header" className="noArrows">
+                Action
+              </th>
             </tr>
           )}
         </thead>
