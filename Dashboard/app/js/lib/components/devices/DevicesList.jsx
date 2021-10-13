@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
+import DevicesGroupList from './DevicesGroupList';
 
 export default function DevicesList() {
   const xOffset = 10;
@@ -37,7 +38,7 @@ export default function DevicesList() {
       deviceIdentifier: 'jana',
     },
   ];
-
+  
   function selectDevice(id) {
     const selectedDevice = devices.find(device => device.keyId === id);
     if (!devicesGroup.some(device => selectedDevice.deviceGroup === device)) {
@@ -48,7 +49,6 @@ export default function DevicesList() {
     }
   }
 
-  // Mouse events
   const mouseEnter = function(e) {
     const tooltipText = $(e.target).attr('data-title');
     $('body').append(`<p id='tooltip'>${tooltipText}</p>`);
@@ -70,76 +70,74 @@ export default function DevicesList() {
 
   return (
     <section id="devicesList">
-      <div className="deviceControls">
-        <button type="button" className="btnOutline" onClick={() => setSwitchTable(!switchTable)}>
-          {!switchTable ? 'Manage device groups' : 'Manage devices'}
-        </button>
-        <nav className="dataTabMenu">
-          <ul>
-            <li>
-              <button
-                type="button"
-                className={devicesGroup.length !== 0 ? '' : 'disabled'}
-                onClick={() =>
-                  devicesGroup.length !== 0 &&
-                  (!switchTable ? alert('Added to device group') : alert('add a group'))
-                }
-              >
-                {!switchTable ? 'Add to device group' : 'add a group'}
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={() => devicesGroup.length !== 0 && setShowRemoveFromGroupDialogBool(true)}
-              >
-                {!switchTable
-                  ? '  Remove from device group'
-                  : [devicesGroup.length > 1 ? 'Remove groups' : 'Remove a group']}
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <table className="dataTable" id="surveyDataTable">
-        <thead>
-          {!switchTable ? (
-            <tr>
-              <th className="noArrows" />
-              <th id="device_table_header">
-                <div
-                  onMouseEnter={mouseEnter}
-                  onMouseMove={mouseMove}
-                  onMouseLeave={mouseLeave}
-                  className="helpIcon tooltip"
-                  data-title="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number."
-                >
-                  ?
-                </div>
-                <span>IMEI</span>
-              </th>
-              <th id="device_table_header">Device ID</th>
-              <th id="device_table_header">Device Group</th>
-              <th id="device_table_header">Last contact</th>
-              <th id="device_table_header">Version</th>
-              <th id="device_table_header" className="noArrows">
-                Action
-              </th>
-            </tr>
-          ) : (
-            <tr>
-              <th className="noArrows" />
-              <th id="device_table_header">Device Group</th>
-              <th id="device_table_header" className="noArrows">
-                Action
-              </th>
-            </tr>
-          )}
-        </thead>
-        <tbody>
-          {!switchTable
-            ? devices.map(device => (
+      {switchTable ? (
+        <DevicesGroupList
+          devices={devices}
+          switchTable={switchTable}
+          setSwitchTable={setSwitchTable}
+          selectDevice={selectDevice}
+          showRemoveFromGroupDialogBool={showRemoveFromGroupDialogBool}
+        />
+      ) : (
+        <>
+          <div className="deviceControls">
+            <button type="button" className="btnOutline" onClick={() => setSwitchTable(true)}>
+              Manage device groups
+            </button>
+            <nav className="dataTabMenu">
+              <ul>
+                <li>
+                  <button
+                    type="button"
+                    className={devicesGroup.length !== 0 ? '' : 'disabled'}
+                    onClick={() => devicesGroup.length !== 0 && alert('Added to device group')}
+                  >
+                    Add to device group
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className={devicesGroup.length === 0 ? 'disabled' : ''}
+                    onClick={() =>
+                      devicesGroup.length !== 0 && setShowRemoveFromGroupDialogBool(true)
+                    }
+                  >
+                    Remove from device group
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          
+          {/* TABLE CONTENTS */}
+          <table className="dataTable" id="surveyDataTable">
+            <thead>
+              <tr>
+                <th className="noArrows" />
+                <th id="device_table_header">
+                  <div
+                    onMouseEnter={mouseEnter}
+                    onMouseMove={mouseMove}
+                    onMouseLeave={mouseLeave}
+                    className="helpIcon tooltip"
+                    data-title="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number."
+                  >
+                    ?
+                  </div>
+                  <span>IMEI</span>
+                </th>
+                <th id="device_table_header">Device ID</th>
+                <th id="device_table_header">Device Group</th>
+                <th id="device_table_header">Last contact</th>
+                <th id="device_table_header">Version</th>
+                <th id="device_table_header" className="noArrows">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {devices.map(device => (
                 <tr key={device.keyId}>
                   <td className="selection">
                     <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
@@ -158,29 +156,15 @@ export default function DevicesList() {
                     </div>
                   </td>
                 </tr>
-              ))
-            : devices.map(device => (
-                <tr key={device.keyId}>
-                  <td className="selection">
-                    <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
-                  </td>
-                  <td className="deviceGroup">{device.deviceGroupName}</td>
-                  <td>
-                    <div
-                      onClick={() => alert(`${device.deviceGroupName} is deleted`)}
-                      onKeyDown={() => alert(`${device.deviceGroupName} is deleted`)}
-                    >
-                      Delete
-                    </div>
-                  </td>
-                </tr>
               ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </>
+      )}
       <RemoveDialog
         className={showRemoveFromGroupDialogBool ? `display overlay` : `overlay`}
         cancelRemoveFromGroup={() => setShowRemoveFromGroupDialogBool(false)}
-        warningText={!switchTable ? 'Remove devices from device group?' : 'Remove groups?'}
+        warningText={!switchTable ? 'Remove devices from device group?' : 'Remove group?'}
       />
     </section>
   );
