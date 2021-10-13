@@ -178,7 +178,7 @@ export default function DevicesList() {
       <RemoveDialog
         className={showRemoveFromGroupDialogBool ? `display overlay` : `overlay`}
         cancelRemoveFromGroup={() => setShowRemoveFromGroupDialogBool(false)}
-        warningText={!switchTable ? 'Remove devices from device group?' : 'Remove group?'}
+        warningText={!switchTable ? 'Remove devices from device group?' : 'Remove groups?'}
       />
     </section>
   );
