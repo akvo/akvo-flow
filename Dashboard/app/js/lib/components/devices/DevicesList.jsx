@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
 
 export default function DevicesList() {
+  const xOffset = 10;
+  const yOffset = 20;
+
   const [showRemoveFromGroupDialogBool, setShowRemoveFromGroupDialogBool] = useState(false);
   const [switchTable, setSwitchTable] = useState(false);
   const [devicesGroup, setDevicesGroup] = useState([]);
@@ -45,6 +48,26 @@ export default function DevicesList() {
     }
   }
 
+  // Mouse events
+  const mouseEnter = function(e) {
+    const tooltipText = $(e.target).attr('data-title');
+    $('body').append(`<p id='tooltip'>${tooltipText}</p>`);
+    $('#tooltip')
+      .css('top', `${e.pageY - xOffset}px`)
+      .css('left', `${e.pageX + yOffset}px`)
+      .fadeIn('fast');
+  };
+
+  const mouseLeave = function() {
+    $('#tooltip').remove();
+  };
+
+  const mouseMove = function(e) {
+    $('#tooltip')
+      .css('top', `${e.pageY - xOffset}px`)
+      .css('left', `${e.pageX + yOffset}px`);
+  };
+
   return (
     <section id="devicesList">
       <div className="deviceControls">
@@ -84,6 +107,9 @@ export default function DevicesList() {
               <th className="noArrows" />
               <th id="device_table_header">
                 <div
+                  onMouseEnter={mouseEnter}
+                  onMouseMove={mouseMove}
+                  onMouseLeave={mouseLeave}
                   className="helpIcon tooltip"
                   data-title="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number."
                 >
