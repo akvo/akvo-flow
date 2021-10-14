@@ -1,5 +1,5 @@
 import React from 'react';
-import DevicesList from '../../components/devices/DevicesList';
+import DevicesTab from '../../components/devices/DevicesTab';
 import observe from '../../mixins/observe';
 
 require('akvo-flow/views/react-component');
@@ -26,7 +26,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
 
     renderReactSide() {
       const props = this.getProps();
-      this.reactRender(<DevicesList {...props} />);
+      this.reactRender(<DevicesTab {...props} />);
     },
 
     getProps() {
