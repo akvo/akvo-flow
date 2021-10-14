@@ -184,6 +184,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
             if (errs != null) {
                 for (RestError err : errs) {
                     resp.getWriter().print(err.toString() + "\n");
+                    log.log(Level.SEVERE, err.toString());
                 }
             } else {
                 resp.getWriter().print(new RestError());
