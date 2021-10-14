@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function DevicesGroupList({ devices, selectDevice, switchTable, setSwitchTable }) {
+export default function DevicesGroupList({ devices, selectDevice, setSwitchTable }) {
   return (
     <>
       <div className="deviceControls">
         <button type="button" className="btnOutline" onClick={() => setSwitchTable(false)}>
-          {!switchTable ? 'Manage device groups' : 'Manage devices'}
+          Manage devices
         </button>
         <nav className="dataTabMenu">
           <ul>
@@ -56,13 +56,11 @@ export default function DevicesGroupList({ devices, selectDevice, switchTable, s
 DevicesGroupList.propTypes = {
   devices: PropTypes.array,
   selectDevice: PropTypes.func,
-  switchTable: PropTypes.bool,
   setSwitchTable: PropTypes.func,
 };
 
 DevicesGroupList.defaultProps = {
   devices: [],
   selectDevice: () => null,
-  switchTable: false,
   setSwitchTable: () => null,
 };
