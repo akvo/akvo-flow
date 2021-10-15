@@ -7,12 +7,13 @@ require('akvo-flow/views/react-component');
 FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
-    'FLOW.router.deviceControl.content': 'getDeviceLists',
+    'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.renderReactSide = this.renderReactSide.bind(this);
+      // this.getDevicesList = this.getDevicesList.bind(this);
       this.getProps = this.getProps.bind(this);
     },
 
@@ -20,8 +21,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this._super(...args);
 
       // react render
-      this.renderReactSide();
-      this.getProps();
+      // this.renderReactSide();
     },
 
     renderReactSide() {
@@ -31,16 +31,19 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        showDeleteDevicesDialogBool: this.showDeleteDevicesDialogBool,
-        showAddToGroupDialogBool: this.showAddToGroupDialogBool,
-        showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
-        showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
-        doAddToGroup: this.doAddToGroup,
-        doRemoveFromGroup: this.doRemoveFromGroup,
+        devices: this.get('devices'),
       };
     },
 
+    devices: Ember.computed(function() {
+      return FLOW.deviceControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes');
+    }).property('FLOW.deviceControl.content.isLoaded'),
+
     // bound to devices-list.handlebars
+
     changedDeviceGroupName: null,
     selectedDeviceGroup: null,
     selectedDeviceGroupForDelete: null,
@@ -51,6 +54,17 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     showRemoveFromGroupDialogBool: false,
     showManageDeviceGroupsDialogBool: false,
     newDeviceGroupName: null,
+
+    // getDevicesList() {
+    //   if (this.get('devices').length === 0) {
+    //     const data = FLOW.deviceControl
+    //       .get('content')
+    //       .getEach('_data')
+    //       .getEach('attributes');
+    //     this.set('devices', data);
+    //     this.renderReactSide();
+    //   }
+    // },
 
     showAddToGroupDialog() {
       this.set('selectedDeviceGroup', null);
