@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import DevicesTabContext from './device-context';
 
 export default function DevicesList({
-  devices,
   selectDevice,
   setSwitchTable,
   devicesGroup,
   mouseEnter,
   mouseLeave,
   mouseMove,
-  setShowRemoveFromGroupDialogBool,
+  // setShowRemoveFromGroupDialogBool,
 }) {
+  const { devices, showRemoveFromGroupDialog } = useContext(
+    DevicesTabContext
+  );
   return (
     <>
       <div className="deviceControls">
@@ -31,8 +34,8 @@ export default function DevicesList({
             <li>
               <button
                 type="button"
-                className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={() => devicesGroup.length !== 0 && setShowRemoveFromGroupDialogBool(true)}
+                // className={devicesGroup.length === 0 ? 'disabled' : ''}
+                onClick={showRemoveFromGroupDialog}
               >
                 Remove from device group
               </button>
@@ -102,7 +105,7 @@ DevicesList.propTypes = {
   mouseEnter: PropTypes.func,
   mouseLeave: PropTypes.func,
   mouseMove: PropTypes.func,
-  setShowRemoveFromGroupDialogBool: PropTypes.func,
+  showRemoveFromGroupDialog: PropTypes.func,
 };
 
 DevicesList.defaultProps = {
@@ -113,5 +116,5 @@ DevicesList.defaultProps = {
   mouseEnter: () => null,
   mouseLeave: () => null,
   mouseMove: () => null,
-  setShowRemoveFromGroupDialogBool: false,
+  showRemoveFromGroupDialog: () => null,
 };

@@ -8,20 +8,19 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
+    'this.showRemoveFromGroupDialogBool': 'renderReactSide',
   }),
   {
     init() {
       this._super();
-      this.renderReactSide = this.renderReactSide.bind(this);
-      // this.getDevicesList = this.getDevicesList.bind(this);
       this.getProps = this.getProps.bind(this);
+      this.renderReactSide = this.renderReactSide.bind(this);
+      this.showRemoveFromGroupDialog = this.showRemoveFromGroupDialog.bind(this);
+      this.cancelRemoveFromGroup = this.cancelRemoveFromGroup.bind(this);
     },
 
     didInsertElement(...args) {
       this._super(...args);
-
-      // react render
-      // this.renderReactSide();
     },
 
     renderReactSide() {
@@ -32,6 +31,9 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     getProps() {
       return {
         devices: this.get('devices'),
+        showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
+        showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
+        cancelRemoveFromGroup: this.cancelRemoveFromGroup,
       };
     },
 
@@ -54,17 +56,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     showRemoveFromGroupDialogBool: false,
     showManageDeviceGroupsDialogBool: false,
     newDeviceGroupName: null,
-
-    // getDevicesList() {
-    //   if (this.get('devices').length === 0) {
-    //     const data = FLOW.deviceControl
-    //       .get('content')
-    //       .getEach('_data')
-    //       .getEach('attributes');
-    //     this.set('devices', data);
-    //     this.renderReactSide();
-    //   }
-    // },
 
     showAddToGroupDialog() {
       this.set('selectedDeviceGroup', null);
