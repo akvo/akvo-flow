@@ -3,23 +3,24 @@ import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
 import DevicesList from './DevicesList';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
-
-const DevicesTabContext = React.createContext(null);
+import DevicesTabContext from './device-context';
 
 export default class DevicesTab extends React.Component {
   state = {
-    devices: [...this.props.devices],
-    xOffset: 10,
-    yOffset: 20,
-    showRemoveFromGroupDialogBool: false,
+    // xOffset: 10,
+    // // yOffset: 20,
+    // showRemoveFromGroupDialogBool: false,
     switchTable: false,
     devicesGroup: [],
   };
 
   selectDevice(id) {
-    const selectedDevice = this.state.devices.find(device => device.keyId === id);
+    const selectedDevice = this.props.devices.find(device => device.keyId === id);
+
     if (!this.state.devicesGroup.some(device => selectedDevice.deviceGroup === device)) {
-      this.setState({ devicesGroup: [...this.state.devicesGroup, selectedDevice.deviceGroup] });
+      this.setState(prevState => ({
+        devicesGroup: [...prevState.devicesGroup, selectedDevice.deviceGroup],
+      }));
     } else {
       const filterDevice = this.state.devicesGroup.filter(
         device => device !== selectedDevice.deviceGroup
@@ -48,43 +49,50 @@ export default class DevicesTab extends React.Component {
   // },
 
   render() {
+    // console.log(this.props.showRemoveFromGroupDialogBool, this.props, 'show dialog');
+    const contextData = {
+      devices: this.props.devices,
+      showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
+      showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
+      cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
+    };
+
     return (
-      <DevicesTabContext.Provider value={this.state}>
+      <DevicesTabContext.Provider value={contextData}>
         <section id="devicesList">
           {this.state.switchTable ? (
             <DevicesGroupList
-              devices={this.state.devices}
               selectDevice={this.selectDevice}
               setSwitchTable={() => this.setState({ switchTable: false })}
             />
           ) : (
             <DevicesList
-              devices={this.state.devices}
               devicesGroup={this.state.devicesGroup}
               selectDevice={this.selectDevice}
               setSwitchTable={() => this.setState({ switchTable: true })}
               // mouseEnter={mouseEnter}
               // mouseLeave={mouseLeave}
               // mouseMove={mouseMove}
-              setShowRemoveFromGroupDialogBool={() => null}
             />
           )}
-          <RemoveDialog
-            className={this.state.showRemoveFromGroupDialogBool ? `display overlay` : `overlay`}
-            cancelRemoveFromGroup={() => this.setState('showRemoveFromGroupDialogBool', false)}
-            warningText="Remove devices from device group?"
-          />
+          <RemoveDialog warningText="Remove devices from device group?" />
         </section>
       </DevicesTabContext.Provider>
     );
   }
 }
 
-DevicesTab.contextType = DevicesTabContext;
-// DevicesTab.propTypes = {
-//   devices: PropTypes.array,
-// };
+// DevicesTab.contextType = DevicesTabContext;
+DevicesTab.propTypes = {
+  devices: PropTypes.array,
+  showRemoveFromGroupDialogBool: PropTypes.bool,
+  showRemoveFromGroupDialog: PropTypes.func,
+  cancelRemoveFromGroup: PropTypes.func,
+};
 
-// DevicesTab.defaultProps = {
-//   devices: [],
-// };
+DevicesTab.defaultProps = {
+  devices: [],
+  showRemoveFromGroupDialogBool: false,
+  showRemoveFromGroupDialog: () => null,
+  cancelRemoveFromGroup: () => null,
+};
