@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import DevicesTabContext from '../device-context';
 
 export default function RemoveDialog({ warningText, doRemoveFromGroup }) {
-  const { showRemoveFromGroupDialogBool, cancelRemoveFromGroup } = useContext(DevicesTabContext);
+  const { showRemoveFromGroupDialogBool, cancelRemoveFromGroup, strings } = useContext(
+    DevicesTabContext
+  );
 
   return (
     <div className={showRemoveFromGroupDialogBool ? `display overlay` : `overlay`}>
@@ -16,12 +18,12 @@ export default function RemoveDialog({ warningText, doRemoveFromGroup }) {
             <ul>
               <li>
                 <button type="button" onClick={doRemoveFromGroup} className="ok smallBtn">
-                  OK
+                  {strings.dialogText.save}
                 </button>
               </li>
               <li>
                 <button type="button" onClick={cancelRemoveFromGroup} className="cancel">
-                  Cancel
+                  {strings.dialogText.cancel}
                 </button>
               </li>
             </ul>

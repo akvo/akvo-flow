@@ -3,18 +3,19 @@ import PropTypes from 'prop-types';
 import DevicesTabContext from './device-context';
 
 export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
-  const { devices } = useContext(DevicesTabContext);
+  const { devices, strings } = useContext(DevicesTabContext);
+  console.log(strings);
   return (
     <>
       <div className="deviceControls">
         <button type="button" className="btnOutline" onClick={() => setSwitchTable(false)}>
-          Manage devices
+          {strings.navText.manageDevices}
         </button>
         <nav className="dataTabMenu">
           <ul>
             <li>
               <button type="button" onClick={() => alert('add a group')}>
-                add a group
+                {strings.navText.newGroup}
               </button>
             </li>
           </ul>
@@ -26,9 +27,9 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
         <thead>
           <tr>
             <th className="noArrows" />
-            <th id="device_table_header">Device Group</th>
+            <th id="device_table_header">{strings.deviceGroup}</th>
             <th id="device_table_header" className="noArrows">
-              Action
+              {strings.action}
             </th>
           </tr>
         </thead>
@@ -44,7 +45,7 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
                   onClick={() => alert(`${device.deviceGroupName} is deleted`)}
                   onKeyDown={() => alert(`${device.deviceGroupName} is deleted`)}
                 >
-                  Delete
+                  {strings.delete}
                 </div>
               </td>
             </tr>
