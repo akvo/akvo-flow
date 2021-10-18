@@ -34,6 +34,28 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
         showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
+        strings: {
+          imeiTooltip: Ember.String.loc('_imei_tooltip'),
+          delete: Ember.String.loc('_delete'),
+          IMEI: Ember.String.loc('_imei'),
+          deviceID: Ember.String.loc('_device_id'),
+          deviceGroup: Ember.String.loc('_device_group'),
+          lastContact: Ember.String.loc('_last_contact'),
+          version: Ember.String.loc('_version'),
+          action: Ember.String.loc('_action'),
+          navText: {
+            manageDeviceGroups: Ember.String.loc('_manage_device_groups'),
+            addToDeviceGroup: Ember.String.loc('_add_to_device_group'),
+            manageDevices: Ember.String.loc('_devices'),
+            newGroup: Ember.String.loc('_new_group'),
+            removeFromDeviceGroup: Ember.String.loc('_remove_from_device_group'),
+          },
+          dialogText: {
+            warningText: Ember.String.loc('_remove_devices_from_device_group'),
+            save: Ember.String.loc('_ok'),
+            cancel: Ember.String.loc('_cancel'),
+          },
+        },
       };
     },
 

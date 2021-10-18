@@ -9,16 +9,13 @@ export default function DevicesList({
   mouseEnter,
   mouseLeave,
   mouseMove,
-  // setShowRemoveFromGroupDialogBool,
 }) {
-  const { devices, showRemoveFromGroupDialog } = useContext(
-    DevicesTabContext
-  );
+  const { devices, showRemoveFromGroupDialog, strings } = useContext(DevicesTabContext);
   return (
     <>
       <div className="deviceControls">
         <button type="button" className="btnOutline" onClick={() => setSwitchTable(true)}>
-          Manage device groups
+          {strings.navText.manageDeviceGroups}
         </button>
         <nav className="dataTabMenu">
           <ul>
@@ -28,16 +25,16 @@ export default function DevicesList({
                 className={devicesGroup.length !== 0 ? '' : 'disabled'}
                 onClick={() => devicesGroup.length !== 0 && alert('Added to device group')}
               >
-                Add to device group
+                {strings.navText.addToDeviceGroup}
               </button>
             </li>
             <li>
               <button
                 type="button"
-                // className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={showRemoveFromGroupDialog}
+                className={devicesGroup.length === 0 ? 'disabled' : ''}
+                onClick={devicesGroup.length === 0 && showRemoveFromGroupDialog}
               >
-                Remove from device group
+                {strings.navText.removeFromDeviceGroup}
               </button>
             </li>
           </ul>
@@ -55,18 +52,18 @@ export default function DevicesList({
                 onMouseMove={mouseMove}
                 onMouseLeave={mouseLeave}
                 className="helpIcon tooltip"
-                data-title="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number."
+                data-title={strings.imeiTooltip}
               >
                 ?
               </div>
-              <span>IMEI</span>
+              <span>{strings.IMEI}</span>
             </th>
-            <th id="device_table_header">Device ID</th>
-            <th id="device_table_header">Device Group</th>
-            <th id="device_table_header">Last contact</th>
-            <th id="device_table_header">Version</th>
+            <th id="device_table_header">{strings.deviceID}</th>
+            <th id="device_table_header">{strings.deviceGroup}</th>
+            <th id="device_table_header">{strings.lastContact}</th>
+            <th id="device_table_header">{strings.version}</th>
             <th id="device_table_header" className="noArrows">
-              Action
+              {strings.action}
             </th>
           </tr>
         </thead>
@@ -86,7 +83,7 @@ export default function DevicesList({
                   onClick={() => alert(`${device.deviceIdentifier} is deleted`)}
                   onKeyDown={() => alert(`${device.deviceIdentifier} is deleted`)}
                 >
-                  Delete
+                  {strings.delete}
                 </div>
               </td>
             </tr>
@@ -106,6 +103,7 @@ DevicesList.propTypes = {
   mouseLeave: PropTypes.func,
   mouseMove: PropTypes.func,
   showRemoveFromGroupDialog: PropTypes.func,
+  strings: PropTypes.object,
 };
 
 DevicesList.defaultProps = {
@@ -117,4 +115,5 @@ DevicesList.defaultProps = {
   mouseLeave: () => null,
   mouseMove: () => null,
   showRemoveFromGroupDialog: () => null,
+  strings: {},
 };

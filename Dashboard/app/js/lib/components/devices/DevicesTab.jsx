@@ -7,9 +7,6 @@ import DevicesTabContext from './device-context';
 
 export default class DevicesTab extends React.Component {
   state = {
-    // xOffset: 10,
-    // // yOffset: 20,
-    // showRemoveFromGroupDialogBool: false,
     switchTable: false,
     devicesGroup: [],
   };
@@ -29,32 +26,13 @@ export default class DevicesTab extends React.Component {
     }
   }
 
-  // const mouseEnter = function(e) {
-  //   const tooltipText = $(e.target).attr('data-title');
-  //   $('body').append(`<p id='tooltip'>${tooltipText}</p>`);
-  //   $('#tooltip')
-  //     .css('top', `${e.pageY - xOffset}px`)
-  //     .css('left', `${e.pageX + yOffset}px`)
-  //     .fadeIn('fast');
-  // },
-
-  // const mouseLeave = function() {
-  //   $('#tooltip').remove();
-  // },
-
-  // const mouseMove = function(e) {
-  //   $('#tooltip')
-  //     .css('top', `${e.pageY - xOffset}px`)
-  //     .css('left', `${e.pageX + yOffset}px`);
-  // },
-
   render() {
-    // console.log(this.props.showRemoveFromGroupDialogBool, this.props, 'show dialog');
     const contextData = {
       devices: this.props.devices,
       showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
       showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
       cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
+      strings: this.props.strings,
     };
 
     return (
@@ -70,12 +48,9 @@ export default class DevicesTab extends React.Component {
               devicesGroup={this.state.devicesGroup}
               selectDevice={this.selectDevice}
               setSwitchTable={() => this.setState({ switchTable: true })}
-              // mouseEnter={mouseEnter}
-              // mouseLeave={mouseLeave}
-              // mouseMove={mouseMove}
             />
           )}
-          <RemoveDialog warningText="Remove devices from device group?" />
+          <RemoveDialog warningText={this.props.strings.dialogText.warningText} />
         </section>
       </DevicesTabContext.Provider>
     );
@@ -88,6 +63,7 @@ DevicesTab.propTypes = {
   showRemoveFromGroupDialogBool: PropTypes.bool,
   showRemoveFromGroupDialog: PropTypes.func,
   cancelRemoveFromGroup: PropTypes.func,
+  strings: PropTypes.object,
 };
 
 DevicesTab.defaultProps = {
@@ -95,4 +71,5 @@ DevicesTab.defaultProps = {
   showRemoveFromGroupDialogBool: false,
   showRemoveFromGroupDialog: () => null,
   cancelRemoveFromGroup: () => null,
+  strings: {},
 };
