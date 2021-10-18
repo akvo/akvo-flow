@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
-export default function RemoveDialog({
-  className,
-  cancelRemoveFromGroup,
-  warningText,
-  doRemoveFromGroup,
-}) {
+import DevicesTabContext from '../device-context';
+
+export default function RemoveDialog({ warningText, doRemoveFromGroup }) {
+  const { showRemoveFromGroupDialogBool, cancelRemoveFromGroup } = useContext(DevicesTabContext);
+
   return (
-    <div className={className}>
+    <div className={showRemoveFromGroupDialogBool ? `display overlay` : `overlay`}>
       <div className="blanket" />
       <div className="dialogWrap">
         <div className="confirmDialog dialog">
