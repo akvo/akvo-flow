@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import DevicesTabContext from './device-context';
 
-export default function DevicesGroupList({ devices, selectDevice, setSwitchTable }) {
+export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
+  const { devices } = useContext(DevicesTabContext);
   return (
     <>
       <div className="deviceControls">
