@@ -9,6 +9,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'this.showRemoveFromGroupDialogBool': 'renderReactSide',
+    'this.selectedColumn': 'renderReactSide',
+    'this.sortAscending': 'renderReactSide',
   }),
   {
     init() {
@@ -17,6 +19,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.renderReactSide = this.renderReactSide.bind(this);
       this.showRemoveFromGroupDialog = this.showRemoveFromGroupDialog.bind(this);
       this.cancelRemoveFromGroup = this.cancelRemoveFromGroup.bind(this);
+      this.devicesSort = this.devicesSort.bind(this);
+      this.sortedDevices = this.sortedDevices.bind(this);
     },
 
     didInsertElement(...args) {
@@ -34,6 +38,11 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
         showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
+        onSort: this.devicesSort,
+        sortProperties: {
+          column: this.selectedColumn,
+          ascending: this.sortAscending,
+        },
         strings: {
           imeiTooltip: Ember.String.loc('_imei_tooltip'),
           delete: Ember.String.loc('_delete'),
@@ -67,7 +76,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     }).property('FLOW.deviceControl.content.isLoaded'),
 
     // bound to devices-list.handlebars
-
+    sortAscending: null,
+    selectedColumn: null,
     changedDeviceGroupName: null,
     selectedDeviceGroup: null,
     selectedDeviceGroupForDelete: null,
@@ -120,6 +130,34 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       }
       FLOW.store.commit();
       this.set('showAddToGroupDialogBool', false);
+    },
+
+    devicesSort(item) {
+      this.set('sortAscending', !this.sortAscending);
+      this.set('selectedColumn', item);
+      this.sortedDevices();
+    },
+
+    // Sort the devices
+    sortedDevices() {
+      return this.get('devices').sort((a, b) => {
+        if (this.sortAscending) {
+          if (a[this.selectedColumn] < b[this.selectedColumn]) {
+            return -1;
+          }
+          if (a[this.selectedColumn] > b[this.selectedColumn]) {
+            return 1;
+          }
+        } else {
+          if (b[this.selectedColumn] < a[this.selectedColumn]) {
+            return -1;
+          }
+          if (b[this.selectedColumn] > a[this.selectedColumn]) {
+            return 1;
+          }
+        }
+        return 0;
+      });
     },
 
     // TODO repopulate list after update
