@@ -7,8 +7,10 @@ import DevicesTabContext from './device-context';
 
 export default class DevicesTab extends React.Component {
   state = {
+    devices: this.props.devices,
     switchTable: false,
     devicesGroup: [],
+    showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
   };
 
   selectDevice(id) {
@@ -28,11 +30,14 @@ export default class DevicesTab extends React.Component {
 
   render() {
     const contextData = {
-      devices: this.props.devices,
+      devices: this.state.devices,
+      devicesGroup: this.state.devicesGroup,
+      showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
       showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
-      showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
       cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
+      onSort: this.props.onSort,
       strings: this.props.strings,
+      sortProperties: this.props.sortProperties,
     };
 
     return (
@@ -63,7 +68,9 @@ DevicesTab.propTypes = {
   showRemoveFromGroupDialogBool: PropTypes.bool,
   showRemoveFromGroupDialog: PropTypes.func,
   cancelRemoveFromGroup: PropTypes.func,
+  onSort: PropTypes.func,
   strings: PropTypes.object,
+  sortProperties: PropTypes.object,
 };
 
 DevicesTab.defaultProps = {
@@ -71,5 +78,7 @@ DevicesTab.defaultProps = {
   showRemoveFromGroupDialogBool: false,
   showRemoveFromGroupDialog: () => null,
   cancelRemoveFromGroup: () => null,
+  onSort: () => null,
+  sortProperties: {},
   strings: {},
 };
