@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import DevicesTabContext from './device-context';
 
 export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
-  const { devices, strings } = useContext(DevicesTabContext);
-  console.log(strings);
+  const { devices, strings, onSort, sortProperties } = useContext(DevicesTabContext);
   return (
     <>
       <div className="deviceControls">
@@ -27,7 +26,20 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
         <thead>
           <tr>
             <th className="noArrows" />
-            <th id="device_table_header">{strings.deviceGroup}</th>
+            <th
+              id="device_table_header"
+              className={
+                sortProperties.column == 'deviceGroupName'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              onClick={() => onSort('deviceGroupName')}
+              onKeyDown={() => onSort('deviceGroupName')}
+            >
+              {strings.deviceGroup}
+            </th>
             <th id="device_table_header" className="noArrows">
               {strings.action}
             </th>
