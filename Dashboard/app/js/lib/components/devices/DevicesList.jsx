@@ -10,7 +10,10 @@ export default function DevicesList({
   mouseLeave,
   mouseMove,
 }) {
-  const { devices, showRemoveFromGroupDialog, strings } = useContext(DevicesTabContext);
+  const { devices, showRemoveFromGroupDialog, strings, onSort, sortProperties } = useContext(
+    DevicesTabContext
+  );
+
   return (
     <>
       <div className="deviceControls">
@@ -31,8 +34,8 @@ export default function DevicesList({
             <li>
               <button
                 type="button"
-                className={devicesGroup.length === 0 ? 'disabled' : ''}
-                onClick={devicesGroup.length === 0 && showRemoveFromGroupDialog}
+                className={devicesGroup.length == 0 ? 'disabled' : ''}
+                onClick={devicesGroup.length == 0 && showRemoveFromGroupDialog}
               >
                 {strings.navText.removeFromDeviceGroup}
               </button>
@@ -46,7 +49,18 @@ export default function DevicesList({
         <thead>
           <tr>
             <th className="noArrows" />
-            <th id="device_table_header">
+            <th
+              className={
+                sortProperties.column == 'esn'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              id="device_table_header"
+              onClick={() => onSort('esn')}
+              onKeyDown={() => onSort('esn')}
+            >
               <div
                 onMouseEnter={mouseEnter}
                 onMouseMove={mouseMove}
@@ -58,10 +72,62 @@ export default function DevicesList({
               </div>
               <span>{strings.IMEI}</span>
             </th>
-            <th id="device_table_header">{strings.deviceID}</th>
-            <th id="device_table_header">{strings.deviceGroup}</th>
-            <th id="device_table_header">{strings.lastContact}</th>
-            <th id="device_table_header">{strings.version}</th>
+            <th
+              className={
+                sortProperties.column == 'deviceIdentifier'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              id="device_table_header"
+              onClick={() => onSort('deviceIdentifier')}
+              onKeyDown={() => onSort('deviceIdentifier')}
+            >
+              {strings.deviceID}
+            </th>
+            <th
+              className={
+                sortProperties.column == 'deviceGroupName'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              id="device_table_header"
+              onClick={() => onSort('deviceGroupName')}
+              onKeyDown={() => onSort('deviceGroupName')}
+            >
+              {strings.deviceGroup}
+            </th>
+            <th
+              className={
+                sortProperties.column == 'lastPositionDate'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              id="device_table_header"
+              onClick={() => onSort('lastPositionDate')}
+              onKeyDown={() => onSort('lastPositionDate')}
+            >
+              {strings.lastContact}
+            </th>
+            <th
+              className={
+                sortProperties.column == 'gallatinSoftwareManifest'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
+              id="device_table_header"
+              onClick={() => onSort('gallatinSoftwareManifest')}
+              onKeyDown={() => onSort('gallatinSoftwareManifest')}
+            >
+              {strings.version}
+            </th>
             <th id="device_table_header" className="noArrows">
               {strings.action}
             </th>
