@@ -2,8 +2,18 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import DevicesTabContext from './device-context';
 
-export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
-  const { devices, strings, onSort, sortProperties } = useContext(DevicesTabContext);
+export default function DevicesGroupList({ setSwitchTable }) {
+  const {
+    strings,
+    onSortGroup,
+    sortProperties,
+    selectGroup,
+    devicesGroup,
+    tableHeaderClass,
+  } = useContext(DevicesTabContext);
+
+  const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
+
   return (
     <>
       <div className="deviceControls">
@@ -28,15 +38,9 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
             <th className="noArrows" />
             <th
               id="device_table_header"
-              className={
-                sortProperties.column == 'deviceGroupName'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
-              }
-              onClick={() => onSort('deviceGroupName')}
-              onKeyDown={() => onSort('deviceGroupName')}
+              className={sortProperties.column == 'code' ? tableHeaderClass() : ''}
+              onClick={() => onSortGroup('code')}
+              onKeyDown={() => onSortGroup('code')}
             >
               {strings.deviceGroup}
             </th>
@@ -46,16 +50,16 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
           </tr>
         </thead>
         <tbody>
-          {devices.map(device => (
-            <tr key={device.keyId}>
+          {allGroups.map(group => (
+            <tr key={group.keyId}>
               <td className="selection">
-                <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
+                <input type="checkBox" onChange={() => selectGroup(group.code)} />
               </td>
-              <td className="deviceGroup">{device.deviceGroupName}</td>
+              <td className="deviceGroup">{group.code}</td>
               <td>
                 <div
-                  onClick={() => alert(`${device.deviceGroupName} is deleted`)}
-                  onKeyDown={() => alert(`${device.deviceGroupName} is deleted`)}
+                  onClick={() => alert(`${group.code} is deleted`)}
+                  onKeyDown={() => alert(`${group.code} is deleted`)}
                 >
                   {strings.delete}
                 </div>
@@ -69,13 +73,11 @@ export default function DevicesGroupList({ selectDevice, setSwitchTable }) {
 }
 
 DevicesGroupList.propTypes = {
-  devices: PropTypes.array,
   selectDevice: PropTypes.func,
   setSwitchTable: PropTypes.func,
 };
 
 DevicesGroupList.defaultProps = {
-  devices: [],
   selectDevice: () => null,
   setSwitchTable: () => null,
 };
