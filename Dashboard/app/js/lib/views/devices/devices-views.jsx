@@ -32,7 +32,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         devicesGroup: this.get('devicesGroup'),
         doAddToGroup: this.doAddToGroup,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
-        onSort: this.devicesSort,
+        onSortDevices: this.devicesSort,
+        onSortGroup: this.GroupSort,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
