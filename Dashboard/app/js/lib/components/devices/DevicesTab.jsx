@@ -9,51 +9,63 @@ export default class DevicesTab extends React.Component {
   state = {
     devices: this.props.devices,
     switchTable: false,
-    devicesGroup: [],
-    showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
+    devicesGroup: this.props.devicesGroup,
+    selectedDeviceIds: [],
+    selectedDeviceGroupIds: [],
   };
 
-  selectDevice(id) {
-    const selectedDevice = this.props.devices.find(device => device.keyId === id);
+  selectDevice = id => {
+    this.setState(state => {
+      if (state.selectedDeviceIds.some(deviceId => id === deviceId)) {
+        const filterDevice = state.selectedDeviceIds.filter(deviceId => id !== deviceId);
+        return { selectedDeviceIds: [...filterDevice] };
+      }
+      return { selectedDeviceIds: [...state.selectedDeviceIds, id] };
+    });
+  };
 
-    if (!this.state.devicesGroup.some(device => selectedDevice.deviceGroup === device)) {
-      this.setState(prevState => ({
-        devicesGroup: [...prevState.devicesGroup, selectedDevice.deviceGroup],
-      }));
-    } else {
-      const filterDevice = this.state.devicesGroup.filter(
-        device => device !== selectedDevice.deviceGroup
-      );
-      this.setState({ devicesGroup: [...filterDevice] });
+  selectGroup = id => {
+    this.setState(state => {
+      if (state.selectedDeviceGroupIds.some(deviceGroup => id === deviceGroup)) {
+        const filterGroup = state.selectedDeviceGroupIds.filter(deviceGroup => id !== deviceGroup);
+        return { selectedDeviceGroupIds: [...filterGroup] };
+      }
+      return { selectedDeviceGroupIds: [...state.selectedDeviceGroupIds, id] };
+    });
+  };
+
+  tableHeaderClass = () => {
+    if (this.props.sortProperties.ascending) {
+      return 'sorting_asc';
     }
-  }
+    return 'sorting_desc';
+  };
 
   render() {
     const contextData = {
       devices: this.state.devices,
       devicesGroup: this.state.devicesGroup,
-      showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
+      showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
       showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
-      onSort: this.props.onSort,
+      onSortDevices: this.props.onSortDevices,
+      onSortGroup: this.props.onSortGroup,
       strings: this.props.strings,
       sortProperties: this.props.sortProperties,
+      selectDevice: this.selectDevice,
+      selectGroup: this.selectGroup,
+      selectedDeviceIds: this.state.selectedDeviceIds,
+      selectedDeviceGroupIds: this.state.selectedDeviceGroupIds,
+      tableHeaderClass: this.tableHeaderClass,
     };
 
     return (
       <DevicesTabContext.Provider value={contextData}>
         <section id="devicesList">
           {this.state.switchTable ? (
-            <DevicesGroupList
-              selectDevice={this.selectDevice}
-              setSwitchTable={() => this.setState({ switchTable: false })}
-            />
+            <DevicesGroupList setSwitchTable={() => this.setState({ switchTable: false })} />
           ) : (
-            <DevicesList
-              devicesGroup={this.state.devicesGroup}
-              selectDevice={this.selectDevice}
-              setSwitchTable={() => this.setState({ switchTable: true })}
-            />
+            <DevicesList setSwitchTable={() => this.setState({ switchTable: true })} />
           )}
           <RemoveDialog warningText={this.props.strings.dialogText.warningText} />
         </section>
@@ -65,20 +77,28 @@ export default class DevicesTab extends React.Component {
 // DevicesTab.contextType = DevicesTabContext;
 DevicesTab.propTypes = {
   devices: PropTypes.array,
+  devicesGroup: PropTypes.array,
   showRemoveFromGroupDialogBool: PropTypes.bool,
   showRemoveFromGroupDialog: PropTypes.func,
   cancelRemoveFromGroup: PropTypes.func,
-  onSort: PropTypes.func,
+  onSortDevices: PropTypes.func,
   strings: PropTypes.object,
   sortProperties: PropTypes.object,
+  doAddToGroup: PropTypes.func,
+  onSortGroup: PropTypes.func,
+  selectedDeviceGroup: PropTypes.bool,
 };
 
 DevicesTab.defaultProps = {
   devices: [],
+  devicesGroup: [],
   showRemoveFromGroupDialogBool: false,
   showRemoveFromGroupDialog: () => null,
   cancelRemoveFromGroup: () => null,
-  onSort: () => null,
+  onSortDevices: () => null,
+  doAddToGroup: () => null,
+  onSortGroup: () => null,
   sortProperties: {},
   strings: {},
+  selectedDeviceGroup: null,
 };
