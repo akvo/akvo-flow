@@ -3,16 +3,22 @@ import PropTypes from 'prop-types';
 import DevicesTabContext from './device-context';
 
 export default function DevicesList({
-  selectDevice,
   setSwitchTable,
-  devicesGroup,
+  // devicesGroup,
   mouseEnter,
   mouseLeave,
   mouseMove,
 }) {
-  const { devices, showRemoveFromGroupDialog, strings, onSort, sortProperties } = useContext(
-    DevicesTabContext
-  );
+  const {
+    devices,
+    showRemoveFromGroupDialog,
+    strings,
+    onSortDevices,
+    sortProperties,
+    selectDevice,
+    selectedDeviceIds,
+    tableHeaderClass,
+  } = useContext(DevicesTabContext);
 
   return (
     <>
@@ -25,8 +31,8 @@ export default function DevicesList({
             <li>
               <button
                 type="button"
-                className={devicesGroup.length !== 0 ? '' : 'disabled'}
-                onClick={() => devicesGroup.length !== 0 && alert('Added to device group')}
+                className={selectedDeviceIds.length !== 0 ? '' : 'disabled'}
+                onClick={() => selectedDeviceIds.length !== 0 && alert('Added to device group')}
               >
                 {strings.navText.addToDeviceGroup}
               </button>
@@ -34,8 +40,8 @@ export default function DevicesList({
             <li>
               <button
                 type="button"
-                className={devicesGroup.length == 0 ? 'disabled' : ''}
-                onClick={devicesGroup.length == 0 && showRemoveFromGroupDialog}
+                className={selectedDeviceIds.length === 0 ? 'disabled' : ''}
+                onClick={showRemoveFromGroupDialog}
               >
                 {strings.navText.removeFromDeviceGroup}
               </button>
@@ -50,16 +56,10 @@ export default function DevicesList({
           <tr>
             <th className="noArrows" />
             <th
-              className={
-                sortProperties.column == 'esn'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
-              }
+              className={sortProperties.column == 'esn' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSort('esn')}
-              onKeyDown={() => onSort('esn')}
+              onClick={() => onSortDevices('esn')}
+              onKeyDown={() => onSortDevices('esn')}
             >
               <div
                 onMouseEnter={mouseEnter}
@@ -73,58 +73,36 @@ export default function DevicesList({
               <span>{strings.IMEI}</span>
             </th>
             <th
-              className={
-                sortProperties.column == 'deviceIdentifier'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
-              }
+              className={sortProperties.column == 'deviceIdentifier' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSort('deviceIdentifier')}
-              onKeyDown={() => onSort('deviceIdentifier')}
+              onClick={() => onSortDevices('deviceIdentifier')}
+              onKeyDown={() => onSortDevices('deviceIdentifier')}
             >
               {strings.deviceID}
             </th>
             <th
-              className={
-                sortProperties.column == 'deviceGroupName'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
-              }
+              className={sortProperties.column == 'deviceGroupName' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSort('deviceGroupName')}
-              onKeyDown={() => onSort('deviceGroupName')}
+              onClick={() => onSortDevices('deviceGroupName')}
+              onKeyDown={() => onSortDevices('deviceGroupName')}
             >
               {strings.deviceGroup}
             </th>
             <th
-              className={
-                sortProperties.column == 'lastPositionDate'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
-              }
+              className={sortProperties.column == 'lastPositionDate' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSort('lastPositionDate')}
-              onKeyDown={() => onSort('lastPositionDate')}
+              onClick={() => onSortDevices('lastPositionDate')}
+              onKeyDown={() => onSortDevices('lastPositionDate')}
             >
               {strings.lastContact}
             </th>
             <th
               className={
-                sortProperties.column == 'gallatinSoftwareManifest'
-                  ? sortProperties.ascending
-                    ? 'sorting_asc'
-                    : 'sorting_desc'
-                  : ''
+                sortProperties.column == 'gallatinSoftwareManifest' ? tableHeaderClass() : ''
               }
               id="device_table_header"
-              onClick={() => onSort('gallatinSoftwareManifest')}
-              onKeyDown={() => onSort('gallatinSoftwareManifest')}
+              onClick={() => onSortDevices('gallatinSoftwareManifest')}
+              onKeyDown={() => onSortDevices('gallatinSoftwareManifest')}
             >
               {strings.version}
             </th>
@@ -163,7 +141,6 @@ export default function DevicesList({
 DevicesList.propTypes = {
   devices: PropTypes.array,
   devicesGroup: PropTypes.array,
-  selectDevice: PropTypes.func,
   setSwitchTable: PropTypes.func,
   mouseEnter: PropTypes.func,
   mouseLeave: PropTypes.func,
@@ -175,7 +152,6 @@ DevicesList.propTypes = {
 DevicesList.defaultProps = {
   devices: [],
   devicesGroup: [],
-  selectDevice: () => null,
   setSwitchTable: () => null,
   mouseEnter: () => null,
   mouseLeave: () => null,
