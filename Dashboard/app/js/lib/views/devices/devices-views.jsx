@@ -21,6 +21,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.cancelRemoveFromGroup = this.cancelRemoveFromGroup.bind(this);
       this.devicesSort = this.devicesSort.bind(this);
       this.sortedDevices = this.sortedDevices.bind(this);
+      this.doAddToGroup = this.doAddToGroup.bind(this);
+      this.GroupSort = this.GroupSort.bind(this);
     },
 
     didInsertElement(...args) {
@@ -35,10 +37,13 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     getProps() {
       return {
         devices: this.get('devices'),
+        devicesGroup: this.get('devicesGroup'),
+        doAddToGroup: this.doAddToGroup,
         showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
         showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
-        onSort: this.devicesSort,
+        onSortDevices: this.devicesSort,
+        onSortGroup: this.GroupSort,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
@@ -75,8 +80,15 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         .getEach('attributes');
     }).property('FLOW.deviceControl.content.isLoaded'),
 
+    devicesGroup: Ember.computed(function() {
+      return FLOW.deviceGroupControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes');
+    }).property('FLOW.deviceControl.content.isLoaded'),
+
     // bound to devices-list.handlebars
-    sortAscending: null,
+    sortAscending: false,
     selectedColumn: null,
     changedDeviceGroupName: null,
     selectedDeviceGroup: null,
@@ -123,6 +135,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
           }
           return false;
         });
+
         selectedDevices.forEach(item => {
           item.set('deviceGroupName', selectedDeviceGroupName);
           item.set('deviceGroup', selectedDeviceGroupId);
@@ -141,6 +154,34 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     // Sort the devices
     sortedDevices() {
       return this.get('devices').sort((a, b) => {
+        if (this.sortAscending) {
+          if (a[this.selectedColumn] < b[this.selectedColumn]) {
+            return -1;
+          }
+          if (a[this.selectedColumn] > b[this.selectedColumn]) {
+            return 1;
+          }
+        } else {
+          if (b[this.selectedColumn] < a[this.selectedColumn]) {
+            return -1;
+          }
+          if (b[this.selectedColumn] > a[this.selectedColumn]) {
+            return 1;
+          }
+        }
+        return 0;
+      });
+    },
+
+    GroupSort(item) {
+      this.set('sortAscending', !this.sortAscending);
+      this.set('selectedColumn', item);
+      this.sortedGroup();
+    },
+
+    // Sort the Group
+    sortedGroup() {
+      return this.get('devicesGroup').sort((a, b) => {
         if (this.sortAscending) {
           if (a[this.selectedColumn] < b[this.selectedColumn]) {
             return -1;
