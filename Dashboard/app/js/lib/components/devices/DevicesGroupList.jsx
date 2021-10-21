@@ -13,6 +13,7 @@ export default function DevicesGroupList() {
     tableHeaderClass,
     selectedDeviceGroupIds,
     setCurrentTable,
+    onDeleteGroup,
   } = useContext(DevicesTabContext);
 
   const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
@@ -69,8 +70,8 @@ export default function DevicesGroupList() {
               <td className="deviceGroup">{group.code}</td>
               <td>
                 <div
-                  onClick={() => alert(`${group.code} is deleted`)}
-                  onKeyDown={() => alert(`${group.code} is deleted`)}
+                  onClick={() => onDeleteGroup(group.keyId)}
+                  onKeyDown={() => onDeleteGroup(group.keyId)}
                 >
                   {strings.delete}
                 </div>
