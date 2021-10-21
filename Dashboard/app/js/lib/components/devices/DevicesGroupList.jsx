@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import DevicesTabContext from './devices-context';
-import { TABLE_NAMES } from './constants';
+import TABLE_NAMES from './constants';
 
 export default function DevicesGroupList() {
   const {
