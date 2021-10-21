@@ -8,6 +8,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
+    'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
     'this.showRemoveFromGroupDialogBool': 'renderReactSide',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
@@ -30,6 +31,12 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
+      if (
+        !FLOW.deviceControl.content ||
+        !FLOW.deviceControl.content.isLoaded ||
+        !FLOW.deviceGroupControl.content.isLoaded
+      )
+        return;
       const props = this.getProps();
       this.reactRender(<DevicesTab {...props} />);
     },
@@ -85,7 +92,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         .get('content')
         .getEach('_data')
         .getEach('attributes');
-    }).property('FLOW.deviceControl.content.isLoaded'),
+    }).property('FLOW.deviceGroupControl.content.isLoaded'),
 
     // bound to devices-list.handlebars
     sortAscending: false,
