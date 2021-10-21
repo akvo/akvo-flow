@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-
-import DevicesTabContext from '../device-context';
+import DevicesTabContext from '../devices-context';
 
 export default function RemoveDialog({ warningText, doRemoveFromGroup }) {
   const { showRemoveFromGroupDialogBool, cancelRemoveFromGroup, strings } = useContext(
