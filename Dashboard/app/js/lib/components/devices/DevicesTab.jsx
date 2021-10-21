@@ -64,6 +64,7 @@ export default class DevicesTab extends React.Component {
       tableHeaderClass: this.tableHeaderClass,
       currentTable: this.state.currentTable,
       setCurrentTable: this.setCurrentTable,
+      onDeleteGroup: this.props.onDeleteGroup,
     };
     // FLOW.selectedControl.set('selectedDevice', true);
 
@@ -94,6 +95,7 @@ DevicesTab.propTypes = {
   doAddToGroup: PropTypes.func,
   onSortGroup: PropTypes.func,
   selectedDeviceGroup: PropTypes.bool,
+  onDeleteGroup: PropTypes.func,
 };
 
 DevicesTab.defaultProps = {
@@ -108,4 +110,5 @@ DevicesTab.defaultProps = {
   sortProperties: {},
   strings: {},
   selectedDeviceGroup: null,
+  onDeleteGroup: () => null,
 };

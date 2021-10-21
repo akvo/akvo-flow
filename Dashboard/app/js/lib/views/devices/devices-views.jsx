@@ -10,6 +10,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
     'this.showRemoveFromGroupDialogBool': 'renderReactSide',
+    'FLOW.dialogControl.deleteGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
   }),
@@ -24,6 +25,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.sortedDevices = this.sortedDevices.bind(this);
       this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
+      this.deleteGroup = this.deleteGroup.bind(this);
+      this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
     },
 
     didInsertElement(...args) {
@@ -51,6 +54,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
         onSortDevices: this.devicesSort,
         onSortGroup: this.GroupSort,
+        onDeleteGroup: this.deleteGroupConfirm,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
@@ -269,6 +273,26 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
       this.set('showManageDeviceGroupsDialogBool', false);
+    },
+
+    deleteGroupConfirm(groupId) {
+      FLOW.dialogControl.confirm({
+        context: FLOW.dialogControl.delDeviceGroup,
+        groupId,
+      });
+    },
+
+    deleteGroup() {
+      if (FLOW.dialogControl.deleteGroupConfirm) {
+        const devicesGroup = FLOW.store.find(
+          FLOW.DeviceGroup,
+          FLOW.dialogControl.get('delGroupId')
+        );
+        if (devicesGroup) {
+          devicesGroup.deleteRecord();
+          FLOW.store.commit();
+        }
+      }
     },
 
     deleteDeviceGroup() {
