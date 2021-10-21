@@ -4,7 +4,7 @@ import DevicesGroupList from './DevicesGroupList';
 import DevicesList from './DevicesList';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
 import DevicesTabContext from './devices-context';
-import { TABLE_NAMES } from './constants';
+import TABLE_NAMES from './constants';
 
 export default class DevicesTab extends React.Component {
   state = {
@@ -43,7 +43,6 @@ export default class DevicesTab extends React.Component {
   };
 
   setCurrentTable = tableName => {
-
     this.setState({ currentTable: tableName });
   };
 
