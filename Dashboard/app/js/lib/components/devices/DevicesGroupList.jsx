@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import DevicesTabContext from './device-context';
+import DevicesTabContext from './devices-context';
+import { TABLE_NAMES } from './constants';
 
-export default function DevicesGroupList({ setSwitchTable }) {
+export default function DevicesGroupList() {
   const {
     strings,
     onSortGroup,
@@ -10,6 +11,8 @@ export default function DevicesGroupList({ setSwitchTable }) {
     selectGroup,
     devicesGroup,
     tableHeaderClass,
+    selectedDeviceGroupIds,
+    setCurrentTable,
   } = useContext(DevicesTabContext);
 
   const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
@@ -17,7 +20,11 @@ export default function DevicesGroupList({ setSwitchTable }) {
   return (
     <>
       <div className="deviceControls">
-        <button type="button" className="btnOutline" onClick={() => setSwitchTable(false)}>
+        <button
+          type="button"
+          className="btnOutline"
+          onClick={() => setCurrentTable(TABLE_NAMES.DEVICES)}
+        >
           {strings.navText.manageDevices}
         </button>
         <nav className="dataTabMenu">
@@ -53,7 +60,11 @@ export default function DevicesGroupList({ setSwitchTable }) {
           {allGroups.map(group => (
             <tr key={group.keyId}>
               <td className="selection">
-                <input type="checkBox" onChange={() => selectGroup(group.code)} />
+                <input
+                  type="checkBox"
+                  checked={selectedDeviceGroupIds.includes(group.keyId)}
+                  onChange={() => selectGroup(group.keyId)}
+                />
               </td>
               <td className="deviceGroup">{group.code}</td>
               <td>

@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
 import DevicesList from './DevicesList';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
-import DevicesTabContext from './device-context';
+import DevicesTabContext from './devices-context';
+import { TABLE_NAMES } from './constants';
 
 export default class DevicesTab extends React.Component {
   state = {
     devices: this.props.devices,
-    switchTable: false,
+    currentTable: false,
     devicesGroup: this.props.devicesGroup,
     selectedDeviceIds: [],
     selectedDeviceGroupIds: [],
@@ -26,8 +27,8 @@ export default class DevicesTab extends React.Component {
 
   selectGroup = id => {
     this.setState(state => {
-      if (state.selectedDeviceGroupIds.some(deviceGroup => id === deviceGroup)) {
-        const filterGroup = state.selectedDeviceGroupIds.filter(deviceGroup => id !== deviceGroup);
+      if (state.selectedDeviceGroupIds.some(keyId => id === keyId)) {
+        const filterGroup = state.selectedDeviceGroupIds.filter(keyId => id !== keyId);
         return { selectedDeviceGroupIds: [...filterGroup] };
       }
       return { selectedDeviceGroupIds: [...state.selectedDeviceGroupIds, id] };
@@ -39,6 +40,11 @@ export default class DevicesTab extends React.Component {
       return 'sorting_asc';
     }
     return 'sorting_desc';
+  };
+
+  setCurrentTable = tableName => {
+
+    this.setState({ currentTable: tableName });
   };
 
   render() {
@@ -57,15 +63,18 @@ export default class DevicesTab extends React.Component {
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDeviceGroupIds: this.state.selectedDeviceGroupIds,
       tableHeaderClass: this.tableHeaderClass,
+      currentTable: this.state.currentTable,
+      setCurrentTable: this.setCurrentTable,
     };
+    // FLOW.selectedControl.set('selectedDevice', true);
 
     return (
       <DevicesTabContext.Provider value={contextData}>
         <section id="devicesList">
-          {this.state.switchTable ? (
-            <DevicesGroupList setSwitchTable={() => this.setState({ switchTable: false })} />
+          {this.state.currentTable === TABLE_NAMES.DEVICES_GROUP ? (
+            <DevicesGroupList />
           ) : (
-            <DevicesList setSwitchTable={() => this.setState({ switchTable: true })} />
+            <DevicesList />
           )}
           <RemoveDialog warningText={this.props.strings.dialogText.warningText} />
         </section>
@@ -74,7 +83,6 @@ export default class DevicesTab extends React.Component {
   }
 }
 
-// DevicesTab.contextType = DevicesTabContext;
 DevicesTab.propTypes = {
   devices: PropTypes.array,
   devicesGroup: PropTypes.array,
