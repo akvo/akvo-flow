@@ -386,4 +386,5 @@ DevicesTab.defaultProps = {
   sortProperties: {},
   strings: {},
   selectedDeviceGroup: null,
+  onDeleteGroup: () => null,
 };
