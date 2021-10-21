@@ -10,6 +10,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
     'this.showRemoveFromGroupDialogBool': 'renderReactSide',
+    'this.get(`devicesGroup`)': 'renderReactSide',
     'FLOW.dialogControl.deleteGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
@@ -25,7 +26,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.sortedDevices = this.sortedDevices.bind(this);
       this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
-      this.deleteGroup = this.deleteGroup.bind(this);
       this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
     },
 
@@ -34,12 +34,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      if (
-        !FLOW.deviceControl.content ||
-        !FLOW.deviceControl.content.isLoaded ||
-        !FLOW.deviceGroupControl.content.isLoaded
-      )
-        return;
+      if (!FLOW.deviceControl.content || !FLOW.deviceControl.content.isLoaded) return;
+      if (!FLOW.deviceGroupControl.content.isLoaded) return;
       const props = this.getProps();
       this.reactRender(<DevicesTab {...props} />);
     },
