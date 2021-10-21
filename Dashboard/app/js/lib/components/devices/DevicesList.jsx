@@ -1,14 +1,9 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import DevicesTabContext from './device-context';
+import DevicesTabContext from './devices-context';
+import { TABLE_NAMES } from './constants';
 
-export default function DevicesList({
-  setSwitchTable,
-  // devicesGroup,
-  mouseEnter,
-  mouseLeave,
-  mouseMove,
-}) {
+export default function DevicesList() {
   const {
     devices,
     showRemoveFromGroupDialog,
@@ -18,12 +13,17 @@ export default function DevicesList({
     selectDevice,
     selectedDeviceIds,
     tableHeaderClass,
+    setCurrentTable,
   } = useContext(DevicesTabContext);
 
   return (
     <>
       <div className="deviceControls">
-        <button type="button" className="btnOutline" onClick={() => setSwitchTable(true)}>
+        <button
+          type="button"
+          className="btnOutline"
+          onClick={() => setCurrentTable(TABLE_NAMES.DEVICES_GROUP)}
+        >
           {strings.navText.manageDeviceGroups}
         </button>
         <nav className="dataTabMenu">
@@ -61,13 +61,7 @@ export default function DevicesList({
               onClick={() => onSortDevices('esn')}
               onKeyDown={() => onSortDevices('esn')}
             >
-              <div
-                onMouseEnter={mouseEnter}
-                onMouseMove={mouseMove}
-                onMouseLeave={mouseLeave}
-                className="helpIcon tooltip"
-                data-title={strings.imeiTooltip}
-              >
+              <div className="helpIcon tooltip" data-title={strings.imeiTooltip}>
                 ?
               </div>
               <span>{strings.IMEI}</span>
@@ -115,7 +109,11 @@ export default function DevicesList({
           {devices.map(device => (
             <tr key={device.keyId}>
               <td className="selection">
-                <input type="checkBox" onChange={() => selectDevice(device.keyId)} />
+                <input
+                  type="checkBox"
+                  checked={selectedDeviceIds.includes(device.keyId)}
+                  onChange={() => selectDevice(device.keyId)}
+                />
               </td>
               <td className="EMEI">{device.esn}</td>
               <td className="deviceId">{device.deviceIdentifier}</td>
