@@ -13,6 +13,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.dialogControl.deleteGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
+    'this.newDeviceGroupName': 'renderReactSide',
   }),
   {
     init() {
@@ -26,6 +27,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
       this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
+      this.addNewGroup = this.addNewGroup.bind(this);
     },
 
     didInsertElement(...args) {
@@ -48,6 +50,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         devices: this.get('devices'),
         devicesGroup: this.get('devicesGroup'),
         doAddToGroup: this.doAddToGroup,
+        addNewGroup: this.addNewGroup,
         showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
         showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
@@ -109,7 +112,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     showAddToGroupDialogBool: false,
     showRemoveFromGroupDialogBool: false,
     showManageDeviceGroupsDialogBool: false,
-    newDeviceGroupName: null,
+    newDeviceGroupName: 'New group',
 
     showAddToGroupDialog() {
       this.set('selectedDeviceGroup', null);
@@ -272,6 +275,21 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
       this.set('showManageDeviceGroupsDialogBool', false);
+    },
+
+    addNewGroup() {
+      // const newName = 'New group';
+      const allGroup = FLOW.deviceGroupControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes');
+      this.set('newDeviceGroupName', `newName${[allGroup.length - 1]}`);
+      if (this.get('newDeviceGroupName') !== null) {
+        FLOW.store.createRecord(FLOW.DeviceGroup, {
+          code: this.get('newDeviceGroupName'),
+        });
+      }
+      FLOW.store.commit();
     },
 
     deleteGroupConfirm(groupId) {
