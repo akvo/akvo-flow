@@ -13,6 +13,7 @@ export default function DevicesGroupList() {
     selectedDeviceGroupIds,
     setCurrentTable,
     onDeleteGroup,
+    addNewGroup,
   } = useContext(DevicesTabContext);
 
   const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
@@ -30,7 +31,7 @@ export default function DevicesGroupList() {
         <nav className="dataTabMenu">
           <ul>
             <li>
-              <button type="button" onClick={() => alert('add a group')}>
+              <button type="button" onClick={addNewGroup}>
                 {strings.navText.newGroup}
               </button>
             </li>
