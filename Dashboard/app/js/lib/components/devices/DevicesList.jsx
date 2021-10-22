@@ -139,10 +139,6 @@ export default function DevicesList() {
 DevicesList.propTypes = {
   devices: PropTypes.array,
   devicesGroup: PropTypes.array,
-  setSwitchTable: PropTypes.func,
-  mouseEnter: PropTypes.func,
-  mouseLeave: PropTypes.func,
-  mouseMove: PropTypes.func,
   showRemoveFromGroupDialog: PropTypes.func,
   strings: PropTypes.object,
 };
@@ -150,10 +146,6 @@ DevicesList.propTypes = {
 DevicesList.defaultProps = {
   devices: [],
   devicesGroup: [],
-  setSwitchTable: () => null,
-  mouseEnter: () => null,
-  mouseLeave: () => null,
-  mouseMove: () => null,
   showRemoveFromGroupDialog: () => null,
   strings: {},
 };

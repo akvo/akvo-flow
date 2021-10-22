@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
 
@@ -83,13 +82,3 @@ export default function DevicesGroupList() {
     </>
   );
 }
-
-DevicesGroupList.propTypes = {
-  selectDevice: PropTypes.func,
-  setSwitchTable: PropTypes.func,
-};
-
-DevicesGroupList.defaultProps = {
-  selectDevice: () => null,
-  setSwitchTable: () => null,
-};
