@@ -33,8 +33,12 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      if (!FLOW.deviceControl.content || !FLOW.deviceControl.content.isLoaded) return;
-      if (!FLOW.deviceGroupControl.content.isLoaded) return;
+      if (
+        !FLOW.deviceControl.content ||
+        !FLOW.deviceControl.content.isLoaded ||
+        !FLOW.deviceGroupControl.content.isLoaded
+      )
+        return;
       const props = this.getProps();
       this.reactRender(<DevicesTab {...props} />);
     },
