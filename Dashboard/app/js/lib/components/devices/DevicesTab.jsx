@@ -387,4 +387,5 @@ DevicesTab.defaultProps = {
   strings: {},
   selectedDeviceGroup: null,
   onDeleteGroup: () => null,
+  addNewGroup: () => null,
 };
