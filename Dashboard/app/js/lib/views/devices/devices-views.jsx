@@ -13,7 +13,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.dialogControl.deleteGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
-    'this.newDeviceGroupName': 'renderReactSide',
   }),
   {
     init() {
@@ -278,12 +277,11 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     addNewGroup() {
-      // const newName = 'New group';
       const allGroup = FLOW.deviceGroupControl
         .get('content')
         .getEach('_data')
         .getEach('attributes');
-      this.set('newDeviceGroupName', `newName${[allGroup.length - 1]}`);
+      this.set('newDeviceGroupName', `New group[${[allGroup.length - 1]}]`);
       if (this.get('newDeviceGroupName') !== null) {
         FLOW.store.createRecord(FLOW.DeviceGroup, {
           code: this.get('newDeviceGroupName'),
