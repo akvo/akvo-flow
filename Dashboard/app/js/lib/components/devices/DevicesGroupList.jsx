@@ -14,6 +14,9 @@ export default function DevicesGroupList() {
     setCurrentTable,
     onDeleteGroup,
     addNewGroup,
+    toggleEditButton,
+    selectedEditGroupId,
+    renameGroup,
   } = useContext(DevicesTabContext);
 
   const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
@@ -58,26 +61,49 @@ export default function DevicesGroupList() {
           </tr>
         </thead>
         <tbody>
-          {allGroups.map(group => (
-            <tr key={group.keyId}>
-              <td className="selection">
-                <input
-                  type="checkBox"
-                  checked={selectedDeviceGroupIds.includes(group.keyId)}
-                  onChange={() => selectGroup(group.keyId)}
-                />
-              </td>
-              <td className="deviceGroup">{group.code}</td>
-              <td>
-                <div
-                  onClick={() => onDeleteGroup(group.keyId)}
-                  onKeyDown={() => onDeleteGroup(group.keyId)}
-                >
-                  {strings.delete}
-                </div>
-              </td>
-            </tr>
-          ))}
+          {allGroups.map(group => {
+            const selectedToEdit = selectedEditGroupId === group.keyId;
+            return (
+              <tr key={group.keyId}>
+                <td className="selection">
+                  <input
+                    type="checkBox"
+                    checked={selectedDeviceGroupIds.includes(group.keyId)}
+                    onChange={() => selectGroup(group.keyId)}
+                  />
+                </td>
+                <td className="deviceGroup">
+                  <button
+                    type="button"
+                    id={group.keyId}
+                    onClick={toggleEditButton}
+                    className={selectedToEdit ? `saveGroupName` : `editGroupName`}
+                  >
+                    {selectedToEdit ? `Save group name` : `Edit group name`}
+                  </button>
+                  <input
+                    type="text"
+                    id={group.keyId}
+                    className="editGroupInput"
+                    style={{ display: selectedToEdit ? 'block' : 'none' }}
+                    defaultValue={group.code}
+                    onChange={e => renameGroup({ id: group.keyId, value: e.target.value })}
+                  />
+                  <span style={{ display: selectedToEdit ? 'none' : 'block' }}>
+                    {group.code}
+                  </span>
+                </td>
+                <td>
+                  <div
+                    onClick={() => onDeleteGroup(group.keyId)}
+                    onKeyDown={() => onDeleteGroup(group.keyId)}
+                  >
+                    {strings.delete}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </>
