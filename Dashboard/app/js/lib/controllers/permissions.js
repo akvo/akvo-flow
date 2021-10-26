@@ -1,12 +1,13 @@
 FLOW.permControl = Ember.Controller.create({
-
   /* Given an entity, process the permissions settings for the current user
     and return the permissions associated with that entity.  Entity is an Ember object */
   permissions(entity) {
     let permissions = [];
     const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
 
-    if (!currentUserPermissions || !entity) { return []; }
+    if (!currentUserPermissions || !entity) {
+      return [];
+    }
 
     // first check current object id
     const keyId = entity.get('keyId');
@@ -23,7 +24,7 @@ FLOW.permControl = Ember.Controller.create({
     for (let i = 0; i < ancestorIds.length; i++) {
       if (ancestorIds[i] in currentUserPermissions) {
         if (currentUserPermissions[ancestorIds[i]]) {
-          currentUserPermissions[ancestorIds[i]].forEach((item) => {
+          currentUserPermissions[ancestorIds[i]].forEach(item => {
             if (permissions.indexOf(item) < 0) {
               permissions.push(item);
             }
@@ -40,7 +41,7 @@ FLOW.permControl = Ember.Controller.create({
   canDeleteData(ancestorIds) {
     const pathPermissions = FLOW.currentUser.get('pathPermissions');
     let canDelete = false;
-    ancestorIds.forEach((id) => {
+    ancestorIds.forEach(id => {
       if (id in pathPermissions && pathPermissions[id].indexOf('DATA_DELETE') > -1) {
         canDelete = true;
       }
@@ -92,7 +93,6 @@ FLOW.permControl = Ember.Controller.create({
     return permissions && permissions.indexOf('DATA_READ') > -1;
   },
 });
-
 
 FLOW.dialogControl = Ember.Object.create({
   delS: 'delS',
@@ -159,6 +159,7 @@ FLOW.dialogControl = Ember.Object.create({
       case 'delDeviceGroup':
         this.set('header', Ember.String.loc('_device_group_delete_header'));
         this.set('message', Ember.String.loc('_this_cant_be_undo'));
+        this.set('delGroupId', event.groupId);
         this.set('showDialog', true);
         break;
 
@@ -176,13 +177,18 @@ FLOW.dialogControl = Ember.Object.create({
           this.set('showOKDisabled', true);
           const self = this;
           const instanceDeleted = event.contexts[1];
-          const submissions = FLOW.SurveyInstance.find({surveyedLocaleId: instanceDeleted.get('surveyedLocaleId')});
+          const submissions = FLOW.SurveyInstance.find({
+            surveyedLocaleId: instanceDeleted.get('surveyedLocaleId'),
+          });
           submissions.on('didLoad', () => {
             this.set('showOKDisabled', false);
             const numberOfSubmissions = submissions.get('content').length;
             const numberMonitoringSubmissions = numberOfSubmissions - 1;
             if (numberMonitoringSubmissions > 0) {
-              self.set('message', Ember.String.loc('_delete_all_monitoring_forms', [numberMonitoringSubmissions]));
+              self.set(
+                'message',
+                Ember.String.loc('_delete_all_monitoring_forms', [numberMonitoringSubmissions])
+              );
             }
           });
         }
@@ -206,7 +212,9 @@ FLOW.dialogControl = Ember.Object.create({
   },
 
   isRegistrationFormInstance(instanceDeleted) {
-    const registrationFormId = FLOW.selectedControl.selectedSurvey && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    const registrationFormId =
+      FLOW.selectedControl.selectedSurvey &&
+      FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
     const instanceFormId = instanceDeleted && instanceDeleted.get('surveyId');
     return registrationFormId && instanceFormId && registrationFormId === instanceFormId;
   },
@@ -247,7 +255,7 @@ FLOW.dialogControl = Ember.Object.create({
 
       case 'delDeviceGroup':
         this.set('showDialog', false);
-        view.deleteDeviceGroup.apply(view, arguments);
+        this.set('deleteGroupConfirm', true);
         break;
 
       case 'delSI':
