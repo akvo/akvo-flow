@@ -66,8 +66,10 @@ export default class DevicesTab extends React.Component {
       setCurrentTable: this.setCurrentTable,
       onDeleteGroup: this.props.onDeleteGroup,
       addNewGroup: this.props.addNewGroup,
+      toggleEditButton: this.props.toggleEditButton,
+      selectedEditGroupId: this.props.selectedEditGroupId,
+      renameGroup: this.props.renameGroup,
     };
-    // FLOW.selectedControl.set('selectedDevice', true);
 
     return (
       <DevicesTabContext.Provider value={contextData}>
@@ -98,6 +100,9 @@ DevicesTab.propTypes = {
   selectedDeviceGroup: PropTypes.bool,
   onDeleteGroup: PropTypes.func,
   addNewGroup: PropTypes.func,
+  toggleEditButton: PropTypes.func,
+  selectedEditGroupId: PropTypes.number,
+  renameGroup: PropTypes.func,
 };
 
 DevicesTab.defaultProps = {
@@ -114,4 +119,7 @@ DevicesTab.defaultProps = {
   selectedDeviceGroup: null,
   onDeleteGroup: () => null,
   addNewGroup: () => null,
+  toggleEditButton: () => null,
+  selectedEditGroupId: 0,
+  renameGroup: () => null,
 };
