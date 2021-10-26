@@ -258,6 +258,16 @@ a.btn {
   }
 }
 
+.deviceGroup {
+  display: flex;
+  align-items: center;
+  span,
+  input {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 a,
 a:link,
 a:visited,
@@ -2190,6 +2200,34 @@ li.aSurvey {
         }
       }
     }
+  }
+}
+
+button.editGroupName {
+  display: inline-block;
+  width: 30px;
+  background: url(/admin/images/IconEditGreyLight.svg) center center no-repeat;
+  background-size: 25px;
+  text-indent: -9999px;
+  opacity: 0.5;
+  &:hover {
+    background: url(/admin/images/IconEditOrange.svg) center center no-repeat;
+    background-size: 25px;
+    opacity: 1;
+  }
+}
+
+button.saveGroupName {
+  @extend .editFolderName;
+  background: url(/admin/images/IconSave.svg) center center no-repeat;
+  background-size: 70px 70px;
+  text-indent: -9999px;
+  width: 100%;
+  max-width: 40px;
+  &:hover {
+    background: url(/admin/images/IconSaveOrange.svg) center center no-repeat;
+    background-size: 70px 70px;
+    opacity: 1;
   }
 }
 
