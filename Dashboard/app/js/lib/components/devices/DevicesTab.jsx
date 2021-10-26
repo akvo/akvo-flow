@@ -344,7 +344,6 @@ export default class DevicesTab extends React.Component {
       onSortDevices: this.sortDevices,
       onSortGroup: this.sortGroup,
     };
-    // FLOW.selectedControl.set('selectedDevice', true);
 
     return (
       <DevicesTabContext.Provider value={contextData}>
@@ -388,4 +387,7 @@ DevicesTab.defaultProps = {
   selectedDeviceGroup: null,
   onDeleteGroup: () => null,
   addNewGroup: () => null,
+  toggleEditButton: () => null,
+  selectedEditGroupId: 0,
+  renameGroup: () => null,
 };
