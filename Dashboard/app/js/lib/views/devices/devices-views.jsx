@@ -13,7 +13,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.dialogControl.delGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
-    'this.selectedEditGroupId': 'renderReactSide',
   }),
   {
     init() {
@@ -27,8 +26,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
       this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
-      this.toggleEditButton = this.toggleEditButton.bind(this);
-      this.renameGroup = this.renameGroup.bind(this);
     },
 
     didInsertElement(...args) {
@@ -52,9 +49,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         onSortDevices: this.devicesSort,
         onSortGroup: this.GroupSort,
         onDeleteGroup: this.deleteGroupConfirm,
-        toggleEditButton: this.toggleEditButton,
-        selectedEditGroupId: this.selectedEditGroupId,
-        renameGroup: this.renameGroup,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
@@ -237,49 +231,11 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       }
     },
 
-    // All functionalities that relates to group
-    toggleEditButton(e) {
-      const findButton = this.get('devicesGroup').find(
-        group => group.keyId === Number(e.target.id)
-      );
-      if (findButton) {
-        if (findButton.keyId === this.selectedEditGroupId) {
-          this.set('selectedEditGroupId', null);
-        } else {
-          this.set('selectedEditGroupId', findButton.keyId);
-        }
-      }
-    },
-
-    renameGroup({ id, value }) {
-      const findGroup = this.get('devicesGroup').find(group => group.keyId === id);
-      const selectedDeviceGroupId = findGroup.keyId;
-
-      // this could have been changed in the UI
-      const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
-      originalSelectedDeviceGroup.set('code', value);
-
-      // Update the device group name in the devices list
-      const allDevices = FLOW.store.filter(FLOW.Device, () => true);
-      allDevices.forEach(item => {
-        if (parseInt(item.get('deviceGroup'), 10) == selectedDeviceGroupId) {
-          item.set('deviceGroupName', value);
-        }
-      });
-
-      if (this.get('newDeviceGroupName') !== null) {
-        FLOW.store.createRecord(FLOW.DeviceGroup, {
-          code: this.get('newDeviceGroupName'),
-        });
-      }
-    },
-
     deleteGroupConfirm(groupId) {
       FLOW.dialogControl.confirm({
         context: FLOW.dialogControl.delDeviceGroup,
         groupId,
       });
-    //  this.deleteGroup()
     },
 
     deleteGroup() {
