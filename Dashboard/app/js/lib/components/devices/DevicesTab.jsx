@@ -310,19 +310,54 @@ export default class DevicesTab extends React.Component {
       code: `New group[${[this.state.devicesGroup.length - 1]}]`,
       keyId: Date.now(),
     };
+
     this.setState(state => ({
       devicesGroup: [...state.devicesGroup, newGroup],
     }));
-    if (this.state.newDeviceGroupName !== null) {
-      FLOW.store.createRecord(FLOW.DeviceGroup, {
-        code: `New group[${[this.state.devicesGroup.length - 1]}]`,
-      });
-    }
+
+    FLOW.store.createRecord(FLOW.DeviceGroup, {
+      code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      keyId: newGroup.keyId,
+      id: newGroup.keyId,
+    });
     FLOW.store.commit();
   };
 
+  renameGroup = ({ id, value }) => {
+    const findGroup = this.state.devicesGroup.find(group => group.keyId == id);
+    const selectedDeviceGroupId = findGroup.keyId;
+    // this could have been changed in the UI
+    findGroup.code = value;
+    const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
+    originalSelectedDeviceGroup.set('code', findGroup.code);
+
+    // Update the device group name in the devices list
+    const allDevices = FLOW.store.filter(FLOW.Device, () => true);
+    allDevices.forEach(item => {
+      if (parseInt(item.get('deviceGroup'), 10) == selectedDeviceGroupId) {
+        item.set('deviceGroupName', findGroup.code);
+      }
+    });
+
+    if (this.state.newDeviceGroupName.length !== 0) {
+      FLOW.store.createRecord(FLOW.DeviceGroup, {
+        code: this.state.newDeviceGroupName,
+      });
+    }
+  };
+
+  toggleEditButton = e => {
+    const findButton = this.state.devicesGroup.find(group => group.keyId === Number(e.target.id));
+    if (findButton) {
+      if (findButton.keyId === this.state.selectedEditGroupId) {
+        this.setState({ selectedEditGroupId: null });
+      } else {
+        this.setState({ selectedEditGroupId: findButton.keyId });
+      }
+    }
+  };
+
   render() {
-    console.log(FLOW.dialogControl.delGroupConfirm);
     const contextData = {
       deviceToBlockIds: this.state.deviceToBlockIds,
       groupToDeleteId: this.state.groupToDeleteId,
