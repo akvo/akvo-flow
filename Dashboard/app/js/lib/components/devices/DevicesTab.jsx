@@ -305,7 +305,24 @@ export default class DevicesTab extends React.Component {
     });
   };
 
+  addNewGroup = () => {
+    const newGroup = {
+      code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      keyId: Date.now(),
+    };
+    this.setState(state => ({
+      devicesGroup: [...state.devicesGroup, newGroup],
+    }));
+    if (this.state.newDeviceGroupName !== null) {
+      FLOW.store.createRecord(FLOW.DeviceGroup, {
+        code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      });
+    }
+    FLOW.store.commit();
+  };
+
   render() {
+    console.log(FLOW.dialogControl.delGroupConfirm);
     const contextData = {
       deviceToBlockIds: this.state.deviceToBlockIds,
       groupToDeleteId: this.state.groupToDeleteId,
