@@ -8,9 +8,9 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
-    'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
+    'FLOW.deviceGroupControl.content.@each': 'renderReactSide',
     'this.showRemoveFromGroupDialogBool': 'renderReactSide',
-    'FLOW.dialogControl.deleteGroupConfirm': 'deleteGroup',
+    'FLOW.dialogControl.delGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
     'this.selectedEditGroupId': 'renderReactSide',
@@ -27,7 +27,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
       this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
-      this.addNewGroup = this.addNewGroup.bind(this);
       this.toggleEditButton = this.toggleEditButton.bind(this);
       this.renameGroup = this.renameGroup.bind(this);
     },
@@ -37,12 +36,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      if (
-        !FLOW.deviceControl.content ||
-        !FLOW.deviceControl.content.isLoaded ||
-        !FLOW.deviceGroupControl.content.isLoaded
-      )
-        return;
+      if (!FLOW.deviceControl.content || !FLOW.deviceControl.content.isLoaded) return;
       const props = this.getProps();
       this.reactRender(<DevicesTab {...props} />);
     },
@@ -52,7 +46,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         devices: this.get('devices'),
         devicesGroup: this.get('devicesGroup'),
         doAddToGroup: this.doAddToGroup,
-        addNewGroup: this.addNewGroup,
         showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
         showRemoveFromGroupDialogBool: this.showRemoveFromGroupDialogBool,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
@@ -91,19 +84,19 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       };
     },
 
-    devices: Ember.computed(function() {
+    devices: Ember.computed(() => {
       return FLOW.deviceControl
         .get('content')
         .getEach('_data')
         .getEach('attributes');
     }).property('FLOW.deviceControl.content.isLoaded'),
 
-    devicesGroup: Ember.computed(function() {
+    devicesGroup: Ember.computed(() => {
       return FLOW.deviceGroupControl
         .get('content')
         .getEach('_data')
         .getEach('attributes');
-    }).property('FLOW.deviceGroupControl.content.isLoaded'),
+    }).property('FLOW.deviceGroupControl.content.@each'),
 
     editGroupName: false,
     sortAscending: false,
@@ -245,20 +238,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     },
 
     // All functionalities that relates to group
-    addNewGroup() {
-      const allGroup = FLOW.deviceGroupControl
-        .get('content')
-        .getEach('_data')
-        .getEach('attributes');
-      this.set('newDeviceGroupName', `New group[${[allGroup.length - 1]}]`);
-      if (this.get('newDeviceGroupName') !== null) {
-        FLOW.store.createRecord(FLOW.DeviceGroup, {
-          code: this.get('newDeviceGroupName'),
-        });
-      }
-      FLOW.store.commit();
-    },
-
     toggleEditButton(e) {
       const findButton = this.get('devicesGroup').find(
         group => group.keyId === Number(e.target.id)
@@ -300,10 +279,11 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         context: FLOW.dialogControl.delDeviceGroup,
         groupId,
       });
+    //  this.deleteGroup()
     },
 
     deleteGroup() {
-      if (FLOW.dialogControl.deleteGroupConfirm) {
+      if (FLOW.dialogControl.delGroupConfirm) {
         const devicesGroup = FLOW.store.find(
           FLOW.DeviceGroup,
           FLOW.dialogControl.get('delGroupId')
