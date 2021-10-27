@@ -18,9 +18,7 @@ export default function DevicesGroupList() {
     selectedEditGroupId,
     renameGroup,
   } = useContext(DevicesTabContext);
-
   const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
-
   return (
     <>
       <div className="deviceControls">
@@ -75,6 +73,7 @@ export default function DevicesGroupList() {
                 <td className="deviceGroup">
                   <button
                     type="button"
+                    name={selectedToEdit ? 'save' : 'edit'}
                     id={group.keyId}
                     onClick={toggleEditButton}
                     className={selectedToEdit ? `saveGroupName` : `editGroupName`}
@@ -89,9 +88,7 @@ export default function DevicesGroupList() {
                     defaultValue={group.code}
                     onChange={e => renameGroup({ id: group.keyId, value: e.target.value })}
                   />
-                  <span style={{ display: selectedToEdit ? 'none' : 'block' }}>
-                    {group.code}
-                  </span>
+                  <span style={{ display: selectedToEdit ? 'none' : 'block' }}>{group.code}</span>
                 </td>
                 <td>
                   <div

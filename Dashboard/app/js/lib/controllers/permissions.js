@@ -123,6 +123,7 @@ FLOW.dialogControl = Ember.Object.create({
     this.set('showOK', true);
     this.set('showCANCEL', true);
     this.set('delAssignmentConfirm', false);
+    this.set('delGroupConfirm', false);
 
     switch (this.get('activeAction')) {
       case 'delS':
@@ -255,7 +256,7 @@ FLOW.dialogControl = Ember.Object.create({
 
       case 'delDeviceGroup':
         this.set('showDialog', false);
-        this.set('deleteGroupConfirm', true);
+        this.set('delGroupConfirm', true);
         break;
 
       case 'delSI':

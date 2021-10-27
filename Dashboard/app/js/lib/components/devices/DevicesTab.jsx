@@ -13,6 +13,7 @@ export default class DevicesTab extends React.Component {
     devicesGroup: this.props.devicesGroup,
     selectedDeviceIds: [],
     selectedDeviceGroupIds: [],
+    newDeviceGroupName: '',
   };
 
   selectDevice = id => {
@@ -46,7 +47,24 @@ export default class DevicesTab extends React.Component {
     this.setState({ currentTable: tableName });
   };
 
+  addNewGroup = () => {
+    const newGroup = {
+      code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      keyId: Date.now(),
+    };
+    this.setState(state => ({
+      devicesGroup: [...state.devicesGroup, newGroup],
+    }));
+    if (this.state.newDeviceGroupName !== null) {
+      FLOW.store.createRecord(FLOW.DeviceGroup, {
+        code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      });
+    }
+    FLOW.store.commit();
+  };
+
   render() {
+    console.log(FLOW.dialogControl.delGroupConfirm);
     const contextData = {
       devices: this.state.devices,
       devicesGroup: this.state.devicesGroup,
@@ -65,7 +83,7 @@ export default class DevicesTab extends React.Component {
       currentTable: this.state.currentTable,
       setCurrentTable: this.setCurrentTable,
       onDeleteGroup: this.props.onDeleteGroup,
-      addNewGroup: this.props.addNewGroup,
+      addNewGroup: this.addNewGroup,
       toggleEditButton: this.props.toggleEditButton,
       selectedEditGroupId: this.props.selectedEditGroupId,
       renameGroup: this.props.renameGroup,
