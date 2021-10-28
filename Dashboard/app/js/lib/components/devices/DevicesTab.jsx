@@ -357,6 +357,14 @@ export default class DevicesTab extends React.Component {
     }
   };
 
+  showAddToGroupDialog = () => {
+    this.setState({ showAddToGroupDialogBool: true });
+  };
+
+  cancelAddToGroup = () => {
+    this.setState({ showAddToGroupDialogBool: false });
+  };
+
   render() {
     const contextData = {
       deviceToBlockIds: this.state.deviceToBlockIds,
