@@ -71,6 +71,9 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
           },
           dialogText: {
             warningText: Ember.String.loc('_remove_devices_from_device_group'),
+            selectGroupText: Ember.String.loc('_select_existing_device_group'),
+            chooseGroup: Ember.String.loc('_choose_an_existing_device_group_from_the_list'),
+            addDeviceToGroup: Ember.String.loc('_add_devices_to_device_group'),
             save: Ember.String.loc('_ok'),
             cancel: Ember.String.loc('_cancel'),
           },
