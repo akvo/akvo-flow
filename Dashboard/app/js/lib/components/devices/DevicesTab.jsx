@@ -5,16 +5,18 @@ import DevicesList from './DevicesList';
 import RemoveDialog from './deviceTabDialog/RemoveDialog';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
+import AddToGroupDialog from './deviceTabDialog/AddToGroupDialog';
 
 export default class DevicesTab extends React.Component {
   state = {
     devices: this.props.devices,
     currentTable: false,
-    devicesGroup: this.props.devicesGroup,
+    devicesGroup: this.props.devicesGroup.filter(value => Object.keys(value).length !== 0),
     selectedDeviceIds: [],
     selectedDeviceGroupIds: [],
     newDeviceGroupName: '',
     selectedEditGroupId: null,
+    showAddToGroupDialogBool: null,
   };
 
   selectDevice = id => {
@@ -100,6 +102,14 @@ export default class DevicesTab extends React.Component {
     }
   };
 
+  showAddToGroupDialog = () => {
+    this.setState({ showAddToGroupDialogBool: true });
+  };
+
+  cancelAddToGroup = () => {
+    this.setState({ showAddToGroupDialogBool: false });
+  };
+
   render() {
     const contextData = {
       devices: this.state.devices,
@@ -123,6 +133,9 @@ export default class DevicesTab extends React.Component {
       toggleEditButton: this.toggleEditButton,
       selectedEditGroupId: this.state.selectedEditGroupId,
       renameGroup: this.renameGroup,
+      showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
+      showAddToGroupDialog: this.showAddToGroupDialog,
+      cancelAddToGroup: this.cancelAddToGroup,
     };
 
     return (
@@ -134,6 +147,7 @@ export default class DevicesTab extends React.Component {
             <DevicesList />
           )}
           <RemoveDialog warningText={this.props.strings.dialogText.warningText} />
+          <AddToGroupDialog />
         </section>
       </DevicesTabContext.Provider>
     );
