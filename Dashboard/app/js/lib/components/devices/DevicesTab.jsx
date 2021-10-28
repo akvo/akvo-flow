@@ -324,18 +324,19 @@ export default class DevicesTab extends React.Component {
   };
 
   renameGroup = ({ id, value }) => {
-    const findGroup = this.state.devicesGroup.find(group => group.keyId == id);
+    const findGroup = this.state.devicesGroup.find(group => group.keyId === id);
     const selectedDeviceGroupId = findGroup.keyId;
+
     // this could have been changed in the UI
-    findGroup.code = value;
     const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
-    originalSelectedDeviceGroup.set('code', findGroup.code);
+    originalSelectedDeviceGroup.set('code', value);
+    findGroup.code = value;
 
     // Update the device group name in the devices list
     const allDevices = FLOW.store.filter(FLOW.Device, () => true);
     allDevices.forEach(item => {
       if (parseInt(item.get('deviceGroup'), 10) == selectedDeviceGroupId) {
-        item.set('deviceGroupName', findGroup.code);
+        item.set('deviceGroupName', value);
       }
     });
 
@@ -344,6 +345,7 @@ export default class DevicesTab extends React.Component {
         code: this.state.newDeviceGroupName,
       });
     }
+    FLOW.store.commit();
   };
 
   toggleEditButton = e => {
