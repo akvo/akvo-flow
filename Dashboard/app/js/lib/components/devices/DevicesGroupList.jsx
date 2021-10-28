@@ -18,7 +18,7 @@ export default function DevicesGroupList() {
     selectedEditGroupId,
     renameGroup,
   } = useContext(DevicesTabContext);
-  const allGroups = devicesGroup.filter(value => Object.keys(value).length !== 0);
+
   return (
     <>
       <div className="deviceControls">
@@ -59,7 +59,7 @@ export default function DevicesGroupList() {
           </tr>
         </thead>
         <tbody>
-          {allGroups.map(group => {
+          {devicesGroup.map(group => {
             const selectedToEdit = selectedEditGroupId === group.keyId;
             return (
               <tr key={group.keyId}>
