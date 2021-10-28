@@ -14,6 +14,7 @@ export default function DevicesList() {
     selectedDeviceIds,
     tableHeaderClass,
     setCurrentTable,
+    showAddToGroupDialog,
   } = useContext(DevicesTabContext);
 
   return (
@@ -32,7 +33,7 @@ export default function DevicesList() {
               <button
                 type="button"
                 className={selectedDeviceIds.length !== 0 ? '' : 'disabled'}
-                onClick={() => selectedDeviceIds.length !== 0 && alert('Added to device group')}
+                onClick={() => selectedDeviceIds.length !== 0 && showAddToGroupDialog()}
               >
                 {strings.navText.addToDeviceGroup}
               </button>
@@ -40,8 +41,8 @@ export default function DevicesList() {
             <li>
               <button
                 type="button"
-                className={selectedDeviceIds.length === 0 ? 'disabled' : ''}
-                onClick={showRemoveFromGroupDialog}
+                className={selectedDeviceIds.length !== 0 ? '' : 'disabled'}
+                onClick={() => selectedDeviceIds.length !== 0 && showRemoveFromGroupDialog()}
               >
                 {strings.navText.removeFromDeviceGroup}
               </button>
