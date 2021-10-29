@@ -13,6 +13,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'FLOW.dialogControl.delGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
+    'this.showAddToGroupDialogBool': 'renderReactSide',
   }),
   {
     init() {

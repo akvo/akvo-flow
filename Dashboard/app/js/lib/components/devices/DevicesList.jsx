@@ -113,7 +113,7 @@ export default function DevicesList() {
                 <input
                   type="checkBox"
                   checked={selectedDeviceIds.includes(device.keyId)}
-                  onChange={() => selectDevice(device.keyId)}
+                  onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
                 />
               </td>
               <td className="EMEI">{device.esn}</td>
