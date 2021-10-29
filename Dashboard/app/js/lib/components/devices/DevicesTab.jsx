@@ -31,6 +31,7 @@ export default class DevicesTab extends React.Component {
     return this.setState({ selectedDeviceIds: [...deviceIds, id] });
   };
 
+  // ADD TO GROUP DIALOG
   showAddToGroupDialog = () => {
     this.setState({ showAddToGroupDialogBool: true });
   };
@@ -62,6 +63,7 @@ export default class DevicesTab extends React.Component {
     this.cancelAddToGroup();
   };
 
+  // REMOVE FROM GROUP DIALOG
   cancelAddToGroup = () => {
     this.setState({ showAddToGroupDialogBool: false });
   };
@@ -74,7 +76,20 @@ export default class DevicesTab extends React.Component {
     this.setState({ showRemoveFromGroupDialogBool: false });
   };
 
-  doRemoveFromGroup = () => {
+  doRemoveFromGroup = dev => {
+    let devices = [];
+
+    // Find all devices that have the same keyId as in the selectedDeviceIds
+    for (let i = 0; i < dev.length; i++) {
+      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+      devices = [...devices, filterDevices];
+    }
+
+    devices.forEach(item => {
+      item.deviceGroupName = null;
+      item.deviceGroup = null;
+    });
+
     this.cancelRemoveFromGroup();
   };
 
