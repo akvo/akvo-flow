@@ -7,6 +7,7 @@ export default function RemoveDialog() {
     showRemoveFromGroupDialogBool,
     cancelRemoveFromGroup,
     doRemoveFromGroup,
+    selectedDeviceIds,
     strings,
   } = useContext(DevicesTabContext);
 
@@ -19,7 +20,11 @@ export default function RemoveDialog() {
           <div className="buttons menuCentre">
             <ul>
               <li>
-                <button type="button" onClick={doRemoveFromGroup} className="ok smallBtn">
+                <button
+                  type="button"
+                  onClick={() => doRemoveFromGroup(selectedDeviceIds)}
+                  className="ok smallBtn"
+                >
                   {strings.dialogText.save}
                 </button>
               </li>
