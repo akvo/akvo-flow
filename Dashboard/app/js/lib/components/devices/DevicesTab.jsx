@@ -1,3 +1,5 @@
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/no-unused-state */
 import React from 'react';
 import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
@@ -357,10 +359,6 @@ export default class DevicesTab extends React.Component {
         this.setState({ selectedEditGroupId: findButton.keyId });
       }
     }
-  };
-
-  showAddToGroupDialog = () => {
-    this.setState({ showAddToGroupDialogBool: true });
   };
 
   state = {
