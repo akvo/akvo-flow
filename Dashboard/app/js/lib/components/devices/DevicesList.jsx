@@ -6,7 +6,6 @@ import TABLE_NAMES from './constants';
 export default function DevicesList() {
   const {
     devices,
-    showRemoveFromGroupDialog,
     strings,
     onSortDevices,
     sortProperties,
@@ -15,6 +14,7 @@ export default function DevicesList() {
     tableHeaderClass,
     setCurrentTable,
     showAddToGroupDialog,
+    showRemoveFromGroupDialog,
   } = useContext(DevicesTabContext);
 
   return (
