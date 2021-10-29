@@ -66,6 +66,18 @@ export default class DevicesTab extends React.Component {
     this.setState({ showAddToGroupDialogBool: false });
   };
 
+  showRemoveFromGroupDialog = () => {
+    this.setState({ showRemoveFromGroupDialogBool: true });
+  };
+
+  cancelRemoveFromGroup = () => {
+    this.setState({ showRemoveFromGroupDialogBool: false });
+  };
+
+  doRemoveFromGroup = () => {
+    this.cancelRemoveFromGroup();
+  };
+
   // DEVICES GROUP LIST
 
   selectGroup = id => {
@@ -142,9 +154,9 @@ export default class DevicesTab extends React.Component {
     selectedEditGroupId: null,
     showAddToGroupDialogBool: null,
     selectedDevices: [],
-    showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
-    showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
-    cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
+    showRemoveFromGroupDialogBool: false,
+    showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
+    cancelRemoveFromGroup: this.cancelRemoveFromGroup,
     onSortDevices: this.props.onSortDevices,
     onSortGroup: this.props.onSortGroup,
     strings: this.props.strings,
@@ -162,6 +174,7 @@ export default class DevicesTab extends React.Component {
     addDeviceToGroup: this.addDeviceToGroup,
     dialogGroupSelectionChange: this.dialogGroupSelectionChange,
     dialogGroupSelection: null,
+    doRemoveFromGroup: this.doRemoveFromGroup,
   };
 
   render() {
@@ -173,7 +186,7 @@ export default class DevicesTab extends React.Component {
           ) : (
             <DevicesList />
           )}
-          <RemoveDialog warningText={this.props.strings.dialogText.warningText} />
+          <RemoveDialog />
           <AddToGroupDialog />
         </section>
       </DevicesTabContext.Provider>
