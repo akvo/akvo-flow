@@ -1,3 +1,5 @@
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/no-unused-state */
 import React from 'react';
 import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
@@ -359,10 +361,6 @@ export default class DevicesTab extends React.Component {
     }
   };
 
-  showAddToGroupDialog = () => {
-    this.setState({ showAddToGroupDialogBool: true });
-  };
-
   state = {
     devices: this.props.devices,
     currentTable: false,
@@ -474,10 +472,5 @@ DevicesTab.defaultProps = {
   onSortGroup: () => null,
   sortProperties: {},
   strings: {},
-  selectedDeviceGroup: null,
   onDeleteGroup: () => null,
-  addNewGroup: () => null,
-  toggleEditButton: () => null,
-  selectedEditGroupId: 0,
-  renameGroup: () => null,
 };
