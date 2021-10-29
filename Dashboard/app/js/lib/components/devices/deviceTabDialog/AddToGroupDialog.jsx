@@ -28,13 +28,6 @@ export default function AddToGroupDialog() {
               </option>
             ))}
           </select>
-          {/* {{view Ember.Select
-              contentBinding="FLOW.deviceGroupControl.contentNoUnassigned"
-              selectionBinding="view.selectedDeviceGroup"
-              optionLabelPath="content.code"
-              optionValuePath="content.keyId"
-              prompt=""
-              promptBinding="Ember.STRINGS._select_existing_device_group"}} */}
           <div className="buttons menuCentre">
             <ul>
               <li>
