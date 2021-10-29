@@ -1,3 +1,5 @@
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/no-unused-state */
 import React from 'react';
 import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
@@ -8,49 +10,8 @@ import TABLE_NAMES from './constants';
 import AddToGroupDialog from './deviceTabDialog/AddToGroupDialog';
 
 export default class DevicesTab extends React.Component {
-  selectDevice = (id, deviceIds) => {
-    this.setState(state => {
-      if (deviceIds.some(deviceId => id === deviceId)) {
-        const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
-        return { selectedDeviceIds: [...filterDevice] };
-      }
-      return { selectedDeviceIds: [...deviceIds, id] };
-    });
-  };
-
-  dialogGroupSelectionChange = e => {
-    const { code, keyId } = JSON.parse(e.target.value);
-    this.setState({ dialogGroupSelection: { code, keyId } });
-  };
-
-  addDeviceToGroup = dev => {
-    let devices = [];
-    for (let i = 0; i < dev.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
-      devices = [...devices, filterDevices];
-    }
-
-    devices.map(item => {
-      item.deviceGroupName = this.state.dialogGroupSelection.code;
-      item.deviceGroup = this.state.dialogGroupSelection.keyId;
-    });
-
-    this.cancelAddToGroup();
-    FLOW.store.commit();
-  };
-
-  cancelAddToGroup = () => {
-    this.setState({ showAddToGroupDialogBool: false });
-  };
-
-  selectGroup = id => {
-    this.setState(state => {
-      if (state.selectedDeviceGroupIds.some(keyId => id === keyId)) {
-        const filterGroup = state.selectedDeviceGroupIds.filter(keyId => id !== keyId);
-        return { selectedDeviceGroupIds: [...filterGroup] };
-      }
-      return { selectedDeviceGroupIds: [...state.selectedDeviceGroupIds, id] };
-    });
+  setCurrentTable = tableName => {
+    this.setState({ currentTable: tableName });
   };
 
   tableHeaderClass = () => {
@@ -60,8 +21,61 @@ export default class DevicesTab extends React.Component {
     return 'sorting_desc';
   };
 
-  setCurrentTable = tableName => {
-    this.setState({ currentTable: tableName });
+  // DEVICES LIST
+
+  selectDevice = (id, deviceIds) => {
+    if (deviceIds.some(deviceId => id === deviceId)) {
+      const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
+      return this.setState({ selectedDeviceIds: [...filterDevice] });
+    }
+    return this.setState({ selectedDeviceIds: [...deviceIds, id] });
+  };
+
+  showAddToGroupDialog = () => {
+    this.setState({ showAddToGroupDialogBool: true });
+  };
+
+  // Get the property of a selected group
+  dialogGroupSelectionChange = e => {
+    const { code, keyId } = JSON.parse(e.target.value);
+    this.setState({ dialogGroupSelection: { code, keyId } });
+  };
+
+  addDeviceToGroup = dev => {
+    let devices = [];
+
+    // Find all devices that have the same keyId as in the selectedDeviceIds
+    for (let i = 0; i < dev.length; i++) {
+      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+      devices = [...devices, filterDevices];
+    }
+
+    // Adding group property to the selected devices
+    devices.map(item => {
+      item.deviceGroupName = this.state.dialogGroupSelection.code;
+      item.deviceGroup = this.state.dialogGroupSelection.keyId;
+      return null;
+    });
+
+    FLOW.store.commit();
+
+    this.cancelAddToGroup();
+  };
+
+  cancelAddToGroup = () => {
+    this.setState({ showAddToGroupDialogBool: false });
+  };
+
+  // DEVICES GROUP LIST
+
+  selectGroup = id => {
+    this.setState(state => {
+      if (state.selectedDeviceGroupIds.some(keyId => id === keyId)) {
+        const filterGroup = state.selectedDeviceGroupIds.filter(keyId => id !== keyId);
+        return { selectedDeviceGroupIds: [...filterGroup] };
+      }
+      return { selectedDeviceGroupIds: [...state.selectedDeviceGroupIds, id] };
+    });
   };
 
   addNewGroup = () => {
@@ -116,10 +130,6 @@ export default class DevicesTab extends React.Component {
         this.setState({ selectedEditGroupId: findButton.keyId });
       }
     }
-  };
-
-  showAddToGroupDialog = () => {
-    this.setState({ showAddToGroupDialogBool: true });
   };
 
   state = {
@@ -180,14 +190,8 @@ DevicesTab.propTypes = {
   onSortDevices: PropTypes.func,
   strings: PropTypes.object,
   sortProperties: PropTypes.object,
-  doAddToGroup: PropTypes.func,
   onSortGroup: PropTypes.func,
-  selectedDeviceGroup: PropTypes.bool,
   onDeleteGroup: PropTypes.func,
-  addNewGroup: PropTypes.func,
-  toggleEditButton: PropTypes.func,
-  selectedEditGroupId: PropTypes.number,
-  renameGroup: PropTypes.func,
 };
 
 DevicesTab.defaultProps = {
@@ -197,14 +201,8 @@ DevicesTab.defaultProps = {
   showRemoveFromGroupDialog: () => null,
   cancelRemoveFromGroup: () => null,
   onSortDevices: () => null,
-  doAddToGroup: () => null,
   onSortGroup: () => null,
   sortProperties: {},
   strings: {},
-  selectedDeviceGroup: null,
   onDeleteGroup: () => null,
-  addNewGroup: () => null,
-  toggleEditButton: () => null,
-  selectedEditGroupId: 0,
-  renameGroup: () => null,
 };
