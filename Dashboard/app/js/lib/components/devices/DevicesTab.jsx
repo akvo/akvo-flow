@@ -363,8 +363,36 @@ export default class DevicesTab extends React.Component {
     this.setState({ showAddToGroupDialogBool: true });
   };
 
-  cancelAddToGroup = () => {
-    this.setState({ showAddToGroupDialogBool: false });
+  state = {
+    devices: this.props.devices,
+    currentTable: false,
+    devicesGroup: this.props.devicesGroup.filter(value => Object.keys(value).length !== 0),
+    selectedDeviceIds: [],
+    selectedDeviceGroupIds: [],
+    newDeviceGroupName: '',
+    selectedEditGroupId: null,
+    showAddToGroupDialogBool: null,
+    selectedDevices: [],
+    showRemoveFromGroupDialogBool: this.props.showRemoveFromGroupDialogBool,
+    showRemoveFromGroupDialog: this.props.showRemoveFromGroupDialog,
+    cancelRemoveFromGroup: this.props.cancelRemoveFromGroup,
+    onSortDevices: this.props.onSortDevices,
+    onSortGroup: this.props.onSortGroup,
+    strings: this.props.strings,
+    sortProperties: this.props.sortProperties,
+    selectDevice: this.selectDevice,
+    selectGroup: this.selectGroup,
+    tableHeaderClass: this.tableHeaderClass,
+    setCurrentTable: this.setCurrentTable,
+    onDeleteGroup: this.props.onDeleteGroup,
+    addNewGroup: this.addNewGroup,
+    toggleEditButton: this.toggleEditButton,
+    renameGroup: this.renameGroup,
+    showAddToGroupDialog: this.showAddToGroupDialog,
+    cancelAddToGroup: this.cancelAddToGroup,
+    addDeviceToGroup: this.addDeviceToGroup,
+    dialogGroupSelectionChange: this.dialogGroupSelectionChange,
+    dialogGroupSelection: null,
   };
 
   render() {
@@ -408,7 +436,7 @@ export default class DevicesTab extends React.Component {
     };
 
     return (
-      <DevicesTabContext.Provider value={contextData}>
+      <DevicesTabContext.Provider value={this.state}>
         <section id="devicesList">
           {this.state.currentTable === TABLE_NAMES.DEVICES_GROUP ? (
             <DevicesGroupList />
