@@ -308,8 +308,14 @@ export default class DevicesTab extends React.Component {
   };
 
   addNewGroup = () => {
+    FLOW.store.createRecord(FLOW.DeviceGroup, {
+      code: 'New group',
+      keyId: Date.now(),
+      id: Date.now(),
+    });
+
     const newGroup = {
-      code: `New group[${[this.state.devicesGroup.length - 1]}]`,
+      code: 'New group',
       keyId: Date.now(),
     };
 
@@ -317,11 +323,6 @@ export default class DevicesTab extends React.Component {
       devicesGroup: [...state.devicesGroup, newGroup],
     }));
 
-    FLOW.store.createRecord(FLOW.DeviceGroup, {
-      code: `New group[${[this.state.devicesGroup.length - 1]}]`,
-      keyId: newGroup.keyId,
-      id: newGroup.keyId,
-    });
     FLOW.store.commit();
   };
 
@@ -361,28 +362,60 @@ export default class DevicesTab extends React.Component {
     }
   };
 
+  deleteGroup = groupId => {
+    this.setState({ isShowDeleteDialog: true });
+    this.setState({ groupToDeleteId: groupId });
+  };
+
+  cancelDeletingGroup = () => {
+    this.setState({ isShowDeleteDialog: false });
+  };
+
+  deleteGroupConfirm = () => {
+    const devicesGroup = FLOW.store.find(FLOW.DeviceGroup, this.state.groupToDeleteId);
+
+    const filterDevicesGroup = this.state.devicesGroup.filter(
+      group => group.keyId !== Number(devicesGroup.id)
+    );
+
+    this.setState({
+      devicesGroup: [...filterDevicesGroup],
+    });
+
+    devicesGroup.deleteRecord();
+    FLOW.store.commit();
+
+    this.cancelDeletingGroup();
+  };
+
   state = {
+    isDelete: true,
+    groupToDeleteId: null,
+    cancelDeletingGroup: this.cancelDeletingGroup,
+    isShowDeleteDialog: false,
     devices: this.props.devices,
-    currentTable: false,
-    devicesGroup: this.props.devicesGroup.filter(value => Object.keys(value).length !== 0),
-    selectedDeviceIds: [],
-    selectedDeviceGroupIds: [],
-    newDeviceGroupName: '',
-    selectedEditGroupId: null,
-    showAddToGroupDialogBool: null,
-    selectedDevices: [],
-    showRemoveFromGroupDialogBool: false,
-    showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
-    cancelRemoveFromGroup: this.cancelRemoveFromGroup,
+    devicesGroup: this.props.devicesGroup,
     onSortDevices: this.props.onSortDevices,
     onSortGroup: this.props.onSortGroup,
     strings: this.props.strings,
     sortProperties: this.props.sortProperties,
+    selectedDeviceIds: [],
+    selectedDeviceGroupIds: [],
+    selectedDevices: [],
+    newDeviceGroupName: '',
+    currentTable: false,
+    selectedEditGroupId: null,
+    showAddToGroupDialogBool: null,
+    dialogGroupSelection: null,
+    showRemoveFromGroupDialogBool: false,
+    showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
+    cancelRemoveFromGroup: this.cancelRemoveFromGroup,
     selectDevice: this.selectDevice,
     selectGroup: this.selectGroup,
     tableHeaderClass: this.tableHeaderClass,
     setCurrentTable: this.setCurrentTable,
-    onDeleteGroup: this.props.onDeleteGroup,
+    deleteGroupConfirm: this.deleteGroupConfirm,
+    onDeleteGroup: this.deleteGroup,
     addNewGroup: this.addNewGroup,
     toggleEditButton: this.toggleEditButton,
     renameGroup: this.renameGroup,
@@ -390,7 +423,6 @@ export default class DevicesTab extends React.Component {
     cancelAddToGroup: this.cancelAddToGroup,
     addDeviceToGroup: this.addDeviceToGroup,
     dialogGroupSelectionChange: this.dialogGroupSelectionChange,
-    dialogGroupSelection: null,
     doRemoveFromGroup: this.doRemoveFromGroup,
   };
 
