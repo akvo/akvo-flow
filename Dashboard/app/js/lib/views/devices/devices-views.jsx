@@ -35,9 +35,13 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         onSortDevices: this.devicesSort,
         onSortGroup: this.GroupSort,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         onDeleteGroup: this.deleteGroupConfirm,
 >>>>>>> 71bba63eb... [#3887] Clean code and refactor
+=======
+        // onDeleteGroup: this.deleteGroupConfirm,
+>>>>>>> a257340f3... [#3887] Connect delete dialog to DevicesTab
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
