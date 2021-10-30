@@ -9,10 +9,12 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
     'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'FLOW.deviceGroupControl.content.@each': 'renderReactSide',
+    'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
     'FLOW.dialogControl.delGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
     'this.showAddToGroupDialogBool': 'renderReactSide',
+    'FLOW.deviceGroupControl.content.content.length': 'renderReactSide',
   }),
   {
     init() {
@@ -46,7 +48,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
         onSortDevices: this.devicesSort,
         onSortGroup: this.GroupSort,
-        onDeleteGroup: this.deleteGroupConfirm,
+        // onDeleteGroup: this.deleteGroupConfirm,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
@@ -90,7 +92,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       return FLOW.deviceGroupControl
         .get('content')
         .getEach('_data')
-        .getEach('attributes');
+        .getEach('attributes')
+        .filter(value => Object.keys(value).length !== 0);
     }).property('FLOW.deviceGroupControl.content.@each'),
 
     editGroupName: false,

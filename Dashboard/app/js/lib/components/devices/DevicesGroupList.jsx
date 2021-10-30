@@ -92,6 +92,7 @@ export default function DevicesGroupList() {
                 </td>
                 <td>
                   <div
+                    id={group.keyId}
                     onClick={() => onDeleteGroup(group.keyId)}
                     onKeyDown={() => onDeleteGroup(group.keyId)}
                   >
