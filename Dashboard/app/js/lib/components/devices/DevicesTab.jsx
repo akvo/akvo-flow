@@ -87,8 +87,15 @@ export default class DevicesTab extends React.Component {
       return item;
     });
 
-    FLOW.store.commit();
+      // Adding group property to the selected devices
+      devices.map(item => {
+        item.deviceGroupName = this.state.dialogGroupSelection.code;
+        item.deviceGroup = this.state.dialogGroupSelection.keyId;
+        return null;
+      });
 
+      FLOW.store.commit();
+    }
     this.cancelAddToGroup();
   };
 
@@ -308,12 +315,6 @@ export default class DevicesTab extends React.Component {
   };
 
   addNewGroup = () => {
-    FLOW.store.createRecord(FLOW.DeviceGroup, {
-      code: 'New group',
-      keyId: Date.now(),
-      id: Date.now(),
-    });
-
     const newGroup = {
       code: 'New group',
       keyId: Date.now(),
@@ -322,6 +323,12 @@ export default class DevicesTab extends React.Component {
     this.setState(state => ({
       devicesGroup: [...state.devicesGroup, newGroup],
     }));
+
+    FLOW.store.createRecord(FLOW.DeviceGroup, {
+      code: 'New group',
+      keyId: newGroup.keyId,
+      id: newGroup.keyId,
+    });
 
     FLOW.store.commit();
   };
@@ -378,8 +385,17 @@ export default class DevicesTab extends React.Component {
       group => group.keyId !== Number(devicesGroup.id)
     );
 
+    const filterDevices = this.state.devices.filter(
+      device => Number(device.deviceGroup) === this.state.groupToDeleteId
+    );
+
     this.setState({
       devicesGroup: [...filterDevicesGroup],
+    });
+
+    filterDevices.forEach(item => {
+      item.deviceGroupName = null;
+      item.deviceGroup = null;
     });
 
     devicesGroup.deleteRecord();
@@ -389,16 +405,14 @@ export default class DevicesTab extends React.Component {
   };
 
   state = {
-    isDelete: true,
     groupToDeleteId: null,
-    cancelDeletingGroup: this.cancelDeletingGroup,
     isShowDeleteDialog: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
     onSortDevices: this.props.onSortDevices,
     onSortGroup: this.props.onSortGroup,
-    strings: this.props.strings,
     sortProperties: this.props.sortProperties,
+    strings: this.props.strings,
     selectedDeviceIds: [],
     selectedDeviceGroupIds: [],
     selectedDevices: [],
@@ -408,6 +422,7 @@ export default class DevicesTab extends React.Component {
     showAddToGroupDialogBool: null,
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
+    cancelDeletingGroup: this.cancelDeletingGroup,
     showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
     cancelRemoveFromGroup: this.cancelRemoveFromGroup,
     selectDevice: this.selectDevice,
