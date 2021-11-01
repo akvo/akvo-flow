@@ -11,6 +11,22 @@ import AddToGroupDialog from './deviceTabDialog/AddToGroupDialog';
 import DeleteGroup from './deviceTabDialog/DeleteGroupDialog';
 
 export default class DevicesTab extends React.Component {
+  state = {
+    groupToDeleteId: null,
+    isShowDeleteDialog: false,
+    devices: this.props.devices,
+    devicesGroup: this.props.devicesGroup,
+    selectedDeviceIds: [],
+    selectedDeviceGroupIds: [],
+    selectedDevices: [],
+    newDeviceGroupName: '',
+    currentTable: false,
+    selectedEditGroupId: null,
+    showAddToGroupDialogBool: null,
+    dialogGroupSelection: null,
+    showRemoveFromGroupDialogBool: false,
+  };
+
   componentDidMount() {
     if (this.state.devicesGroup.length === 0) {
       this.setState({
@@ -65,7 +81,7 @@ export default class DevicesTab extends React.Component {
       for (let i = 0; i < dev.length; i++) {
         const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
         devices = [...devices, filterDevices];
-        const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') == dev[i]);
+        const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
 
         devicesInGroup.forEach(item => {
           item.set('deviceGroupName', this.state.dialogGroupSelection.code);
@@ -223,46 +239,45 @@ export default class DevicesTab extends React.Component {
     this.cancelDeletingGroup();
   };
 
-  state = {
-    groupToDeleteId: null,
-    isShowDeleteDialog: false,
-    devices: this.props.devices,
-    devicesGroup: this.props.devicesGroup,
-    onSortDevices: this.props.onSortDevices,
-    onSortGroup: this.props.onSortGroup,
-    sortProperties: this.props.sortProperties,
-    strings: this.props.strings,
-    selectedDeviceIds: [],
-    selectedDeviceGroupIds: [],
-    selectedDevices: [],
-    newDeviceGroupName: '',
-    currentTable: false,
-    selectedEditGroupId: null,
-    showAddToGroupDialogBool: null,
-    dialogGroupSelection: null,
-    showRemoveFromGroupDialogBool: false,
-    cancelDeletingGroup: this.cancelDeletingGroup,
-    showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
-    cancelRemoveFromGroup: this.cancelRemoveFromGroup,
-    selectDevice: this.selectDevice,
-    selectGroup: this.selectGroup,
-    tableHeaderClass: this.tableHeaderClass,
-    setCurrentTable: this.setCurrentTable,
-    deleteGroupConfirm: this.deleteGroupConfirm,
-    onDeleteGroup: this.deleteGroup,
-    addNewGroup: this.addNewGroup,
-    toggleEditButton: this.toggleEditButton,
-    renameGroup: this.renameGroup,
-    showAddToGroupDialog: this.showAddToGroupDialog,
-    cancelAddToGroup: this.cancelAddToGroup,
-    addDeviceToGroup: this.addDeviceToGroup,
-    dialogGroupSelectionChange: this.dialogGroupSelectionChange,
-    doRemoveFromGroup: this.doRemoveFromGroup,
-  };
-
   render() {
+    const contextData = {
+      groupToDeleteId: this.state.groupToDeleteId,
+      isShowDeleteDialog: this.state.isShowDeleteDialog,
+      devices: this.state.devices,
+      devicesGroup: this.state.devicesGroup,
+      onSortDevices: this.props.onSortDevices,
+      onSortGroup: this.props.onSortGroup,
+      sortProperties: this.props.sortProperties,
+      strings: this.props.strings,
+      selectedDeviceIds: this.state.selectedDeviceIds,
+      selectedDeviceGroupIds: this.state.selectedDeviceGroupIds,
+      selectedDevices: this.state.selectedDevices,
+      newDeviceGroupName: this.state.newDeviceGroupName,
+      currentTable: this.state.currentTable,
+      selectedEditGroupId: this.state.selectedEditGroupId,
+      showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
+      dialogGroupSelection: this.state.dialogGroupSelection,
+      showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
+      cancelDeletingGroup: this.cancelDeletingGroup,
+      showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
+      cancelRemoveFromGroup: this.cancelRemoveFromGroup,
+      selectDevice: this.selectDevice,
+      selectGroup: this.selectGroup,
+      tableHeaderClass: this.tableHeaderClass,
+      setCurrentTable: this.setCurrentTable,
+      deleteGroupConfirm: this.deleteGroupConfirm,
+      onDeleteGroup: this.deleteGroup,
+      addNewGroup: this.addNewGroup,
+      toggleEditButton: this.toggleEditButton,
+      renameGroup: this.renameGroup,
+      showAddToGroupDialog: this.showAddToGroupDialog,
+      cancelAddToGroup: this.cancelAddToGroup,
+      addDeviceToGroup: this.addDeviceToGroup,
+      dialogGroupSelectionChange: this.dialogGroupSelectionChange,
+      doRemoveFromGroup: this.doRemoveFromGroup,
+    };
     return (
-      <DevicesTabContext.Provider value={this.state}>
+      <DevicesTabContext.Provider value={contextData}>
         <section id="devicesList">
           {this.state.currentTable === TABLE_NAMES.DEVICES_GROUP ? (
             <DevicesGroupList />
