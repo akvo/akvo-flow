@@ -116,7 +116,7 @@ export default function DevicesList() {
                   onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
                 />
               </td>
-              <td className="EMEI">{device.esn}</td>
+              <td className="IMEI">{device.esn}</td>
               <td className="deviceId">{device.deviceIdentifier}</td>
               <td className="deviceGroup">{device.deviceGroupName}</td>
               <td className="lastBeacon">{(device.date1, device.lastPositionDate)}</td>
