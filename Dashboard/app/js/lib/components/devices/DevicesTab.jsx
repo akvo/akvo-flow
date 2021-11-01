@@ -8,7 +8,7 @@ import RemoveDialog from './deviceTabDialog/RemoveDialog';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
 import AddToGroupDialog from './deviceTabDialog/AddToGroupDialog';
-import DeleteGroup from './deviceTabDialog/DeleteGroup';
+import DeleteGroup from './deviceTabDialog/DeleteGroupDialog';
 
 export default class DevicesTab extends React.Component {
   componentDidMount() {
@@ -50,28 +50,38 @@ export default class DevicesTab extends React.Component {
 
   // Get the property of a selected group
   dialogGroupSelectionChange = e => {
-    const { code, keyId } = JSON.parse(e.target.value);
+    const { code, keyId } = e.target.value.length !== 0 && JSON.parse(e.target.value);
     this.setState({ dialogGroupSelection: { code, keyId } });
   };
 
   addDeviceToGroup = dev => {
-    let devices = [];
+    if (
+      this.state.dialogGroupSelection.code !== undefined &&
+      this.state.dialogGroupSelection.keyId !== undefined
+    ) {
+      let devices = [];
 
-    // Find all devices that have the same keyId as in the selectedDeviceIds
-    for (let i = 0; i < dev.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
-      devices = [...devices, filterDevices];
+      // Find all devices that have the same keyId as in the selectedDeviceIds
+      for (let i = 0; i < dev.length; i++) {
+        const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+        devices = [...devices, filterDevices];
+        const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') == dev[i]);
+
+        devicesInGroup.forEach(item => {
+          item.set('deviceGroupName', this.state.dialogGroupSelection.code);
+          item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
+        });
+      }
+
+      // Adding group property to the selected devices
+      devices.map(item => {
+        item.deviceGroupName = this.state.dialogGroupSelection.code;
+        item.deviceGroup = this.state.dialogGroupSelection.keyId;
+        return null;
+      });
+
+      FLOW.store.commit();
     }
-
-    // Adding group property to the selected devices
-    devices.map(item => {
-      item.deviceGroupName = this.state.dialogGroupSelection.code;
-      item.deviceGroup = this.state.dialogGroupSelection.keyId;
-      return null;
-    });
-
-    FLOW.store.commit();
-
     this.cancelAddToGroup();
   };
 
@@ -95,6 +105,12 @@ export default class DevicesTab extends React.Component {
     for (let i = 0; i < dev.length; i++) {
       const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
       devices = [...devices, filterDevices];
+      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') == dev[i]);
+
+      devicesInGroup.forEach(item => {
+        item.set('deviceGroupName', null);
+        item.set('deviceGroup', null);
+      });
     }
 
     devices.forEach(item => {
@@ -102,6 +118,7 @@ export default class DevicesTab extends React.Component {
       item.deviceGroup = null;
     });
 
+    FLOW.store.commit();
     this.cancelRemoveFromGroup();
   };
 
@@ -117,12 +134,6 @@ export default class DevicesTab extends React.Component {
   };
 
   addNewGroup = () => {
-    FLOW.store.createRecord(FLOW.DeviceGroup, {
-      code: 'New group',
-      keyId: Date.now(),
-      id: Date.now(),
-    });
-
     const newGroup = {
       code: 'New group',
       keyId: Date.now(),
@@ -131,6 +142,12 @@ export default class DevicesTab extends React.Component {
     this.setState(state => ({
       devicesGroup: [...state.devicesGroup, newGroup],
     }));
+
+    FLOW.store.createRecord(FLOW.DeviceGroup, {
+      code: 'New group',
+      keyId: newGroup.keyId,
+      id: newGroup.keyId,
+    });
 
     FLOW.store.commit();
   };
@@ -187,8 +204,17 @@ export default class DevicesTab extends React.Component {
       group => group.keyId !== Number(devicesGroup.id)
     );
 
+    const filterDevices = this.state.devices.filter(
+      device => Number(device.deviceGroup) === this.state.groupToDeleteId
+    );
+
     this.setState({
       devicesGroup: [...filterDevicesGroup],
+    });
+
+    filterDevices.forEach(item => {
+      item.deviceGroupName = null;
+      item.deviceGroup = null;
     });
 
     devicesGroup.deleteRecord();
@@ -198,16 +224,14 @@ export default class DevicesTab extends React.Component {
   };
 
   state = {
-    isDelete: true,
     groupToDeleteId: null,
-    cancelDeletingGroup: this.cancelDeletingGroup,
     isShowDeleteDialog: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
     onSortDevices: this.props.onSortDevices,
     onSortGroup: this.props.onSortGroup,
-    strings: this.props.strings,
     sortProperties: this.props.sortProperties,
+    strings: this.props.strings,
     selectedDeviceIds: [],
     selectedDeviceGroupIds: [],
     selectedDevices: [],
@@ -217,6 +241,7 @@ export default class DevicesTab extends React.Component {
     showAddToGroupDialogBool: null,
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
+    cancelDeletingGroup: this.cancelDeletingGroup,
     showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
     cancelRemoveFromGroup: this.cancelRemoveFromGroup,
     selectDevice: this.selectDevice,

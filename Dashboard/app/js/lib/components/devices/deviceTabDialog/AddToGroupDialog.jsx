@@ -10,6 +10,7 @@ export default function AddToGroupDialog() {
     addDeviceToGroup,
     dialogGroupSelectionChange,
     selectedDeviceIds,
+    dialogGroupSelection,
   } = useContext(DevicesTabContext);
 
   return (
@@ -21,7 +22,7 @@ export default function AddToGroupDialog() {
           <p className="dialogMsg">{strings.dialogText.chooseGroup}</p>
           <br />
           <select onChange={dialogGroupSelectionChange}>
-            <option value={JSON.stringify('')}>{strings.dialogText.selectGroupText}</option>
+            <option value="">{strings.dialogText.selectGroupText}</option>
             {devicesGroup.map(group => (
               <option key={group.keyId} id={group.keyId} value={JSON.stringify(group)}>
                 {group.code}
@@ -33,7 +34,11 @@ export default function AddToGroupDialog() {
               <li>
                 <button
                   type="button"
-                  onClick={() => addDeviceToGroup(selectedDeviceIds)}
+                  onClick={() =>
+                    dialogGroupSelection !== null || dialogGroupSelection.code !== undefined
+                      ? addDeviceToGroup(selectedDeviceIds)
+                      : cancelAddToGroup()
+                  }
                   className="ok smallBtn"
                 >
                   {strings.dialogText.save}
