@@ -83,7 +83,7 @@ describe('Deviceslist Tests', () => {
     const showRemoveFromGroupButton = wrapper.getByText('Remove from deviceGroup');
     fireEvent.click(showRemoveFromGroupButton);
 
-    const selectDeviceCheckbox = document.querySelector('input');
+    const selectDeviceCheckbox = document.querySelector('[data-keyId="261243005"]');
 
     expect(selectedDeviceIds.length).toBe(0);
     fireEvent.click(selectDeviceCheckbox);
