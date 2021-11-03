@@ -1,5 +1,3 @@
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-state */
 import React from 'react';
 import PropTypes from 'prop-types';
 import DevicesGroupList from './DevicesGroupList';
@@ -315,22 +313,21 @@ export default class DevicesTab extends React.Component {
   };
 
   addNewGroup = () => {
-    const newGroup = {
-      code: 'New group',
-      keyId: Date.now(),
-    };
-
-    this.setState(state => ({
-      devicesGroup: [...state.devicesGroup, newGroup],
-    }));
-
     FLOW.store.createRecord(FLOW.DeviceGroup, {
       code: 'New group',
-      keyId: newGroup.keyId,
-      id: newGroup.keyId,
     });
 
     FLOW.store.commit();
+
+    setTimeout(() => {
+      this.setState({
+        devicesGroup: FLOW.deviceGroupControl
+          .get('content')
+          .getEach('_data')
+          .getEach('attributes')
+          .filter(value => Object.keys(value).length !== 0),
+      });
+    }, 50);
   };
 
   renameGroup = ({ id, value }) => {
@@ -355,6 +352,7 @@ export default class DevicesTab extends React.Component {
         code: this.state.newDeviceGroupName,
       });
     }
+
     FLOW.store.commit();
   };
 
