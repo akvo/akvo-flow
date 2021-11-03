@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
 
@@ -112,6 +111,7 @@ export default function DevicesList() {
               <td className="selection">
                 <input
                   type="checkBox"
+                  data-keyId={device.keyId}
                   checked={selectedDeviceIds.includes(device.keyId)}
                   onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
                 />
@@ -136,17 +136,3 @@ export default function DevicesList() {
     </>
   );
 }
-
-DevicesList.propTypes = {
-  devices: PropTypes.array,
-  devicesGroup: PropTypes.array,
-  showRemoveFromGroupDialog: PropTypes.func,
-  strings: PropTypes.object,
-};
-
-DevicesList.defaultProps = {
-  devices: [],
-  devicesGroup: [],
-  showRemoveFromGroupDialog: () => null,
-  strings: {},
-};
