@@ -7,10 +7,8 @@ export default function DevicesGroupList() {
     strings,
     onSortGroup,
     sortProperties,
-    selectGroup,
     devicesGroup,
     tableHeaderClass,
-    selectedDeviceGroupIds,
     setCurrentTable,
     onDeleteGroup,
     addNewGroup,
@@ -44,7 +42,6 @@ export default function DevicesGroupList() {
       <table className="dataTable" id="surveyDataTable">
         <thead>
           <tr>
-            <th className="noArrows" />
             <th
               id="device_table_header"
               className={sortProperties.column == 'code' ? tableHeaderClass() : ''}
@@ -63,13 +60,6 @@ export default function DevicesGroupList() {
             const selectedToEdit = selectedEditGroupId === group.keyId;
             return (
               <tr key={group.keyId}>
-                <td className="selection">
-                  <input
-                    type="checkBox"
-                    checked={selectedDeviceGroupIds.includes(group.keyId)}
-                    onChange={() => selectGroup(group.keyId)}
-                  />
-                </td>
                 <td className="deviceGroup">
                   <button
                     type="button"
