@@ -28,6 +28,6 @@ describe('Checkbox Tests', () => {
     fireEvent.click(inputNode);
 
     expect(props.onChange).toHaveBeenCalledTimes(1);
-    expect(props.onChange).toHaveBeenCalledWith('fake-id', true);
+    expect(props.onChange).toHaveBeenCalledWith(809082, true);
   });
 });
