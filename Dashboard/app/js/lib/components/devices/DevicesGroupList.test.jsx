@@ -7,7 +7,7 @@ import DevicesGroupList from './DevicesGroupList';
 describe('DevicesGroupList Tests', () => {
   afterEach(cleanup);
 
-  const devicesGroup = [
+  let devicesGroup = [
     {
       keyId: 1689003,
       description: null,
@@ -19,6 +19,17 @@ describe('DevicesGroupList Tests', () => {
       displayName: 'caetie',
     },
   ];
+
+  const newGroup = {
+    keyId: 5562979080732672,
+    description: null,
+    name: null,
+    code: 'fwfwfwdsaddsf',
+    createdDateTime: 1635914912204,
+    lastUpdateDateTime: 1635915246764,
+    deviceList: null,
+    displayName: 'fwfwfwdsaddsf',
+  };
 
   const strings = {
     deviceGroup: 'Device group',
@@ -38,17 +49,44 @@ describe('DevicesGroupList Tests', () => {
 
   const selectedDeviceGroupIds = [];
 
+  const addNewGroup = () => {
+    devicesGroup = [...devicesGroup, newGroup];
+  };
+
+  const onDeleteGroup = () => {
+    const filterDevicesGroup = devicesGroup.filter(group => group.keyId !== 1689003);
+    devicesGroup = [...filterDevicesGroup];
+    return devicesGroup;
+  };
+
   it('+++ renders <snapshot>', () => {
     const wrapper = render(
       <DevicesTabContext.Provider
-        value={{ devicesGroup, strings, sortProperties, tableHeaderClass, selectedDeviceGroupIds }}
+        value={{
+          devicesGroup,
+          strings,
+          sortProperties,
+          tableHeaderClass,
+          selectedDeviceGroupIds,
+          addNewGroup,
+          onDeleteGroup,
+        }}
       >
         <DevicesGroupList />
       </DevicesTabContext.Provider>
     );
 
     const addNewGroupButton = wrapper.getByText('New group', { selector: 'button' });
+
+    // Test adding a new group
+    expect(devicesGroup.length).toEqual(1);
     fireEvent.click(addNewGroupButton);
+    expect(devicesGroup.length).toEqual(2);
+
+    // Test delete button
+    const deleteGroup = wrapper.getByText('Delete');
+    fireEvent.click(deleteGroup);
+    expect(devicesGroup.length).toEqual(1);
 
     expect(wrapper.container).toMatchSnapshot();
   });
