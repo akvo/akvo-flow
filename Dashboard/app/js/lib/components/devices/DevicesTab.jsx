@@ -15,7 +15,6 @@ export default class DevicesTab extends React.Component {
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
     selectedDeviceIds: [],
-    selectedDeviceGroupIds: [],
     selectedDevices: [],
     newDeviceGroupName: '',
     currentTable: false,
@@ -125,16 +124,6 @@ export default class DevicesTab extends React.Component {
   };
 
   // DEVICES GROUP LIST
-  selectGroup = id => {
-    this.setState(state => {
-      if (state.selectedDeviceGroupIds.some(keyId => id === keyId)) {
-        const filterGroup = state.selectedDeviceGroupIds.filter(keyId => id !== keyId);
-        return { selectedDeviceGroupIds: [...filterGroup] };
-      }
-      return { selectedDeviceGroupIds: [...state.selectedDeviceGroupIds, id] };
-    });
-  };
-
   addNewGroup = () => {
     FLOW.store.createRecord(FLOW.DeviceGroup, {
       code: 'New group',
@@ -236,7 +225,6 @@ export default class DevicesTab extends React.Component {
       sortProperties: this.props.sortProperties,
       strings: this.props.strings,
       selectedDeviceIds: this.state.selectedDeviceIds,
-      selectedDeviceGroupIds: this.state.selectedDeviceGroupIds,
       selectedDevices: this.state.selectedDevices,
       newDeviceGroupName: this.state.newDeviceGroupName,
       currentTable: this.state.currentTable,
@@ -248,7 +236,6 @@ export default class DevicesTab extends React.Component {
       showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.cancelRemoveFromGroup,
       selectDevice: this.selectDevice,
-      selectGroup: this.selectGroup,
       tableHeaderClass: this.tableHeaderClass,
       setCurrentTable: this.setCurrentTable,
       deleteGroupConfirm: this.deleteGroupConfirm,
