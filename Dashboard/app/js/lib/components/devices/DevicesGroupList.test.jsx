@@ -43,7 +43,7 @@ describe('DevicesGroupList Tests', () => {
       <DevicesTabContext.Provider
         value={{ devicesGroup, strings, sortProperties, tableHeaderClass, selectedDeviceGroupIds }}
       >
-        <DevicesGroupList strings={strings} />
+        <DevicesGroupList />
       </DevicesTabContext.Provider>
     );
 
