@@ -111,7 +111,7 @@ export default function DevicesList() {
               <td className="selection">
                 <input
                   type="checkBox"
-                  data-keyId={device.keyId}
+                  data-keyid={device.keyId}
                   checked={selectedDeviceIds.includes(device.keyId)}
                   onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
                 />
