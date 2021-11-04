@@ -85,15 +85,26 @@ export default class DevicesTab extends React.Component {
       return item;
     });
 
-      // Adding group property to the selected devices
-      devices.map(item => {
-        item.deviceGroupName = this.state.dialogGroupSelection.code;
-        item.deviceGroup = this.state.dialogGroupSelection.keyId;
-        return item;
-      });
+    // Find all devices that have the same keyId as in the selectedDeviceIds
+    for (let i = 0; i < dev.length; i++) {
+      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+      devices = [...devices, filterDevices];
+      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
 
-      FLOW.store.commit();
+      devicesInGroup.forEach(item => {
+        item.set('deviceGroupName', this.state.dialogGroupSelection.code);
+        item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
+      });
     }
+
+    // Adding group property to the selected devices
+    devices.map(item => {
+      item.deviceGroupName = this.state.dialogGroupSelection.code;
+      item.deviceGroup = this.state.dialogGroupSelection.keyId;
+      return item;
+    });
+
+    FLOW.store.commit();
 
     this.cancelAddToGroup();
   };
@@ -403,6 +414,63 @@ export default class DevicesTab extends React.Component {
     });
 
     this.cancelDeletingGroup();
+  };
+
+  // SORTING
+  tableHeaderClass = () => {
+    if (this.state.sortAscending) {
+      return 'sorting_asc';
+    }
+    return 'sorting_desc';
+  };
+
+  // Sort the groups
+  sortGroup = item => {
+    this.setState(state => ({ sortAscending: !state.sortAscending }));
+    this.setState({ selectedColumn: item });
+    return this.state.devicesGroup.sort((a, b) => {
+      if (this.state.sortAscending) {
+        if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (a[this.state.selectedColumn] > b[this.state.selectedColumn]) {
+          return 1;
+        }
+      } else {
+        if (b[this.state.selectedColumn] < a[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (b[this.state.selectedColumn] > a[this.state.selectedColumn]) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+  };
+
+  // Sort the devices
+  sortDevices = item => {
+    this.setState(state => ({ sortAscending: !state.sortAscending }));
+    this.setState({ selectedColumn: item });
+
+    return this.state.devices.sort((a, b) => {
+      if (this.state.sortAscending) {
+        if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (a[this.state.selectedColumn] > b[this.state.selectedColumn]) {
+          return 1;
+        }
+      } else {
+        if (b[this.state.selectedColumn] < a[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (b[this.state.selectedColumn] > a[this.state.selectedColumn]) {
+          return 1;
+        }
+      }
+      return 0;
+    });
   };
 
   render() {
