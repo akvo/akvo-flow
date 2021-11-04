@@ -6,14 +6,11 @@ require('akvo-flow/views/react-component');
 
 FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
-    'this.selectedDeviceGroup': 'copyDeviceGroupName',
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'FLOW.deviceGroupControl.content.@each': 'renderReactSide',
     'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
-    'FLOW.dialogControl.delGroupConfirm': 'deleteGroup',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
-    'this.showAddToGroupDialogBool': 'renderReactSide',
     'FLOW.deviceGroupControl.content.content.length': 'renderReactSide',
   }),
   {
@@ -21,13 +18,9 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this._super();
       this.getProps = this.getProps.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
-      this.showRemoveFromGroupDialog = this.showRemoveFromGroupDialog.bind(this);
-      this.cancelRemoveFromGroup = this.cancelRemoveFromGroup.bind(this);
       this.devicesSort = this.devicesSort.bind(this);
       this.sortedDevices = this.sortedDevices.bind(this);
-      this.doAddToGroup = this.doAddToGroup.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
-      this.deleteGroupConfirm = this.deleteGroupConfirm.bind(this);
     },
 
     didInsertElement(...args) {
@@ -48,7 +41,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
         onSortDevices: this.devicesSort,
         onSortGroup: this.GroupSort,
-        // onDeleteGroup: this.deleteGroupConfirm,
         sortProperties: {
           column: this.selectedColumn,
           ascending: this.sortAscending,
@@ -96,61 +88,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         .filter(value => Object.keys(value).length !== 0);
     }).property('FLOW.deviceGroupControl.content.@each'),
 
-    editGroupName: false,
     sortAscending: false,
     selectedColumn: null,
-    changedDeviceGroupName: null,
-    selectedDeviceGroup: null,
-    selectedDeviceGroupForDelete: null,
-    showDeleteDevicesDialogBool: false,
-    showAddToGroupDialogBool: false,
-    showRemoveFromGroupDialogBool: false,
-    showManageDeviceGroupsDialogBool: false,
-    newDeviceGroupName: null,
-
-    showAddToGroupDialog() {
-      this.set('selectedDeviceGroup', null);
-      this.set('showAddToGroupDialogBool', true);
-    },
-
-    showRemoveFromGroupDialog() {
-      this.set('showRemoveFromGroupDialogBool', true);
-    },
-
-    cancelAddToGroup() {
-      this.set('showAddToGroupDialogBool', false);
-    },
-
-    showManageDeviceGroupsDialog() {
-      this.set('newDeviceGroupName', null);
-      this.set('changedDeviceGroupName', null);
-      this.set('selectedDeviceGroup', null);
-      // this.set('showManageDeviceGroupsDialogBool', true);
-    },
-
-    cancelManageDeviceGroups() {
-      this.set('showManageDeviceGroupsDialogBool', false);
-    },
-
-    doAddToGroup() {
-      if (this.get('selectedDeviceGroup') !== null) {
-        const selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
-        const selectedDeviceGroupName = this.selectedDeviceGroup.get('code');
-        const selectedDevices = FLOW.store.filter(FLOW.Device, data => {
-          if (data.get('isSelected') === true) {
-            return true;
-          }
-          return false;
-        });
-
-        selectedDevices.forEach(item => {
-          item.set('deviceGroupName', selectedDeviceGroupName);
-          item.set('deviceGroup', selectedDeviceGroupId);
-        });
-      }
-      FLOW.store.commit();
-      this.set('showAddToGroupDialogBool', false);
-    },
 
     devicesSort(item) {
       this.set('sortAscending', !this.sortAscending);
@@ -206,73 +145,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         }
         return 0;
       });
-    },
-
-    // TODO repopulate list after update
-    doRemoveFromGroup() {
-      const selectedDevices = FLOW.store.filter(FLOW.Device, data => {
-        if (data.get('isSelected') === true) {
-          return true;
-        }
-        return false;
-      });
-      selectedDevices.forEach(item => {
-        item.set('deviceGroupName', null);
-        item.set('deviceGroup', null);
-      });
-
-      FLOW.store.commit();
-      this.set('showRemoveFromGroupDialogBool', false);
-    },
-
-    cancelRemoveFromGroup() {
-      this.set('showRemoveFromGroupDialogBool', false);
-    },
-
-    copyDeviceGroupName() {
-      if (this.get('selectedDeviceGroup') !== null) {
-        this.set('changedDeviceGroupName', this.selectedDeviceGroup.get('code'));
-      }
-    },
-
-    deleteGroupConfirm(groupId) {
-      FLOW.dialogControl.confirm({
-        context: FLOW.dialogControl.delDeviceGroup,
-        groupId,
-      });
-    },
-
-    deleteGroup() {
-      if (FLOW.dialogControl.delGroupConfirm) {
-        const devicesGroup = FLOW.store.find(
-          FLOW.DeviceGroup,
-          FLOW.dialogControl.get('delGroupId')
-        );
-        if (devicesGroup) {
-          devicesGroup.deleteRecord();
-          FLOW.store.commit();
-        }
-      }
-    },
-
-    deleteDeviceGroup() {
-      const dgroup = this.get('selectedDeviceGroupForDelete');
-      if (dgroup !== null) {
-        const devicesInGroup = FLOW.store.filter(
-          FLOW.Device,
-          item => item.get('deviceGroup') == dgroup.get('keyId')
-        );
-        devicesInGroup.forEach(item => {
-          item.set('deviceGroupName', null);
-          item.set('deviceGroup', null);
-        });
-
-        FLOW.store.commit();
-
-        dgroup.deleteRecord();
-        FLOW.store.commit();
-      }
-      this.set('showManageDeviceGroupsDialogBool', false);
     },
   }
 );
