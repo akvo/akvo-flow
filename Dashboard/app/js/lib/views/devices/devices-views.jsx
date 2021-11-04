@@ -8,19 +8,12 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
     'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
-    'this.selectedColumn': 'renderReactSide',
-    'this.sortAscending': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
-      this.devicesSort = this.devicesSort.bind(this);
-      this.sortedDevices = this.sortedDevices.bind(this);
-      this.GroupSort = this.GroupSort.bind(this);
-      this.sortAscending = false;
-      this.selectedColumn = null;
     },
 
     didInsertElement(...args) {
@@ -39,12 +32,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         devicesGroup: this.get('devicesGroup'),
         doAddToGroup: this.doAddToGroup,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
-        onSortDevices: this.devicesSort,
-        onSortGroup: this.GroupSort,
-        sortProperties: {
-          column: this.selectedColumn,
-          ascending: this.sortAscending,
-        },
         strings: {
           imeiTooltip: Ember.String.loc('_imei_tooltip'),
           delete: Ember.String.loc('_delete'),
@@ -92,56 +79,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.set('sortAscending', !this.sortAscending);
       this.set('selectedColumn', item);
       this.sortedDevices();
-    },
-
-    // Sort the devices
-    sortedDevices() {
-      return this.get('devices').sort((a, b) => {
-        if (this.sortAscending) {
-          if (a[this.selectedColumn] < b[this.selectedColumn]) {
-            return -1;
-          }
-          if (a[this.selectedColumn] > b[this.selectedColumn]) {
-            return 1;
-          }
-        } else {
-          if (b[this.selectedColumn] < a[this.selectedColumn]) {
-            return -1;
-          }
-          if (b[this.selectedColumn] > a[this.selectedColumn]) {
-            return 1;
-          }
-        }
-        return 0;
-      });
-    },
-
-    GroupSort(item) {
-      this.set('sortAscending', !this.sortAscending);
-      this.set('selectedColumn', item);
-      this.sortedGroup();
-    },
-
-    // Sort the Group
-    sortedGroup() {
-      return this.get('devicesGroup').sort((a, b) => {
-        if (this.sortAscending) {
-          if (a[this.selectedColumn] < b[this.selectedColumn]) {
-            return -1;
-          }
-          if (a[this.selectedColumn] > b[this.selectedColumn]) {
-            return 1;
-          }
-        } else {
-          if (b[this.selectedColumn] < a[this.selectedColumn]) {
-            return -1;
-          }
-          if (b[this.selectedColumn] > a[this.selectedColumn]) {
-            return 1;
-          }
-        }
-        return 0;
-      });
     },
   }
 );
