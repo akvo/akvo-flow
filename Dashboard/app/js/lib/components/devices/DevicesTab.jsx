@@ -90,7 +90,7 @@ export default class DevicesTab extends React.Component {
       devices.map(item => {
         item.deviceGroupName = this.state.dialogGroupSelection.code;
         item.deviceGroup = this.state.dialogGroupSelection.keyId;
-        return null;
+        return item;
       });
 
       FLOW.store.commit();
@@ -320,6 +320,7 @@ export default class DevicesTab extends React.Component {
 
     FLOW.store.commit();
 
+    // Use timeout to ensure that keyId is set
     setTimeout(() => {
       this.setState({
         devicesGroup: FLOW.deviceGroupControl
@@ -328,7 +329,7 @@ export default class DevicesTab extends React.Component {
           .getEach('attributes')
           .filter(value => Object.keys(value).length !== 0),
       });
-    }, 50);
+    }, 500);
   };
 
   renameGroup = ({ id, value }) => {
