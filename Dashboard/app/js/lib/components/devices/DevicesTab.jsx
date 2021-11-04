@@ -6,7 +6,7 @@ import RemoveDialog from './deviceTabDialog/RemoveDialog';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
 import AddToGroupDialog from './deviceTabDialog/AddToGroupDialog';
-import DeleteGroup from './deviceTabDialog/DeleteGroupDialog';
+import DeleteGroupDialog from './deviceTabDialog/DeleteGroupDialog';
 
 export default class DevicesTab extends React.Component {
   state = {
@@ -22,7 +22,7 @@ export default class DevicesTab extends React.Component {
     showAddToGroupDialogBool: null,
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
-    devicesToBlock: [],
+    deviceToBlockIds: [],
   };
 
   componentDidMount() {
@@ -140,12 +140,12 @@ export default class DevicesTab extends React.Component {
   };
 
   // Block and unblock devices
-  setIsblocked = (id, deviceIds) => {
+  blockDevice = (id, deviceIds) => {
     if (deviceIds.some(deviceId => id === deviceId)) {
       const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
-      return this.setState({ devicesToBlock: [...filterDevice] });
+      return this.setState({ deviceToBlockIds: [...filterDevice] });
     }
-    return this.setState({ devicesToBlock: [...deviceIds, id] });
+    return this.setState({ deviceToBlockIds: [...deviceIds, id] });
   };
 
   // DEVICES GROUP LIST
@@ -242,7 +242,7 @@ export default class DevicesTab extends React.Component {
 
   render() {
     const contextData = {
-      devicesToBlock: this.state.devicesToBlock,
+      deviceToBlockIds: this.state.deviceToBlockIds,
       groupToDeleteId: this.state.groupToDeleteId,
       isShowDeleteDialog: this.state.isShowDeleteDialog,
       devices: this.state.devices,
@@ -275,7 +275,7 @@ export default class DevicesTab extends React.Component {
       addDeviceToGroup: this.addDeviceToGroup,
       dialogGroupSelectionChange: this.dialogGroupSelectionChange,
       doRemoveFromGroup: this.doRemoveFromGroup,
-      setIsblocked: this.setIsblocked,
+      blockDevice: this.blockDevice,
     };
 
     return (
@@ -288,7 +288,7 @@ export default class DevicesTab extends React.Component {
           )}
           <RemoveDialog />
           <AddToGroupDialog />
-          <DeleteGroup />
+          <DeleteGroupDialog />
         </section>
       </DevicesTabContext.Provider>
     );
