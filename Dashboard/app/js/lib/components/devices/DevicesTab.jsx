@@ -14,7 +14,6 @@ export default class DevicesTab extends React.Component {
     isShowDeleteDialog: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
-    blockedDevice: null,
     selectedDeviceIds: [],
     selectedDevices: [],
     currentTable: false,
@@ -219,6 +218,7 @@ export default class DevicesTab extends React.Component {
       }
       this.saveNewName();
     }
+    return this.setState({ devicesToBlock: [...deviceIds, id] });
   };
 
   onDeleteGroup = groupId => {
@@ -423,7 +423,6 @@ export default class DevicesTab extends React.Component {
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
-      blockedDevice: this.state.blockedDevice,
       cancelDeletingGroup: this.cancelDeletingGroup,
       showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.cancelRemoveFromGroup,
