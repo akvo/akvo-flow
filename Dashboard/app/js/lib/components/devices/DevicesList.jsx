@@ -12,6 +12,8 @@ export default function DevicesList() {
     selectedDeviceIds,
     tableHeaderClass,
     setCurrentTable,
+    blockedDevice,
+    setIsblocked,
     showAddToGroupDialog,
     showRemoveFromGroupDialog,
   } = useContext(DevicesTabContext);
@@ -56,7 +58,7 @@ export default function DevicesList() {
           <tr>
             <th className="noArrows" />
             <th
-              className={sortProperties.column == 'esn' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'esn' ? tableHeaderClass() : ''}
               id="device_table_header"
               onClick={() => onSortDevices('esn')}
               onKeyDown={() => onSortDevices('esn')}
@@ -67,7 +69,7 @@ export default function DevicesList() {
               <span>{strings.IMEI}</span>
             </th>
             <th
-              className={sortProperties.column == 'deviceIdentifier' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'deviceIdentifier' ? tableHeaderClass() : ''}
               id="device_table_header"
               onClick={() => onSortDevices('deviceIdentifier')}
               onKeyDown={() => onSortDevices('deviceIdentifier')}
@@ -75,7 +77,7 @@ export default function DevicesList() {
               {strings.deviceID}
             </th>
             <th
-              className={sortProperties.column == 'deviceGroupName' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'deviceGroupName' ? tableHeaderClass() : ''}
               id="device_table_header"
               onClick={() => onSortDevices('deviceGroupName')}
               onKeyDown={() => onSortDevices('deviceGroupName')}
@@ -83,7 +85,7 @@ export default function DevicesList() {
               {strings.deviceGroup}
             </th>
             <th
-              className={sortProperties.column == 'lastPositionDate' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'lastPositionDate' ? tableHeaderClass() : ''}
               id="device_table_header"
               onClick={() => onSortDevices('lastPositionDate')}
               onKeyDown={() => onSortDevices('lastPositionDate')}
@@ -92,7 +94,7 @@ export default function DevicesList() {
             </th>
             <th
               className={
-                sortProperties.column == 'gallatinSoftwareManifest' ? tableHeaderClass() : ''
+                sortProperties.column === 'gallatinSoftwareManifest' ? tableHeaderClass() : ''
               }
               id="device_table_header"
               onClick={() => onSortDevices('gallatinSoftwareManifest')}
@@ -106,31 +108,31 @@ export default function DevicesList() {
           </tr>
         </thead>
         <tbody>
-          {devices.map(device => (
-            <tr key={device.keyId}>
-              <td className="selection">
-                <input
-                  type="checkBox"
-                  data-keyid={device.keyId}
-                  checked={selectedDeviceIds.includes(device.keyId)}
-                  onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
-                />
-              </td>
-              <td className="IMEI">{device.esn}</td>
-              <td className="deviceId">{device.deviceIdentifier}</td>
-              <td className="deviceGroup">{device.deviceGroupName}</td>
-              <td className="lastBeacon">{(device.date1, device.lastPositionDate)}</td>
-              <td className="version">{device.gallatinSoftwareManifest}</td>
-              <td>
-                <div
-                  onClick={() => alert(`${device.deviceIdentifier} is deleted`)}
-                  onKeyDown={() => alert(`${device.deviceIdentifier} is deleted`)}
-                >
-                  {strings.delete}
-                </div>
-              </td>
-            </tr>
-          ))}
+          {devices.map(device => {
+            const selectedToBlock = blockedDevice === device.keyId;
+            return (
+              <tr key={device.keyId}>
+                <td className="selection">
+                  <input
+                    type="checkBox"
+                    data-keyid={device.keyId}
+                    checked={selectedDeviceIds.includes(device.keyId)}
+                    onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
+                  />
+                </td>
+                <td className="IMEI">{device.esn}</td>
+                <td className="deviceId">{device.deviceIdentifier}</td>
+                <td className="deviceGroup">{device.deviceGroupName}</td>
+                <td className="lastBeacon">{(device.date1, device.lastPositionDate)}</td>
+                <td className="version">{device.gallatinSoftwareManifest}</td>
+                <td>
+                  <div id={device.keyId} onClick={setIsblocked} onKeyDown={setIsblocked}>
+                    {selectedToBlock ? 'Unblock' : 'Block'}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </>

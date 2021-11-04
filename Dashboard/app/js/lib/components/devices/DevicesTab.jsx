@@ -26,15 +26,17 @@ export default class DevicesTab extends React.Component {
   };
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        devicesGroup: FLOW.deviceGroupControl
-          .get('content')
-          .getEach('_data')
-          .getEach('attributes')
-          .filter(value => Object.keys(value).length !== 0),
-      });
-    }, 50);
+    if (this.state.devicesGroup.length === 0) {
+      setTimeout(() => {
+        this.setState({
+          devicesGroup: FLOW.deviceGroupControl
+            .get('content')
+            .getEach('_data')
+            .getEach('attributes')
+            .filter(value => Object.keys(value).length !== 0),
+        });
+      }, 500);
+    }
   }
 
   setCurrentTable = tableName => {
@@ -91,7 +93,7 @@ export default class DevicesTab extends React.Component {
       devices.map(item => {
         item.deviceGroupName = this.state.dialogGroupSelection.code;
         item.deviceGroup = this.state.dialogGroupSelection.keyId;
-        return null;
+        return item;
       });
 
       FLOW.store.commit();
@@ -130,12 +132,14 @@ export default class DevicesTab extends React.Component {
     devices.forEach(item => {
       item.deviceGroupName = null;
       item.deviceGroup = null;
+      return item;
     });
 
     FLOW.store.commit();
     this.cancelRemoveFromGroup();
   };
 
+  // TODO block and unblock devices
   setIsblocked = e => {
     const findDevice = this.state.devices.find(device => device.keyId === Number(e.target.id));
     if (findDevice) {
@@ -155,6 +159,7 @@ export default class DevicesTab extends React.Component {
 
     FLOW.store.commit();
 
+    // Use timeout to ensure that keyId is set
     setTimeout(() => {
       this.setState({
         devicesGroup: FLOW.deviceGroupControl
@@ -163,7 +168,7 @@ export default class DevicesTab extends React.Component {
           .getEach('attributes')
           .filter(value => Object.keys(value).length !== 0),
       });
-    }, 50);
+    }, 500);
   };
 
   renameGroup = ({ id, value }) => {
