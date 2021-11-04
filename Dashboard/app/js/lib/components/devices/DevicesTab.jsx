@@ -14,7 +14,6 @@ export default class DevicesTab extends React.Component {
     isShowDeleteDialog: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
-    blockedDevice: null,
     selectedDeviceIds: [],
     selectedDevices: [],
     newDeviceGroupName: '',
@@ -23,6 +22,7 @@ export default class DevicesTab extends React.Component {
     showAddToGroupDialogBool: null,
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
+    devicesToBlock: [],
   };
 
   componentDidMount() {
@@ -139,16 +139,13 @@ export default class DevicesTab extends React.Component {
     this.cancelRemoveFromGroup();
   };
 
-  // TODO block and unblock devices
-  setIsblocked = e => {
-    const findDevice = this.state.devices.find(device => device.keyId === Number(e.target.id));
-    if (findDevice) {
-      if (findDevice.keyId === this.state.blockedDevice) {
-        this.setState({ blockedDevice: null });
-      } else {
-        this.setState({ blockedDevice: findDevice.keyId });
-      }
+  // Block and unblock devices
+  setIsblocked = (id, deviceIds) => {
+    if (deviceIds.some(deviceId => id === deviceId)) {
+      const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
+      return this.setState({ devicesToBlock: [...filterDevice] });
     }
+    return this.setState({ devicesToBlock: [...deviceIds, id] });
   };
 
   // DEVICES GROUP LIST
@@ -245,6 +242,7 @@ export default class DevicesTab extends React.Component {
 
   render() {
     const contextData = {
+      devicesToBlock: this.state.devicesToBlock,
       groupToDeleteId: this.state.groupToDeleteId,
       isShowDeleteDialog: this.state.isShowDeleteDialog,
       devices: this.state.devices,
@@ -261,7 +259,6 @@ export default class DevicesTab extends React.Component {
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
-      blockedDevice: this.state.blockedDevice,
       cancelDeletingGroup: this.cancelDeletingGroup,
       showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.cancelRemoveFromGroup,
