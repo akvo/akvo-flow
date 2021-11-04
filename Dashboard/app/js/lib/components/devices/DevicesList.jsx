@@ -12,7 +12,7 @@ export default function DevicesList() {
     selectedDeviceIds,
     tableHeaderClass,
     setCurrentTable,
-    blockedDevice,
+    devicesToBlock,
     setIsblocked,
     showAddToGroupDialog,
     showRemoveFromGroupDialog,
@@ -109,7 +109,7 @@ export default function DevicesList() {
         </thead>
         <tbody>
           {devices.map(device => {
-            const selectedToBlock = blockedDevice === device.keyId;
+            // const selectedToBlock = blockedDevice === device.keyId;
             return (
               <tr key={device.keyId}>
                 <td className="selection">
@@ -126,8 +126,12 @@ export default function DevicesList() {
                 <td className="lastBeacon">{(device.date1, device.lastPositionDate)}</td>
                 <td className="version">{device.gallatinSoftwareManifest}</td>
                 <td>
-                  <div id={device.keyId} onClick={setIsblocked} onKeyDown={setIsblocked}>
-                    {selectedToBlock ? 'Unblock' : 'Block'}
+                  <div
+                    id={device.keyId}
+                    onClick={() => setIsblocked(device.keyId, devicesToBlock)}
+                    onKeyDown={() => setIsblocked(device.keyId, devicesToBlock)}
+                  >
+                    {devicesToBlock.includes(device.keyId) ? 'Unblock' : 'Block'}
                   </div>
                 </td>
               </tr>
