@@ -19,6 +19,8 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
       this.devicesSort = this.devicesSort.bind(this);
       this.sortedDevices = this.sortedDevices.bind(this);
       this.GroupSort = this.GroupSort.bind(this);
+      this.sortAscending = false;
+      this.selectedColumn = null;
     },
 
     didInsertElement(...args) {
@@ -85,9 +87,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         .getEach('attributes')
         .filter(value => Object.keys(value).length !== 0);
     }).property('FLOW.deviceGroupControl.content.isLoaded'),
-
-    sortAscending: false,
-    selectedColumn: null,
 
     devicesSort(item) {
       this.set('sortAscending', !this.sortAscending);
