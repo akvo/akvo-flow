@@ -13,6 +13,14 @@ export default function AddToGroupDialog() {
     dialogGroupSelection,
   } = useContext(DevicesTabContext);
 
+  const buttonCondition =
+    dialogGroupSelection !== null &&
+    dialogGroupSelection.code !== undefined &&
+    dialogGroupSelection.code !== undefined &&
+    (dialogGroupSelection !== null ||
+      dialogGroupSelection.code !== undefined ||
+      dialogGroupSelection.code !== undefined);
+
   return (
     <div className={showAddToGroupDialogBool ? `display overlay` : `overlay`}>
       <div className="blanket" />
@@ -35,9 +43,7 @@ export default function AddToGroupDialog() {
                 <button
                   type="button"
                   onClick={() =>
-                    dialogGroupSelection !== null || dialogGroupSelection.code !== undefined
-                      ? addDeviceToGroup(selectedDeviceIds)
-                      : cancelAddToGroup()
+                    buttonCondition ? addDeviceToGroup(selectedDeviceIds) : cancelAddToGroup()
                   }
                   className="ok smallBtn"
                 >

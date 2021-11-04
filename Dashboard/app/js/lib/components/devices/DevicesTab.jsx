@@ -16,7 +16,6 @@ export default class DevicesTab extends React.Component {
     devicesGroup: this.props.devicesGroup,
     selectedDeviceIds: [],
     selectedDevices: [],
-    newDeviceGroupName: '',
     currentTable: false,
     selectedEditGroupId: null,
     showAddToGroupDialogBool: null,
@@ -98,6 +97,7 @@ export default class DevicesTab extends React.Component {
 
       FLOW.store.commit();
     }
+
     this.cancelAddToGroup();
   };
 
@@ -205,7 +205,7 @@ export default class DevicesTab extends React.Component {
     }
   };
 
-  deleteGroup = groupId => {
+  onDeleteGroup = groupId => {
     this.setState({ isShowDeleteDialog: true });
     this.setState({ groupToDeleteId: groupId });
   };
@@ -253,7 +253,6 @@ export default class DevicesTab extends React.Component {
       strings: this.props.strings,
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDevices: this.state.selectedDevices,
-      newDeviceGroupName: this.state.newDeviceGroupName,
       currentTable: this.state.currentTable,
       selectedEditGroupId: this.state.selectedEditGroupId,
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
@@ -266,7 +265,7 @@ export default class DevicesTab extends React.Component {
       tableHeaderClass: this.tableHeaderClass,
       setCurrentTable: this.setCurrentTable,
       deleteGroupConfirm: this.deleteGroupConfirm,
-      onDeleteGroup: this.deleteGroup,
+      onDeleteGroup: this.onDeleteGroup,
       addNewGroup: this.addNewGroup,
       toggleEditButton: this.toggleEditButton,
       renameGroup: this.renameGroup,
@@ -305,7 +304,6 @@ DevicesTab.propTypes = {
   strings: PropTypes.object,
   sortProperties: PropTypes.object,
   onSortGroup: PropTypes.func,
-  onDeleteGroup: PropTypes.func,
 };
 
 DevicesTab.defaultProps = {
@@ -318,5 +316,4 @@ DevicesTab.defaultProps = {
   onSortGroup: () => null,
   sortProperties: {},
   strings: {},
-  onDeleteGroup: () => null,
 };
