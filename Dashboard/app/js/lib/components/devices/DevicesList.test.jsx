@@ -25,7 +25,7 @@ describe('Deviceslist Tests', () => {
 
   const strings = {
     deviceGroup: 'Device group',
-    delete: 'Delete',
+    block: 'Block',
     action: 'Action',
     imeiTooltip: 'imei tooltip',
     IMEI: 'IMEI',
