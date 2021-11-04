@@ -14,6 +14,7 @@ export default class DevicesTab extends React.Component {
     isShowDeleteDialog: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
+    blockedDevice: null,
     selectedDeviceIds: [],
     selectedDevices: [],
     newDeviceGroupName: '',
@@ -23,6 +24,18 @@ export default class DevicesTab extends React.Component {
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
   };
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        devicesGroup: FLOW.deviceGroupControl
+          .get('content')
+          .getEach('_data')
+          .getEach('attributes')
+          .filter(value => Object.keys(value).length !== 0),
+      });
+    }, 50);
+  }
 
   setCurrentTable = tableName => {
     this.setState({ currentTable: tableName });
@@ -123,6 +136,17 @@ export default class DevicesTab extends React.Component {
     this.cancelRemoveFromGroup();
   };
 
+  setIsblocked = e => {
+    const findDevice = this.state.devices.find(device => device.keyId === Number(e.target.id));
+    if (findDevice) {
+      if (findDevice.keyId === this.state.blockedDevice) {
+        this.setState({ blockedDevice: null });
+      } else {
+        this.setState({ blockedDevice: findDevice.keyId });
+      }
+    }
+  };
+
   // DEVICES GROUP LIST
   addNewGroup = () => {
     FLOW.store.createRecord(FLOW.DeviceGroup, {
@@ -143,29 +167,29 @@ export default class DevicesTab extends React.Component {
   };
 
   renameGroup = ({ id, value }) => {
-    const findGroup = this.state.devicesGroup.find(group => group.keyId === id);
-    const selectedDeviceGroupId = findGroup.keyId;
-
     // this could have been changed in the UI
-    const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
+    const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, id);
+
     originalSelectedDeviceGroup.set('code', value);
-    findGroup.code = value;
 
     // Update the device group name in the devices list
     const allDevices = FLOW.store.filter(FLOW.Device, () => true);
+
     allDevices.forEach(item => {
-      if (parseInt(item.get('deviceGroup'), 10) == selectedDeviceGroupId) {
+      if (parseInt(item.get('deviceGroup'), 10) == id) {
         item.set('deviceGroupName', value);
       }
     });
 
-    if (this.state.newDeviceGroupName.length !== 0) {
-      FLOW.store.createRecord(FLOW.DeviceGroup, {
-        code: this.state.newDeviceGroupName,
-      });
-    }
-
     FLOW.store.commit();
+
+    this.setState({
+      devicesGroup: FLOW.deviceGroupControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes')
+        .filter(group => Object.keys(group).length !== 0),
+    });
   };
 
   toggleEditButton = e => {
@@ -191,17 +215,9 @@ export default class DevicesTab extends React.Component {
   deleteGroupConfirm = () => {
     const devicesGroup = FLOW.store.find(FLOW.DeviceGroup, this.state.groupToDeleteId);
 
-    const filterDevicesGroup = this.state.devicesGroup.filter(
-      group => group.keyId !== Number(devicesGroup.id)
-    );
-
     const filterDevices = this.state.devices.filter(
       device => Number(device.deviceGroup) === this.state.groupToDeleteId
     );
-
-    this.setState({
-      devicesGroup: [...filterDevicesGroup],
-    });
 
     filterDevices.forEach(item => {
       item.deviceGroupName = null;
@@ -210,6 +226,14 @@ export default class DevicesTab extends React.Component {
 
     devicesGroup.deleteRecord();
     FLOW.store.commit();
+
+    this.setState({
+      devicesGroup: FLOW.deviceGroupControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes')
+        .filter(value => Object.keys(value).length !== 0),
+    });
 
     this.cancelDeletingGroup();
   };
@@ -232,6 +256,7 @@ export default class DevicesTab extends React.Component {
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
+      blockedDevice: this.state.blockedDevice,
       cancelDeletingGroup: this.cancelDeletingGroup,
       showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.cancelRemoveFromGroup,
@@ -248,7 +273,9 @@ export default class DevicesTab extends React.Component {
       addDeviceToGroup: this.addDeviceToGroup,
       dialogGroupSelectionChange: this.dialogGroupSelectionChange,
       doRemoveFromGroup: this.doRemoveFromGroup,
+      setIsblocked: this.setIsblocked,
     };
+
     return (
       <DevicesTabContext.Provider value={contextData}>
         <section id="devicesList">
