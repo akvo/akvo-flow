@@ -7,11 +7,9 @@ require('akvo-flow/views/react-component');
 FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.deviceControl.content.isLoaded': 'renderReactSide',
-    'FLOW.deviceGroupControl.content.@each': 'renderReactSide',
     'FLOW.deviceGroupControl.content.isLoaded': 'renderReactSide',
     'this.selectedColumn': 'renderReactSide',
     'this.sortAscending': 'renderReactSide',
-    'FLOW.deviceGroupControl.content.content.length': 'renderReactSide',
   }),
   {
     init() {
@@ -86,7 +84,7 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         .getEach('_data')
         .getEach('attributes')
         .filter(value => Object.keys(value).length !== 0);
-    }).property('FLOW.deviceGroupControl.content.@each'),
+    }).property('FLOW.deviceGroupControl.content.isLoaded'),
 
     sortAscending: false,
     selectedColumn: null,
