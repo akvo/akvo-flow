@@ -22,6 +22,8 @@ export default class DevicesTab extends React.Component {
     dialogGroupSelection: null,
     showRemoveFromGroupDialogBool: false,
     deviceToBlockIds: [],
+    sortAscending: false,
+    selectedColumn: null,
   };
 
   componentDidMount() {
@@ -42,13 +44,6 @@ export default class DevicesTab extends React.Component {
     this.setState({ currentTable: tableName });
   };
 
-  tableHeaderClass = () => {
-    if (this.props.sortProperties.ascending) {
-      return 'sorting_asc';
-    }
-    return 'sorting_desc';
-  };
-
   // DEVICES LIST
   selectDevice = (id, deviceIds) => {
     if (deviceIds.some(deviceId => id === deviceId)) {
@@ -58,11 +53,6 @@ export default class DevicesTab extends React.Component {
     return this.setState({ selectedDeviceIds: [...deviceIds, id] });
   };
 
-  // ADD TO GROUP DIALOG
-  showAddToGroupDialog = () => {
-    this.setState({ showAddToGroupDialogBool: true });
-  };
-
   // Get the property of a selected group
   dialogGroupSelectionChange = e => {
     const { code, keyId } = e.target.value.length !== 0 && JSON.parse(e.target.value);
@@ -70,38 +60,36 @@ export default class DevicesTab extends React.Component {
   };
 
   addDeviceToGroup = dev => {
-    if (
-      this.state.dialogGroupSelection.code !== undefined &&
-      this.state.dialogGroupSelection.keyId !== undefined
-    ) {
-      let devices = [];
+    let devices = [];
 
-      // Find all devices that have the same keyId as in the selectedDeviceIds
-      for (let i = 0; i < dev.length; i++) {
-        const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
-        devices = [...devices, filterDevices];
-        const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
+    // Find all devices that have the same keyId as in the selectedDeviceIds
+    for (let i = 0; i < dev.length; i++) {
+      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+      devices = [...devices, filterDevices];
+      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
 
-        devicesInGroup.forEach(item => {
-          item.set('deviceGroupName', this.state.dialogGroupSelection.code);
-          item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
-        });
-      }
-
-      // Adding group property to the selected devices
-      devices.map(item => {
-        item.deviceGroupName = this.state.dialogGroupSelection.code;
-        item.deviceGroup = this.state.dialogGroupSelection.keyId;
-        return item;
+      devicesInGroup.forEach(item => {
+        item.set('deviceGroupName', this.state.dialogGroupSelection.code);
+        item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
       });
-
-      FLOW.store.commit();
     }
+
+    // Adding group property to the selected devices
+    devices.map(item => {
+      item.deviceGroupName = this.state.dialogGroupSelection.code;
+      item.deviceGroup = this.state.dialogGroupSelection.keyId;
+      return item;
+    });
+
+    FLOW.store.commit();
 
     this.cancelAddToGroup();
   };
 
-  // REMOVE FROM GROUP DIALOG
+  showAddToGroupDialog = () => {
+    this.setState({ showAddToGroupDialogBool: true });
+  };
+
   cancelAddToGroup = () => {
     this.setState({ showAddToGroupDialogBool: false });
   };
@@ -240,16 +228,74 @@ export default class DevicesTab extends React.Component {
     this.cancelDeletingGroup();
   };
 
+  // SORTING
+  tableHeaderClass = () => {
+    if (this.state.sortAscending) {
+      return 'sorting_asc';
+    }
+    return 'sorting_desc';
+  };
+
+  // Sort the groups
+  sortGroup = item => {
+    this.setState(state => ({ sortAscending: !state.sortAscending }));
+    this.setState({ selectedColumn: item });
+    return this.state.devicesGroup.sort((a, b) => {
+      if (this.state.sortAscending) {
+        if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (a[this.state.selectedColumn] > b[this.state.selectedColumn]) {
+          return 1;
+        }
+      } else {
+        if (b[this.state.selectedColumn] < a[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (b[this.state.selectedColumn] > a[this.state.selectedColumn]) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+  };
+
+  // Sort the devices
+  sortDevices = item => {
+    this.setState(state => ({ sortAscending: !state.sortAscending }));
+    this.setState({ selectedColumn: item });
+
+    return this.state.devices.sort((a, b) => {
+      if (this.state.sortAscending) {
+        if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (a[this.state.selectedColumn] > b[this.state.selectedColumn]) {
+          return 1;
+        }
+      } else {
+        if (b[this.state.selectedColumn] < a[this.state.selectedColumn]) {
+          return -1;
+        }
+        if (b[this.state.selectedColumn] > a[this.state.selectedColumn]) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+  };
+
   render() {
     const contextData = {
       deviceToBlockIds: this.state.deviceToBlockIds,
       groupToDeleteId: this.state.groupToDeleteId,
       isShowDeleteDialog: this.state.isShowDeleteDialog,
+      sortProperties: {
+        column: this.state.selectedColumn,
+        ascending: this.state.sortAscending,
+      },
       devices: this.state.devices,
       devicesGroup: this.state.devicesGroup,
-      onSortDevices: this.props.onSortDevices,
-      onSortGroup: this.props.onSortGroup,
-      sortProperties: this.props.sortProperties,
       strings: this.props.strings,
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDevices: this.state.selectedDevices,
@@ -275,6 +321,8 @@ export default class DevicesTab extends React.Component {
       dialogGroupSelectionChange: this.dialogGroupSelectionChange,
       doRemoveFromGroup: this.doRemoveFromGroup,
       blockDevice: this.blockDevice,
+      onSortDevices: this.sortDevices,
+      onSortGroup: this.sortGroup,
     };
 
     return (
