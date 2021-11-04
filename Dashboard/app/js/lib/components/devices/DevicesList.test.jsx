@@ -46,6 +46,7 @@ describe('Deviceslist Tests', () => {
   };
 
   let selectedDeviceIds = [];
+  const devicesToBlock = [];
 
   const selectDevice = () => {
     if (selectedDeviceIds.some(deviceId => deviceId === 261243005)) {
@@ -71,6 +72,7 @@ describe('Deviceslist Tests', () => {
           selectDevice,
           showAddToGroupDialog,
           showRemoveFromGroupDialog,
+          devicesToBlock,
         }}
       >
         <Deviceslist />
