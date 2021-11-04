@@ -12,8 +12,8 @@ export default function DevicesList() {
     selectedDeviceIds,
     tableHeaderClass,
     setCurrentTable,
-    devicesToBlock,
-    setIsblocked,
+    deviceToBlockIds,
+    blockDevice,
     showAddToGroupDialog,
     showRemoveFromGroupDialog,
   } = useContext(DevicesTabContext);
@@ -109,7 +109,6 @@ export default function DevicesList() {
         </thead>
         <tbody>
           {devices.map(device => {
-            // const selectedToBlock = blockedDevice === device.keyId;
             return (
               <tr key={device.keyId}>
                 <td className="selection">
@@ -128,10 +127,10 @@ export default function DevicesList() {
                 <td>
                   <div
                     id={device.keyId}
-                    onClick={() => setIsblocked(device.keyId, devicesToBlock)}
-                    onKeyDown={() => setIsblocked(device.keyId, devicesToBlock)}
+                    onClick={() => blockDevice(device.keyId, deviceToBlockIds)}
+                    onKeyDown={() => blockDevice(device.keyId, deviceToBlockIds)}
                   >
-                    {devicesToBlock.includes(device.keyId) ? 'Unblock' : 'Block'}
+                    {deviceToBlockIds.includes(device.keyId) ? 'Unblock' : 'Block'}
                   </div>
                 </td>
               </tr>
