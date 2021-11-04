@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import DevicesTabContext from '../devices-context';
 
-export default function DeleteGroup() {
+export default function DeleteGroupDialog() {
   const { isShowDeleteDialog, cancelDeletingGroup, deleteGroupConfirm, strings } = useContext(
     DevicesTabContext
   );
