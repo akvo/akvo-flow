@@ -94,6 +94,7 @@ export default class DevicesTab extends React.Component {
 
       FLOW.store.commit();
     }
+
     this.cancelAddToGroup();
   };
 
@@ -369,7 +370,7 @@ export default class DevicesTab extends React.Component {
     }
   };
 
-  deleteGroup = groupId => {
+  onDeleteGroup = groupId => {
     this.setState({ isShowDeleteDialog: true });
     this.setState({ groupToDeleteId: groupId });
   };
@@ -483,5 +484,4 @@ DevicesTab.defaultProps = {
   onSortGroup: () => null,
   sortProperties: {},
   strings: {},
-  onDeleteGroup: () => null,
 };
