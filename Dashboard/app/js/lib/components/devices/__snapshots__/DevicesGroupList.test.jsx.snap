@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DevicesGroupList Tests +++ renders <snapshot> 1`] = `
+<div>
+  <div
+    class="deviceControls"
+  >
+    <button
+      class="btnOutline"
+      type="button"
+    >
+      manage device
+    </button>
+    <nav
+      class="dataTabMenu"
+    >
+      <ul>
+        <li>
+          <button
+            type="button"
+          >
+            New group
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <table
+    class="dataTable"
+    id="surveyDataTable"
+  >
+    <thead>
+      <tr>
+        <th
+          class="sorting_asc"
+          id="device_table_header"
+        >
+          Device group
+        </th>
+        <th
+          class="noArrows"
+          id="device_table_header"
+        >
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="deviceGroup"
+        >
+          <button
+            class="editGroupName"
+            id="1689003"
+            name="edit"
+            type="button"
+          >
+            Edit group name
+          </button>
+          <input
+            class="editGroupInput"
+            id="1689003"
+            style="display: none;"
+            type="text"
+            value="caetie"
+          />
+          <span
+            style="display: block;"
+          >
+            caetie
+          </span>
+        </td>
+        <td>
+          <div
+            id="1689003"
+          >
+            Delete
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
