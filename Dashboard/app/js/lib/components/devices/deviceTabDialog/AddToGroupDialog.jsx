@@ -29,7 +29,7 @@ export default function AddToGroupDialog() {
           <h2>{strings.dialogText.addDeviceToGroup}</h2>
           <p className="dialogMsg">{strings.dialogText.chooseGroup}</p>
           <br />
-          <select onChange={dialogGroupSelectionChange}>
+          <select id="select-group" onChange={dialogGroupSelectionChange}>
             <option value="">{strings.dialogText.selectGroupText}</option>
             {devicesGroup.map(group => (
               <option key={group.keyId} id={group.keyId} value={JSON.stringify(group)}>
