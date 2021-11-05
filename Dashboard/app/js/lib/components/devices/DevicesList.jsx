@@ -6,6 +6,7 @@ export default function DevicesList() {
   const {
     devices,
     strings,
+    devicesGroup,
     onSortDevices,
     sortProperties,
     selectDevice,
@@ -109,6 +110,10 @@ export default function DevicesList() {
         </thead>
         <tbody>
           {devices.map(device => {
+            const deviceGroupToDisplay = devicesGroup.find(
+              group => group.keyId === Number(device.deviceGroup)
+            );
+
             return (
               <tr key={device.keyId}>
                 <td className="selection">
@@ -121,7 +126,7 @@ export default function DevicesList() {
                 </td>
                 <td className="IMEI">{device.esn}</td>
                 <td className="deviceId">{device.deviceIdentifier}</td>
-                <td className="deviceGroup">{device.deviceGroupName}</td>
+                <td className="deviceGroup">{deviceGroupToDisplay && deviceGroupToDisplay.code}</td>
                 <td className="lastBeacon">{(device.date1, device.lastPositionDate)}</td>
                 <td className="version">{device.gallatinSoftwareManifest}</td>
                 <td>
