@@ -4,13 +4,13 @@ exports[`Checkbox Tests +++ renders <snapshot> 1`] = `
 <div>
   <label
     class="checkbox-container"
-    for="fake-id"
+    for="809082"
   >
     Fake checkbox
     <input
       class="displayInline"
-      id="fake-id"
-      name="fake-id"
+      id="809082"
+      name="809082"
       type="checkbox"
     />
     <span

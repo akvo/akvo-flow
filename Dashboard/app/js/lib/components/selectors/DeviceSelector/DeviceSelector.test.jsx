@@ -7,21 +7,21 @@ import '@testing-library/jest-dom/extend-expect';
 describe('DeviceSelector Tests', () => {
   afterEach(cleanup);
 
-  const deviceGroups = {
+  const deviceGroups = [
     // key is the device group id
-    1: [
+    [
       {
         name: 'droidxx',
-        id: '150452032',
-        deviceGroup: { id: '1', name: 'Device not in group' },
+        id: 150452032,
+        deviceGroup: { id: 1, name: 'Device not in group' },
       },
       {
         name: 'jana',
-        id: '150482013',
-        deviceGroup: { id: '1', name: 'Device not in group' },
+        id: 150482013,
+        deviceGroup: { id: 1, name: 'Device not in group' },
       },
     ],
-  };
+  ];
 
   it('+++ renders initial <snapshot>', () => {
     const wrapper = render(
@@ -50,9 +50,6 @@ describe('DeviceSelector Tests', () => {
     const accordion = wrapper.getByTestId('accordion');
     const panel = wrapper.getByTestId('panel');
 
-    // close accordion
-    fireEvent.click(accordion);
-
     // expect panel display to be closed
     expect(panel).toHaveStyle('display: none');
 
@@ -80,7 +77,7 @@ describe('DeviceSelector Tests', () => {
     fireEvent.click(inputNode);
 
     expect(handleSelectDevice).toHaveBeenCalledTimes(1);
-    expect(handleSelectDevice).toHaveBeenCalledWith('150482013', true);
+    expect(handleSelectDevice).toHaveBeenCalledWith(150482013, true);
   });
 
   test('+++ select all device works', () => {
@@ -100,9 +97,6 @@ describe('DeviceSelector Tests', () => {
     fireEvent.click(inputNode);
 
     expect(handleSelectAllDevice).toHaveBeenCalledTimes(1);
-    expect(handleSelectAllDevice).toHaveBeenCalledWith(
-      ['150452032', '150482013'],
-      true
-    );
+    expect(handleSelectAllDevice).toHaveBeenCalledWith([150452032, 150482013], true);
   });
 });
