@@ -47,6 +47,18 @@ describe('Deviceslist Tests', () => {
 
   let selectedDeviceIds = [];
   const deviceToBlockIds = [];
+  const devicesGroup = [
+    {
+      keyId: 5559405667942400,
+      description: null,
+      name: null,
+      code: 'test group',
+      createdDateTime: 1636117065540,
+      lastUpdateDateTime: 1636117282343,
+      deviceList: null,
+      displayName: 'test group',
+    },
+  ];
 
   const selectDevice = () => {
     if (selectedDeviceIds.some(deviceId => deviceId === 261243005)) {
@@ -66,6 +78,7 @@ describe('Deviceslist Tests', () => {
         value={{
           strings,
           devices,
+          devicesGroup,
           tableHeaderClass,
           selectedDeviceIds,
           sortProperties,
