@@ -109,7 +109,9 @@ exports[`Deviceslist Tests +++ renders <snapshot> 1`] = `
         </td>
         <td
           class="deviceGroup"
-        />
+        >
+          caetie
+        </td>
         <td
           class="lastBeacon"
         >
