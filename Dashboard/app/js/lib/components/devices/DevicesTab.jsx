@@ -354,12 +354,10 @@ export default class DevicesTab extends React.Component {
     const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
     allDevices.forEach(item => {
-      if (parseInt(item.get('deviceGroup'), 10) == id) {
+      if (parseInt(item.get('deviceGroup'), 10) === id) {
         item.set('deviceGroupName', value);
       }
     });
-
-    FLOW.store.commit();
 
     this.setState({
       devicesGroup: FLOW.deviceGroupControl
@@ -368,6 +366,8 @@ export default class DevicesTab extends React.Component {
         .getEach('attributes')
         .filter(group => Object.keys(group).length !== 0),
     });
+
+    FLOW.store.commit();
   };
 
   toggleEditButton = e => {
