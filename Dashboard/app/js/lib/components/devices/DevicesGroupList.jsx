@@ -14,7 +14,7 @@ export default function DevicesGroupList() {
     addNewGroup,
     toggleEditButton,
     selectedEditGroupId,
-    renameGroup,
+    getGroupNewName,
   } = useContext(DevicesTabContext);
 
   return (
@@ -76,7 +76,7 @@ export default function DevicesGroupList() {
                     className="editGroupInput"
                     style={{ display: selectedToEdit ? 'block' : 'none' }}
                     defaultValue={group.code}
-                    onChange={e => renameGroup({ id: group.keyId, value: e.target.value })}
+                    onChange={e => getGroupNewName({ id: group.keyId, value: e.target.value })}
                   />
                   <span style={{ display: selectedToEdit ? 'none' : 'block' }}>{group.code}</span>
                 </td>
