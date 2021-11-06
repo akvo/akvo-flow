@@ -44,6 +44,8 @@ export default class DevicesTab extends React.Component {
 
   setCurrentTable = tableName => {
     this.setState({ currentTable: tableName });
+    this.setState({ selectedEditGroupId: null });
+    this.setState({ newName: null });
   };
 
   // DEVICES LIST
