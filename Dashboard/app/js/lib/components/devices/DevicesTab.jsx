@@ -24,6 +24,8 @@ export default class DevicesTab extends React.Component {
     deviceToBlockIds: [],
     sortAscending: false,
     selectedColumn: null,
+    newName: null,
+    groupToEditId: null,
   };
 
   componentDidMount() {
@@ -159,30 +161,42 @@ export default class DevicesTab extends React.Component {
     }, 500);
   };
 
-  renameGroup = ({ id, value }) => {
-    // this could have been changed in the UI
-    const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, id);
+  getGroupNewName = ({ id, value }) => {
+    this.setState({ newName: value });
+    this.setState({ groupToEditId: id });
+  };
 
-    originalSelectedDeviceGroup.set('code', value);
+  saveNewName = () => {
+    // Update for the database
+    if (this.state.newName !== null) {
+      const originalSelectedDeviceGroup = FLOW.store.find(
+        FLOW.DeviceGroup,
+        this.state.groupToEditId
+      );
 
-    // Update the device group name in the devices list
-    const allDevices = FLOW.store.filter(FLOW.Device, () => true);
+      originalSelectedDeviceGroup.set('code', this.state.newName);
 
-    allDevices.forEach(item => {
-      if (parseInt(item.get('deviceGroup'), 10) === id) {
-        item.set('deviceGroupName', value);
-      }
-    });
+      // Update the device group name in the devices list
+      const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
-    this.setState({
-      devicesGroup: FLOW.deviceGroupControl
-        .get('content')
-        .getEach('_data')
-        .getEach('attributes')
-        .filter(group => Object.keys(group).length !== 0),
-    });
+      allDevices.forEach(item => {
+        if (parseInt(item.get('deviceGroup'), 10) === this.state.groupToEditId) {
+          item.set('deviceGroupName', this.state.newName);
+        }
+      });
 
-    FLOW.store.commit();
+      // Using setTimeout to make sure that the new name is displayed in the UI
+      setTimeout(() => {
+        this.setState({
+          devicesGroup: FLOW.deviceGroupControl
+            .get('content')
+            .getEach('_data')
+            .getEach('attributes')
+            .filter(value => Object.keys(value).length !== 0),
+        });
+      }, 500);
+      FLOW.store.commit();
+    }
   };
 
   toggleEditButton = e => {
@@ -193,6 +207,7 @@ export default class DevicesTab extends React.Component {
       } else {
         this.setState({ selectedEditGroupId: findButton.keyId });
       }
+      this.saveNewName();
     }
   };
 
@@ -317,7 +332,7 @@ export default class DevicesTab extends React.Component {
       onDeleteGroup: this.onDeleteGroup,
       addNewGroup: this.addNewGroup,
       toggleEditButton: this.toggleEditButton,
-      renameGroup: this.renameGroup,
+      getGroupNewName: this.getGroupNewName,
       showAddToGroupDialog: this.showAddToGroupDialog,
       cancelAddToGroup: this.cancelAddToGroup,
       addDeviceToGroup: this.addDeviceToGroup,
