@@ -1,5 +1,7 @@
 import React from 'react';
+
 import DevicesTab from '../../components/devices/DevicesTab';
+
 import observe from '../../mixins/observe';
 
 require('akvo-flow/views/react-component');

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
+import Tooltip from '../reusable/Tooltips/index';
 
 export default function DevicesList() {
   const {
@@ -64,9 +65,7 @@ export default function DevicesList() {
               onClick={() => onSortDevices('esn')}
               onKeyDown={() => onSortDevices('esn')}
             >
-              <div className="helpIcon tooltip" data-title={strings.imeiTooltip}>
-                ?
-              </div>
+              <Tooltip dataTitle="The IMEI is the identifying number unique to each device that helps to identify it in our Akvo database. IMEI stands for International Mobile Station Equipment Identity number." />
               <span>{strings.IMEI}</span>
             </th>
             <th
