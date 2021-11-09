@@ -7,7 +7,7 @@ exports[`DeviceSelector Tests +++ renders initial <snapshot> 1`] = `
       class="accordion-container"
     >
       <div
-        class="accordion active"
+        class="accordion "
       >
         <label
           class="checkbox-container"
@@ -31,14 +31,14 @@ exports[`DeviceSelector Tests +++ renders initial <snapshot> 1`] = `
             Device not in group
           </span>
           <span
-            class="fa fa-chevron-up"
+            class="fa fa-chevron-down"
           />
         </div>
       </div>
       <div
         class="panel"
         data-testid="panel"
-        style="display: block;"
+        style="display: none;"
       >
         <div>
           <label
