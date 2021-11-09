@@ -44,7 +44,7 @@ export default function DevicesGroupList() {
           <tr>
             <th
               id="device_table_header"
-              className={sortProperties.column == 'code' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'code' ? tableHeaderClass() : ''}
               onClick={() => onSortGroup('code')}
               onKeyDown={() => onSortGroup('code')}
             >
