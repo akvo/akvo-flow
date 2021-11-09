@@ -12,6 +12,6 @@ bin
 node_modules
 test_assets
 tmp
-
+.clj-kondo
 # Ruby env build output
 vendor
