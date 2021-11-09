@@ -11,8 +11,8 @@ export default function DeleteGroupDialog() {
       <div className="blanket" />
       <div className="dialogWrap">
         <div className="confirmDialog dialog">
-          <h2>{Ember.String.loc('_device_group_delete_header')}</h2>
-          <p className="dialogMsg">{Ember.String.loc('_this_cant_be_undo')}</p>
+          <h2>{strings.dialogText.dialogHeader}</h2>
+          <p className="dialogMsg">{strings.dialogText.dialogMessage}</p>
           <div className="buttons menuCentre">
             <ul>
               <li>
