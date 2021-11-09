@@ -5,7 +5,7 @@ const xOffset = 10;
 const yOffset = 20;
 
 // Mouse events
-const mouseEnter = function(e) {
+const mouseEnter = e => {
   const tooltipText = $(e.target).attr('data-title');
   $('body').append(`<p id='tooltip'>${tooltipText}</p>`);
   $('#tooltip')
@@ -14,11 +14,11 @@ const mouseEnter = function(e) {
     .fadeIn('fast');
 };
 
-const mouseLeave = function() {
+const mouseLeave = () => {
   $('#tooltip').remove();
 };
 
-const mouseMove = function(e) {
+const mouseMove = e => {
   $('#tooltip')
     .css('top', `${e.pageY - xOffset}px`)
     .css('left', `${e.pageX + yOffset}px`);
