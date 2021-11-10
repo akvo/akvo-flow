@@ -10,22 +10,20 @@ import DeleteGroupDialog from './deviceTabDialog/DeleteGroupDialog';
 
 export default class DevicesTab extends React.Component {
   state = {
-    groupToDeleteId: null,
-    isShowDeleteDialog: false,
+    currentTable: false,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
-    selectedDeviceIds: [],
-    selectedDevices: [],
-    currentTable: false,
-    selectedEditGroupId: null,
-    showAddToGroupDialogBool: null,
-    dialogGroupSelection: null,
-    showRemoveFromGroupDialogBool: false,
-    deviceToBlockIds: [],
     sortAscending: false,
     selectedColumn: null,
-    newName: null,
+    selectedDeviceIds: [],
+    selectedDevices: [],
+    deviceToBlockIds: [],
+    selectedEditGroupId: null,
+    dialogGroupSelection: null,
+    showAddToGroupDialogBool: null,
+    showRemoveFromGroupDialogBool: false,
     groupToEditId: null,
+    newName: null,
   };
 
   componentDidMount() {
@@ -307,22 +305,22 @@ export default class DevicesTab extends React.Component {
 
   render() {
     const contextData = {
-      deviceToBlockIds: this.state.deviceToBlockIds,
-      groupToDeleteId: this.state.groupToDeleteId,
-      isShowDeleteDialog: this.state.isShowDeleteDialog,
+      currentTable: this.state.currentTable,
+      strings: this.props.strings,
+      devices: this.state.devices,
+      devicesGroup: this.state.devicesGroup,
       sortProperties: {
         column: this.state.selectedColumn,
         ascending: this.state.sortAscending,
       },
-      devices: this.state.devices,
-      devicesGroup: this.state.devicesGroup,
-      strings: this.props.strings,
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDevices: this.state.selectedDevices,
-      currentTable: this.state.currentTable,
       selectedEditGroupId: this.state.selectedEditGroupId,
-      showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
+      deviceToBlockIds: this.state.deviceToBlockIds,
+      groupToDeleteId: this.state.groupToDeleteId,
       dialogGroupSelection: this.state.dialogGroupSelection,
+      showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
+      isShowDeleteDialog: this.state.isShowDeleteDialog,
       showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
 
       // Functions
