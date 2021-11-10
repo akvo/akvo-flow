@@ -4,17 +4,22 @@ import TABLE_NAMES from './constants';
 
 export default function DevicesGroupList() {
   const {
+    // States
     strings,
-    onSortGroup,
-    sortProperties,
     devicesGroup,
-    tableHeaderClass,
-    setCurrentTable,
-    onDeleteGroup,
-    addNewGroup,
-    toggleEditButton,
+    sortProperties,
     selectedEditGroupId,
+
+    // Functions
+    tableHeaderClass,
+
+    // Event handlers
+    setCurrentTable,
+    onSortGroup,
+    onDeleteGroup,
+    toggleEditButton,
     getGroupNewName,
+    addNewGroup,
   } = useContext(DevicesTabContext);
 
   return (
@@ -44,7 +49,7 @@ export default function DevicesGroupList() {
           <tr>
             <th
               id="device_table_header"
-              className={sortProperties.column == 'code' ? tableHeaderClass() : ''}
+              className={sortProperties.column === 'code' ? tableHeaderClass() : ''}
               onClick={() => onSortGroup('code')}
               onKeyDown={() => onSortGroup('code')}
             >

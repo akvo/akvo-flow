@@ -504,12 +504,16 @@ export default class DevicesTab extends React.Component {
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showRemoveFromGroupDialogBool: this.state.showRemoveFromGroupDialogBool,
+
+      // Functions
+      tableHeaderClass: this.tableHeaderClass,
+
+      // Event handlers
+      setCurrentTable: this.setCurrentTable,
       cancelDeletingGroup: this.cancelDeletingGroup,
       showRemoveFromGroupDialog: this.showRemoveFromGroupDialog,
       cancelRemoveFromGroup: this.cancelRemoveFromGroup,
       selectDevice: this.selectDevice,
-      tableHeaderClass: this.tableHeaderClass,
-      setCurrentTable: this.setCurrentTable,
       deleteGroupConfirm: this.deleteGroupConfirm,
       onDeleteGroup: this.onDeleteGroup,
       addNewGroup: this.addNewGroup,
