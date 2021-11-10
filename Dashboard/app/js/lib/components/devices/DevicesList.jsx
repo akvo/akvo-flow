@@ -139,7 +139,7 @@ export default function DevicesList() {
                     onClick={() => blockDevice(device.keyId, deviceToBlockIds)}
                     onKeyDown={() => blockDevice(device.keyId, deviceToBlockIds)}
                   >
-                    {deviceToBlockIds.includes(device.keyId) ? 'Unblock' : 'Block'}
+                    {deviceToBlockIds.includes(device.keyId) ? strings.unblock : strings.block}
                   </div>
                 </td>
               </tr>
