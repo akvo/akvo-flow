@@ -4,16 +4,20 @@ import TABLE_NAMES from './constants';
 
 export default function DevicesList() {
   const {
-    devices,
     strings,
+    devices,
     devicesGroup,
-    onSortDevices,
     sortProperties,
-    selectDevice,
     selectedDeviceIds,
-    tableHeaderClass,
-    setCurrentTable,
     deviceToBlockIds,
+
+    // Functions
+    tableHeaderClass,
+
+    // Event handlers
+    setCurrentTable,
+    onSortDevices,
+    selectDevice,
     blockDevice,
     showAddToGroupDialog,
     showRemoveFromGroupDialog,
