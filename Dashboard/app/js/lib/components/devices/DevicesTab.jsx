@@ -144,7 +144,7 @@ export default class DevicesTab extends React.Component {
   // DEVICES GROUP LIST
   addNewGroup = () => {
     FLOW.store.createRecord(FLOW.DeviceGroup, {
-      code: 'New group',
+      code: this.props.strings.newGroup,
     });
 
     FLOW.store.commit();
