@@ -73,7 +73,7 @@ export default function DevicesGroupList() {
                     onClick={toggleEditButton}
                     className={selectedToEdit ? `saveGroupName` : `editGroupName`}
                   >
-                    {selectedToEdit ? `Save group name` : `Edit group name`}
+                    {selectedToEdit ? strings.saveGroupName : strings.editGroupName}
                   </button>
                   <input
                     type="text"
