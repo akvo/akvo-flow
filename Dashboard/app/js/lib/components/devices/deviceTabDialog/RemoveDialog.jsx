@@ -3,11 +3,13 @@ import DevicesTabContext from '../devices-context';
 
 export default function RemoveDialog() {
   const {
-    showRemoveFromGroupDialogBool,
-    cancelRemoveFromGroup,
-    doRemoveFromGroup,
-    selectedDeviceIds,
     strings,
+    selectedDeviceIds,
+
+    // Event handlers
+    doRemoveFromGroup,
+    cancelRemoveFromGroup,
+    showRemoveFromGroupDialogBool,
   } = useContext(DevicesTabContext);
 
   return (

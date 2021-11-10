@@ -5,12 +5,14 @@ export default function AddToGroupDialog() {
   const {
     strings,
     devicesGroup,
+    selectedDeviceIds,
+    dialogGroupSelection,
+
+    // Event handlers
     showAddToGroupDialogBool,
     cancelAddToGroup,
     addDeviceToGroup,
     dialogGroupSelectionChange,
-    selectedDeviceIds,
-    dialogGroupSelection,
   } = useContext(DevicesTabContext);
 
   const buttonCondition =
