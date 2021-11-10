@@ -24,11 +24,11 @@ describe('DevicesGroupList Tests', () => {
     keyId: 5562979080732672,
     description: null,
     name: null,
-    code: 'fwfwfwdsaddsf',
+    code: 'new group',
     createdDateTime: 1635914912204,
     lastUpdateDateTime: 1635915246764,
     deviceList: null,
-    displayName: 'fwfwfwdsaddsf',
+    displayName: 'new group',
   };
 
   const strings = {
