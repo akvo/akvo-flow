@@ -79,6 +79,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public Long getDeviceGroupId() {
+        if (this.device != null) {
+            return device.getDeviceGroupId();
+        }
         return deviceGroupId;
     }
 
