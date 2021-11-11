@@ -313,10 +313,10 @@ FLOW.Device = FLOW.BaseModel.extend({
   lastPositionDate: DS.attr('number', {
     defaultValue: '',
   }),
-  deviceGroup: DS.attr('string', {
-    defaultValue: '',
+  deviceGroupId: DS.attr('number', {
+    defaultValue: 0,
   }),
-  deviceGroupId: DS.attr('string', {
+  deviceGroup: DS.attr('string', {
     defaultValue: '',
   }),
   deviceGroupName: DS.attr('string', {
