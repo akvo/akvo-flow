@@ -187,7 +187,7 @@ export default class DevicesTab extends React.Component {
 
       allDevices.forEach(item => {
         // TODO: change deviceGroup to deviceGroupId when updating the data from the database
-        if (parseInt(item.get('deviceGroup'), 10) === this.state.groupToEditId) {
+        if (parseInt(item.get('deviceGroupId'), 10) === this.state.groupToEditId) {
           item.set('deviceGroupName', this.state.newName);
         }
       });
@@ -237,6 +237,7 @@ export default class DevicesTab extends React.Component {
     filterDevices.forEach(item => {
       item.deviceGroupName = null;
       item.deviceGroupId = null;
+      item.deviceGroup = null;
     });
 
     devicesGroup.deleteRecord();
