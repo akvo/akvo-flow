@@ -45,9 +45,9 @@ describe('DevicesGroupList Tests', () => {
     column: 'code',
   };
 
-  const tableHeaderClass = () => 'sorting_asc';
-
   const selectedDeviceGroupIds = [];
+
+  const tableHeaderClass = () => 'sorting_asc';
 
   const addNewGroup = () => {
     devicesGroup = [...devicesGroup, newGroup];
@@ -66,8 +66,8 @@ describe('DevicesGroupList Tests', () => {
           devicesGroup,
           strings,
           sortProperties,
-          tableHeaderClass,
           selectedDeviceGroupIds,
+          tableHeaderClass,
           addNewGroup,
           onDeleteGroup,
         }}
