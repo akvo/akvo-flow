@@ -69,18 +69,20 @@ export default class DevicesTab extends React.Component {
       const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
       devices = [...devices, filterDevices];
       const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
-
       devicesInGroup.forEach(item => {
+        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
         item.set('deviceGroupName', this.state.dialogGroupSelection.code);
+        item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
         item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
       });
     }
 
     // Adding group property to the selected devices
-    devices.map(item => {
+    devices.forEach(item => {
+      // TODO: change deviceGroup to deviceGroupId when updating the data from the database
       item.deviceGroupName = this.state.dialogGroupSelection.code;
       item.deviceGroupId = this.state.dialogGroupSelection.keyId;
-      return item;
+      item.deviceGroup = this.state.dialogGroupSelection.keyId;
     });
 
     FLOW.store.commit();
@@ -114,17 +116,21 @@ export default class DevicesTab extends React.Component {
     for (let i = 0; i < dev.length; i++) {
       const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
       devices = [...devices, filterDevices];
-      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') == dev[i]);
+      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
 
       devicesInGroup.forEach(item => {
+        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
         item.set('deviceGroupName', null);
+        item.set('deviceGroupId', null);
         item.set('deviceGroup', null);
       });
     }
 
     devices.forEach(item => {
+      // TODO: change deviceGroup to deviceGroupId when updating the data from the database
       item.deviceGroupName = null;
       item.deviceGroupId = null;
+      item.deviceGroup = null;
       return item;
     });
 
@@ -180,6 +186,7 @@ export default class DevicesTab extends React.Component {
       const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
       allDevices.forEach(item => {
+        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
         if (parseInt(item.get('deviceGroup'), 10) === this.state.groupToEditId) {
           item.set('deviceGroupName', this.state.newName);
         }
