@@ -79,7 +79,7 @@ export default class DevicesTab extends React.Component {
     // Adding group property to the selected devices
     devices.map(item => {
       item.deviceGroupName = this.state.dialogGroupSelection.code;
-      item.deviceGroup = this.state.dialogGroupSelection.keyId;
+      item.deviceGroupId = this.state.dialogGroupSelection.keyId;
       return item;
     });
 
@@ -124,7 +124,7 @@ export default class DevicesTab extends React.Component {
 
     devices.forEach(item => {
       item.deviceGroupName = null;
-      item.deviceGroup = null;
+      item.deviceGroupId = null;
       return item;
     });
 
@@ -224,12 +224,12 @@ export default class DevicesTab extends React.Component {
     const devicesGroup = FLOW.store.find(FLOW.DeviceGroup, this.state.groupToDeleteId);
 
     const filterDevices = this.state.devices.filter(
-      device => Number(device.deviceGroup) === this.state.groupToDeleteId
+      device => Number(device.deviceGroupId) === this.state.groupToDeleteId
     );
 
     filterDevices.forEach(item => {
       item.deviceGroupName = null;
-      item.deviceGroup = null;
+      item.deviceGroupId = null;
     });
 
     devicesGroup.deleteRecord();
