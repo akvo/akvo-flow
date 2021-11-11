@@ -17,7 +17,7 @@ describe('Deviceslist Tests', () => {
       lastKnownAccuracy: null,
       lastPositionDate: 1624877130200,
       gallatinSoftwareManifest: '2.10.1',
-      deviceGroup: '1689003',
+      deviceGroupId: '1689003',
       deviceGroupName: 'caetie',
       deviceIdentifier: 'valeria_moto5',
     },

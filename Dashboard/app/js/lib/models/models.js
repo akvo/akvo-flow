@@ -316,6 +316,9 @@ FLOW.Device = FLOW.BaseModel.extend({
   deviceGroup: DS.attr('string', {
     defaultValue: '',
   }),
+  deviceGroupId: DS.attr('string', {
+    defaultValue: '',
+  }),
   deviceGroupName: DS.attr('string', {
     defaultValue: '',
   }),

@@ -55,9 +55,7 @@ exports[`DevicesGroupList Tests +++ renders <snapshot> 1`] = `
             id="1689003"
             name="edit"
             type="button"
-          >
-            Edit group name
-          </button>
+          />
           <input
             class="editGroupInput"
             id="1689003"
