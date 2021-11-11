@@ -114,6 +114,7 @@ export default function DevicesList() {
         </thead>
         <tbody>
           {devices.map(device => {
+            // TODO: change deviceGroup to deviceGroupId when updating the data from the database
             const deviceGroupToDisplay = devicesGroup.find(
               group => group.keyId === Number(device.deviceGroup)
             );
