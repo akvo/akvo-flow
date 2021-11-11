@@ -100,3 +100,9 @@ build.dev.log
 .vscode
 
 notify.team.sh
+
+# Clojure cache folder
+.clj-kondo
+
+# mdb folder
+.lsp
