@@ -46,12 +46,12 @@ export default class DevicesTab extends React.Component {
   };
 
   // DEVICES LIST
-  selectDevice = (id, deviceIds) => {
-    if (deviceIds.some(deviceId => id === deviceId)) {
-      const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
+  selectDevice = (changedDeviceId, selectedDeviceIds) => {
+    if (selectedDeviceIds.includes(changedDeviceId)) {
+      const filterDevice = selectedDeviceIds.filter(deviceId => changedDeviceId !== deviceId);
       return this.setState({ selectedDeviceIds: [...filterDevice] });
     }
-    return this.setState({ selectedDeviceIds: [...deviceIds, id] });
+    return this.setState({ selectedDeviceIds: [...selectedDeviceIds, changedDeviceId] });
   };
 
   // Get the property of a selected group
