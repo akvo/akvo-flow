@@ -17,12 +17,12 @@ export default class DevicesTab extends React.Component {
     selectedColumn: null,
     selectedDeviceIds: [],
     selectedDevices: [],
-    selectedEditGroupId: null,
+    groupToEditButtonId: null,
     dialogGroupSelection: null,
     showAddToGroupDialogBool: null,
     showRemoveFromGroupDialogBool: false,
     groupToEditId: null,
-    newName: null,
+    inputEditGroupValue: null,
   };
 
   componentDidMount() {
@@ -41,8 +41,10 @@ export default class DevicesTab extends React.Component {
 
   setCurrentTable = tableName => {
     this.setState({ currentTable: tableName });
-    this.setState({ selectedEditGroupId: null });
-    this.setState({ newName: null });
+
+    // Input value is reseted when switched into Manage devices
+    this.setState({ groupToEditButtonId: null });
+    this.setState({ inputEditGroupValue: null });
   };
 
   // DEVICES LIST
@@ -178,26 +180,26 @@ export default class DevicesTab extends React.Component {
   };
 
   getGroupNewName = ({ id, value }) => {
-    this.setState({ newName: value });
+    this.setState({ inputEditGroupValue: value });
     this.setState({ groupToEditId: id });
   };
 
   saveNewName = () => {
     // Update for the database
-    if (this.state.newName !== null) {
+    if (this.state.inputEditGroupValue !== null) {
       const originalSelectedDeviceGroup = FLOW.store.find(
         FLOW.DeviceGroup,
         this.state.groupToEditId
       );
 
-      originalSelectedDeviceGroup.set('code', this.state.newName);
+      originalSelectedDeviceGroup.set('code', this.state.inputEditGroupValue);
 
       // Update the device group name in the devices list
       const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
       allDevices.forEach(item => {
         if (item.get('deviceGroupId') === this.state.groupToEditId) {
-          item.set('deviceGroupName', this.state.newName);
+          item.set('deviceGroupName', this.state.inputEditGroupValue);
         }
       });
 
@@ -218,10 +220,10 @@ export default class DevicesTab extends React.Component {
   toggleEditButton = e => {
     const findButton = this.state.devicesGroup.find(group => group.keyId === Number(e.target.id));
     if (findButton) {
-      if (findButton.keyId === this.state.selectedEditGroupId) {
-        this.setState({ selectedEditGroupId: null });
+      if (findButton.keyId === this.state.groupToEditButtonId) {
+        this.setState({ groupToEditButtonId: null });
       } else {
-        this.setState({ selectedEditGroupId: findButton.keyId });
+        this.setState({ groupToEditButtonId: findButton.keyId });
       }
       this.saveNewName();
     }
@@ -492,7 +494,7 @@ export default class DevicesTab extends React.Component {
       },
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDevices: this.state.selectedDevices,
-      selectedEditGroupId: this.state.selectedEditGroupId,
+      groupToEditButtonId: this.state.groupToEditButtonId,
       groupToDeleteId: this.state.groupToDeleteId,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
