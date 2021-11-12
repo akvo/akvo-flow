@@ -9,7 +9,6 @@ export default function DevicesList() {
     devicesGroup,
     sortProperties,
     selectedDeviceIds,
-    deviceToBlockIds,
 
     // Functions
     tableHeaderClass,
@@ -136,10 +135,10 @@ export default function DevicesList() {
                 <td>
                   <div
                     id={device.keyId}
-                    onClick={() => blockDevice(device.keyId, deviceToBlockIds)}
-                    onKeyDown={() => blockDevice(device.keyId, deviceToBlockIds)}
+                    onClick={() => blockDevice(device.keyId)}
+                    onKeyDown={() => blockDevice(device.keyId)}
                   >
-                    {deviceToBlockIds.includes(device.keyId) ? strings.unblock : strings.block}
+                    {device.isBlocked ? strings.unblock : strings.block}
                   </div>
                 </td>
               </tr>
