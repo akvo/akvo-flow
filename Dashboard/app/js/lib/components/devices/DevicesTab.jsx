@@ -70,19 +70,15 @@ export default class DevicesTab extends React.Component {
       devices = [...devices, filterDevices];
       const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
       devicesInGroup.forEach(item => {
-        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
         item.set('deviceGroupName', this.state.dialogGroupSelection.code);
         item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
-        item.set('deviceGroup', this.state.dialogGroupSelection.keyId);
       });
     }
 
     // Adding group property to the selected devices
     devices.forEach(item => {
-      // TODO: change deviceGroup to deviceGroupId when updating the data from the database
       item.deviceGroupName = this.state.dialogGroupSelection.code;
       item.deviceGroupId = this.state.dialogGroupSelection.keyId;
-      item.deviceGroup = this.state.dialogGroupSelection.keyId;
     });
 
     // Find all devices that have the same keyId as in the selectedDeviceIds
@@ -138,18 +134,14 @@ export default class DevicesTab extends React.Component {
       const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
 
       devicesInGroup.forEach(item => {
-        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
         item.set('deviceGroupName', null);
         item.set('deviceGroupId', null);
-        item.set('deviceGroup', null);
       });
     }
 
     devices.forEach(item => {
-      // TODO: change deviceGroup to deviceGroupId when updating the data from the database
       item.deviceGroupName = null;
       item.deviceGroupId = null;
-      item.deviceGroup = null;
       return item;
     });
 
@@ -205,8 +197,7 @@ export default class DevicesTab extends React.Component {
       const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
       allDevices.forEach(item => {
-        // TODO: change deviceGroup to deviceGroupId when updating the data from the database
-        if (parseInt(item.get('deviceGroupId'), 10) === this.state.groupToEditId) {
+        if (item.get('deviceGroupId') === this.state.groupToEditId) {
           item.set('deviceGroupName', this.state.newName);
         }
       });
@@ -411,13 +402,12 @@ export default class DevicesTab extends React.Component {
     const devicesGroup = FLOW.store.find(FLOW.DeviceGroup, this.state.groupToDeleteId);
 
     const filterDevices = this.state.devices.filter(
-      device => Number(device.deviceGroupId) === this.state.groupToDeleteId
+      device => device.deviceGroupId === this.state.groupToDeleteId
     );
 
     filterDevices.forEach(item => {
       item.deviceGroupName = null;
       item.deviceGroupId = null;
-      item.deviceGroup = null;
     });
 
     devicesGroup.deleteRecord();
