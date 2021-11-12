@@ -322,6 +322,9 @@ FLOW.Device = FLOW.BaseModel.extend({
   deviceGroupName: DS.attr('string', {
     defaultValue: '',
   }),
+  isBlocked: DS.attr('boolean', {
+    defaultValue: null,
+  }),
   isSelected: false,
   combinedName: null,
 });
