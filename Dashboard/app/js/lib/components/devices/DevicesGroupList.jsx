@@ -8,7 +8,7 @@ export default function DevicesGroupList() {
     strings,
     devicesGroup,
     sortProperties,
-    selectedEditGroupId,
+    groupToEditButtonId,
 
     // Functions
     tableHeaderClass,
@@ -62,7 +62,7 @@ export default function DevicesGroupList() {
         </thead>
         <tbody>
           {devicesGroup.map(group => {
-            const selectedToEdit = selectedEditGroupId === group.keyId;
+            const selectedToEdit = groupToEditButtonId === group.keyId;
             return (
               <tr key={group.keyId}>
                 <td className="deviceGroup">
