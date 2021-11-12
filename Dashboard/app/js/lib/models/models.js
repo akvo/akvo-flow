@@ -313,11 +313,17 @@ FLOW.Device = FLOW.BaseModel.extend({
   lastPositionDate: DS.attr('number', {
     defaultValue: '',
   }),
+  deviceGroupId: DS.attr('number', {
+    defaultValue: null,
+  }),
   deviceGroup: DS.attr('string', {
     defaultValue: '',
   }),
   deviceGroupName: DS.attr('string', {
     defaultValue: '',
+  }),
+  isBlocked: DS.attr('boolean', {
+    defaultValue: null,
   }),
   isSelected: false,
   combinedName: null,
