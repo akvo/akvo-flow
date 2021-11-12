@@ -17,7 +17,6 @@ export default class DevicesTab extends React.Component {
     selectedColumn: null,
     selectedDeviceIds: [],
     selectedDevices: [],
-    deviceToBlockIds: [],
     selectedEditGroupId: null,
     dialogGroupSelection: null,
     showAddToGroupDialogBool: null,
@@ -149,13 +148,13 @@ export default class DevicesTab extends React.Component {
     this.cancelRemoveFromGroup();
   };
 
-  // Block and unblock devices
-  blockDevice = (id, deviceIds) => {
-    if (deviceIds.some(deviceId => id === deviceId)) {
-      const filterDevice = deviceIds.filter(deviceId => id !== deviceId);
-      return this.setState({ deviceToBlockIds: [...filterDevice] });
+  // Block and unblock a device
+  blockDevice = id => {
+    const findDevice = this.state.devices.find(device => device.keyId === id);
+    if (findDevice.keyId === id) {
+      findDevice.isBlocked = !findDevice.isBlocked;
+      this.setState(state => ({ devices: state.devices }));
     }
-    return this.setState({ deviceToBlockIds: [...deviceIds, id] });
   };
 
   // DEVICES GROUP LIST
@@ -494,7 +493,6 @@ export default class DevicesTab extends React.Component {
       selectedDeviceIds: this.state.selectedDeviceIds,
       selectedDevices: this.state.selectedDevices,
       selectedEditGroupId: this.state.selectedEditGroupId,
-      deviceToBlockIds: this.state.deviceToBlockIds,
       groupToDeleteId: this.state.groupToDeleteId,
       dialogGroupSelection: this.state.dialogGroupSelection,
       showAddToGroupDialogBool: this.state.showAddToGroupDialogBool,
