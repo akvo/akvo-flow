@@ -4,7 +4,12 @@ FLOW.ReactComponentView = Ember.View.extend({
   template: Ember.Handlebars.compile(''),
 
   reactRender(reactComponent) {
-    ReactDOM.render(reactComponent, this.get('element'));
+    const elements = this.get('element');
+    if (elements) {
+      ReactDOM.render(reactComponent, elements);
+    } else {
+      console.warn('React mount element not found');
+    }
   },
 
   unmountReactElement() {
