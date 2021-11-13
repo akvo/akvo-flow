@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
