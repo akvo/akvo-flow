@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
 import DevicesTab from '../../components/devices/DevicesTab';
 import observe from '../../mixins/observe';
