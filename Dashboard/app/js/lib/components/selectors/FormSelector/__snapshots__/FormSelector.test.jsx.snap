@@ -2,7 +2,9 @@
 
 exports[`FormSelector Tests +++ renders <snapshot> correctly 1`] = `
 <div>
-  <div>
+  <div
+    class="form-selector"
+  >
     <div
       class="form"
     >
