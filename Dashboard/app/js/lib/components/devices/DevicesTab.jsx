@@ -25,20 +25,6 @@ export default class DevicesTab extends React.Component {
     inputEditGroupValue: null,
   };
 
-  componentDidMount() {
-    if (this.state.devicesGroup.length === 0) {
-      setTimeout(() => {
-        this.setState({
-          devicesGroup: FLOW.deviceGroupControl
-            .get('content')
-            .getEach('_data')
-            .getEach('attributes')
-            .filter(value => Object.keys(value).length !== 0),
-        });
-      }, 500);
-    }
-  }
-
   setCurrentTable = tableName => {
     this.setState({ currentTable: tableName });
 
