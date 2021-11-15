@@ -156,8 +156,7 @@ pre {
     border-radius: 3px;
     box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
     padding: 5px 3px 5px 25px;
-    background: rgb(248, 248, 248) url(/admin/images/loader.gif) 5px center
-      no-repeat;
+    background: rgb(248, 248, 248) url(/admin/images/loader.gif) 5px center no-repeat;
     color: rgb(252, 159, 0);
   }
 }
@@ -259,9 +258,24 @@ a.btn {
   }
 }
 
+.deviceGroup {
+  display: flex;
+  align-items: center;
+  span,
+  input {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 a,
 a:link,
-a:visited {
+a:visited,
+td div,
+#device_table_header,
+#device_table_header span,
+#device_table_header div,
+button.cancel {
   outline: none;
   color: $flowAnchorLink;
   text-decoration: none;
@@ -271,7 +285,7 @@ a:visited {
   }
   /* buttons must be <a> tags (use the appropriate class) */
   &.helpIcon {
-    display: inline-block;
+    display: block;
     font-size: 0.8em;
     font-weight: bold;
     padding-top: 3px;
@@ -337,7 +351,8 @@ input[type='submit'] {
   @extend .standardBtn;
 }
 
-.selectinLabel a.helpIcon {
+.selectinLabel a.helpIcon,
+div.helpIcon {
   line-height: 1.5em;
 }
 
@@ -863,7 +878,7 @@ table.dataTable.assignmentListTable thead tr th {
 
 table.dataTable.assignmentListTable td {
   text-align: left;
-    padding-left: 2em;
+  padding-left: 2em;
 }
 
 table.dataTable tbody tr,
@@ -901,7 +916,8 @@ table.dataTable thead tr th a:visited {
 
 /* end addition MTW */
 
-table.dataTable thead tr th a.helpIcon {
+table.dataTable thead tr th a.helpIcon,
+div.helpIcon {
   position: absolute;
   top: 9px;
 }
@@ -980,6 +996,7 @@ tfoot tr {
   background: transparent;
   color: grey;
   -o-border-radius: 0;
+  cursor: not-allowed;
 }
 
 .disabled {
@@ -995,7 +1012,8 @@ tfoot tr {
       display: inline;
       float: left;
       margin: 0 0.5em 0 0;
-      a {
+      a,
+      button {
         display: block;
         padding: 0.4em 0.8em;
         background: transparent;
@@ -1488,8 +1506,7 @@ nav.menuGroupWrap {
       width: calc(98%-30px);
       border-bottom: thin solid rgb(55, 55, 55);
       background: rgb(70, 70, 70);
-      background: rgba(255, 255, 255, 0.05) url(/admin/images/selectFolder.svg)
-        2px center no-repeat;
+      background: rgba(255, 255, 255, 0.05) url(/admin/images/selectFolder.svg) 2px center no-repeat;
       background-size: 20px 20px;
       div.edit {
         position: absolute;
@@ -1530,8 +1547,8 @@ nav.menuGroupWrap {
         background-size: 35px 35px;
         &:hover {
           background: rgb(70, 70, 70);
-          background: rgba(255, 255, 255, 0.05)
-            url(/admin/images/folderUpHover.svg) 2px center no-repeat;
+          background: rgba(255, 255, 255, 0.05) url(/admin/images/folderUpHover.svg) 2px center
+            no-repeat;
           background-size: 35px 35px;
         }
         a {
@@ -1547,15 +1564,13 @@ nav.menuGroupWrap {
       }
       &.current {
         border-bottom: thin solid rgb(55, 55, 55);
-        background: rgb(90, 90, 90) url(/admin/images/selectFolder.svg) left
-          center no-repeat;
-        background: rgba(255, 255, 255, 0.15)
-          url(/admin/images/selectFolder.svg) 2px center no-repeat;
+        background: rgb(90, 90, 90) url(/admin/images/selectFolder.svg) left center no-repeat;
+        background: rgba(255, 255, 255, 0.15) url(/admin/images/selectFolder.svg) 2px center
+          no-repeat;
         background-size: 20px 20px;
         a,
         a:hover {
-          background: url(/admin/images/carretFolderSelected.svg) right center
-            no-repeat;
+          background: url(/admin/images/carretFolderSelected.svg) right center no-repeat;
           color: $flowAnchorLinkHover;
           background-size: 15px 25px;
         }
@@ -1572,10 +1587,9 @@ nav.menuGroupWrap {
         @include noWrapTxt;
         cursor: pointer;
         &:hover {
-          background: rgb(80, 80, 80) url(/admin/images/carretFolder.svg) right
-            center no-repeat;
-          background: rgba(255, 255, 255, 0.05)
-            url(/admin/images/carretFolder.svg) right center no-repeat;
+          background: rgb(80, 80, 80) url(/admin/images/carretFolder.svg) right center no-repeat;
+          background: rgba(255, 255, 255, 0.05) url(/admin/images/carretFolder.svg) right center
+            no-repeat;
           color: rgb(114, 205, 255);
           background-size: 15px 25px;
         }
@@ -1611,20 +1625,16 @@ nav.menuGroupWrap {
     transition: background 0.4s ease-in;
     &.scrollUp {
       border-radius: 5px 5px 0 0;
-      background: rgb(31, 31, 31) url(/admin/images/scrollUp.png) center center
-        no-repeat;
+      background: rgb(31, 31, 31) url(/admin/images/scrollUp.png) center center no-repeat;
       &:hover {
-        background: rgb(107, 134, 141) url(/admin/images/scrollUp.png) center
-          center no-repeat;
+        background: rgb(107, 134, 141) url(/admin/images/scrollUp.png) center center no-repeat;
       }
     }
     &.scrollDown {
       border-radius: 0 0 5px 5px;
-      background: rgb(31, 31, 31) url(/admin/images/scrollDown.png) center
-        center no-repeat;
+      background: rgb(31, 31, 31) url(/admin/images/scrollDown.png) center center no-repeat;
       &:hover {
-        background: rgb(107, 134, 141) url(/admin/images/scrollDown.png) center
-          center no-repeat;
+        background: rgb(107, 134, 141) url(/admin/images/scrollDown.png) center center no-repeat;
       }
     }
   }
@@ -1865,15 +1875,14 @@ section.topBar {
         &.homeRoot {
           border-radius: 3px 0 0 3px;
           width: 40px;
-          background: url(/admin/images/breadCrumb-Root.png) center center
-            no-repeat $akvoLightBlue;
+          background: url(/admin/images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
           background-size: 60%;
           text-indent: -9999px;
           z-index: 9999;
           margin-left: 0;
           &:hover {
-            background: url(/admin/images/breadCrumb-Root.png) center center
-              no-repeat $flowAnchorLinkHover;
+            background: url(/admin/images/breadCrumb-Root.png) center center no-repeat
+              $flowAnchorLinkHover;
             background-size: 60%;
           }
         }
@@ -1891,8 +1900,8 @@ section.topBar {
             padding-right: 0;
             border-radius: 3px 0 0 3px;
             width: 40px;
-            background: url(/admin/images/breadCrumb-Root.png) center center
-              no-repeat $akvoLightBlue;
+            background: url(/admin/images/breadCrumb-Root.png) center center no-repeat
+              $akvoLightBlue;
             text-indent: -9999px;
             z-index: 9999;
             margin-left: 0;
@@ -1912,8 +1921,8 @@ section.topBar {
               z-index: 10;
             }
             &:hover {
-              background: url(/admin/images/breadCrumb-Root.png) center center
-                no-repeat $akvoLightBlue;
+              background: url(/admin/images/breadCrumb-Root.png) center center no-repeat
+                $akvoLightBlue;
             }
           }
           &:after {
@@ -1936,8 +1945,7 @@ section.topBar {
         padding: 0;
         &.actionTitleEdit {
           padding: 5px 5px 5px 15px;
-          background: url(/admin/images/IconEditGreyLight.svg) left center
-            no-repeat;
+          background: url(/admin/images/IconEditGreyLight.svg) left center no-repeat;
           background-size: 15px;
         }
       }
@@ -2109,7 +2117,7 @@ li.dropdown {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
@@ -2121,7 +2129,9 @@ li.dropdown {
   text-align: left;
 }
 
-.dropdown-content a:hover {background-color: #f1f1f1;}
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
 
 .dropdown:hover .dropdown-content {
   display: block;
@@ -2191,6 +2201,34 @@ li.aSurvey {
         }
       }
     }
+  }
+}
+
+button.editGroupName {
+  display: inline-block;
+  width: 30px;
+  background: url(/admin/images/IconEditGreyLight.svg) center center no-repeat;
+  background-size: 25px;
+  text-indent: -9999px;
+  opacity: 0.5;
+  &:hover {
+    background: url(/admin/images/IconEditOrange.svg) center center no-repeat;
+    background-size: 25px;
+    opacity: 1;
+  }
+}
+
+button.saveGroupName {
+  @extend .editFolderName;
+  background: url(/admin/images/IconSave.svg) center center no-repeat;
+  background-size: 70px 70px;
+  text-indent: -9999px;
+  width: 100%;
+  max-width: 40px;
+  &:hover {
+    background: url(/admin/images/IconSaveOrange.svg) center center no-repeat;
+    background-size: 70px 70px;
+    opacity: 1;
   }
 }
 
@@ -2635,28 +2673,25 @@ div.published {
 }
 
 a.publishProjectBtn {
-  background: $flowAnchorLink url(/admin/images/IconPublishWhite.svg) left
-    center no-repeat;
+  background: $flowAnchorLink url(/admin/images/IconPublishWhite.svg) left center no-repeat;
   background-size: 55px 55px;
   padding: 10px 15px 10px 45px;
   color: white;
   border-radius: 3px;
   &.noChanges {
-    background: rgba(32, 32, 36, 0.1) url(/admin/images/IconPublishWhite.svg)
-      left center no-repeat;
+    background: rgba(32, 32, 36, 0.1) url(/admin/images/IconPublishWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     padding: 10px 15px 10px 45px;
     color: white;
     cursor: text;
     &:hover {
-      background: rgba(32, 32, 36, 0.1) url(/admin/images/IconPublishWhite.svg)
-        left center no-repeat;
+      background: rgba(32, 32, 36, 0.1) url(/admin/images/IconPublishWhite.svg) left center
+        no-repeat;
       background-size: 55px 55px;
     }
   }
   &:hover {
-    background: $flowAnchorLinkHover url(/admin/images/IconPublishWhite.svg)
-      left center no-repeat;
+    background: $flowAnchorLinkHover url(/admin/images/IconPublishWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     color: white;
   }
@@ -2817,15 +2852,13 @@ span.qtnGroupHead {
   padding: 0.5em 0.5em 0.35em 25px;
   width: 7%;
   border-radius: 3px;
-  background: rgb(235, 235, 235) url(/admin/images/addSet.png) left center
-    no-repeat;
+  background: rgb(235, 235, 235) url(/admin/images/addSet.png) left center no-repeat;
   color: rgb(227, 27, 35);
   @include noWrapTxt;
 }
 
 .aQuestionSet footer a.addSet:hover {
-  background: rgb(214, 214, 214) url(/admin/images/addSet.png) left center
-    no-repeat;
+  background: rgb(214, 214, 214) url(/admin/images/addSet.png) left center no-repeat;
   color: rgb(227, 27, 35);
 }
 
@@ -2993,12 +3026,13 @@ nav.questionActionMenu a:hover {
   text-align: center;
 }
 
-.menuCentre ul li a {
+.menuCentre ul li button {
   display: inline;
   padding: 6px 10%;
+  line-height: normal;
 }
 
-.menuCentre ul li a.smallBtn {
+.menuCentre ul li button.smallBtn {
   margin: 0 5px 0 0;
 }
 
@@ -3057,8 +3091,6 @@ nav.questionActionMenu a:hover {
 .innerContent nav.smallMenu ul li a:hover {
   color: rgba(246, 160, 26, 1);
 }
-
-
 
 // nav.smallMenu ul li a.editQuestion {
 //     background: url(/admin/images/IconEdit.svg) left center no-repeat;
@@ -3228,11 +3260,11 @@ nav.questionActionMenu a:hover {
 }
 
 div.error {
-    border: medium solid red;
+  border: medium solid red;
 }
 
-.aQuestionSet .questionSetContent div.error  {
-    border: medium solid red;
+.aQuestionSet .questionSetContent div.error {
+  border: medium solid red;
 }
 
 .questionNbr span {
@@ -4886,8 +4918,7 @@ table.surveyDetails {
       }
       .tabNav {
         .aFormTab {
-          background: rgb(32, 32, 36) url(/admin/images/IconForms.png) no-repeat
-            left center;
+          background: rgb(32, 32, 36) url(/admin/images/IconForms.png) no-repeat left center;
         }
       }
     }
@@ -5100,8 +5131,7 @@ table.surveyDetails {
         background: url(/admin/images/IconEdit.svg) center center no-repeat;
         background-size: 18px 18px;
         &:hover {
-          background: url(/admin/images/IconEditOrange.svg) center center
-            no-repeat;
+          background: url(/admin/images/IconEditOrange.svg) center center no-repeat;
           background-size: 18px 18px;
         }
       }
@@ -5177,15 +5207,13 @@ nav.cascadeBreadCrumb {
         border-color: transparent transparent transparent rgba(32, 32, 36, 0.1);
         transition: all 0.4s ease-in;
         &:after {
-          border-color: transparent transparent transparent
-            rgba(32, 32, 36, 0.1);
+          border-color: transparent transparent transparent rgba(32, 32, 36, 0.1);
           transition: all 0.4s ease-in;
         }
         &:hover {
           background: rgba($flowAnchorLinkHover, 0.5);
           &:after {
-            border-color: transparent transparent transparent
-              rgba($flowAnchorLinkHover, 0.5);
+            border-color: transparent transparent transparent rgba($flowAnchorLinkHover, 0.5);
           }
         }
       }
@@ -5289,15 +5317,13 @@ nav.cascadeBreadCrumb {
         &:first-of-type {
         }
         &:hover {
-          background: rgba(255, 255, 255, 0.2) url(/admin/images/carret.svg)
-            right center no-repeat;
+          background: rgba(255, 255, 255, 0.2) url(/admin/images/carret.svg) right center no-repeat;
           background-size: 15px 15px;
           cursor: pointer;
           box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
         }
         &.selected {
-          background: rgba(41, 119, 152, 0.1) url(/admin/images/carret.svg)
-            right center no-repeat;
+          background: rgba(41, 119, 152, 0.1) url(/admin/images/carret.svg) right center no-repeat;
           background-size: 15px 15px;
           cursor: text;
           box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
@@ -5358,15 +5384,14 @@ a.levelUp {
   display: table;
   margin: 20px auto 0;
   padding: 15px 35px 15px 15px;
-  background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightBlue.svg)
-    right center no-repeat;
+  background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightBlue.svg) right center no-repeat;
   -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
   transition: color 0.2s ease-in, background-color 0.2s ease-in;
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
   &:hover {
-    background: rgba($flowAnchorLink, 0.1)
-      url(/admin/images/IconRightOrange.svg) right center no-repeat;
+    background: rgba($flowAnchorLink, 0.1) url(/admin/images/IconRightOrange.svg) right center
+      no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
   }
@@ -5376,15 +5401,14 @@ a.levelDown {
   display: table;
   margin: 20px auto 0;
   padding: 15px 15px 15px 35px;
-  background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftBlue.svg) left
-    center no-repeat;
+  background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftBlue.svg) left center no-repeat;
   -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
   transition: color 0.2s ease-in, background-color 0.2s ease-in;
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
   &:hover {
-    background: rgba($flowAnchorLink, 0.1) url(/admin/images/IconLeftOrange.svg)
-      left center no-repeat;
+    background: rgba($flowAnchorLink, 0.1) url(/admin/images/IconLeftOrange.svg) left center
+      no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
   }
@@ -5397,15 +5421,15 @@ li.disable {
     @include opacity(0.2);
     color: white;
     padding: 15px 35px 15px 15px;
-    background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightWhite.svg)
-      right center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightWhite.svg) right center
+      no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
     &:hover {
       -webkit-background-size: 25px 25px;
       background-size: 25px 25px;
-      background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightWhite.svg)
-        right center no-repeat;
+      background: rgba($flowAnchorLink, 0) url(/admin/images/IconRightWhite.svg) right center
+        no-repeat;
     }
   }
   a.levelDown {
@@ -5414,13 +5438,12 @@ li.disable {
     @include opacity(0.2);
     color: white;
     padding: 15px 15px 15px 35px;
-    background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftWhite.svg)
-      left center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftWhite.svg) left center no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
     &:hover {
-      background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftWhite.svg)
-        left center no-repeat;
+      background: rgba($flowAnchorLink, 0) url(/admin/images/IconLeftWhite.svg) left center
+        no-repeat;
       -webkit-background-size: 25px 25px;
       background-size: 25px 25px;
     }
@@ -5502,8 +5525,7 @@ li.disable {
   border-radius: 3px;
   box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
   padding: 5px 3px 5px 25px;
-  background: rgb(248, 248, 248) url(/admin/images/loader.gif) 5px center
-    no-repeat;
+  background: rgb(248, 248, 248) url(/admin/images/loader.gif) 5px center no-repeat;
   color: rgb(252, 159, 0);
   font-weight: bold;
 }
@@ -5534,7 +5556,7 @@ li.disable {
       }
     }
   }
-  > a {
+  > button {
     margin-top: 10px;
   }
   .dataTabMenu {
@@ -5719,8 +5741,7 @@ html.navMaps,
       background-size: 15px auto;
       background: url(/admin/images/topnavUsers.svg) left center no-repeat;
       &:hover {
-        background: url(/admin/images/topnavUsersOrange.svg) left center
-          no-repeat;
+        background: url(/admin/images/topnavUsersOrange.svg) left center no-repeat;
       }
     }
   }
@@ -5825,15 +5846,13 @@ svg {
         &.homeRoot {
           border-radius: 3px 0 0 3px;
           width: 40px;
-          background: url(/admin/images/breadCrumb-Root.png) center center
-            no-repeat $akvoBlack;
+          background: url(/admin/images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
           background-size: 40%;
           text-indent: -9999px;
           z-index: 9999;
           margin-left: 0;
           &:hover {
-            background: url(/admin/images/breadCrumb-Root.png) center center
-              no-repeat $akvoBlack;
+            background: url(/admin/images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
             background-size: 40%;
           }
         }
@@ -6289,11 +6308,7 @@ svg {
     color-stop(0%, rgba(234, 185, 45, 1)),
     color-stop(100%, rgba(199, 152, 16, 1))
   );
-  background: -webkit-linear-gradient(
-    top,
-    rgba(234, 185, 45, 1) 0%,
-    rgba(199, 152, 16, 1) 100%
-  );
+  background: -webkit-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
   background: -webkit-gradient(
     linear,
     left top,
@@ -6301,11 +6316,7 @@ svg {
     from(rgba(234, 185, 45, 1)),
     to(rgba(199, 152, 16, 1))
   );
-  background: linear-gradient(
-    to bottom,
-    rgba(234, 185, 45, 1) 0%,
-    rgba(199, 152, 16, 1) 100%
-  );
+  background: linear-gradient(to bottom, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
   position: relative;
   -o-border-radius: 0.5em;
   border-radius: 0.5em;
@@ -6596,8 +6607,7 @@ svg {
         background: url(/admin/images/Export01.svg) 15px center no-repeat;
         background-size: 30px;
         &.exportGenerating {
-          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export01.svg)
-            15px center no-repeat;
+          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export01.svg) 15px center no-repeat;
           background-size: 30px;
         }
       }
@@ -6605,8 +6615,7 @@ svg {
         background: url(/admin/images/Export02.svg) 15px center no-repeat;
         background-size: 30px;
         &.exportGenerating {
-          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export02.svg)
-            15px center no-repeat;
+          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export02.svg) 15px center no-repeat;
           background-size: 30px;
         }
       }
@@ -6614,8 +6623,7 @@ svg {
         background: url(/admin/images/Export03.svg) 15px center no-repeat;
         background-size: 30px;
         &.exportGenerating {
-          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export03.svg)
-            15px center no-repeat;
+          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export03.svg) 15px center no-repeat;
           background-size: 30px;
         }
       }
@@ -6623,8 +6631,7 @@ svg {
         background: url(/admin/images/Export04.svg) 15px center no-repeat;
         background-size: 30px;
         &.exportGenerating {
-          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export04.svg)
-            15px center no-repeat;
+          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export04.svg) 15px center no-repeat;
           background-size: 30px;
         }
       }
@@ -6632,8 +6639,7 @@ svg {
         background: url(/admin/images/Export05.svg) 15px center no-repeat;
         background-size: 30px;
         &.exportGenerating {
-          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export05.svg)
-            15px center no-repeat;
+          background: rgba(128, 128, 128, 0.1) url(/admin/images/Export05.svg) 15px center no-repeat;
           background-size: 30px;
         }
       }
