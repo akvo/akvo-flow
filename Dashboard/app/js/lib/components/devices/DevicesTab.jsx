@@ -53,7 +53,9 @@ export default class DevicesTab extends React.Component {
 
     // Find all devices that have the same keyId as in the selectedDeviceIds
     for (let i = 0; i < selectedDeviceIds.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === selectedDeviceIds[i]);
+      const filterDevices = this.state.devices.find(
+        device => device.keyId === selectedDeviceIds[i]
+      );
       devices = [...devices, filterDevices];
       const devicesInGroup = FLOW.store.filter(
         FLOW.Device,
@@ -70,6 +72,8 @@ export default class DevicesTab extends React.Component {
       item.deviceGroupName = this.state.dialogGroupSelection.code;
       item.deviceGroupId = this.state.dialogGroupSelection.keyId;
     });
+
+    this.setState({ selectedDeviceIds: [] });
 
     FLOW.store.commit();
 
@@ -116,6 +120,7 @@ export default class DevicesTab extends React.Component {
       return item;
     });
 
+    this.setState({ selectedDeviceIds: [] });
     FLOW.store.commit();
     this.cancelRemoveFromGroup();
   };
