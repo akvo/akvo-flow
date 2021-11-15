@@ -48,14 +48,17 @@ export default class DevicesTab extends React.Component {
     this.setState({ dialogGroupSelection: { code, keyId } });
   };
 
-  addDeviceToGroup = dev => {
+  addDeviceToGroup = selectedGroupIds => {
     let devices = [];
 
     // Find all devices that have the same keyId as in the selectedDeviceIds
-    for (let i = 0; i < dev.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+    for (let i = 0; i < selectedGroupIds.length; i++) {
+      const filterDevices = this.state.devices.find(device => device.keyId === selectedGroupIds[i]);
       devices = [...devices, filterDevices];
-      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
+      const devicesInGroup = FLOW.store.filter(
+        FLOW.Device,
+        item => item.get('keyId') === selectedGroupIds[i]
+      );
       devicesInGroup.forEach(item => {
         item.set('deviceGroupName', this.state.dialogGroupSelection.code);
         item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
@@ -92,14 +95,19 @@ export default class DevicesTab extends React.Component {
     this.setState({ showRemoveFromGroupDialogBool: false });
   };
 
-  doRemoveFromGroup = dev => {
+  doRemoveFromGroup = selectedDeviceIds => {
     let devices = [];
 
     // Find all devices that have the same keyId as in the selectedDeviceIds
-    for (let i = 0; i < dev.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
+    for (let i = 0; i < selectedDeviceIds.length; i++) {
+      const filterDevices = this.state.devices.find(
+        device => device.keyId === selectedDeviceIds[i]
+      );
       devices = [...devices, filterDevices];
-      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
+      const devicesInGroup = FLOW.store.filter(
+        FLOW.Device,
+        item => item.get('keyId') === selectedDeviceIds[i]
+      );
 
       devicesInGroup.forEach(item => {
         item.set('deviceGroupName', null);
