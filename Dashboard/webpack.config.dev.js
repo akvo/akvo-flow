@@ -45,7 +45,7 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('development'), // Tells React to build in either dev or prod modes. https://facebook.github.io/react/downloads.html (See bottom)
       'process.env.ANALYTICS_SITE_ID': JSON.stringify('2eb02fff-08a4-4973-ae92-fb4ae6157da4'),
       __DEV__: true,
-      __VERSION__: JSON.stringify(execSync('git describe').toString()),
+      __VERSION__: JSON.stringify(execSync('git describe --all --long').toString()),
     }),
 
     new HtmlWebpackPlugin({
