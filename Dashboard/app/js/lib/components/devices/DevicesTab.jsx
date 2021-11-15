@@ -42,7 +42,7 @@ export default class DevicesTab extends React.Component {
   setCurrentTable = tableName => {
     this.setState({ currentTable: tableName });
 
-    // Input value is reseted when switched into Manage devices
+    // Input value is reseted when switched into Manage devices  
     this.setState({ groupToEditButtonId: null });
     this.setState({ inputEditGroupValue: null });
   };
