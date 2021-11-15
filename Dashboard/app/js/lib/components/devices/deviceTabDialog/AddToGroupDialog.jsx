@@ -18,10 +18,10 @@ export default function AddToGroupDialog() {
   const buttonCondition =
     dialogGroupSelection !== null &&
     dialogGroupSelection.code !== undefined &&
-    dialogGroupSelection.code !== undefined &&
+    dialogGroupSelection.keyId !== undefined &&
     (dialogGroupSelection !== null ||
       dialogGroupSelection.code !== undefined ||
-      dialogGroupSelection.code !== undefined);
+      dialogGroupSelection.keyId !== undefined);
 
   return (
     <div className={showAddToGroupDialogBool ? `display overlay` : `overlay`}>
