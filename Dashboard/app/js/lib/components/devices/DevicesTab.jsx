@@ -49,33 +49,33 @@ export default class DevicesTab extends React.Component {
   };
 
   addDeviceToGroup = selectedDeviceIds => {
-    let devices = [];
+    // Create a deep copy of the devices
+    const devices = JSON.parse(JSON.stringify(this.state.devices));
 
-    // Find all devices that have the same keyId as in the selectedDeviceIds
-    for (let i = 0; i < selectedDeviceIds.length; i++) {
-      const filterDevices = this.state.devices.find(
-        device => device.keyId === selectedDeviceIds[i]
-      );
-      devices = [...devices, filterDevices];
-      const devicesInGroup = FLOW.store.filter(
-        FLOW.Device,
-        item => item.get('keyId') === selectedDeviceIds[i]
-      );
-      devicesInGroup.forEach(item => {
-        item.set('deviceGroupName', this.state.dialogGroupSelection.code);
-        item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
-      });
-    }
-
-    // Adding group property to the selected devices
-    devices.forEach(item => {
-      item.deviceGroupName = this.state.dialogGroupSelection.code;
-      item.deviceGroupId = this.state.dialogGroupSelection.keyId;
+    const updatedDevices = devices.map(device => {
+      if (selectedDeviceIds.includes(device.keyId)) {
+        device.deviceGroupName = this.state.dialogGroupSelection.code;
+        device.deviceGroupId = this.state.dialogGroupSelection.keyId;
+      }
+      return device;
     });
 
-    this.setState({ selectedDeviceIds: [] });
+    this.setState({ devices: updatedDevices });
+
+    const devicesInGroup = FLOW.store.filter(
+      FLOW.Device,
+      item => selectedDeviceIds.includes(item.get('keyId')) && item
+    );
+
+    devicesInGroup.forEach(item => {
+      item.set('deviceGroupName', this.state.dialogGroupSelection.code);
+      item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
+    });
 
     FLOW.store.commit();
+
+    // Removes selection
+    this.setState({ selectedDeviceIds: [] });
 
     this.cancelAddToGroup();
   };
@@ -99,29 +99,35 @@ export default class DevicesTab extends React.Component {
     this.setState({ showRemoveFromGroupDialogBool: false });
   };
 
-  doRemoveFromGroup = dev => {
-    let devices = [];
+  doRemoveFromGroup = selectedDeviceIds => {
+    // Create a deep copy of the devices
+    const devices = JSON.parse(JSON.stringify(this.state.devices));
 
-    // Find all devices that have the same keyId as in the selectedDeviceIds
-    for (let i = 0; i < dev.length; i++) {
-      const filterDevices = this.state.devices.find(device => device.keyId === dev[i]);
-      devices = [...devices, filterDevices];
-      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('keyId') === dev[i]);
-
-      devicesInGroup.forEach(item => {
-        item.set('deviceGroupName', null);
-        item.set('deviceGroupId', null);
-      });
-    }
-
-    devices.forEach(item => {
-      item.deviceGroupName = null;
-      item.deviceGroupId = null;
-      return item;
+    const updatedDevices = devices.map(device => {
+      if (selectedDeviceIds.includes(device.keyId)) {
+        device.deviceGroupName = null;
+        device.deviceGroupId = null;
+      }
+      return device;
     });
 
-    this.setState({ selectedDeviceIds: [] });
+    this.setState({ devices: updatedDevices });
+
+    const devicesInGroup = FLOW.store.filter(
+      FLOW.Device,
+      item => selectedDeviceIds.includes(item.get('keyId')) && item
+    );
+
+    devicesInGroup.forEach(item => {
+      item.set('deviceGroupName', null);
+      item.set('deviceGroupId', null);
+    });
+
     FLOW.store.commit();
+
+    // Removes selection
+    this.setState({ selectedDeviceIds: [] });
+
     this.cancelRemoveFromGroup();
   };
 
