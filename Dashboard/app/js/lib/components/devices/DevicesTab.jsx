@@ -43,16 +43,16 @@ export default class DevicesTab extends React.Component {
   };
 
   // Get the property of a selected group
-  dialogGroupSelectionChange = e => {
-    const { code, keyId } = e.target.value.length !== 0 && JSON.parse(e.target.value);
+  dialogGroupSelectionChange = event => {
+    const { code, keyId } = event.target.value.length !== 0 && JSON.parse(event.target.value);
     this.setState({ dialogGroupSelection: { code, keyId } });
   };
 
   addDeviceToGroup = selectedDeviceIds => {
     // Create a deep copy of the devices
-    const devices = JSON.parse(JSON.stringify(this.state.devices));
+    const copyOfDevices = JSON.parse(JSON.stringify(this.state.devices));
 
-    const updatedDevices = devices.map(device => {
+    const updatedDevices = copyOfDevices.map(device => {
       if (selectedDeviceIds.includes(device.keyId)) {
         device.deviceGroupName = this.state.dialogGroupSelection.code;
         device.deviceGroupId = this.state.dialogGroupSelection.keyId;
@@ -64,12 +64,12 @@ export default class DevicesTab extends React.Component {
 
     const devicesInGroup = FLOW.store.filter(
       FLOW.Device,
-      item => selectedDeviceIds.includes(item.get('keyId')) && item
+      device => selectedDeviceIds.includes(device.get('keyId')) && device
     );
 
-    devicesInGroup.forEach(item => {
-      item.set('deviceGroupName', this.state.dialogGroupSelection.code);
-      item.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
+    devicesInGroup.forEach(device => {
+      device.set('deviceGroupName', this.state.dialogGroupSelection.code);
+      device.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
     });
 
     FLOW.store.commit();
@@ -101,9 +101,9 @@ export default class DevicesTab extends React.Component {
 
   doRemoveFromGroup = selectedDeviceIds => {
     // Create a deep copy of the devices
-    const devices = JSON.parse(JSON.stringify(this.state.devices));
+    const copyOfDevices = JSON.parse(JSON.stringify(this.state.devices));
 
-    const updatedDevices = devices.map(device => {
+    const updatedDevices = copyOfDevices.map(device => {
       if (selectedDeviceIds.includes(device.keyId)) {
         device.deviceGroupName = null;
         device.deviceGroupId = null;
@@ -115,12 +115,12 @@ export default class DevicesTab extends React.Component {
 
     const devicesInGroup = FLOW.store.filter(
       FLOW.Device,
-      item => selectedDeviceIds.includes(item.get('keyId')) && item
+      device => selectedDeviceIds.includes(device.get('keyId')) && device
     );
 
-    devicesInGroup.forEach(item => {
-      item.set('deviceGroupName', null);
-      item.set('deviceGroupId', null);
+    devicesInGroup.forEach(device => {
+      device.set('deviceGroupName', null);
+      device.set('deviceGroupId', null);
     });
 
     FLOW.store.commit();
@@ -132,9 +132,9 @@ export default class DevicesTab extends React.Component {
   };
 
   // Block and unblock a device
-  blockDevice = id => {
-    const findDevice = this.state.devices.find(device => device.keyId === id);
-    if (findDevice.keyId === id) {
+  blockDevice = deviceId => {
+    const findDevice = this.state.devices.find(device => device.keyId === deviceId);
+    if (findDevice.keyId === deviceId) {
       findDevice.isBlocked = !findDevice.isBlocked;
       this.setState({
         devices: FLOW.deviceControl
@@ -183,9 +183,9 @@ export default class DevicesTab extends React.Component {
       // Update the device group name in the devices list
       const allDevices = FLOW.store.filter(FLOW.Device, () => true);
 
-      allDevices.forEach(item => {
-        if (item.get('deviceGroupId') === this.state.groupToEditId) {
-          item.set('deviceGroupName', this.state.inputEditGroupValue);
+      allDevices.forEach(device => {
+        if (device.get('deviceGroupId') === this.state.groupToEditId) {
+          device.set('deviceGroupName', this.state.inputEditGroupValue);
         }
       });
 
@@ -231,9 +231,9 @@ export default class DevicesTab extends React.Component {
       device => device.deviceGroupId === this.state.groupToDeleteId
     );
 
-    filterDevices.forEach(item => {
-      item.deviceGroupName = null;
-      item.deviceGroupId = null;
+    filterDevices.forEach(device => {
+      device.deviceGroupName = null;
+      device.deviceGroupId = null;
     });
 
     devicesGroup.deleteRecord();
