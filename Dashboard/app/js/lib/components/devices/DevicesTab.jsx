@@ -49,19 +49,6 @@ export default class DevicesTab extends React.Component {
   };
 
   addDeviceToGroup = selectedDeviceIds => {
-    // Create a deep copy of the devices
-    const copyOfDevices = JSON.parse(JSON.stringify(this.state.devices));
-
-    const updatedDevices = copyOfDevices.map(device => {
-      if (selectedDeviceIds.includes(device.keyId)) {
-        device.deviceGroupName = this.state.dialogGroupSelection.code;
-        device.deviceGroupId = this.state.dialogGroupSelection.keyId;
-      }
-      return device;
-    });
-
-    this.setState({ devices: updatedDevices });
-
     const devicesInGroup = FLOW.store.filter(
       FLOW.Device,
       device => selectedDeviceIds.includes(device.get('keyId')) && device
@@ -70,6 +57,14 @@ export default class DevicesTab extends React.Component {
     devicesInGroup.forEach(device => {
       device.set('deviceGroupName', this.state.dialogGroupSelection.code);
       device.set('deviceGroupId', this.state.dialogGroupSelection.keyId);
+    });
+
+    this.state.devices.map(device => {
+      if (selectedDeviceIds.includes(device.keyId)) {
+        device.deviceGroupName = this.state.dialogGroupSelection.code;
+        device.deviceGroupId = this.state.dialogGroupSelection.keyId;
+      }
+      return device;
     });
 
     FLOW.store.commit();
@@ -100,19 +95,6 @@ export default class DevicesTab extends React.Component {
   };
 
   doRemoveFromGroup = selectedDeviceIds => {
-    // Create a deep copy of the devices
-    const copyOfDevices = JSON.parse(JSON.stringify(this.state.devices));
-
-    const updatedDevices = copyOfDevices.map(device => {
-      if (selectedDeviceIds.includes(device.keyId)) {
-        device.deviceGroupName = null;
-        device.deviceGroupId = null;
-      }
-      return device;
-    });
-
-    this.setState({ devices: updatedDevices });
-
     const devicesInGroup = FLOW.store.filter(
       FLOW.Device,
       device => selectedDeviceIds.includes(device.get('keyId')) && device
@@ -121,6 +103,14 @@ export default class DevicesTab extends React.Component {
     devicesInGroup.forEach(device => {
       device.set('deviceGroupName', null);
       device.set('deviceGroupId', null);
+    });
+
+    this.state.devices.map(device => {
+      if (selectedDeviceIds.includes(device.keyId)) {
+        device.deviceGroupName = null;
+        device.deviceGroupId = null;
+      }
+      return device;
     });
 
     FLOW.store.commit();
