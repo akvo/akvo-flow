@@ -15,7 +15,7 @@ export default function DevicesList() {
 
     // Event handlers
     setCurrentTable,
-    onSortDevices,
+    sortTableItem,
     selectDevice,
     blockDevice,
     showAddToGroupDialog,
@@ -64,8 +64,8 @@ export default function DevicesList() {
             <th
               className={sortProperties.column === 'esn' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSortDevices('esn')}
-              onKeyDown={() => onSortDevices('esn')}
+              onClick={() => sortTableItem('esn')}
+              onKeyDown={() => sortTableItem('esn')}
             >
               <div className="helpIcon tooltip" data-title={strings.imeiTooltip}>
                 ?
@@ -75,24 +75,24 @@ export default function DevicesList() {
             <th
               className={sortProperties.column === 'deviceIdentifier' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSortDevices('deviceIdentifier')}
-              onKeyDown={() => onSortDevices('deviceIdentifier')}
+              onClick={() => sortTableItem('deviceIdentifier')}
+              onKeyDown={() => sortTableItem('deviceIdentifier')}
             >
               {strings.deviceID}
             </th>
             <th
               className={sortProperties.column === 'deviceGroupName' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSortDevices('deviceGroupName')}
-              onKeyDown={() => onSortDevices('deviceGroupName')}
+              onClick={() => sortTableItem('deviceGroupName')}
+              onKeyDown={() => sortTableItem('deviceGroupName')}
             >
               {strings.deviceGroup}
             </th>
             <th
               className={sortProperties.column === 'lastPositionDate' ? tableHeaderClass() : ''}
               id="device_table_header"
-              onClick={() => onSortDevices('lastPositionDate')}
-              onKeyDown={() => onSortDevices('lastPositionDate')}
+              onClick={() => sortTableItem('lastPositionDate')}
+              onKeyDown={() => sortTableItem('lastPositionDate')}
             >
               {strings.lastContact}
             </th>
@@ -101,8 +101,8 @@ export default function DevicesList() {
                 sortProperties.column === 'gallatinSoftwareManifest' ? tableHeaderClass() : ''
               }
               id="device_table_header"
-              onClick={() => onSortDevices('gallatinSoftwareManifest')}
-              onKeyDown={() => onSortDevices('gallatinSoftwareManifest')}
+              onClick={() => sortTableItem('gallatinSoftwareManifest')}
+              onKeyDown={() => sortTableItem('gallatinSoftwareManifest')}
             >
               {strings.version}
             </th>
