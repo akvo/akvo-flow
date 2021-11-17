@@ -33,6 +33,7 @@ public class DeviceDto extends BaseDto {
     private String gallatinSoftwareManifest;
     private String deviceGroup;
     private String deviceGroupName;
+    private Long deviceGroupId;
     private String deviceIdentifier;
     private Device device;
 
@@ -75,6 +76,17 @@ public class DeviceDto extends BaseDto {
 
     public void setDeviceGroup(String deviceGroup) {
         this.deviceGroup = deviceGroup;
+    }
+
+    public Long getDeviceGroupId() {
+        if (this.device != null) {
+            return device.getDeviceGroupId();
+        }
+        return deviceGroupId;
+    }
+
+    public void setDeviceGroupId(Long deviceGroupId) {
+        this.deviceGroupId = deviceGroupId;
     }
 
     public Double getLastKnownLat() {
