@@ -903,6 +903,11 @@ table.dataTable tbody tr.even:hover {
   color: rgba($tableHeaderGrey, 0.5);
 }
 
+table.dataTable tbody tr.disabled,
+table.dataTable tbody tr.disabled:hover {
+  color: #e0e0e0;
+}
+
 #usersListTable thead tr th {
   padding: 11px 1em 7px 1em;
 }
