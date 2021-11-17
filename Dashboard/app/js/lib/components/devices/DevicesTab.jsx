@@ -10,10 +10,10 @@ import DeleteGroupDialog from './deviceTabDialog/DeleteGroupDialog';
 
 export default class DevicesTab extends React.Component {
   state = {
-    currentTable: false,
+    currentTable: TABLE_NAMES.DEVICES,
     devices: this.props.devices,
     devicesGroup: this.props.devicesGroup,
-    sortAscending: false,
+    sortAscending: null,
     selectedColumn: null,
     selectedDeviceIds: [],
     selectedDevices: [],
@@ -249,36 +249,16 @@ export default class DevicesTab extends React.Component {
     return 'sorting_desc';
   };
 
-  // Sort the groups
-  sortGroup = item => {
-    this.setState(state => ({ sortAscending: !state.sortAscending }));
-    this.setState({ selectedColumn: item });
-    return this.state.devicesGroup.sort((a, b) => {
-      if (this.state.sortAscending) {
-        if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
-          return -1;
-        }
-        if (a[this.state.selectedColumn] > b[this.state.selectedColumn]) {
-          return 1;
-        }
-      } else {
-        if (b[this.state.selectedColumn] < a[this.state.selectedColumn]) {
-          return -1;
-        }
-        if (b[this.state.selectedColumn] > a[this.state.selectedColumn]) {
-          return 1;
-        }
-      }
-      return 0;
-    });
-  };
-
-  // Sort the devices
-  sortDevices = item => {
+  sortTableItem = item => {
     this.setState(state => ({ sortAscending: !state.sortAscending }));
     this.setState({ selectedColumn: item });
 
-    return this.state.devices.sort((a, b) => {
+    const itemToSort =
+      this.state.currentTable === TABLE_NAMES.DEVICES_GROUP
+        ? this.state.devicesGroup
+        : this.state.devices;
+
+    return itemToSort.sort((a, b) => {
       if (this.state.sortAscending) {
         if (a[this.state.selectedColumn] < b[this.state.selectedColumn]) {
           return -1;
@@ -337,8 +317,7 @@ export default class DevicesTab extends React.Component {
       dialogGroupSelectionChange: this.dialogGroupSelectionChange,
       doRemoveFromGroup: this.doRemoveFromGroup,
       blockDevice: this.blockDevice,
-      onSortDevices: this.sortDevices,
-      onSortGroup: this.sortGroup,
+      sortTableItem: this.sortTableItem,
     };
 
     return (
