@@ -79,8 +79,10 @@ export default class DevicesTab extends React.Component {
   };
 
   cancelAddToGroup = () => {
+    // Reset dropdown
     const select = document.querySelector('#select-group');
     select.value = '';
+
     this.setState({ dialogGroupSelection: null });
     this.setState({ showAddToGroupDialogBool: false });
   };
@@ -93,7 +95,7 @@ export default class DevicesTab extends React.Component {
     this.setState({ showRemoveFromGroupDialogBool: false });
   };
 
-  doRemoveFromGroup = selectedDeviceIds => {
+  removeDeviceFromGroup = selectedDeviceIds => {
     const devicesInGroup = FLOW.store.filter(
       FLOW.Device,
       device => selectedDeviceIds.includes(device.get('keyId')) && device
@@ -217,16 +219,16 @@ export default class DevicesTab extends React.Component {
   deleteGroupConfirm = () => {
     const devicesGroup = FLOW.store.find(FLOW.DeviceGroup, this.state.groupToDeleteId);
 
-    const filterDevices = this.state.devices.filter(
-      device => device.deviceGroupId === this.state.groupToDeleteId
-    );
-
-    filterDevices.forEach(device => {
-      device.deviceGroupName = null;
-      device.deviceGroupId = null;
+    this.state.devices.map(device => {
+      if (this.state.groupToDeleteId === device.deviceGroupId) {
+        device.deviceGroupName = null;
+        device.deviceGroupId = null;
+      }
+      return device;
     });
 
     devicesGroup.deleteRecord();
+
     FLOW.store.commit();
 
     this.setState({
@@ -313,7 +315,7 @@ export default class DevicesTab extends React.Component {
       cancelAddToGroup: this.cancelAddToGroup,
       addDeviceToGroup: this.addDeviceToGroup,
       dialogGroupSelectionChange: this.dialogGroupSelectionChange,
-      doRemoveFromGroup: this.doRemoveFromGroup,
+      removeDeviceFromGroup: this.removeDeviceFromGroup,
       blockDevice: this.blockDevice,
       sortTableItem: this.sortTableItem,
     };
