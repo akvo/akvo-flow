@@ -126,12 +126,13 @@ export default class DevicesTab extends React.Component {
     const findDevice = this.state.devices.find(device => device.keyId === deviceId);
     if (findDevice.keyId === deviceId) {
       findDevice.isBlocked = !findDevice.isBlocked;
-      this.setState({
-        devices: FLOW.deviceControl
-          .get('content')
-          .getEach('_data')
-          .getEach('attributes'),
-      });
+
+      // Remove the selection
+      this.setState(state => ({
+        selectedDeviceIds: state.selectedDeviceIds.filter(
+          selectedDeviceId => selectedDeviceId !== findDevice.keyId
+        ),
+      }));
     }
   };
 
