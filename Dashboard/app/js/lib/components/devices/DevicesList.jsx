@@ -118,10 +118,11 @@ export default function DevicesList() {
             );
 
             return (
-              <tr key={device.keyId}>
+              <tr className={device.isBlocked ? 'disabled' : ''} key={device.keyId}>
                 <td className="selection">
                   <input
                     type="checkBox"
+                    disabled={device.isBlocked}
                     data-keyid={device.keyId}
                     checked={selectedDeviceIds.includes(device.keyId)}
                     onChange={() => selectDevice(device.keyId, selectedDeviceIds)}
