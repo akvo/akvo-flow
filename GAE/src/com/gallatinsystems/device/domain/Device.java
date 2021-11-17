@@ -47,6 +47,7 @@ public class Device extends BaseDomain {
     private Double lastKnownAccuracy;
     private Date lastLocationBeaconTime;
     private String deviceGroup;
+    private Long deviceGroupId;
 
     public String getAndroidId() {
         return androidId;
@@ -107,6 +108,10 @@ public class Device extends BaseDomain {
     public enum DeviceType {
         CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
     }
+
+    public Long getDeviceGroupId() { return deviceGroupId; }
+
+    public void setDeviceGroupId(Long deviceGroupId) { this.deviceGroupId = deviceGroupId; }
 
     public DeviceType getDeviceType() {
         return deviceType;
