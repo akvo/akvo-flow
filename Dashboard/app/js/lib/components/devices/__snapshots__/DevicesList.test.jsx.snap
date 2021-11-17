@@ -88,7 +88,9 @@ exports[`Deviceslist Tests +++ renders <snapshot> 1`] = `
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr
+        class=""
+      >
         <td
           class="selection"
         >
