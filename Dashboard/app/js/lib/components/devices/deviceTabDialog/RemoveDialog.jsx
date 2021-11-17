@@ -7,7 +7,7 @@ export default function RemoveDialog() {
     selectedDeviceIds,
 
     // Event handlers
-    doRemoveFromGroup,
+    removeDeviceFromGroup,
     cancelRemoveFromGroup,
     showRemoveFromGroupDialogBool,
   } = useContext(DevicesTabContext);
@@ -23,7 +23,7 @@ export default function RemoveDialog() {
               <li>
                 <button
                   type="button"
-                  onClick={() => doRemoveFromGroup(selectedDeviceIds)}
+                  onClick={() => removeDeviceFromGroup(selectedDeviceIds)}
                   className="ok smallBtn"
                 >
                   {strings.dialogText.save}
