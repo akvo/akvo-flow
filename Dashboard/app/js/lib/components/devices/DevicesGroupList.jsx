@@ -15,7 +15,7 @@ export default function DevicesGroupList() {
 
     // Event handlers
     setCurrentTable,
-    onSortGroup,
+    sortTableItem,
     onDeleteGroup,
     toggleEditButton,
     getGroupNewName,
@@ -50,8 +50,8 @@ export default function DevicesGroupList() {
             <th
               id="device_table_header"
               className={sortProperties.column === 'code' ? tableHeaderClass() : ''}
-              onClick={() => onSortGroup('code')}
-              onKeyDown={() => onSortGroup('code')}
+              onClick={() => sortTableItem('code')}
+              onKeyDown={() => sortTableItem('code')}
             >
               {strings.deviceGroup}
             </th>
