@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Deviceslist Tests +++ renders <snapshot> 1`] = `
+<div>
+  <div
+    class="deviceControls"
+  >
+    <button
+      class="btnOutline"
+      type="button"
+    />
+    <nav
+      class="dataTabMenu"
+    >
+      <ul>
+        <li>
+          <button
+            class="disabled"
+            type="button"
+          >
+            Add to device group
+          </button>
+        </li>
+        <li>
+          <button
+            class="disabled"
+            type="button"
+          >
+            Remove from deviceGroup
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <table
+    class="dataTable"
+    id="surveyDataTable"
+  >
+    <thead>
+      <tr>
+        <th
+          class="noArrows"
+        />
+        <th
+          class=""
+          id="device_table_header"
+        >
+          <div
+            class="helpIcon tooltip"
+            data-title="imei tooltip"
+          >
+            ?
+          </div>
+          <span>
+            IMEI
+          </span>
+        </th>
+        <th
+          class=""
+          id="device_table_header"
+        >
+          device id
+        </th>
+        <th
+          class=""
+          id="device_table_header"
+        >
+          Device group
+        </th>
+        <th
+          class=""
+          id="device_table_header"
+        >
+          last contact
+        </th>
+        <th
+          class=""
+          id="device_table_header"
+        >
+          version
+        </th>
+        <th
+          class="noArrows"
+          id="device_table_header"
+        >
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class=""
+      >
+        <td
+          class="selection"
+        >
+          <input
+            data-keyid="261243005"
+            type="checkBox"
+          />
+        </td>
+        <td
+          class="IMEI"
+        >
+          351859083835250
+        </td>
+        <td
+          class="deviceId"
+        >
+          valeria_moto5
+        </td>
+        <td
+          class="deviceGroup"
+        />
+        <td
+          class="lastBeacon"
+        >
+          1624877130200
+        </td>
+        <td
+          class="version"
+        >
+          2.10.1
+        </td>
+        <td>
+          <div
+            id="261243005"
+          >
+            Block
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
