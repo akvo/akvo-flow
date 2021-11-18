@@ -32,12 +32,6 @@ FLOW.CurrentDevicesTabView = FLOW.ReactComponentView.extend(
         devicesGroup: this.get('devicesGroup'),
         doAddToGroup: this.doAddToGroup,
         cancelRemoveFromGroup: this.cancelRemoveFromGroup,
-        onSortDevices: this.devicesSort,
-        onSortGroup: this.GroupSort,
-        sortProperties: {
-          column: this.selectedColumn,
-          ascending: this.sortAscending,
-        },
         strings: {
           imeiTooltip: Ember.String.loc('_imei_tooltip'),
           delete: Ember.String.loc('_delete'),

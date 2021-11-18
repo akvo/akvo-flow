@@ -359,5 +359,4 @@ DevicesTab.defaultProps = {
   onSortGroup: () => null,
   sortProperties: {},
   strings: {},
-  selectedDeviceGroup: null,
 };
