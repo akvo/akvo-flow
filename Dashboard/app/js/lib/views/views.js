@@ -75,8 +75,8 @@ Ember.Handlebars.registerHelper('if_blank', function(item) {
   return text && text.replace(/\s/g, '').length
     ? new Ember.Handlebars.SafeString('')
     : new Ember.Handlebars.SafeString(
-      '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-    );
+        '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+      );
 });
 
 FLOW.TooltipQuestionMark = Ember.View.extend({
@@ -84,7 +84,7 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
 
   template: Ember.Handlebars.compile('?'),
 
-  classNames: ['helpIcon','tooltip'],
+  classNames: ['helpIcon', 'tooltip'],
 
   attributeBindings: ['tooltipText:data-title'],
 
@@ -95,29 +95,28 @@ FLOW.TooltipQuestionMark = Ember.View.extend({
 
     yOffset: 20,
 
-    mouseEnter: function (e) {
-      let tooltipText = $(e.target).attr("data-title");
-      $("body").append("<p id='tooltip'>" + tooltipText + "</p>");
-      $("#tooltip")
-        .css("top", (e.pageY - this.get('xOffset')) + "px")
-        .css("left", (e.pageX + this.get('yOffset')) + "px")
-        .fadeIn("fast");
+    mouseEnter: function(e) {
+      let tooltipText = $(e.target).attr('data-title');
+      $('body').append("<p id='tooltip'>" + tooltipText + '</p>');
+      $('#tooltip')
+        .css('top', e.pageY - this.get('xOffset') + 'px')
+        .css('left', e.pageX + this.get('yOffset') + 'px')
+        .fadeIn('fast');
     },
 
-    mouseLeave: function () {
-      $("#tooltip").remove();
+    mouseLeave: function() {
+      $('#tooltip').remove();
     },
 
-    mouseMove: function (e) {
-      $("#tooltip")
-        .css("top", (e.pageY - this.get('xOffset')) + "px")
-        .css("left", (e.pageX + this.get('yOffset')) + "px")
+    mouseMove: function(e) {
+      $('#tooltip')
+        .css('top', e.pageY - this.get('xOffset') + 'px')
+        .css('left', e.pageX + this.get('yOffset') + 'px');
     },
   }),
 });
 
 FLOW.TooltipText = FLOW.TooltipQuestionMark.extend({
-
   classNames: ['addSurvey', 'noChanges', 'tooltip'],
 
   i18nTooltipKey: null,
@@ -191,10 +190,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
       const cascadeJson = JSON.parse(answer);
       answer = cascadeJson.map(item => item.name).join('|');
     }
-  } else if (
-    (responseType === 'VIDEO' || responseType === 'IMAGE') &&
-    answer.charAt(0) === '{'
-  ) {
+  } else if ((responseType === 'VIDEO' || responseType === 'IMAGE') && answer.charAt(0) === '{') {
     const photoJson = JSON.parse(answer);
     const mediaAnswer = photoJson.filename;
 
@@ -211,8 +207,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
       }' href="${mediaFileURL}" target="_blank"><img src="${mediaFileURL}" alt=""/></a><br>${
         photoJson.location
           ? `<a class="media-location" data-coordinates='${answer}'>${Ember.String.loc(
-            '_show_photo_on_map'
-          )}</a>`
+              '_show_photo_on_map'
+            )}</a>`
           : ''
       }</div>`;
     } else if (responseType === 'VIDEO') {
@@ -220,13 +216,11 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
         `<div><div class="media" data-coordinates='${
           photoJson.location ? answer : ''
         }'><video controls><source src="${mediaFileURL}" type="video/mp4"></video></div><br>` +
-        `<a href="${mediaFileURL}" target="_blank">${Ember.String.loc(
-          '_open_video'
-        )}</a>${
+        `<a href="${mediaFileURL}" target="_blank">${Ember.String.loc('_open_video')}</a>${
           photoJson.location
             ? `&nbsp;|&nbsp;<a class="media-location" data-coordinates='${answer}'>${Ember.String.loc(
-              '_show_photo_on_map'
-            )}</a>`
+                '_show_photo_on_map'
+              )}</a>`
             : ''
         }</div>`;
     }
@@ -239,10 +233,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
     answer = (signatureJson && imageSrcAttr + signatureJson.image) || '';
     answer = answer && `<img src="${answer}" />`;
     answer =
-      (answer &&
-        `${answer}<div>${Ember.String.loc('_signed_by')}:${
-          signatureJson.name
-        }</div>`) ||
+      (answer && `${answer}<div>${Ember.String.loc('_signed_by')}:${signatureJson.name}</div>`) ||
       '';
   } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
@@ -262,24 +253,24 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
         geoshapeObject.features[0].geometry.type === 'LineString' ||
         geoshapeObject.features[0].geometry.type === 'MultiPoint'
       ) {
-        answer += `<div style="float: left; width: 100%">${Ember.String.loc(
-          '_points'
-        )}: ${geoshapeObject.features[0].properties.pointCount}</div>`;
+        answer += `<div style="float: left; width: 100%">${Ember.String.loc('_points')}: ${
+          geoshapeObject.features[0].properties.pointCount
+        }</div>`;
       }
 
       if (
         geoshapeObject.features[0].geometry.type === 'Polygon' ||
         geoshapeObject.features[0].geometry.type === 'LineString'
       ) {
-        answer += `<div style="float: left; width: 100%">${Ember.String.loc(
-          '_length'
-        )}: ${geoshapeObject.features[0].properties.length}m</div>`;
+        answer += `<div style="float: left; width: 100%">${Ember.String.loc('_length')}: ${
+          geoshapeObject.features[0].properties.length
+        }m</div>`;
       }
 
       if (geoshapeObject.features[0].geometry.type === 'Polygon') {
-        answer += `<div style="float: left; width: 100%">${Ember.String.loc(
-          '_area'
-        )}: ${geoshapeObject.features[0].properties.area}m&sup2;</div>`;
+        answer += `<div style="float: left; width: 100%">${Ember.String.loc('_area')}: ${
+          geoshapeObject.features[0].properties.area
+        }m&sup2;</div>`;
       }
     }
   }
@@ -297,10 +288,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function() {
   if (responseType === 'VALUE' && answer.indexOf('features":[') > 0) {
     setTimeout(() => {
       $('.geoshape-map').each(function(index) {
-        FLOW.drawGeoShape(
-          $('.geoshape-map')[index],
-          $(this).data('geoshape-object')
-        );
+        FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
       });
     }, 500);
   }
@@ -478,31 +466,23 @@ FLOW.drawGeoShape = function(containerNode, geoShapeObject) {
   let geoshapeCoordinatesArray;
   const geoShapeObjectType = geoShapeObject.features[0].geometry.type;
   if (geoShapeObjectType === 'Polygon') {
-    geoshapeCoordinatesArray =
-      geoShapeObject.features[0].geometry.coordinates[0];
+    geoshapeCoordinatesArray = geoShapeObject.features[0].geometry.coordinates[0];
   } else {
     geoshapeCoordinatesArray = geoShapeObject.features[0].geometry.coordinates;
   }
   const points = [];
 
   for (let j = 0; j < geoshapeCoordinatesArray.length; j++) {
-    points.push([
-      geoshapeCoordinatesArray[j][1],
-      geoshapeCoordinatesArray[j][0],
-    ]);
+    points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
   }
 
   const center = FLOW.getCentroid(points);
 
-  const geoshapeMap = L.map(containerNode, { scrollWheelZoom: false }).setView(
-    center,
-    2
-  );
+  const geoshapeMap = L.map(containerNode, { scrollWheelZoom: false }).setView(center, 2);
 
   geoshapeMap.options.maxZoom = 18;
   geoshapeMap.options.minZoom = 2;
-  const mbAttr =
-    'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
+  const mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
   const mbUrl =
     'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
   const normal = L.tileLayer(mbUrl, {
@@ -543,9 +523,7 @@ FLOW.drawGeoShape = function(containerNode, geoShapeObject) {
     for (let i = 0; i < points.length; i++) {
       geoShapeMarkersArray.push(L.marker([points[i][0], points[i][1]]));
     }
-    const geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(
-      geoshapeMap
-    );
+    const geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
     geoshapeMap.fitBounds(geoShapeMarkers.getBounds());
   } else if (geoShapeObjectType === 'LineString') {
     const geoShapeLine = L.polyline(points).addTo(geoshapeMap);
@@ -554,10 +532,7 @@ FLOW.drawGeoShape = function(containerNode, geoShapeObject) {
 };
 
 FLOW.getCentroid = function(arr) {
-  return arr.reduce(
-    (x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length],
-    [0, 0]
-  );
+  return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
 };
 
 FLOW.reportFilename = function(url) {
@@ -574,8 +549,7 @@ FLOW.hasPermission = function(permission) {
   const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
   return Object.keys(currentUserPermissions).reduce(
     (alreadyHasPermission, permissionKey) =>
-      alreadyHasPermission ||
-      currentUserPermissions[permissionKey].indexOf(permission) > -1,
+      alreadyHasPermission || currentUserPermissions[permissionKey].indexOf(permission) > -1,
     false
   );
 };
@@ -588,9 +562,7 @@ Ember.Handlebars.registerHelper('getServer', () => {
 
 Ember.Handlebars.registerHelper('sgName', function(property) {
   const sgId = Ember.get(this, property);
-  const sg = FLOW.surveyGroupControl.find(
-    item => item.get && item.get('keyId') === sgId
-  );
+  const sg = FLOW.surveyGroupControl.find(item => item.get && item.get('keyId') === sgId);
   return sg ? sg.get('name') : sgId;
 });
 
@@ -675,12 +647,8 @@ FLOW.registerViewHelper(
 FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
   selectedBinding: 'controller.selected',
 
-  showDevicesButton: Ember.computed(() =>
-    FLOW.permControl.get('canManageDevices')
-  ).property(),
-  showMapsButton: Ember.computed(() => FLOW.Env.showMapsTab).property(
-    'FLOW.Env.showMapsTab'
-  ),
+  showDevicesButton: Ember.computed(() => FLOW.permControl.get('canManageDevices')).property(),
+  showMapsButton: Ember.computed(() => FLOW.Env.showMapsTab).property('FLOW.Env.showMapsTab'),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -731,11 +699,7 @@ FLOW.DateField = Ember.TextField.extend({
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect(selectedDate) {
-          $('#to_date, #to_date02').datepicker(
-            'option',
-            'minDate',
-            selectedDate
-          );
+          $('#to_date, #to_date02').datepicker('option', 'minDate', selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         },
       });
@@ -746,11 +710,7 @@ FLOW.DateField = Ember.TextField.extend({
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect(selectedDate) {
-          $('#from_date, #from_date02').datepicker(
-            'option',
-            'maxDate',
-            selectedDate
-          );
+          $('#from_date, #from_date02').datepicker('option', 'maxDate', selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         },
       });
@@ -761,11 +721,7 @@ FLOW.DateField = Ember.TextField.extend({
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect(selectedDate) {
-          $('#to_date, #to_date02').datepicker(
-            'option',
-            'minDate',
-            selectedDate
-          );
+          $('#to_date, #to_date02').datepicker('option', 'minDate', selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         },
       });
@@ -775,11 +731,7 @@ FLOW.DateField = Ember.TextField.extend({
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect(selectedDate) {
-          $('#from_date, #from_date02').datepicker(
-            'option',
-            'maxDate',
-            selectedDate
-          );
+          $('#from_date, #from_date02').datepicker('option', 'maxDate', selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         },
       });
@@ -801,28 +753,18 @@ FLOW.DateField2 = Ember.TextField.extend({
 
 // surveys views
 FLOW.NavSurveysView = Ember.View.extend(template('navSurveys/nav-surveys'));
-FLOW.NavSurveysMainView = Ember.View.extend(
-  template('navSurveys/nav-surveys-main')
-);
+FLOW.NavSurveysMainView = Ember.View.extend(template('navSurveys/nav-surveys-main'));
 
-FLOW.ManageNotificationsView = Ember.View.extend(
-  template('navSurveys/manage-notifications')
-);
+FLOW.ManageNotificationsView = Ember.View.extend(template('navSurveys/manage-notifications'));
 
-FLOW.ManageTranslationsView = Ember.View.extend(
-  template('navSurveys/manage-translations')
-);
+FLOW.ManageTranslationsView = Ember.View.extend(template('navSurveys/manage-translations'));
 
-FLOW.EditQuestionsView = Ember.View.extend(
-  template('navSurveys/edit-questions')
-);
+FLOW.EditQuestionsView = Ember.View.extend(template('navSurveys/edit-questions'));
 
 // devices views
 FLOW.NavDevicesView = Ember.View.extend(template('navDevices/nav-devices'));
 
-FLOW.CurrentDevicesView = FLOW.View.extend(
-  template('navDevices/devices-list-tab/devices-list')
-);
+FLOW.CurrentDevicesView = FLOW.CurrentDevicesTabView;
 
 FLOW.AssignSurveysOverviewView = FLOW.View.extend(
   template('navDevices/assignment-list-tab/assignment-list')
@@ -832,9 +774,7 @@ FLOW.EditSurveyAssignmentView = Ember.View.extend(
   template('navDevices/assignment-edit-tab/assignment-edit')
 );
 
-FLOW.SurveyBootstrapView = FLOW.View.extend(
-  template('navDevices/bootstrap-tab/survey-bootstrap')
-);
+FLOW.SurveyBootstrapView = FLOW.View.extend(template('navDevices/bootstrap-tab/survey-bootstrap'));
 
 // data views
 FLOW.NavDataView = Ember.View.extend(template('navData/nav-data'));
@@ -845,20 +785,14 @@ FLOW.BulkUploadView = Ember.View.extend(template('navData/bulk-upload'));
 
 FLOW.BulkUploadImagesView = Ember.View.extend(template('navData/bulk-upload-images'));
 
-FLOW.CascadeResourcesView = Ember.View.extend(
-  template('navData/cascade-resources')
-);
+FLOW.CascadeResourcesView = Ember.View.extend(template('navData/cascade-resources'));
 
-FLOW.MonitoringDataView = Ember.View.extend(
-  template('navData/monitoring-data')
-);
+FLOW.MonitoringDataView = Ember.View.extend(template('navData/monitoring-data'));
 
 FLOW.ChartReportsView = Ember.View.extend(template('navReports/chart-reports'));
 
 // resources views
-FLOW.NavResourcesView = Ember.View.extend(
-  template('navResources/nav-resources')
-);
+FLOW.NavResourcesView = Ember.View.extend(template('navResources/nav-resources'));
 
 // users views
 FLOW.NavUsersView = Ember.View.extend(template('navUsers/nav-users'));
@@ -902,61 +836,51 @@ FLOW.DatasubnavView = FLOW.View.extend(template('navData/data-subnav'), {
       .property('item', 'parentView.selected')
       .cacheable(),
 
-    showDataCleaningButton: Ember.computed(() =>
-      FLOW.permControl.get('canCleanData')
-    ).property(),
+    showDataCleaningButton: Ember.computed(() => FLOW.permControl.get('canCleanData')).property(),
   }),
 });
 
 // ********************************************************//
 //             Subnavigation for the Device tabs
 // ********************************************************//
-FLOW.DevicesSubnavView = FLOW.View.extend(
-  template('navDevices/devices-subnav'),
-  {
-    selectedBinding: 'controller.selected',
-    NavItemView: Ember.View.extend({
-      tagName: 'li',
-      classNameBindings: 'isActive:active'.w(),
+FLOW.DevicesSubnavView = FLOW.View.extend(template('navDevices/devices-subnav'), {
+  selectedBinding: 'controller.selected',
+  NavItemView: Ember.View.extend({
+    tagName: 'li',
+    classNameBindings: 'isActive:active'.w(),
 
-      isActive: Ember.computed(function() {
-        return this.get('item') === this.get('parentView.selected');
-      })
-        .property('item', 'parentView.selected')
-        .cacheable(),
-    }),
-  }
-);
+    isActive: Ember.computed(function() {
+      return this.get('item') === this.get('parentView.selected');
+    })
+      .property('item', 'parentView.selected')
+      .cacheable(),
+  }),
+});
 
 // ********************************************************//
 //             Subnavigation for the Resources tabs
 // ********************************************************//
-FLOW.ResourcesSubnavView = Ember.View.extend(
-  template('navResources/resources-subnav'),
-  {
-    selectedBinding: 'controller.selected',
-    NavItemView: Ember.View.extend({
-      tagName: 'li',
-      classNameBindings: 'isActive:active'.w(),
+FLOW.ResourcesSubnavView = Ember.View.extend(template('navResources/resources-subnav'), {
+  selectedBinding: 'controller.selected',
+  NavItemView: Ember.View.extend({
+    tagName: 'li',
+    classNameBindings: 'isActive:active'.w(),
 
-      isActive: Ember.computed(function() {
-        return this.get('item') === this.get('parentView.selected');
-      })
-        .property('item', 'parentView.selected')
-        .cacheable(),
+    isActive: Ember.computed(function() {
+      return this.get('item') === this.get('parentView.selected');
+    })
+      .property('item', 'parentView.selected')
+      .cacheable(),
 
-      showCascadeResourcesButton: Ember.computed(() =>
-        FLOW.permControl.get('canManageCascadeResources')
-      ).property(),
+    showCascadeResourcesButton: Ember.computed(() =>
+      FLOW.permControl.get('canManageCascadeResources')
+    ).property(),
 
-      showDataApprovalButton: Ember.computed(
-        () =>
-          FLOW.Env.enableDataApproval &&
-          FLOW.permControl.get('canManageDataAppoval')
-      ).property(),
-    }),
-  }
-);
+    showDataApprovalButton: Ember.computed(
+      () => FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval')
+    ).property(),
+  }),
+});
 
 // *************************************************************//
 //             Generic table column view which supports sorting
@@ -974,11 +898,7 @@ FLOW.ColumnView = Ember.View.extend({
       FLOW.tableColumnControl.get('sortAscending') === true
     );
   })
-    .property(
-      'item',
-      'FLOW.tableColumnControl.selected',
-      'FLOW.tableColumnControl.sortAscending'
-    )
+    .property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending')
     .cacheable(),
 
   isActiveDesc: Ember.computed(function() {
@@ -987,11 +907,7 @@ FLOW.ColumnView = Ember.View.extend({
       FLOW.tableColumnControl.get('sortAscending') === false
     );
   })
-    .property(
-      'item',
-      'FLOW.tableColumnControl.selected',
-      'FLOW.tableColumnControl.sortAscending'
-    )
+    .property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending')
     .cacheable(),
 
   sort() {
@@ -1091,16 +1007,9 @@ FLOW.SelectFolder = Ember.Select.extend(
         // only proceed if a folder/survey is selected
         if (this.get('controller').isSurvey(keyId)) {
           FLOW.selectedControl.set('selectedSurveyGroup', survey);
-          if (
-            FLOW.Env.enableDataApproval &&
-            survey.get('dataApprovalGroupId')
-          ) {
-            FLOW.router.approvalGroupController.load(
-              survey.get('dataApprovalGroupId')
-            );
-            FLOW.router.approvalStepsController.loadByGroupId(
-              survey.get('dataApprovalGroupId')
-            );
+          if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+            FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
+            FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
           }
         } else {
           FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -1132,8 +1041,7 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
       FLOW.SelectFolder.create({
         parentId: 0, // start with the root folder
         idx: 0,
-        showMonitoringSurveysOnly:
-          this.get('showMonitoringSurveysOnly') || false,
+        showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
         showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false,
       })
     );
@@ -1151,8 +1059,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
       FLOW.SelectFolder.create({
         parentId: 0, // start with the root folder
         idx: 0,
-        showMonitoringSurveysOnly:
-          this.get('showMonitoringSurveysOnly') || false,
+        showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
         showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false,
         selectionFilter: FLOW.projectControl.dataCleaningEnabled,
       })
