@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import DevicesTabContext from './devices-context';
 import TABLE_NAMES from './constants';
+import Tooltip from '../reusable/Tooltips';
 
 export default function DevicesList() {
   const {
@@ -67,9 +68,7 @@ export default function DevicesList() {
               onClick={() => sortTableItem('esn')}
               onKeyDown={() => sortTableItem('esn')}
             >
-              <div className="helpIcon tooltip" data-title={strings.imeiTooltip}>
-                ?
-              </div>
+              <Tooltip dataTitle={strings.imeiTooltip} />
               <span>{strings.IMEI}</span>
             </th>
             <th
