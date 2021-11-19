@@ -870,6 +870,15 @@ table.dataTable {
   }
 }
 
+table.dataTable tbody tr.disabled,
+table.dataTable tbody tr.disabled:hover {
+  color: #e0e0e0;
+}
+
+table.dataTable tbody tr.disabled td:last-of-type {
+  cursor: auto;
+}
+
 // Assignment Data table
 table.dataTable.assignmentListTable thead tr th {
   text-align: left;
@@ -901,11 +910,6 @@ table.dataTable tbody tr:nth-child(2n):hover,
 table.dataTable tbody tr.even:hover {
   background: rgba($flowAnchorLink, 0.1);
   color: rgba($tableHeaderGrey, 0.5);
-}
-
-table.dataTable tbody tr.disabled,
-table.dataTable tbody tr.disabled:hover {
-  color: #e0e0e0;
 }
 
 #usersListTable thead tr th {
