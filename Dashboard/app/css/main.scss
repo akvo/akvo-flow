@@ -873,6 +873,7 @@ table.dataTable {
 table.dataTable tbody tr.disabled,
 table.dataTable tbody tr.disabled:hover {
   color: #e0e0e0;
+  cursor: auto;
 }
 
 table.dataTable tbody tr.disabled td:last-of-type {
