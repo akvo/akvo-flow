@@ -290,29 +290,26 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       this._super();
       this.getProps = this.getProps.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
-      this.formatDate = this.formatDate.bind(this);
     },
 
     didInsertElement(...args) {
       this._super(...args);
+
       this.renderReactSide();
     },
 
     renderReactSide() {
-      console.log(this.get('isFolder'));
-      console.log(['classProperty']);
-      console.log(this.get('hideFolderSurveyDeleteButton'));
-      console.log(this.content);
+      console.log(this.get('surveyGroups'));
       const props = this.getProps();
       this.reactRender(<Main {...props} />);
     },
 
     getProps() {
       return {
+        surveyGroups: this.get('surveyGroups'),
         content: this.content,
         isFolder: this.get('isFolder'),
         classNameBindings: this.classProperty,
-        formatDate: this.formatDate,
         strings: {
           editFolderName: Ember.String.loc(' edit_folder_name'),
           created: Ember.String.loc('_created'),
@@ -328,6 +325,15 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
     // tagName: 'li',
     content: null,
     // classNameBindings: ['classProperty'],
+
+    surveyGroups: Ember.computed(() => {
+      return FLOW.projectControl
+        .get('content')
+        .getEach('_data')
+        .getEach('attributes');
+    }).property('FLOW.projectControl.content.isLoaded'),
+
+    surveys: null,
 
     classProperty: Ember.computed(function() {
       const isFolder = FLOW.projectControl.isProjectFolder(this.content);
@@ -351,25 +357,6 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
 
     isFolder: Ember.computed(function() {
       return FLOW.projectControl.isProjectFolder(this.content);
-    }).property(),
-
-    formatDate(datetime) {
-      if (datetime === '') return '';
-      const date = new Date(parseInt(datetime, 10));
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    },
-
-    created: Ember.computed(function() {
-      return this.formatDate(this.content.get('createdDateTime'));
-    }).property('this.content.createdDateTime'),
-
-    modified: Ember.computed(function() {
-      return this.formatDate(this.content.get('lastUpdateDateTime'));
-    }).property('this.content.lastUpdateDateTime'),
-
-    language: Ember.computed(function() {
-      const langs = { en: 'English', es: 'Español', fr: 'Français' };
-      return langs[this.content.get('defaultLanguageCode')];
     }).property(),
 
     hideFolderSurveyDeleteButton: Ember.computed(function() {

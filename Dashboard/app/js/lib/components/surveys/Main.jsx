@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React from 'react';
 import PropTypes from 'prop-types';
 import SurveysContext from './surveys-context';
@@ -46,141 +47,65 @@ export default class Main extends React.Component {
         translationMap: null,
       },
     ],
-    surveyGroups: [
-      {
-        keyId: 4583039342477312,
-        description: '',
-        name: 'New folder',
-        code: 'New folder',
-        path: '/Folder with a few large data sets/New folder',
-        monitoringGroup: false,
-        newLocaleSurveyId: null,
-        createdDateTime: 1636780642802,
-        lastUpdateDateTime: 1636780642802,
-        projectType: 'PROJECT_FOLDER',
-        parentId: 153142013,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: false,
-        dataApprovalGroupId: null,
-        ancestorIds: [0, 153142013],
-        surveyList: null,
-        template: false,
-      },
-      {
-        keyId: 152342023,
-        description: '',
-        name: 'BAR-handpump',
-        code: 'BAR-handpump',
-        path: '/Folder with a few large data sets/BAR-handpump',
-        monitoringGroup: true,
-        newLocaleSurveyId: 146532016,
-        createdDateTime: 1490604443830,
-        lastUpdateDateTime: 1490604833184,
-        projectType: 'PROJECT',
-        parentId: 153142013,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: false,
-        dataApprovalGroupId: null,
-        ancestorIds: [0, 153142013],
-        surveyList: [4574243249455104],
-        template: null,
-      },
-      {
-        keyId: 148412306,
-        description: '',
-        name: 'NR-handpump',
-        code: 'NR-handpump',
-        path: '/Folder with a few large data sets/NR-handpump',
-        monitoringGroup: true,
-        newLocaleSurveyId: 145492013,
-        createdDateTime: 1490605551743,
-        lastUpdateDateTime: 1490605647506,
-        projectType: 'PROJECT',
-        parentId: 153142013,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: false,
-        dataApprovalGroupId: null,
-        ancestorIds: [0, 153142013],
-        surveyList: [145492013],
-        template: null,
-      },
-      {
-        keyId: 6051986877186048,
-        description: '',
-        name: "Daniel's survey",
-        code: "Daniel's survey",
-        path: "/Folder with a few large data sets/Daniel's survey",
-        monitoringGroup: true,
-        newLocaleSurveyId: 6614936830607360,
-        createdDateTime: 1636090277753,
-        lastUpdateDateTime: 1637736537837,
-        projectType: 'PROJECT',
-        parentId: 153142013,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: true,
-        dataApprovalGroupId: null,
-        ancestorIds: [0, 153142013],
-        surveyList: [6614936830607360],
-        template: true,
-      },
-      {
-        keyId: 6535771993407488,
-        description: '',
-        name: "Daniel's survey copy",
-        code: "Daniel's survey copy",
-        path: "/Folder with a few large data sets/New folder/Daniel's survey copy",
-        monitoringGroup: true,
-        newLocaleSurveyId: 4706184644788224,
-        createdDateTime: 1637237380255,
-        lastUpdateDateTime: 1637237380837,
-        projectType: 'PROJECT',
-        parentId: 4583039342477312,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: true,
-        dataApprovalGroupId: null,
-        ancestorIds: [0, 153142013, 4583039342477312],
-        surveyList: [5550609574920192],
-        template: false,
-      },
-      {
-        keyId: 153142013,
-        description: '',
-        name: 'Folder with a few large data sets',
-        code: 'Folder with a few large data sets',
-        path: '/Folder with a few large data sets',
-        monitoringGroup: false,
-        newLocaleSurveyId: null,
-        createdDateTime: 1490599366674,
-        lastUpdateDateTime: 1635150012263,
-        projectType: 'PROJECT_FOLDER',
-        parentId: 0,
-        defaultLanguageCode: 'en',
-        published: false,
-        requireDataApproval: false,
-        dataApprovalGroupId: null,
-        ancestorIds: [0],
-        surveyList: null,
-        template: false,
-      },
-    ],
-    folderEdit: false,
+    surveyGroups: this.props.surveyGroups,
+    isFolderEdit: null,
+    inputId: null,
+    inputValue: null,
   };
 
-  toggleEditFolderName = id => {
-    const surveyGroupToEdit = this.state.surveyGroups.find(surveyGroup => surveyGroup.keyId === id);
-    if (!surveyGroupToEdit.isEdit) {
-      surveyGroupToEdit.isEdit = true;
-    } else {
-      surveyGroupToEdit.isEdit = false;
-    }
+  formatDate = datetime => {
+    if (datetime === '') return '';
+    const date = new Date(parseInt(datetime, 10));
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  };
+
+  toggleEditFolderName = surveyGroupKeyId => {
+    const surveyGroupToEdit = this.state.surveyGroups.find(
+      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+    );
+    surveyGroupToEdit.isEdit = true;
+
     this.setState(state => ({
-      folderEdit: !state.folderEdit,
+      isFolderEdit: !state.isFolderEdit,
     }));
+  };
+
+  editFolderName = (inputId, inputValue) => {
+    this.setState({ inputId, inputValue });
+  };
+
+  saveFolderName = surveyGroupKeyId => {
+    // Toggle the edit button
+    const surveyGroupToEdit = this.state.surveyGroups.find(
+      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+    );
+    surveyGroupToEdit.isEdit = false;
+
+    if (this.state.inputValue !== null) {
+      const folderToEdit = FLOW.projectControl.find(
+        item => item.get('keyId') === this.state.inputId
+      );
+
+      folderToEdit.set('name', this.state.inputValue);
+      folderToEdit.set('code', this.state.inputValue);
+      const path = `${FLOW.projectControl.get('currentProjectPath')}/${this.state.inputValue}`;
+      folderToEdit.set('path', path);
+
+      FLOW.store.commit();
+    }
+
+    this.setState(state => ({
+      isFolderEdit: !state.isFolderEdit,
+    }));
+
+    this.state.surveyGroups.map(surveyGroup => {
+      if (this.state.inputId === surveyGroup.keyId) {
+        surveyGroup.name = this.state.inputValue;
+        surveyGroup.code = this.state.inputValue;
+        surveyGroup.path = this.state.inputValue;
+      }
+      return surveyGroup;
+    });
   };
 
   render() {
@@ -190,9 +115,11 @@ export default class Main extends React.Component {
       strings: this.props.strings,
 
       // Functions
-      formatDate: this.props.formatDate,
+      formatDate: this.formatDate,
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
+      editFolderName: this.editFolderName,
+      saveFolderName: this.saveFolderName,
     };
 
     return (
@@ -211,15 +138,15 @@ export default class Main extends React.Component {
 
 Main.propTypes = {
   strings: PropTypes.object.isRequired,
+  surveyGroups: PropTypes.array,
   isFolder: PropTypes.bool,
-  folderEdit: PropTypes.bool,
-  formatDate: PropTypes.func,
+  isFolderEdit: PropTypes.bool,
   toggleEditFolderName: PropTypes.func,
 };
 
 Main.defaultProps = {
+  surveyGroups: [],
   isFolder: false,
-  folderEdit: false,
-  formatDate: () => null,
+  isFolderEdit: false,
   toggleEditFolderName: () => null,
 };

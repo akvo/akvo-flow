@@ -1,8 +1,17 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useContext } from 'react';
 import SurveysContext from './surveys-context';
 
 export default function Folders() {
-  const { surveyGroups, strings, toggleEditFolderName } = useContext(SurveysContext);
+  const {
+    surveyGroups,
+    strings,
+
+    // Actions
+    toggleEditFolderName,
+    editFolderName,
+    saveFolderName,
+  } = useContext(SurveysContext);
 
   return surveyGroups.map(surveyGroup => (
     <li
@@ -11,9 +20,8 @@ export default function Folders() {
     >
       {surveyGroup.isEdit ? (
         <a
-          onClick={() => toggleEditFolderName(surveyGroup.keyId)}
-          onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
-          // {{action "toggleEditFolderName" sg target="this"}}
+          onClick={() => saveFolderName(surveyGroup.keyId)}
+          onKeyDown={() => saveFolderName(surveyGroup.keyId)}
           className="editingFolderName"
         >
           {strings.editFolderName}
@@ -22,7 +30,6 @@ export default function Folders() {
         <a
           onClick={() => toggleEditFolderName(surveyGroup.keyId)}
           onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
-          //  {{action "toggleEditFolderName" sg target="this"}}
           className="editFolderName"
         >
           {strings.editFolderName}
@@ -35,7 +42,11 @@ export default function Folders() {
 
       {/* {{/if}} */}
       {surveyGroup.isEdit ? (
-        <input type="text" defaultValue={surveyGroup.code} />
+        <input
+          type="text"
+          defaultValue={surveyGroup.code}
+          onChange={e => editFolderName(surveyGroup.keyId, e.target.value)}
+        />
       ) : (
         <a>
           {/* {{action "selectProject" sg target="FLOW.projectControl"}} */}
