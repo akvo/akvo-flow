@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import SurveysContext from './surveys-context';
 
 export default function SurveyLists() {
-  const { surveys, surveyGroups, strings, formatDate } = useContext(SurveysContext);
+  const { surveysInFolder, surveyGroups, strings, formatDate } = useContext(SurveysContext);
 
-  return surveys.map(survey => {
+  return surveysInFolder.map(survey => {
     const getSurveyGroup = surveyGroups.find(
       surveyGroup => surveyGroup.keyId === survey.surveyGroupId
     );

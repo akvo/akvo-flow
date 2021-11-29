@@ -299,16 +299,34 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      console.log(this.get('surveyGroups'));
+      const surveys = [];
+
+      // Get all surveys
+      FLOW.store.filter(FLOW.Survey, data => {
+        const surveyData = data;
+        if (!surveys.some(survey => survey.keyId === surveyData._data.attributes.keyId)) {
+          surveys.push(surveyData._data.attributes);
+        }
+        return surveyData;
+      });
+
+      this.set('surveys', surveys);
+
       const props = this.getProps();
       this.reactRender(<Main {...props} />);
     },
 
+    setCurrentProject(project) {
+      this.set('currentProject', project);
+      FLOW.selectedControl.set('publishingErrors', null);
+      window.scrollTo(0, 0);
+    },
+
     getProps() {
       return {
+        surveys: this.get('surveys'),
         surveyGroups: this.get('surveyGroups'),
         content: this.content,
-        isFolder: this.get('isFolder'),
         classNameBindings: this.classProperty,
         strings: {
           editFolderName: Ember.String.loc(' edit_folder_name'),

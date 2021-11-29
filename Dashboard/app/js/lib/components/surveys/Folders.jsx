@@ -11,6 +11,7 @@ export default function Folders() {
     toggleEditFolderName,
     editFolderName,
     saveFolderName,
+    selectProject,
   } = useContext(SurveysContext);
 
   return surveyGroups.map(surveyGroup => (
@@ -48,7 +49,10 @@ export default function Folders() {
           onChange={e => editFolderName(surveyGroup.keyId, e.target.value)}
         />
       ) : (
-        <a>
+        <a
+          onClick={() => selectProject(surveyGroup.keyId)}
+          onKeyDown={() => selectProject(surveyGroup.keyId)}
+        >
           {/* {{action "selectProject" sg target="FLOW.projectControl"}} */}
           <h2>{surveyGroup.code}</h2>
         </a>

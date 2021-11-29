@@ -7,47 +7,10 @@ import SurveyLists from './SurveyLists';
 
 export default class Main extends React.Component {
   state = {
-    surveys: [
-      {
-        keyId: 6614936830607360,
-        name: 'New form',
-        code: 'New form',
-        version: '1.0',
-        description: null,
-        status: 'NOT_PUBLISHED',
-        questionGroupList: null,
-        path: '/Folder with a few large data sets/New survey/New form',
-        surveyGroupId: 6051986877186048,
-        defaultLanguageCode: 'en',
-        requireApproval: false,
-        createdDateTime: 1636102031681,
-        lastUpdateDateTime: 1636102031681,
-        sourceId: null,
-        ancestorIds: [0, 153142013, 6051986877186048],
-        alias: null,
-        translationMap: null,
-      },
-      {
-        keyId: 5550609574920192,
-        name: 'New form',
-        code: 'New form',
-        version: '1.0',
-        description: null,
-        status: 'NOT_PUBLISHED',
-        questionGroupList: null,
-        path: "/Folder with a few large data sets/New folder/Daniel's survey copy/New form",
-        surveyGroupId: 6535771993407488,
-        defaultLanguageCode: 'en',
-        requireApproval: false,
-        createdDateTime: 1637300972815,
-        lastUpdateDateTime: 1637300972815,
-        sourceId: null,
-        ancestorIds: [0, 153142013, 4583039342477312, 6535771993407488],
-        alias: null,
-        translationMap: null,
-      },
-    ],
+    surveys: this.props.surveys,
     surveyGroups: this.props.surveyGroups,
+    surveysInFolder: [],
+    isFolder: true,
     isFolderEdit: null,
     inputId: null,
     inputValue: null,
@@ -108,11 +71,32 @@ export default class Main extends React.Component {
     });
   };
 
+  selectProject = surveyGroupKeyId => {
+    const surveyGroups = this.state.surveyGroups.find(
+      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+    );
+
+    if (surveyGroups.surveyList !== null) {
+      const getSurveys = this.state.surveys.filter(survey => {
+        if (surveyGroups.surveyList.includes(survey.keyId)) {
+          return true;
+        }
+        return false;
+      });
+      this.setState({ surveysInFolder: [...getSurveys] });
+    } else {
+      this.setState({ surveysInFolder: [] });
+    }
+
+    this.setState({ isFolder: false });
+  };
+
   render() {
     const contextData = {
       surveys: this.state.surveys,
       surveyGroups: this.state.surveyGroups,
       strings: this.props.strings,
+      surveysInFolder: this.state.surveysInFolder,
 
       // Functions
       formatDate: this.formatDate,
@@ -120,6 +104,7 @@ export default class Main extends React.Component {
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
+      selectProject: this.selectProject,
     };
 
     return (
@@ -127,7 +112,7 @@ export default class Main extends React.Component {
         <div className="floats-in">
           <div id="pageWrap" className="widthConstraint belowHeader">
             <section id="allSurvey" className="surveysList">
-              <ul>{this.props.isFolder ? <Folders /> : <SurveyLists />}</ul>
+              <ul>{this.state.isFolder ? <Folders /> : <SurveyLists />}</ul>
             </section>
           </div>
         </div>
@@ -139,6 +124,7 @@ export default class Main extends React.Component {
 Main.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroups: PropTypes.array,
+  surveys: PropTypes.array,
   isFolder: PropTypes.bool,
   isFolderEdit: PropTypes.bool,
   toggleEditFolderName: PropTypes.func,
@@ -146,6 +132,7 @@ Main.propTypes = {
 
 Main.defaultProps = {
   surveyGroups: [],
+  surveys: [],
   isFolder: false,
   isFolderEdit: false,
   toggleEditFolderName: () => null,
