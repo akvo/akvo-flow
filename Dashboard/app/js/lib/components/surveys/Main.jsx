@@ -13,12 +13,28 @@ export default class Main extends React.Component {
     isFolderEdit: null,
     inputId: null,
     inputValue: null,
+    currentLevel: 0,
   };
 
   formatDate = datetime => {
     if (datetime === '') return '';
     const date = new Date(parseInt(datetime, 10));
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  };
+
+  isProjectFolderEmpty = folder => {
+    const id = folder.keyId;
+    const children = this.state.surveyGroups.filter(project => project.parentId === id);
+    return children.length === 0;
+  };
+
+  isProjectFolder = project => {
+    return project === null || project.projectType === 'PROJECT_FOLDER';
+  };
+
+  sortAscending = item => {
+    const sortByProjectName = item.sort((a, b) => a.code.localeCompare(b.code));
+    return sortByProjectName.sort(project => (project.projectType === 'PROJECT_FOLDER' ? -1 : 1));
   };
 
   toggleEditFolderName = surveyGroupKeyId => {
@@ -71,27 +87,7 @@ export default class Main extends React.Component {
   };
 
   selectProject = folderKeyId => {
-    const surveyGroups = this.state.surveyGroups.find(
-      surveyGroup => surveyGroup.keyId === folderKeyId
-    );
-
-    if (surveyGroups.surveyList !== null) {
-      const getSurveys = this.state.surveys.filter(survey => {
-        if (surveyGroups.surveyList.includes(survey.keyId)) {
-          return true;
-        }
-        return false;
-      });
-      this.setState({ surveysInFolder: [...getSurveys] });
-    } else {
-      this.setState({ surveysInFolder: [] });
-    }
-
-    this.setState({ isFolder: false });
-  };
-
-  sortAscending = item => {
-    return item.sort((a, b) => a.code.localeCompare(b.code));
+    this.setState({ currentLevel: folderKeyId });
   };
 
   render() {
@@ -101,10 +97,13 @@ export default class Main extends React.Component {
       strings: this.props.strings,
       surveysInFolder: this.state.surveysInFolder,
       isFolder: this.state.isFolder,
+      currentLevel: this.state.currentLevel,
 
       // Functions
       formatDate: this.formatDate,
       sortAscending: this.sortAscending,
+      isProjectFolderEmpty: this.isProjectFolderEmpty,
+      isProjectFolder: this.isProjectFolder,
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,

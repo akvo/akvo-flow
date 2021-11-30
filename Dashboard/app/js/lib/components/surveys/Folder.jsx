@@ -6,6 +6,9 @@ export default function Folder({
   surveyGroup,
   strings,
 
+  // Functions
+  isProjectFolderEmpty,
+
   // Actions
   toggleEditFolderName,
   editFolderName,
@@ -15,7 +18,7 @@ export default function Folder({
   return (
     <li
       key={surveyGroup.keyId}
-      className={`aSurvey aFolder ${surveyGroup.surveyList === null && 'folderEmpty'}`}
+      className={`aSurvey aFolder ${isProjectFolderEmpty(surveyGroup) && 'folderEmpty'}`}
     >
       {surveyGroup.isEdit ? (
         <a
@@ -42,7 +45,10 @@ export default function Folder({
           onChange={e => editFolderName(surveyGroup.keyId, e.target.value)}
         />
       ) : (
-        <a onClick={selectProject} onKeyDown={selectProject}>
+        <a
+          onClick={() => selectProject(surveyGroup.keyId)}
+          onKeyDown={() => selectProject(surveyGroup.keyId)}
+        >
           <h2>{surveyGroup.code}</h2>
         </a>
       )}
@@ -71,6 +77,7 @@ Folder.propTypes = {
   editFolderName: PropTypes.func,
   saveFolderName: PropTypes.func,
   selectProject: PropTypes.func,
+  isProjectFolderEmpty: PropTypes.func,
 };
 
 Folder.defaultProps = {
@@ -79,4 +86,5 @@ Folder.defaultProps = {
   editFolderName: () => null,
   saveFolderName: () => null,
   selectProject: () => null,
+  isProjectFolderEmpty: () => null,
 };

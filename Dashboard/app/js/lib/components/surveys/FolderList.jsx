@@ -7,10 +7,12 @@ export default function FolderList() {
   const {
     surveyGroups,
     strings,
+    currentLevel,
 
     // Functions
     formatDate,
-
+    isProjectFolderEmpty,
+    isProjectFolder,
     // Actions
     toggleEditFolderName,
     editFolderName,
@@ -19,24 +21,28 @@ export default function FolderList() {
     sortAscending,
   } = useContext(SurveysContext);
 
-  return sortAscending(surveyGroups).map(surveyGroup => {
-    return surveyGroup.projectType === 'PROJECT' ? (
-      <SurveyList
-        key={surveyGroup.keyId}
-        surveyGroup={surveyGroup}
-        strings={strings}
-        formatDate={formatDate}
-      />
-    ) : (
-      <Folder
-        key={surveyGroup.keyId}
-        surveyGroup={surveyGroup}
-        strings={strings}
-        toggleEditFolderName={toggleEditFolderName}
-        editFolderName={editFolderName}
-        saveFolderName={saveFolderName}
-        selectProject={selectProject}
-      />
-    );
-  });
+  return sortAscending(surveyGroups)
+    .filter(surveyGroup => surveyGroup.parentId === currentLevel)
+    .map(surveyGroup => {
+      return isProjectFolder(surveyGroup) ? (
+        <Folder
+          key={surveyGroup.keyId}
+          surveyGroups={surveyGroups}
+          surveyGroup={surveyGroup}
+          strings={strings}
+          isProjectFolderEmpty={isProjectFolderEmpty}
+          toggleEditFolderName={toggleEditFolderName}
+          editFolderName={editFolderName}
+          saveFolderName={saveFolderName}
+          selectProject={selectProject}
+        />
+      ) : (
+        <SurveyList
+          key={surveyGroup.keyId}
+          surveyGroup={surveyGroup}
+          strings={strings}
+          formatDate={formatDate}
+        />
+      );
+    });
 }
