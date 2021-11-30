@@ -1,20 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useContext } from 'react';
-import SurveysContext from './surveys-context';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default function Folders() {
-  const {
-    surveyGroups,
-    strings,
+export default function Folder({
+  surveyGroup,
+  strings,
 
-    // Actions
-    toggleEditFolderName,
-    editFolderName,
-    saveFolderName,
-    selectProject,
-  } = useContext(SurveysContext);
-
-  return surveyGroups.map(surveyGroup => (
+  // Actions
+  toggleEditFolderName,
+  editFolderName,
+  saveFolderName,
+  selectProject,
+}) {
+  return (
     <li
       key={surveyGroup.keyId}
       className={`aSurvey aFolder ${surveyGroup.surveyList === null && 'folderEmpty'}`}
@@ -37,11 +35,6 @@ export default function Folders() {
         </a>
       )}
 
-      {/* {{view FLOW.FolderEditView valueBinding="sg.code" contentBinding="sg"}}
-              {{else}}
-                  {{#if view.showSurveyEditButton}} */}
-
-      {/* {{/if}} */}
       {surveyGroup.isEdit ? (
         <input
           type="text"
@@ -49,38 +42,41 @@ export default function Folders() {
           onChange={e => editFolderName(surveyGroup.keyId, e.target.value)}
         />
       ) : (
-        <a
-          onClick={() => selectProject(surveyGroup.keyId)}
-          onKeyDown={() => selectProject(surveyGroup.keyId)}
-        >
-          {/* {{action "selectProject" sg target="FLOW.projectControl"}} */}
+        <a onClick={selectProject} onKeyDown={selectProject}>
           <h2>{surveyGroup.code}</h2>
         </a>
       )}
 
       <nav>
         <ul>
-          {/* {{#unless view.hideFolderSurveyDeleteButton}} */}
-
           {surveyGroup.surveyList === null && (
             <li className="deleteSurvey">
-              <a>
-                {/* {{action "deleteProject" sg target="FLOW.projectControl"}} */}
-                {strings.delete}
-              </a>
+              <a>{strings.delete}</a>
             </li>
           )}
 
           <li className="moveSurvey">
             <a>{strings.move}</a>
-            {/* {action "beginMoveProject" sg target="FLOW.projectControl"}} */}
           </li>
-          {/* {{/unless}} */}
-          {/* {{#if view.showSurveyMoveButton}} */}
-
-          {/* {{/if}} */}
         </ul>
       </nav>
     </li>
-  ));
+  );
 }
+
+Folder.propTypes = {
+  strings: PropTypes.object.isRequired,
+  surveyGroup: PropTypes.object,
+  toggleEditFolderName: PropTypes.func,
+  editFolderName: PropTypes.func,
+  saveFolderName: PropTypes.func,
+  selectProject: PropTypes.func,
+};
+
+Folder.defaultProps = {
+  surveyGroup: null,
+  toggleEditFolderName: () => null,
+  editFolderName: () => null,
+  saveFolderName: () => null,
+  selectProject: () => null,
+};

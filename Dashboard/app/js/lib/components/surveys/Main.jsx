@@ -2,8 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import SurveysContext from './surveys-context';
-import Folders from './Folders';
-import SurveyLists from './SurveyLists';
+import ForlderList from './FolderList';
 
 export default class Main extends React.Component {
   state = {
@@ -71,9 +70,9 @@ export default class Main extends React.Component {
     });
   };
 
-  selectProject = surveyGroupKeyId => {
+  selectProject = folderKeyId => {
     const surveyGroups = this.state.surveyGroups.find(
-      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+      surveyGroup => surveyGroup.keyId === folderKeyId
     );
 
     if (surveyGroups.surveyList !== null) {
@@ -91,15 +90,21 @@ export default class Main extends React.Component {
     this.setState({ isFolder: false });
   };
 
+  sortAscending = item => {
+    return item.sort((a, b) => a.code.localeCompare(b.code));
+  };
+
   render() {
     const contextData = {
       surveys: this.state.surveys,
       surveyGroups: this.state.surveyGroups,
       strings: this.props.strings,
       surveysInFolder: this.state.surveysInFolder,
+      isFolder: this.state.isFolder,
 
       // Functions
       formatDate: this.formatDate,
+      sortAscending: this.sortAscending,
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
@@ -112,7 +117,9 @@ export default class Main extends React.Component {
         <div className="floats-in">
           <div id="pageWrap" className="widthConstraint belowHeader">
             <section id="allSurvey" className="surveysList">
-              <ul>{this.state.isFolder ? <Folders /> : <SurveyLists />}</ul>
+              <ul>
+                <ForlderList />
+              </ul>
             </section>
           </div>
         </div>
