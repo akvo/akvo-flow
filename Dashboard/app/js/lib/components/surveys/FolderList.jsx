@@ -5,20 +5,23 @@ import SurveysContext from './surveys-context';
 
 export default function FolderList() {
   const {
-    surveyGroups,
     strings,
+    surveyGroups,
     currentLevel,
 
     // Functions
     formatDate,
     isProjectFolderEmpty,
     isProjectFolder,
+    sortAscending,
+    classNames,
+
     // Actions
     toggleEditFolderName,
     editFolderName,
     saveFolderName,
     selectProject,
-    sortAscending,
+    moveProject,
   } = useContext(SurveysContext);
 
   return sortAscending(surveyGroups)
@@ -27,21 +30,25 @@ export default function FolderList() {
       return isProjectFolder(surveyGroup) ? (
         <Folder
           key={surveyGroup.keyId}
+          strings={strings}
           surveyGroups={surveyGroups}
           surveyGroup={surveyGroup}
-          strings={strings}
+          classNames={classNames}
           isProjectFolderEmpty={isProjectFolderEmpty}
           toggleEditFolderName={toggleEditFolderName}
           editFolderName={editFolderName}
           saveFolderName={saveFolderName}
           selectProject={selectProject}
+          moveProject={moveProject}
         />
       ) : (
         <SurveyList
           key={surveyGroup.keyId}
-          surveyGroup={surveyGroup}
           strings={strings}
+          surveyGroup={surveyGroup}
+          classNames={classNames}
           formatDate={formatDate}
+          moveProject={moveProject}
         />
       );
     });

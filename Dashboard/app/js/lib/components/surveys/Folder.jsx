@@ -3,23 +3,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function Folder({
-  surveyGroup,
   strings,
+  surveyGroup,
 
   // Functions
-  isProjectFolderEmpty,
+  classNames,
 
   // Actions
   toggleEditFolderName,
   editFolderName,
   saveFolderName,
   selectProject,
+  moveProject,
 }) {
   return (
-    <li
-      key={surveyGroup.keyId}
-      className={`aSurvey aFolder ${isProjectFolderEmpty(surveyGroup) && 'folderEmpty'}`}
-    >
+    <li key={surveyGroup.keyId} className={`aSurvey aFolder ${classNames(surveyGroup)}`}>
       {surveyGroup.isEdit ? (
         <a
           onClick={() => saveFolderName(surveyGroup.keyId)}
@@ -62,7 +60,12 @@ export default function Folder({
           )}
 
           <li className="moveSurvey">
-            <a>{strings.move}</a>
+            <a
+              onClick={() => moveProject(surveyGroup.keyId)}
+              onKeyDown={() => moveProject(surveyGroup.keyId)}
+            >
+              {strings.move}
+            </a>
           </li>
         </ul>
       </nav>
@@ -73,18 +76,22 @@ export default function Folder({
 Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
+  classNames: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
   saveFolderName: PropTypes.func,
   selectProject: PropTypes.func,
   isProjectFolderEmpty: PropTypes.func,
+  moveProject: PropTypes.func,
 };
 
 Folder.defaultProps = {
   surveyGroup: null,
+  classNames: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
   saveFolderName: () => null,
   selectProject: () => null,
   isProjectFolderEmpty: () => null,
+  moveProject: () => null,
 };

@@ -14,6 +14,7 @@ export default class Main extends React.Component {
     inputId: null,
     inputValue: null,
     currentLevel: 0,
+    projectToMoveId: null,
   };
 
   formatDate = datetime => {
@@ -28,13 +29,27 @@ export default class Main extends React.Component {
     return children.length === 0;
   };
 
-  isProjectFolder = project => {
-    return project === null || project.projectType === 'PROJECT_FOLDER';
+  isProjectFolder = surveyGroup => {
+    return surveyGroup === null || surveyGroup.projectType === 'PROJECT_FOLDER';
   };
 
-  sortAscending = item => {
-    const sortByProjectName = item.sort((a, b) => a.code.localeCompare(b.code));
-    return sortByProjectName.sort(project => (project.projectType === 'PROJECT_FOLDER' ? -1 : 1));
+  sortAscending = surveyGroups => {
+    const sortByProjectName = surveyGroups.sort((a, b) => a.code.localeCompare(b.code));
+    return sortByProjectName.sort(surveyGroup =>
+      surveyGroup.projectType === 'PROJECT_FOLDER' ? -1 : 1
+    );
+  };
+
+  classNames = project => {
+    if (this.state.projectToMoveId === project.keyId) {
+      if (this.state.projectToMoveId) {
+        return 'highLighted';
+      }
+      if (this.isProjectFolderEmpty(project)) {
+        return 'folderEmpty';
+      }
+    }
+    return '';
   };
 
   toggleEditFolderName = surveyGroupKeyId => {
@@ -90,6 +105,10 @@ export default class Main extends React.Component {
     this.setState({ currentLevel: folderKeyId });
   };
 
+  moveProject = surveyGroupKeyId => {
+    this.setState({ projectToMoveId: surveyGroupKeyId });
+  };
+
   render() {
     const contextData = {
       surveys: this.state.surveys,
@@ -98,17 +117,21 @@ export default class Main extends React.Component {
       surveysInFolder: this.state.surveysInFolder,
       isFolder: this.state.isFolder,
       currentLevel: this.state.currentLevel,
+      projectToMoveId: this.state.projectToMoveId,
 
       // Functions
       formatDate: this.formatDate,
       sortAscending: this.sortAscending,
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
+      classNames: this.classNames,
+
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
       selectProject: this.selectProject,
+      moveProject: this.moveProject,
     };
 
     return (
