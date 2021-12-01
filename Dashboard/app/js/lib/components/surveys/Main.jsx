@@ -139,7 +139,7 @@ export default class Main extends React.Component {
         <div className="floats-in">
           <div id="pageWrap" className="widthConstraint belowHeader">
             <section id="allSurvey" className="surveysList">
-              <ul>
+              <ul className={this.state.projectToMoveId && 'actionProcess'}>
                 <ForlderList />
               </ul>
             </section>

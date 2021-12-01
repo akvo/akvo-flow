@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 export default function Folder({
   strings,
   surveyGroup,
+  projectToMoveId,
 
   // Functions
   classNames,
@@ -61,8 +62,8 @@ export default function Folder({
 
           <li className="moveSurvey">
             <a
-              onClick={() => moveProject(surveyGroup.keyId)}
-              onKeyDown={() => moveProject(surveyGroup.keyId)}
+              onClick={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
+              onKeyDown={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -76,6 +77,7 @@ export default function Folder({
 Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
+  projectToMoveId: PropTypes.number,
   classNames: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
@@ -87,6 +89,7 @@ Folder.propTypes = {
 
 Folder.defaultProps = {
   surveyGroup: null,
+  projectToMoveId: null,
   classNames: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,

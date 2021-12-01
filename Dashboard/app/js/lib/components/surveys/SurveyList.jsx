@@ -2,7 +2,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function SurveyLists({ surveyGroup, strings, formatDate, classNames, moveProject }) {
+export default function SurveyLists({
+  strings,
+  surveyGroup,
+  projectToMoveId,
+  formatDate,
+  classNames,
+  moveProject,
+}) {
   const language = () => {
     let languageFullWord = '';
     if (surveyGroup.defaultLanguageCode === 'en') {
@@ -47,8 +54,8 @@ export default function SurveyLists({ surveyGroup, strings, formatDate, classNam
 
           <li className="moveSurvey">
             <a
-              onClick={() => moveProject(surveyGroup.keyId)}
-              onKeyDown={() => moveProject(surveyGroup.keyId)}
+              onClick={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
+              onKeyDown={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -72,6 +79,7 @@ export default function SurveyLists({ surveyGroup, strings, formatDate, classNam
 SurveyLists.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
+  projectToMoveId: PropTypes.number,
   formatDate: PropTypes.func,
   classNames: PropTypes.func,
   moveProject: PropTypes.func,
@@ -79,6 +87,7 @@ SurveyLists.propTypes = {
 
 SurveyLists.defaultProps = {
   surveyGroup: null,
+  projectToMoveId: null,
   formatDate: () => null,
   classNames: () => null,
   moveProject: () => null,

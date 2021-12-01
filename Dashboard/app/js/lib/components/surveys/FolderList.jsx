@@ -8,6 +8,7 @@ export default function FolderList() {
     strings,
     surveyGroups,
     currentLevel,
+    projectToMoveId,
 
     // Functions
     formatDate,
@@ -33,6 +34,7 @@ export default function FolderList() {
           strings={strings}
           surveyGroups={surveyGroups}
           surveyGroup={surveyGroup}
+          projectToMoveId={projectToMoveId}
           classNames={classNames}
           isProjectFolderEmpty={isProjectFolderEmpty}
           toggleEditFolderName={toggleEditFolderName}
@@ -46,6 +48,7 @@ export default function FolderList() {
           key={surveyGroup.keyId}
           strings={strings}
           surveyGroup={surveyGroup}
+          projectToMoveId={projectToMoveId}
           classNames={classNames}
           formatDate={formatDate}
           moveProject={moveProject}
