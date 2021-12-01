@@ -35,9 +35,7 @@ export default class Main extends React.Component {
 
   sortAscending = surveyGroups => {
     const sortByProjectName = surveyGroups.sort((a, b) => a.code.localeCompare(b.code));
-    return sortByProjectName.sort(surveyGroup =>
-      surveyGroup.projectType === 'PROJECT_FOLDER' ? -1 : 1
-    );
+    return sortByProjectName.sort((a, b) => (a.projectType === b.projectType ? 1 : -1));
   };
 
   classNames = project => {
