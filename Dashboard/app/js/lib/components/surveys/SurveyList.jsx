@@ -6,8 +6,13 @@ export default function SurveyLists({
   strings,
   surveyGroup,
   surveyGroupId,
+
+  // Functions
   formatDate,
   classNames,
+
+  // Actions
+  selectProject,
   beginMoveProject,
   beginCopyProject,
 }) {
@@ -27,7 +32,10 @@ export default function SurveyLists({
 
   return (
     <li key={surveyGroup.keyId} className={`aSurvey ${classNames(surveyGroup)}`}>
-      <a>
+      <a
+        onClick={() => !surveyGroupId && selectProject()}
+        onKeyDown={() => !surveyGroupId && selectProject()}
+      >
         <h2>{surveyGroup.code}</h2>
       </a>
       <ul className="surveyInfo floats-in">
@@ -50,7 +58,12 @@ export default function SurveyLists({
       <nav>
         <ul>
           <li className="editSurvey">
-            <a>{strings.edit}</a>
+            <a
+              onClick={() => !surveyGroupId && selectProject()}
+              onKeyDown={() => !surveyGroupId && selectProject()}
+            >
+              {strings.edit}
+            </a>
           </li>
 
           <li className="moveSurvey">
@@ -88,6 +101,7 @@ SurveyLists.propTypes = {
   surveyGroupId: PropTypes.number,
   formatDate: PropTypes.func,
   classNames: PropTypes.func,
+  selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
 };
@@ -97,6 +111,7 @@ SurveyLists.defaultProps = {
   surveyGroupId: null,
   formatDate: () => null,
   classNames: () => null,
+  selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,
 };

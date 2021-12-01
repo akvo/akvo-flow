@@ -288,30 +288,18 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
   {
     init() {
       this._super();
+      this.setupSurveys = this.setupSurveys.bind(this);
       this.getProps = this.getProps.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
 
     didInsertElement(...args) {
       this._super(...args);
-
       this.renderReactSide();
     },
 
     renderReactSide() {
-      const surveys = [];
-
-      // Get all surveys
-      FLOW.store.filter(FLOW.Survey, data => {
-        const surveyData = data;
-        if (!surveys.some(survey => survey.keyId === surveyData._data.attributes.keyId)) {
-          surveys.push(surveyData._data.attributes);
-        }
-        return surveyData;
-      });
-
-      this.set('surveys', surveys);
-
+      this.setupSurveys();
       const props = this.getProps();
       this.reactRender(<Main {...props} />);
     },
@@ -350,6 +338,21 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
         .getEach('_data')
         .getEach('attributes');
     }).property('FLOW.projectControl.content.isLoaded'),
+
+    setupSurveys() {
+      const surveys = [];
+
+      // Get all surveys
+      FLOW.store.filter(FLOW.Survey, data => {
+        const surveyData = data;
+        if (!surveys.some(survey => survey.keyId === surveyData._data.attributes.keyId)) {
+          surveys.push(surveyData._data.attributes);
+        }
+        return surveyData;
+      });
+
+      this.set('surveys', surveys);
+    },
 
     surveys: null,
 

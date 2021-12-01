@@ -13,7 +13,7 @@ export default class Main extends React.Component {
     isFolderEdit: null,
     inputId: null,
     inputValue: null,
-    currentLevel: 0,
+    currentProject: 0,
     surveyGroupId: null,
   };
 
@@ -99,8 +99,11 @@ export default class Main extends React.Component {
     });
   };
 
-  selectProject = folderId => {
-    this.setState({ currentLevel: folderId });
+  selectProject = surveyGroupId => {
+    // the project should not be openable while being moved. Prevents moving it into itself.
+    if (surveyGroupId !== this.state.surveyGroupId) {
+      this.setState({ currentProject: surveyGroupId });
+    }
   };
 
   beginMoveProject = surveyGroupId => {
@@ -118,7 +121,7 @@ export default class Main extends React.Component {
       strings: this.props.strings,
       surveysInFolder: this.state.surveysInFolder,
       isFolder: this.state.isFolder,
-      currentLevel: this.state.currentLevel,
+      currentProject: this.state.currentProject,
       surveyGroupId: this.state.surveyGroupId,
 
       // Functions
