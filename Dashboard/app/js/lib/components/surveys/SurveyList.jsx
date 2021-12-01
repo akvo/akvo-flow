@@ -5,10 +5,11 @@ import PropTypes from 'prop-types';
 export default function SurveyLists({
   strings,
   surveyGroup,
-  projectToMoveId,
+  surveyGroupId,
   formatDate,
   classNames,
-  moveProject,
+  beginMoveProject,
+  beginCopyProject,
 }) {
   const language = () => {
     let languageFullWord = '';
@@ -54,8 +55,8 @@ export default function SurveyLists({
 
           <li className="moveSurvey">
             <a
-              onClick={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
-              onKeyDown={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
+              onClick={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
+              onKeyDown={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -68,7 +69,12 @@ export default function SurveyLists({
           )}
 
           <li className="copySurvey">
-            <a>{strings.copy}</a>
+            <a
+              onClick={() => !surveyGroupId && beginCopyProject(surveyGroup.keyId)}
+              onKeyDown={() => !surveyGroupId && beginCopyProject(surveyGroup.keyId)}
+            >
+              {strings.copy}
+            </a>
           </li>
         </ul>
       </nav>
@@ -79,16 +85,18 @@ export default function SurveyLists({
 SurveyLists.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
-  projectToMoveId: PropTypes.number,
+  surveyGroupId: PropTypes.number,
   formatDate: PropTypes.func,
   classNames: PropTypes.func,
-  moveProject: PropTypes.func,
+  beginMoveProject: PropTypes.func,
+  beginCopyProject: PropTypes.func,
 };
 
 SurveyLists.defaultProps = {
   surveyGroup: null,
-  projectToMoveId: null,
+  surveyGroupId: null,
   formatDate: () => null,
   classNames: () => null,
-  moveProject: () => null,
+  beginMoveProject: () => null,
+  beginCopyProject: () => null,
 };

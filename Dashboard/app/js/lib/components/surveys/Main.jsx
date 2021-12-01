@@ -14,7 +14,7 @@ export default class Main extends React.Component {
     inputId: null,
     inputValue: null,
     currentLevel: 0,
-    projectToMoveId: null,
+    surveyGroupId: null,
   };
 
   formatDate = datetime => {
@@ -41,8 +41,8 @@ export default class Main extends React.Component {
   };
 
   classNames = project => {
-    if (this.state.projectToMoveId === project.keyId) {
-      if (this.state.projectToMoveId) {
+    if (this.state.surveyGroupId === project.keyId) {
+      if (this.state.surveyGroupId) {
         return 'highLighted';
       }
       if (this.isProjectFolderEmpty(project)) {
@@ -52,9 +52,9 @@ export default class Main extends React.Component {
     return '';
   };
 
-  toggleEditFolderName = surveyGroupKeyId => {
+  toggleEditFolderName = surveyGroupId => {
     const surveyGroupToEdit = this.state.surveyGroups.find(
-      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+      surveyGroup => surveyGroup.keyId === surveyGroupId
     );
     surveyGroupToEdit.isEdit = true;
 
@@ -67,10 +67,10 @@ export default class Main extends React.Component {
     this.setState({ inputId, inputValue });
   };
 
-  saveFolderName = surveyGroupKeyId => {
+  saveFolderName = surveyGroupId => {
     // Toggle the edit button
     const surveyGroupToEdit = this.state.surveyGroups.find(
-      surveyGroup => surveyGroup.keyId === surveyGroupKeyId
+      surveyGroup => surveyGroup.keyId === surveyGroupId
     );
     surveyGroupToEdit.isEdit = false;
 
@@ -101,12 +101,16 @@ export default class Main extends React.Component {
     });
   };
 
-  selectProject = folderKeyId => {
-    this.setState({ currentLevel: folderKeyId });
+  selectProject = folderId => {
+    this.setState({ currentLevel: folderId });
   };
 
-  moveProject = surveyGroupKeyId => {
-    this.setState({ projectToMoveId: surveyGroupKeyId });
+  beginMoveProject = surveyGroupId => {
+    this.setState({ surveyGroupId });
+  };
+
+  beginCopyProject = surveyGroupId => {
+    this.setState({ surveyGroupId });
   };
 
   render() {
@@ -117,7 +121,7 @@ export default class Main extends React.Component {
       surveysInFolder: this.state.surveysInFolder,
       isFolder: this.state.isFolder,
       currentLevel: this.state.currentLevel,
-      projectToMoveId: this.state.projectToMoveId,
+      surveyGroupId: this.state.surveyGroupId,
 
       // Functions
       formatDate: this.formatDate,
@@ -131,7 +135,8 @@ export default class Main extends React.Component {
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
       selectProject: this.selectProject,
-      moveProject: this.moveProject,
+      beginMoveProject: this.beginMoveProject,
+      beginCopyProject: this.beginCopyProject,
     };
 
     return (
@@ -139,7 +144,7 @@ export default class Main extends React.Component {
         <div className="floats-in">
           <div id="pageWrap" className="widthConstraint belowHeader">
             <section id="allSurvey" className="surveysList">
-              <ul className={this.state.projectToMoveId && 'actionProcess'}>
+              <ul className={this.state.surveyGroupId && 'actionProcess'}>
                 <ForlderList />
               </ul>
             </section>

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 export default function Folder({
   strings,
   surveyGroup,
-  projectToMoveId,
+  surveyGroupId,
 
   // Functions
   classNames,
@@ -15,7 +15,7 @@ export default function Folder({
   editFolderName,
   saveFolderName,
   selectProject,
-  moveProject,
+  beginMoveProject,
 }) {
   return (
     <li key={surveyGroup.keyId} className={`aSurvey aFolder ${classNames(surveyGroup)}`}>
@@ -62,8 +62,8 @@ export default function Folder({
 
           <li className="moveSurvey">
             <a
-              onClick={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
-              onKeyDown={() => !projectToMoveId && moveProject(surveyGroup.keyId)}
+              onClick={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
+              onKeyDown={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -77,24 +77,24 @@ export default function Folder({
 Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
-  projectToMoveId: PropTypes.number,
+  surveyGroupId: PropTypes.number,
   classNames: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
   saveFolderName: PropTypes.func,
   selectProject: PropTypes.func,
   isProjectFolderEmpty: PropTypes.func,
-  moveProject: PropTypes.func,
+  beginMoveProject: PropTypes.func,
 };
 
 Folder.defaultProps = {
   surveyGroup: null,
-  projectToMoveId: null,
+  surveyGroupId: null,
   classNames: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
   saveFolderName: () => null,
   selectProject: () => null,
   isProjectFolderEmpty: () => null,
-  moveProject: () => null,
+  beginMoveProject: () => null,
 };
