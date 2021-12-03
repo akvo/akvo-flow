@@ -106,6 +106,7 @@ SurveyListItem.propTypes = {
   selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
+  setCurrentSurvey: PropTypes.func,
 };
 
 SurveyListItem.defaultProps = {
@@ -116,4 +117,5 @@ SurveyListItem.defaultProps = {
   selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,
+  setCurrentSurvey: () => null,
 };
