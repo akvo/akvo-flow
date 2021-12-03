@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SurveysContext from './surveys-context';
 import ForlderList from './FolderList';
+import Survey from './Survey';
 
 export default class Main extends React.Component {
   state = {
@@ -13,8 +14,12 @@ export default class Main extends React.Component {
     isFolderEdit: null,
     inputId: null,
     inputValue: null,
-    currentProject: 0,
+    currentProjectId: 0,
     surveyGroupId: null,
+    surveyToDisplay: null,
+    currentProject: null,
+    showProjectDetails: false,
+    showDataApproval: FLOW.Env.enableDataApproval,
   };
 
   formatDate = datetime => {
@@ -31,6 +36,14 @@ export default class Main extends React.Component {
 
   isProjectFolder = surveyGroup => {
     return surveyGroup === null || surveyGroup.projectType === 'PROJECT_FOLDER';
+  };
+
+  isNewProject = currentProject => {
+    return currentProject && currentProject.code === 'New survey';
+  };
+
+  visibleProjectBasics = () => {
+    return this.isNewProject() || this.state.showProjectDetails;
   };
 
   sortAscending = surveyGroups => {
@@ -50,6 +63,12 @@ export default class Main extends React.Component {
     return '';
   };
 
+  toggleShowProjectDetails = () => {
+    this.setState(state => ({
+      showProjectDetails: !state.showProjectDetails,
+    }));
+  };
+
   toggleEditFolderName = surveyGroupId => {
     const surveyGroupToEdit = this.state.surveyGroups.find(
       surveyGroup => surveyGroup.keyId === surveyGroupId
@@ -60,6 +79,12 @@ export default class Main extends React.Component {
       isFolderEdit: !state.isFolderEdit,
     }));
   };
+
+  // formCount: Ember.computed(() => (FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0)).property('FLOW.surveyControl.content.@each'),
+
+  // hasForms: Ember.computed(function () {
+  //   return this.get('formCount') > 0;
+  // }).property('this.formCount'),
 
   editFolderName = (inputId, inputValue) => {
     this.setState({ inputId, inputValue });
@@ -102,8 +127,49 @@ export default class Main extends React.Component {
   selectProject = surveyGroupId => {
     // the project should not be openable while being moved. Prevents moving it into itself.
     if (surveyGroupId !== this.state.surveyGroupId) {
-      this.setState({ currentProject: surveyGroupId });
+      this.setState({ currentProjectId: surveyGroupId });
     }
+
+    // selectProject(evt) {
+    //   const project = evt.context;
+    //   // the target should not be openable while being moved. Prevents moving it into itself.
+    //   if (this.moveTarget == project) {
+    //     return;
+    //   }
+
+    //   this.setCurrentProject(project);
+
+    //   // User is using the breadcrumb to navigate, we could have unsaved changes
+    //   FLOW.store.commit();
+
+    //   if (this.isProject(project)) {
+    //     // load caddisfly resources if they are not loaded
+    //     // and only when surveys are selected
+    //     this.loadCaddisflyResources();
+
+    //     // applies to project where data approval has
+    //     // been previously set
+    //     if (project.get('requireDataApproval')) {
+    //       this.loadDataApprovalGroups();
+    //     }
+
+    //     FLOW.selectedControl.set('selectedSurveyGroup', project);
+    //   }
+
+    //   this.set('newlyCreated', null);
+    // },
+  };
+
+  setCurrentSurvey = surveyId => {
+    const getSurvey = this.state.surveys.find(survey => survey.keyId === surveyId);
+
+    this.setState(state => ({
+      currentProject: state.surveyGroups.find(
+        surveyGroup => surveyGroup.surveyList !== null && surveyGroup.surveyList.includes(surveyId)
+      ),
+    }));
+
+    this.setState({ surveyToDisplay: { ...getSurvey } });
   };
 
   beginMoveProject = surveyGroupId => {
@@ -121,8 +187,11 @@ export default class Main extends React.Component {
       strings: this.props.strings,
       surveysInFolder: this.state.surveysInFolder,
       isFolder: this.state.isFolder,
+      currentProjectId: this.state.currentProjectId,
       currentProject: this.state.currentProject,
       surveyGroupId: this.state.surveyGroupId,
+      surveyToDisplay: this.state.surveyToDisplay,
+      showDataApproval: this.state.showDataApproval,
 
       // Functions
       formatDate: this.formatDate,
@@ -130,12 +199,16 @@ export default class Main extends React.Component {
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
       classNames: this.classNames,
+      isNewProject: this.isNewProject,
+      visibleProjectBasics: this.visibleProjectBasics,
 
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
+      toggleShowProjectDetails: this.toggleShowProjectDetails,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
       selectProject: this.selectProject,
+      setCurrentSurvey: this.setCurrentSurvey,
       beginMoveProject: this.beginMoveProject,
       beginCopyProject: this.beginCopyProject,
     };
@@ -144,11 +217,7 @@ export default class Main extends React.Component {
       <SurveysContext.Provider value={contextData}>
         <div className="floats-in">
           <div id="pageWrap" className="widthConstraint belowHeader">
-            <section id="allSurvey" className="surveysList">
-              <ul className={this.state.surveyGroupId && 'actionProcess'}>
-                <ForlderList />
-              </ul>
-            </section>
+            {this.state.surveyToDisplay !== null ? <Survey /> : <ForlderList />}
           </div>
         </div>
       </SurveysContext.Provider>

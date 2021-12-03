@@ -2,19 +2,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function SurveyLists({
+export default function SurveyListItem({
   strings,
   surveyGroup,
-  surveyGroupId,
 
   // Functions
   formatDate,
   classNames,
 
   // Actions
-  selectProject,
+  // selectProject,
   beginMoveProject,
   beginCopyProject,
+  setCurrentSurvey,
 }) {
   const language = () => {
     let languageFullWord = '';
@@ -30,11 +30,13 @@ export default function SurveyLists({
     return languageFullWord;
   };
 
+  const hasSurvey = Boolean(surveyGroup && surveyGroup.surveyList && surveyGroup.surveyList.length);
+
   return (
     <li key={surveyGroup.keyId} className={`aSurvey ${classNames(surveyGroup)}`}>
       <a
-        onClick={() => !surveyGroupId && selectProject()}
-        onKeyDown={() => !surveyGroupId && selectProject()}
+        onClick={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
+        onKeyDown={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
       >
         <h2>{surveyGroup.code}</h2>
       </a>
@@ -59,8 +61,8 @@ export default function SurveyLists({
         <ul>
           <li className="editSurvey">
             <a
-              onClick={() => !surveyGroupId && selectProject()}
-              onKeyDown={() => !surveyGroupId && selectProject()}
+              onClick={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
+              onKeyDown={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
             >
               {strings.edit}
             </a>
@@ -68,8 +70,8 @@ export default function SurveyLists({
 
           <li className="moveSurvey">
             <a
-              onClick={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
-              onKeyDown={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
+              onClick={() => beginMoveProject(surveyGroup.keyId)}
+              onKeyDown={() => beginMoveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -83,8 +85,8 @@ export default function SurveyLists({
 
           <li className="copySurvey">
             <a
-              onClick={() => !surveyGroupId && beginCopyProject(surveyGroup.keyId)}
-              onKeyDown={() => !surveyGroupId && beginCopyProject(surveyGroup.keyId)}
+              onClick={() => beginCopyProject(surveyGroup.keyId)}
+              onKeyDown={() => beginCopyProject(surveyGroup.keyId)}
             >
               {strings.copy}
             </a>
@@ -95,7 +97,7 @@ export default function SurveyLists({
   );
 }
 
-SurveyLists.propTypes = {
+SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
   surveyGroupId: PropTypes.number,
@@ -106,7 +108,7 @@ SurveyLists.propTypes = {
   beginCopyProject: PropTypes.func,
 };
 
-SurveyLists.defaultProps = {
+SurveyListItem.defaultProps = {
   surveyGroup: null,
   surveyGroupId: null,
   formatDate: () => null,

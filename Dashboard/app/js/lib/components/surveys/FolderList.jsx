@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import Folder from './Folder';
-import SurveyList from './SurveyList';
+import SurveyListItem from './SurveyListItem';
 import SurveysContext from './surveys-context';
 
 export default function FolderList() {
   const {
     strings,
     surveyGroups,
-    currentProject,
+    currentProjectId,
     surveyGroupId,
 
     // Functions
@@ -21,6 +21,7 @@ export default function FolderList() {
     toggleEditFolderName,
     editFolderName,
     saveFolderName,
+    setCurrentSurvey,
     selectProject,
     beginMoveProject,
     beginCopyProject,
@@ -28,57 +29,44 @@ export default function FolderList() {
 
   // Get all projects on each level
   const surveyGroupToDisplay = sortAscending(surveyGroups).filter(
-    surveyGroup => surveyGroup.parentId === currentProject
+    surveyGroup => surveyGroup.parentId === currentProjectId
   );
 
-  // selectProject = surveyGroupKeyId => {
-  //   const surveyGroups = this.state.surveyGroups.find(
-  //     surveyGroup => surveyGroup.keyId === surveyGroupKeyId
-  //   );
-
-  //   if (surveyGroups.surveyList !== null) {
-  //     const getSurveys = this.state.surveys.filter(survey => {
-  //       if (surveyGroups.surveyList.includes(survey.keyId)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-  //     this.setState({ surveysInFolder: [...getSurveys] });
-  //   } else {
-  //     this.setState({ surveysInFolder: [] });
-  //   }
-
-  //   this.setState({ isFolder: false });
-  // };
-
-  return surveyGroupToDisplay.map(surveyGroup => {
-    return isProjectFolder(surveyGroup) ? (
-      <Folder
-        key={surveyGroup.keyId}
-        strings={strings}
-        surveyGroups={surveyGroups}
-        surveyGroup={surveyGroup}
-        surveyGroupId={surveyGroupId}
-        classNames={classNames}
-        isProjectFolderEmpty={isProjectFolderEmpty}
-        toggleEditFolderName={toggleEditFolderName}
-        editFolderName={editFolderName}
-        saveFolderName={saveFolderName}
-        selectProject={selectProject}
-        beginMoveProject={beginMoveProject}
-      />
-    ) : (
-      <SurveyList
-        key={surveyGroup.keyId}
-        strings={strings}
-        surveyGroup={surveyGroup}
-        surveyGroupId={surveyGroupId}
-        classNames={classNames}
-        formatDate={formatDate}
-        selectProject={selectProject}
-        beginMoveProject={beginMoveProject}
-        beginCopyProject={beginCopyProject}
-      />
-    );
-  });
+  return (
+    <section id="allSurvey" className="surveysList">
+      <ul className={surveyGroupId && 'actionProcess'}>
+        {surveyGroupToDisplay.map(surveyGroup => {
+          return isProjectFolder(surveyGroup) ? (
+            <Folder
+              key={surveyGroup.keyId}
+              strings={strings}
+              surveyGroups={surveyGroups}
+              surveyGroup={surveyGroup}
+              surveyGroupId={surveyGroupId}
+              classNames={classNames}
+              isProjectFolderEmpty={isProjectFolderEmpty}
+              toggleEditFolderName={toggleEditFolderName}
+              editFolderName={editFolderName}
+              saveFolderName={saveFolderName}
+              selectProject={selectProject}
+              beginMoveProject={beginMoveProject}
+            />
+          ) : (
+            <SurveyListItem
+              key={surveyGroup.keyId}
+              strings={strings}
+              surveyGroup={surveyGroup}
+              surveyGroupId={surveyGroupId}
+              classNames={classNames}
+              formatDate={formatDate}
+              selectProject={selectProject}
+              setCurrentSurvey={setCurrentSurvey}
+              beginMoveProject={beginMoveProject}
+              beginCopyProject={beginCopyProject}
+            />
+          );
+        })}
+      </ul>
+    </section>
+  );
 }
