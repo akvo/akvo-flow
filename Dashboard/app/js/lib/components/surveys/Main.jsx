@@ -80,11 +80,23 @@ export default class Main extends React.Component {
     }));
   };
 
-  // formCount: Ember.computed(() => (FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0)).property('FLOW.surveyControl.content.@each'),
+  forms = () => {
+    if (this.state.currentProject && this.state.currentProject.projectType !== 'PROJECT_FOLDER') {
+      return FLOW.store.filter(
+        FLOW.Survey,
+        form =>
+          this.state.currentProject && form.get('surveyGroupId') === this.state.currentProject.keyId
+      );
+    }
+  };
 
-  // hasForms: Ember.computed(function () {
-  //   return this.get('formCount') > 0;
-  // }).property('this.formCount'),
+  formCount = () => {
+    return this.forms().content ? this.forms().content.get('length') : 0;
+  };
+
+  hasForms = () => {
+    return this.formCount() > 0;
+  };
 
   editFolderName = (inputId, inputValue) => {
     this.setState({ inputId, inputValue });
@@ -180,6 +192,48 @@ export default class Main extends React.Component {
     this.setState({ surveyGroupId });
   };
 
+  orderForms = () => {
+    if (this.state.currentProject && this.state.currentProject.keyId > 0) {
+      const sgId = this.state.currentProject.keyId;
+      const self = FLOW.surveyControl;
+      const forms = FLOW.store.filter(FLOW.Survey, item => item.get('surveyGroupId') === sgId);
+      self.set('orderedForms', []);
+
+      if (forms.get('length') > 1 && this.state.currentProject.monitoringGroup) {
+        // find registration form if set
+        let regFormId;
+        const regForm = forms.find(
+          item => item.get('keyId') === this.state.currentProject.newLocaleSurveyId
+        );
+        if (regForm) {
+          regFormId = regForm.get('keyId');
+        } else {
+          regFormId = forms.get('firstObject').get('keyId'); // registration form not defined so assume first form is registration
+        }
+
+        self.orderedForms.push(forms.find(form => form.get('keyId') === regFormId));
+
+        return forms
+          .filter(form => form.get('keyId') !== regFormId)
+          .sort((a, b) => {
+            const nameA = a.get('name').toUpperCase();
+            const nameB = b.get('name').toUpperCase();
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
+          })
+          .forEach(form => {
+            self.orderedForms.push(form);
+          });
+      }
+      self.orderedForms.push(forms.find(form => form.get('surveyGroupId') === sgId));
+    }
+  };
+
   render() {
     const contextData = {
       surveys: this.state.surveys,
@@ -201,6 +255,10 @@ export default class Main extends React.Component {
       classNames: this.classNames,
       isNewProject: this.isNewProject,
       visibleProjectBasics: this.visibleProjectBasics,
+      orderForms: this.orderForms,
+      formCount: this.formCount,
+      hasForms: this.hasForms,
+      forms: this.forms,
 
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,

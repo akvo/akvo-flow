@@ -11,7 +11,14 @@ export default function Survey() {
     visibleProjectBasics,
     isNewProject,
     toggleShowProjectDetails,
+    formCount,
+    hasForms,
+    forms,
   } = useContext(SurveysContext);
+
+  const orderedForms = forms()
+    .getEach('_data')
+    .getEach('attributes');
 
   const languageControl = FLOW.languageControl.content;
 
@@ -22,7 +29,7 @@ export default function Survey() {
         <ul className="projectSummary">
           <li>
             {Ember.String.loc('_forms')}
-            <span className="projectForm">FLOW.projectControl.formCount</span>
+            <span className="projectForm">{formCount()}</span>
           </li>
           {/* Should we display the ID as we do with forms?  */}
           <li className="hidden">
@@ -211,76 +218,80 @@ export default function Survey() {
 
         <section className="noFormsContainer">
           {/* {{#unless FLOW.projectControl.hasForms}} */}
-          <ul>
-            <li className="formList">
-              <p className="noForms">{Ember.String.loc('_no_forms_in_this_survey')}</p>
-            </li>
-            {/* {{#if view.showAddNewFormButton}} */}
-            <li>
-              <a
-                className="addMenuAction aBtn addNewForm"
-                //    {{action "createForm" target="FLOW.surveyControl"}}
-              >
-                {Ember.String.loc('_add_new_form')}
-              </a>
-            </li>
-            {/* {{/if}} */}
-          </ul>
+          {!hasForms() && (
+            <ul>
+              <li className="formList">
+                <p className="noForms">{Ember.String.loc('_no_forms_in_this_survey')}</p>
+              </li>
+              {/* {{#if view.showAddNewFormButton}} */}
+              <li>
+                <a
+                  className="addMenuAction aBtn addNewForm"
+                  //    {{action "createForm" target="FLOW.surveyControl"}}
+                >
+                  {Ember.String.loc('_add_new_form')}
+                </a>
+              </li>
+              {/* {{/if}} */}
+            </ul>
+          )}
           {/* {{/unless}} */}
         </section>
 
         <section className="forms">
           {/* {{#if FLOW.projectControl.hasForms}} */}
-          <div id="tabs">
-            {currentProject.monitoringGroup && (
-              //     /* {{#if FLOW.projectControl.currentProject.monitoringGroup}} */
+          {hasForms() && (
+            <div id="tabs">
+              {currentProject.monitoringGroup && (
+                // /* {{#if view.showAddNewFormButton}} */
 
-              // /* {{#if view.showAddNewFormButton}} */
+                <nav className="menuTopbar">
+                  <ul>
+                    <li>
+                      <a
+                        //   {{action "createForm" target="FLOW.surveyControl"}}
+                        className="button addFormBtn"
+                      >
+                        {Ember.String.loc('_add_new_form')}
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              )}
 
-              <nav className="menuTopbar">
+              {/* {{/if}} */}
+              <nav className="tabNav floats-in">
                 <ul>
-                  <li>
-                    <a
-                      //   {{action "createForm" target="FLOW.surveyControl"}}
-                      className="button addFormBtn"
-                    >
-                      {Ember.String.loc('_add_new_form')}
-                    </a>
-                  </li>
+                  {/* {{#each form in FLOW.surveyControl.orderedForms}}
+                              {{#view FLOW.FormTabView contentBinding="form"}} */}
+                  {orderedForms.map(form => (
+                    <li key={form.keyId} className="aFormTab current">
+                      <a>
+                        {/* {{action "selectForm" form target="FLOW.surveyControl"}  */}
+                        {form.name}
+                      </a>
+                    </li>
+                  ))}
+                  {/* {{/view}}
+                            {{/each}} */}
                 </ul>
               </nav>
-            )}
-            {/* {{/if}}
-                    {{/if}} */}
-            <nav className="tabNav floats-in">
-              <ul>
-                {/* {{#each form in FLOW.surveyControl.orderedForms}}
-                              {{#view FLOW.FormTabView contentBinding="form"}} */}
-                <li className="aFormTab current">
-                  <a>
-                    {/* {{action "selectForm" form target="FLOW.surveyControl"}  */}
-                    form.name
-                  </a>
-                </li>
-                {/* {{/view}}
-                            {{/each}} */}
-              </ul>
-            </nav>
-            <section className="formsContainer">
-              <div
-                id="form01"
-                // {{bindAttr className="view.isPublished:published"}}
-              >
-                {/* {{#if FLOW.selectedControl.selectedSurvey}} */}
-                <h3>
-                  {surveyToDisplay.name}
-                  {/* {{FLOW.selectedControl.selectedSurvey.name}} */}
-                </h3>
-                {/* {{view FLOW.FormView}}
+              <section className="formsContainer">
+                <div
+                  id="form01"
+                  // {{bindAttr className="view.isPublished:published"}}
+                >
+                  {/* {{#if FLOW.selectedControl.selectedSurvey}} */}
+                  <h3>
+                    {surveyToDisplay.name}
+                    {/* {{FLOW.selectedControl.selectedSurvey.name}} */}
+                  </h3>
+                  {/* {{view FLOW.FormView}}
                               {{/if}} */}
-              </div>
-            </section>
-          </div>
+                </div>
+              </section>
+            </div>
+          )}
           {/* {{/if}} */}
         </section>
       </section>
