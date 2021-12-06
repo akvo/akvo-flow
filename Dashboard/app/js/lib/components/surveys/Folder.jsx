@@ -8,7 +8,7 @@ export default function Folder({
   surveyGroupId,
 
   // Functions
-  classNames,
+  listItemClassProperty,
 
   // Actions
   toggleEditFolderName,
@@ -19,7 +19,7 @@ export default function Folder({
   deleteSurveyGroup,
 }) {
   return (
-    <li key={surveyGroup.keyId} className={`aSurvey aFolder ${classNames(surveyGroup)}`}>
+    <li key={surveyGroup.keyId} className={listItemClassProperty(surveyGroup)}>
       {surveyGroup.isEdit ? (
         <a
           onClick={() => saveFolderName(surveyGroup.keyId)}
@@ -84,7 +84,7 @@ Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
   surveyGroupId: PropTypes.number,
-  classNames: PropTypes.func,
+  listItemClassProperty: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
   saveFolderName: PropTypes.func,
@@ -97,7 +97,7 @@ Folder.propTypes = {
 Folder.defaultProps = {
   surveyGroup: null,
   surveyGroupId: null,
-  classNames: () => null,
+  listItemClassProperty: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
   saveFolderName: () => null,

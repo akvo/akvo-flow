@@ -8,7 +8,6 @@ export default function SurveyListItem({
 
   // Functions
   formatDate,
-  classNames,
 
   // Actions
   selectProject,
@@ -31,7 +30,7 @@ export default function SurveyListItem({
   };
 
   return (
-    <li key={surveyGroup.keyId} className={`aSurvey ${classNames(surveyGroup)}`}>
+    <li key={surveyGroup.keyId} className="aSurvey">
       <a
         onClick={() => selectProject(surveyGroup.keyId)}
         onKeyDown={() => selectProject(surveyGroup.keyId)}
@@ -105,7 +104,7 @@ SurveyListItem.propTypes = {
   surveyGroup: PropTypes.object,
   surveyGroupId: PropTypes.number,
   formatDate: PropTypes.func,
-  classNames: PropTypes.func,
+  listItemClassProperty: PropTypes.func,
   selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
@@ -116,7 +115,7 @@ SurveyListItem.defaultProps = {
   surveyGroup: null,
   surveyGroupId: null,
   formatDate: () => null,
-  classNames: () => null,
+  listItemClassProperty: () => null,
   selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,

@@ -13,7 +13,7 @@ export default function FolderList() {
     formatDate,
     isProjectFolderEmpty,
     isProjectFolder,
-    classNames,
+    listItemClassProperty,
 
     // Actions
     toggleEditFolderName,
@@ -35,13 +35,14 @@ export default function FolderList() {
               strings={strings}
               surveyGroup={surveyGroup}
               surveyGroupId={surveyGroupId}
-              classNames={classNames}
+              listItemClassProperty={listItemClassProperty}
               isProjectFolderEmpty={isProjectFolderEmpty}
               toggleEditFolderName={toggleEditFolderName}
               editFolderName={editFolderName}
               saveFolderName={saveFolderName}
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}
+              deleteSurveyGroup={deleteSurveyGroup}
             />
           ) : (
             <SurveyListItem
@@ -49,7 +50,7 @@ export default function FolderList() {
               strings={strings}
               surveyGroup={surveyGroup}
               surveyGroupId={surveyGroupId}
-              classNames={classNames}
+              listItemClassProperty={listItemClassProperty}
               formatDate={formatDate}
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}

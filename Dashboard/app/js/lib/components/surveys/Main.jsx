@@ -22,11 +22,13 @@ export default class Main extends React.Component {
   };
 
   isProjectFolderEmpty = folder => {
-    const id = folder !== undefined && folder.get('keyId');
+    const id = folder !== undefined && folder.keyId;
+
     const children = FLOW.projectControl
       .get('content')
       .filter(project => project.get('parentId') === id);
-    return children.get('length') === 0;
+
+    return children.length === 0;
   };
 
   isProjectFolder = surveyGroup => {
@@ -37,16 +39,27 @@ export default class Main extends React.Component {
     return currentProject && currentProject.code === 'New survey';
   };
 
-  classNames = project => {
-    if (this.state.surveyGroups.get('keyId') === project.keyId) {
-      if (this.state.surveyGroupId) {
-        return 'highLighted';
-      }
-      if (this.isProjectFolderEmpty(project)) {
-        return 'folderEmpty';
-      }
-    }
-    return '';
+  listItemClassProperty = project => {
+    let classes = 'aSurvey';
+
+    const isMoving =
+      FLOW.projectControl.moveTarget && project.keyId === Number(FLOW.projectControl.moveTarget.id);
+    const isCopying =
+      FLOW.projectControl.copyTarget && project.keyId === Number(FLOW.projectControl.copyTarget.id);
+
+    const isFolder = this.isProjectFolder(project);
+    const isFolderEmpty = this.isProjectFolderEmpty(project);
+
+    if (isFolder) classes += ' aFolder';
+
+    if (isMoving || isCopying) classes += ' highLighted';
+
+    if (isFolderEmpty) classes = 'aFolder folderEmpty';
+    // if (FLOW.projectControl.get('newlyCreated') === this.get('content'))
+
+    //   classes += ' newlyCreated';
+
+    return classes;
   };
 
   // ACTIONS
@@ -123,7 +136,6 @@ export default class Main extends React.Component {
   beginCopyProject = surveyGroupId => {
     const surveyGroup = this.state.surveyGroups;
     const copyTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
-
     FLOW.projectControl.set('copyTarget', copyTarget);
   };
 
@@ -191,7 +203,7 @@ export default class Main extends React.Component {
       formatDate: this.formatDate,
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
-      classNames: this.classNames,
+      listItemClassProperty: this.listItemClassProperty,
       isNewProject: this.isNewProject,
 
       // Actions
