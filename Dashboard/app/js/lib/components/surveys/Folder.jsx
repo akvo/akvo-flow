@@ -16,6 +16,7 @@ export default function Folder({
   saveFolderName,
   selectProject,
   beginMoveProject,
+  deleteSurveyGroup,
 }) {
   return (
     <li key={surveyGroup.keyId} className={`aSurvey aFolder ${classNames(surveyGroup)}`}>
@@ -56,7 +57,12 @@ export default function Folder({
         <ul>
           {surveyGroup.surveyList === null && (
             <li className="deleteSurvey">
-              <a>{strings.delete}</a>
+              <a
+                onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
+                onKeyDown={() => deleteSurveyGroup(surveyGroup.keyId)}
+              >
+                {strings.delete}
+              </a>
             </li>
           )}
 
@@ -85,6 +91,7 @@ Folder.propTypes = {
   selectProject: PropTypes.func,
   isProjectFolderEmpty: PropTypes.func,
   beginMoveProject: PropTypes.func,
+  deleteSurveyGroup: PropTypes.func,
 };
 
 Folder.defaultProps = {
@@ -97,4 +104,5 @@ Folder.defaultProps = {
   selectProject: () => null,
   isProjectFolderEmpty: () => null,
   beginMoveProject: () => null,
+  deleteSurveyGroup: () => null,
 };

@@ -288,7 +288,6 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
   {
     init() {
       this._super();
-      this.setupSurveys = this.setupSurveys.bind(this);
       this.getProps = this.getProps.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
@@ -299,7 +298,6 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      this.setupSurveys();
       const props = this.getProps();
       this.reactRender(<Main {...props} />);
     },
@@ -312,12 +310,11 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        surveys: this.get('surveys'),
         surveyGroups: this.get('surveyGroups'),
         content: this.content,
         classNameBindings: this.classProperty,
         strings: {
-          editFolderName: Ember.String.loc(' edit_folder_name'),
+          editFolderName: Ember.String.loc('_edit_folder_name'),
           created: Ember.String.loc('_created'),
           modified: Ember.String.loc('_modified'),
           language: Ember.String.loc('_language'),
@@ -328,33 +325,11 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
         },
       };
     },
-    // tagName: 'li',
+
     content: null,
     // classNameBindings: ['classProperty'],
 
-    surveyGroups: Ember.computed(() => {
-      return FLOW.projectControl
-        .get('content')
-        .getEach('_data')
-        .getEach('attributes');
-    }).property('FLOW.projectControl.content.isLoaded'),
-
-    setupSurveys() {
-      const surveys = [];
-
-      // Get all surveys
-      FLOW.store.filter(FLOW.Survey, data => {
-        const surveyData = data;
-        if (!surveys.some(survey => survey.keyId === surveyData._data.attributes.keyId)) {
-          surveys.push(surveyData._data.attributes);
-        }
-        return surveyData;
-      });
-
-      this.set('surveys', surveys);
-    },
-
-    surveys: null,
+    surveyGroups: FLOW.store.find(FLOW.SurveyGroup),
 
     classProperty: Ember.computed(function() {
       const isFolder = FLOW.projectControl.isProjectFolder(this.content);

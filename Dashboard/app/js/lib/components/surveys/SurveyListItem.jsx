@@ -11,10 +11,10 @@ export default function SurveyListItem({
   classNames,
 
   // Actions
-  // selectProject,
+  selectProject,
   beginMoveProject,
   beginCopyProject,
-  setCurrentSurvey,
+  deleteSurveyGroup,
 }) {
   const language = () => {
     let languageFullWord = '';
@@ -30,13 +30,11 @@ export default function SurveyListItem({
     return languageFullWord;
   };
 
-  const hasSurvey = Boolean(surveyGroup && surveyGroup.surveyList && surveyGroup.surveyList.length);
-
   return (
     <li key={surveyGroup.keyId} className={`aSurvey ${classNames(surveyGroup)}`}>
       <a
-        onClick={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
-        onKeyDown={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
+        onClick={() => selectProject(surveyGroup.keyId)}
+        onKeyDown={() => selectProject(surveyGroup.keyId)}
       >
         <h2>{surveyGroup.code}</h2>
       </a>
@@ -61,8 +59,8 @@ export default function SurveyListItem({
         <ul>
           <li className="editSurvey">
             <a
-              onClick={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
-              onKeyDown={() => hasSurvey && setCurrentSurvey(surveyGroup.surveyList[0])}
+              onClick={() => selectProject(surveyGroup.keyId)}
+              onKeyDown={() => selectProject(surveyGroup.keyId)}
             >
               {strings.edit}
             </a>
@@ -79,7 +77,12 @@ export default function SurveyListItem({
 
           {surveyGroup.surveyList === null && (
             <li className="deleteSurvey">
-              <a>{strings.delete}</a>
+              <a
+                onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
+                onKeyDown={() => deleteSurveyGroup(surveyGroup.keyId)}
+              >
+                {strings.delete}
+              </a>
             </li>
           )}
 
@@ -106,7 +109,7 @@ SurveyListItem.propTypes = {
   selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
-  setCurrentSurvey: PropTypes.func,
+  deleteSurveyGroup: PropTypes.func,
 };
 
 SurveyListItem.defaultProps = {
@@ -117,5 +120,5 @@ SurveyListItem.defaultProps = {
   selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,
-  setCurrentSurvey: () => null,
+  deleteSurveyGroup: () => null,
 };

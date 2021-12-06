@@ -6,41 +6,33 @@ import SurveysContext from './surveys-context';
 export default function FolderList() {
   const {
     strings,
-    surveyGroups,
-    currentProjectId,
+    currentFolder,
     surveyGroupId,
 
     // Functions
     formatDate,
     isProjectFolderEmpty,
     isProjectFolder,
-    sortAscending,
     classNames,
 
     // Actions
     toggleEditFolderName,
     editFolderName,
     saveFolderName,
-    setCurrentSurvey,
     selectProject,
     beginMoveProject,
     beginCopyProject,
+    deleteSurveyGroup,
   } = useContext(SurveysContext);
-
-  // Get all projects on each level
-  const surveyGroupToDisplay = sortAscending(surveyGroups).filter(
-    surveyGroup => surveyGroup.parentId === currentProjectId
-  );
 
   return (
     <section id="allSurvey" className="surveysList">
       <ul className={surveyGroupId && 'actionProcess'}>
-        {surveyGroupToDisplay.map(surveyGroup => {
+        {currentFolder.map(surveyGroup => {
           return isProjectFolder(surveyGroup) ? (
             <Folder
               key={surveyGroup.keyId}
               strings={strings}
-              surveyGroups={surveyGroups}
               surveyGroup={surveyGroup}
               surveyGroupId={surveyGroupId}
               classNames={classNames}
@@ -60,9 +52,9 @@ export default function FolderList() {
               classNames={classNames}
               formatDate={formatDate}
               selectProject={selectProject}
-              setCurrentSurvey={setCurrentSurvey}
               beginMoveProject={beginMoveProject}
               beginCopyProject={beginCopyProject}
+              deleteSurveyGroup={deleteSurveyGroup}
             />
           );
         })}
