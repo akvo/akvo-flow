@@ -7,7 +7,6 @@ export default function FolderList() {
   const {
     strings,
     currentFolder,
-    surveyGroupId,
 
     // Functions
     formatDate,
@@ -15,6 +14,8 @@ export default function FolderList() {
     isProjectFolder,
     listItemClassProperty,
     listClassProperty,
+    hideFolderSurveyDeleteButton,
+
     // Actions
     toggleEditFolderName,
     editFolderName,
@@ -34,7 +35,6 @@ export default function FolderList() {
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
-              surveyGroupId={surveyGroupId}
               listItemClassProperty={listItemClassProperty}
               isProjectFolderEmpty={isProjectFolderEmpty}
               toggleEditFolderName={toggleEditFolderName}
@@ -43,19 +43,20 @@ export default function FolderList() {
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}
               deleteSurveyGroup={deleteSurveyGroup}
+              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
             />
           ) : (
             <SurveyListItem
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
-              surveyGroupId={surveyGroupId}
               listItemClassProperty={listItemClassProperty}
               formatDate={formatDate}
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}
               beginCopyProject={beginCopyProject}
               deleteSurveyGroup={deleteSurveyGroup}
+              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
             />
           );
         })}

@@ -280,21 +280,25 @@ FLOW.ProjectList = FLOW.View.extend({
   ).property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget'),
 });
 
-// ////////////////////////////////////////////////////
 FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.projectControl.content.isLoaded': 'renderReactSide',
     'FLOW.projectControl.content.length': 'renderReactSide',
     'FLOW.projectControl.moveTarget': 'renderReactSide',
     'FLOW.projectControl.copyTarget': 'renderReactSide',
-    'FLOW.projectControl.newlyCreated': 'renderReactSide',
-    // 'FLOW.selectedControl.selectedSurveyGroup': 'renderReactSide',
     'FLOW.projectControl.currentProject': 'renderReactSide',
+    'FLOW.projectControl.endMoveProject': 'renderReactSide',
+    'FLOW.projectControl.endCopyProject': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
+      this.selectProject = this.selectProject.bind(this);
+      this.beginMoveProject = this.beginMoveProject.bind(this);
+      this.beginCopyProject = this.beginCopyProject.bind(this);
+      this.deleteSurveyGroup = this.deleteSurveyGroup.bind(this);
+      this.setCurrentProject = this.setCurrentProject.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
 
@@ -308,17 +312,18 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       this.reactRender(<Main {...props} />);
     },
 
-    setCurrentProject(project) {
-      this.set('currentProject', project);
-      FLOW.selectedControl.set('publishingErrors', null);
-      window.scrollTo(0, 0);
-    },
-
     getProps() {
       return {
         surveyGroups: this.get('surveyGroups'),
         content: this.content,
         classNameBindings: this.classProperty,
+        currentFolders: this.currentFolders().map(item => item._data.attributes),
+        selectProject: this.selectProject,
+        beginMoveProject: this.beginMoveProject,
+        beginCopyProject: this.beginCopyProject,
+        deleteSurveyGroup: this.deleteSurveyGroup,
+        classProperty: this.classProperty,
+        hideFolderSurveyDeleteButton: this.hideFolderSurveyDeleteButton,
         strings: {
           editFolderName: Ember.String.loc('_edit_folder_name'),
           created: Ember.String.loc('_created'),
@@ -332,60 +337,111 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       };
     },
 
-    content: null,
-    // classNameBindings: ['classProperty'],
-
     surveyGroups: FLOW.store.find(FLOW.SurveyGroup),
 
-    classProperty: Ember.computed(function() {
-      const isFolder = FLOW.projectControl.isProjectFolder(this.content);
-      const isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
-      const isMoving = this.content === FLOW.projectControl.get('moveTarget');
-      const isCopying = this.content === FLOW.projectControl.get('copyTarget');
+    selectProject(surveyGroupId) {
+      const self = FLOW.projectControl;
+      const surveyGroup = this.surveyGroups;
+      const project = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      // the target should not be openable while being moved. Prevents moving it into itself.
+      if (self.moveTarget !== null && self.moveTarget.get('keyId') === surveyGroupId) {
+        return;
+      }
 
-      let classes = 'aSurvey';
-      if (isFolder) classes += ' aFolder';
-      if (isFolderEmpty) classes += 'folderEmpty';
-      if (isMoving || isCopying) classes += ' highLighted';
-      if (FLOW.projectControl.get('newlyCreated') === this.get('content'))
-        classes += ' newlyCreated';
+      self.setCurrentProject(project);
 
-      return classes;
-    }).property(
-      'FLOW.projectControl.moveTarget',
-      'FLOW.projectControl.copyTarget',
-      'FLOW.projectControl.currentProject'
-    ),
+      // User is using the breadcrumb to navigate, we could have unsaved changes
+      FLOW.store.commit();
 
-    isFolder: Ember.computed(function() {
-      return FLOW.projectControl.isProjectFolder(this.content);
-    }).property(),
+      if (self.isProject(project)) {
+        //  load caddisfly resources if they are not loaded
+        //  and only when surveys are selected
+        self.loadCaddisflyResources();
 
-    hideFolderSurveyDeleteButton: Ember.computed(function() {
-      const c = this.get('content');
+        //  applies to project where data approval has
+        //  been previously set
+        if (project.get('requireDataApproval')) {
+          self.loadDataApprovalGroups();
+        }
+
+        FLOW.selectedControl.set('selectedSurveyGroup', project);
+      }
+
+      self.set('newlyCreated', null);
+    },
+
+    setCurrentProject(project) {
+      FLOW.projectControl.set('currentProject', project);
+      FLOW.selectedControl.set('publishingErrors', null);
+      window.scrollTo(0, 0);
+    },
+
+    currentFolders() {
+      const self = FLOW.projectControl;
+      const currentProject = FLOW.projectControl.get('currentProject');
+      const parentId = currentProject ? currentProject.get('keyId') : 0;
+      return FLOW.projectControl
+        .get('content')
+        .filter(project => project.get('parentId') === parentId)
+        .sort((a, b) => {
+          if (self.isProjectFolder(a) && self.isProject(b)) {
+            return -1;
+          }
+          if (self.isProject(a) && self.isProjectFolder(b)) {
+            return 1;
+          }
+          const aCode = a.get('code') || a.get('name');
+          const bCode = b.get('code') || b.get('name');
+          if (aCode === bCode) return 0;
+          if (aCode === 'New survey' || aCode === 'New folder') return -1;
+          if (bCode === 'New survey' || bCode === 'New folder') return 1;
+          return aCode.localeCompare(bCode);
+        });
+    },
+
+    beginMoveProject(surveyGroupId) {
+      const surveyGroup = this.surveyGroups;
+      const moveTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      FLOW.projectControl.set('moveTarget', moveTarget);
+    },
+
+    beginCopyProject(surveyGroupId) {
+      const surveyGroup = this.surveyGroups;
+      const copyTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      FLOW.projectControl.set('copyTarget', copyTarget);
+    },
+
+    deleteSurveyGroup(surveyGroupId) {
+      const surveyGroup = FLOW.store.find(FLOW.SurveyGroup, surveyGroupId);
+      surveyGroup.deleteRecord();
+      FLOW.store.commit();
+      FLOW.selectedControl.set('selectedSurveyGroup', null);
+    },
+
+    hideFolderSurveyDeleteButton(project) {
+      const c = project;
       const permissions = FLOW.projectControl.get('currentFolderPermissions');
-      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || !Ember.empty(c.get('surveyList'));
-    }).property(),
+      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || c.surveyList !== null;
+    },
 
-    showSurveyEditButton: Ember.computed(function() {
+    showSurveyEditButton() {
       const survey = this.get('content');
       return (
         FLOW.permControl.canEditSurvey(survey) || FLOW.projectControl.get('newlyCreated') === survey
       );
-    }).property(),
+    },
 
-    showSurveyMoveButton: Ember.computed(function() {
+    showSurveyMoveButton() {
       const survey = this.get('content');
       return FLOW.permControl.canEditSurvey(survey);
-    }).property(),
+    },
 
-    showSurveyCopyButton: Ember.computed(function() {
+    showSurveyCopyButton() {
       const survey = this.get('content');
       return FLOW.permControl.canEditSurvey(survey);
-    }).property(),
+    },
   }
 );
-// ////////////////////////////////////////////////
 
 FLOW.FolderEditView = Ember.TextField.extend({
   content: null,

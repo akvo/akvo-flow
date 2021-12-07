@@ -8,7 +8,7 @@ export default function SurveyListItem({
 
   // Functions
   formatDate,
-
+  hideFolderSurveyDeleteButton,
   // Actions
   selectProject,
   beginMoveProject,
@@ -74,7 +74,7 @@ export default function SurveyListItem({
             </a>
           </li>
 
-          {surveyGroup.surveyList === null && (
+          {!hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
                 onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
@@ -102,22 +102,22 @@ export default function SurveyListItem({
 SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
-  surveyGroupId: PropTypes.number,
   formatDate: PropTypes.func,
   listItemClassProperty: PropTypes.func,
   selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
   deleteSurveyGroup: PropTypes.func,
+  hideFolderSurveyDeleteButton: PropTypes.func,
 };
 
 SurveyListItem.defaultProps = {
   surveyGroup: null,
-  surveyGroupId: null,
   formatDate: () => null,
   listItemClassProperty: () => null,
   selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,
   deleteSurveyGroup: () => null,
+  hideFolderSurveyDeleteButton: () => null,
 };

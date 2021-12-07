@@ -8,11 +8,7 @@ export default class Main extends React.Component {
   state = {
     surveyGroups: this.props.surveyGroups,
     isFolderEdit: null,
-    inputId: null,
     inputValue: null,
-    currentProjectId: null,
-    surveyGroupId: null,
-    currentProject: null,
   };
 
   formatDate = datetime => {
@@ -62,104 +58,17 @@ export default class Main extends React.Component {
     if (FLOW.projectControl.newlyCreated === FLOW.projectControl.get('content'))
       classes += ' newlyCreated';
 
-    console.log(FLOW.projectControl.newlyCreated);
-
     return classes;
   };
 
-  // ACTIONS
-
-  selectProject = surveyGroupId => {
-    const self = FLOW.projectControl;
-    const surveyGroup = this.state.surveyGroups;
-    const project = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
-    // the target should not be openable while being moved. Prevents moving it into itself.
-    if (self.moveTarget !== null && self.moveTarget.get('keyId') === surveyGroupId) {
-      return;
-    }
-
-    self.setCurrentProject(project);
-
-    // User is using the breadcrumb to navigate, we could have unsaved changes
-    FLOW.store.commit();
-
-    if (self.isProject(project)) {
-      //  load caddisfly resources if they are not loaded
-      //  and only when surveys are selected
-      self.loadCaddisflyResources();
-
-      //  applies to project where data approval has
-      //  been previously set
-      if (project.get('requireDataApproval')) {
-        self.loadDataApprovalGroups();
-      }
-
-      FLOW.selectedControl.set('selectedSurveyGroup', project);
-    }
-
-    self.set('newlyCreated', null);
-    if (surveyGroupId !== this.state.surveyGroupId) {
-      this.setState({ currentProjectId: surveyGroupId });
-    }
-  };
-
-  currentFolders = () => {
-    const self = FLOW.projectControl;
-    const currentProject = FLOW.projectControl.get('currentProject');
-    const parentId = currentProject ? currentProject.get('keyId') : 0;
-    return FLOW.projectControl
-      .get('content')
-      .filter(project => project.get('parentId') === parentId)
-      .sort((a, b) => {
-        if (self.isProjectFolder(a) && self.isProject(b)) {
-          return -1;
-        }
-        if (self.isProject(a) && self.isProjectFolder(b)) {
-          return 1;
-        }
-        const aCode = a.get('code') || a.get('name');
-        const bCode = b.get('code') || b.get('name');
-        if (aCode === bCode) return 0;
-        if (aCode === 'New survey' || aCode === 'New folder') return -1;
-        if (bCode === 'New survey' || bCode === 'New folder') return 1;
-        return aCode.localeCompare(bCode);
-      });
-  };
-
-  setCurrentProject = project => {
-    FLOW.projectControl.set('currentProject', project);
-    FLOW.selectedControl.set('publishingErrors', null);
-    window.scrollTo(0, 0);
-  };
-
-  beginMoveProject = surveyGroupId => {
-    const surveyGroup = this.state.surveyGroups;
-    const moveTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
-    FLOW.projectControl.set('moveTarget', moveTarget);
-  };
-
-  beginCopyProject = surveyGroupId => {
-    const surveyGroup = this.state.surveyGroups;
-    const copyTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
-    FLOW.projectControl.set('copyTarget', copyTarget);
-  };
-
-  deleteSurveyGroup = surveyGroupId => {
-    const surveyGroup = FLOW.store.find(FLOW.SurveyGroup, surveyGroupId);
-    surveyGroup.deleteRecord();
-    FLOW.store.commit();
-    FLOW.selectedControl.set('selectedSurveyGroup', null);
-  };
-
-  editFolderName = (inputId, inputValue) => {
-    this.setState({ inputId, inputValue });
+  editFolderName = inputValue => {
+    this.setState({ inputValue });
   };
 
   toggleEditFolderName = surveyGroupId => {
-    const surveyGroups = this.currentFolders().map(item => item._data.attributes);
-
-    const surveyGroupToEdit = surveyGroups.find(surveyGroup => surveyGroup.keyId === surveyGroupId);
-
+    const surveyGroupToEdit = this.props.currentFolders.find(
+      surveyGroup => surveyGroup.keyId === surveyGroupId
+    );
     surveyGroupToEdit.isEdit = true;
 
     this.setState(state => ({
@@ -168,23 +77,20 @@ export default class Main extends React.Component {
   };
 
   saveFolderName = surveyGroupId => {
-    const surveyGroups = this.currentFolders().map(item => item._data.attributes);
-
-    const surveyGroupToEdit = surveyGroups.find(surveyGroup => surveyGroup.keyId === surveyGroupId);
+    const surveyGroupToEdit = this.props.currentFolders.find(
+      surveyGroup => surveyGroup.keyId === surveyGroupId
+    );
 
     // Delete an object property
     delete surveyGroupToEdit.isEdit;
 
     if (this.state.inputValue !== null) {
-      const folderToEdit = FLOW.projectControl.find(
-        item => item.get('keyId') === this.state.inputId
-      );
+      const folderToEdit = FLOW.projectControl.find(item => item.get('keyId') === surveyGroupId);
 
       folderToEdit.set('name', this.state.inputValue);
       folderToEdit.set('code', this.state.inputValue);
       const path = `${FLOW.projectControl.get('currentProjectPath')}/${this.state.inputValue}`;
       folderToEdit.set('path', path);
-
       FLOW.store.commit();
     }
 
@@ -198,10 +104,7 @@ export default class Main extends React.Component {
       surveys: this.state.surveys,
       surveyGroups: this.state.surveyGroups,
       strings: this.props.strings,
-      currentProjectId: this.state.currentProjectId,
-      currentProject: this.state.currentProject,
-      surveyGroupId: this.state.surveyGroupId,
-      currentFolder: this.currentFolders().map(item => item._data.attributes),
+      currentFolder: this.props.currentFolders,
 
       // Functions
 
@@ -211,15 +114,16 @@ export default class Main extends React.Component {
       listItemClassProperty: this.listItemClassProperty,
       listClassProperty: this.listClassProperty,
       isNewProject: this.isNewProject,
+      hideFolderSurveyDeleteButton: this.props.hideFolderSurveyDeleteButton,
 
       // Actions
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
-      selectProject: this.selectProject,
-      beginMoveProject: this.beginMoveProject,
-      beginCopyProject: this.beginCopyProject,
-      deleteSurveyGroup: this.deleteSurveyGroup,
+      selectProject: this.props.selectProject,
+      beginMoveProject: this.props.beginMoveProject,
+      beginCopyProject: this.props.beginCopyProject,
+      deleteSurveyGroup: this.props.deleteSurveyGroup,
     };
 
     return (
@@ -239,12 +143,24 @@ Main.propTypes = {
   surveyGroups: PropTypes.object,
   isFolder: PropTypes.bool,
   isFolderEdit: PropTypes.bool,
+  currentFolders: PropTypes.array,
+  beginMoveProject: PropTypes.func,
+  beginCopyProject: PropTypes.func,
+  deleteSurveyGroup: PropTypes.func,
+  selectProject: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
+  hideFolderSurveyDeleteButton: PropTypes.func,
 };
 
 Main.defaultProps = {
   surveyGroups: null,
   isFolder: false,
   isFolderEdit: false,
+  currentFolders: [],
+  beginMoveProject: () => null,
+  beginCopyProject: () => null,
+  deleteSurveyGroup: () => null,
+  selectProject: () => null,
   toggleEditFolderName: () => null,
+  hideFolderSurveyDeleteButton: () => null,
 };

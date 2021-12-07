@@ -5,10 +5,10 @@ import PropTypes from 'prop-types';
 export default function Folder({
   strings,
   surveyGroup,
-  surveyGroupId,
 
   // Functions
   listItemClassProperty,
+  hideFolderSurveyDeleteButton,
 
   // Actions
   toggleEditFolderName,
@@ -42,7 +42,7 @@ export default function Folder({
         <input
           type="text"
           defaultValue={surveyGroup.code}
-          onChange={e => editFolderName(surveyGroup.keyId, e.target.value)}
+          onChange={e => editFolderName(e.target.value)}
         />
       ) : (
         <a
@@ -55,7 +55,7 @@ export default function Folder({
 
       <nav>
         <ul>
-          {surveyGroup.surveyList === null && (
+          {!hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
                 onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
@@ -68,8 +68,8 @@ export default function Folder({
 
           <li className="moveSurvey">
             <a
-              onClick={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
-              onKeyDown={() => !surveyGroupId && beginMoveProject(surveyGroup.keyId)}
+              onClick={() => beginMoveProject(surveyGroup.keyId)}
+              onKeyDown={() => beginMoveProject(surveyGroup.keyId)}
             >
               {strings.move}
             </a>
@@ -83,7 +83,7 @@ export default function Folder({
 Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
-  surveyGroupId: PropTypes.number,
+
   listItemClassProperty: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
@@ -92,11 +92,11 @@ Folder.propTypes = {
   isProjectFolderEmpty: PropTypes.func,
   beginMoveProject: PropTypes.func,
   deleteSurveyGroup: PropTypes.func,
+  hideFolderSurveyDeleteButton: PropTypes.func,
 };
 
 Folder.defaultProps = {
   surveyGroup: null,
-  surveyGroupId: null,
   listItemClassProperty: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
@@ -105,4 +105,5 @@ Folder.defaultProps = {
   isProjectFolderEmpty: () => null,
   beginMoveProject: () => null,
   deleteSurveyGroup: () => null,
+  hideFolderSurveyDeleteButton: () => null,
 };
