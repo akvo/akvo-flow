@@ -14,7 +14,7 @@ export default function FolderList() {
     isProjectFolderEmpty,
     isProjectFolder,
     listItemClassProperty,
-
+    listClassProperty,
     // Actions
     toggleEditFolderName,
     editFolderName,
@@ -27,7 +27,7 @@ export default function FolderList() {
 
   return (
     <section id="allSurvey" className="surveysList">
-      <ul className={surveyGroupId && 'actionProcess'}>
+      <ul className={listClassProperty()}>
         {currentFolder.map(surveyGroup => {
           return isProjectFolder(surveyGroup) ? (
             <Folder

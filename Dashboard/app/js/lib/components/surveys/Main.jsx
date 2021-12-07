@@ -10,7 +10,7 @@ export default class Main extends React.Component {
     isFolderEdit: null,
     inputId: null,
     inputValue: null,
-    currentProjectId: 0,
+    currentProjectId: null,
     surveyGroupId: null,
     currentProject: null,
   };
@@ -39,6 +39,10 @@ export default class Main extends React.Component {
     return currentProject && currentProject.code === 'New survey';
   };
 
+  listClassProperty = () => {
+    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
+  };
+
   listItemClassProperty = project => {
     let classes = 'aSurvey';
 
@@ -55,9 +59,10 @@ export default class Main extends React.Component {
     if (isMoving || isCopying) classes += ' highLighted';
 
     if (isFolderEmpty) classes = 'aFolder folderEmpty';
-    // if (FLOW.projectControl.get('newlyCreated') === this.get('content'))
+    if (FLOW.projectControl.newlyCreated === FLOW.projectControl.get('content'))
+      classes += ' newlyCreated';
 
-    //   classes += ' newlyCreated';
+    console.log(FLOW.projectControl.newlyCreated);
 
     return classes;
   };
@@ -204,6 +209,7 @@ export default class Main extends React.Component {
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
       listItemClassProperty: this.listItemClassProperty,
+      listClassProperty: this.listClassProperty,
       isNewProject: this.isNewProject,
 
       // Actions

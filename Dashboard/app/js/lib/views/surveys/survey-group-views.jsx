@@ -284,8 +284,12 @@ FLOW.ProjectList = FLOW.View.extend({
 FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.projectControl.content.isLoaded': 'renderReactSide',
+    'FLOW.projectControl.content.length': 'renderReactSide',
     'FLOW.projectControl.moveTarget': 'renderReactSide',
     'FLOW.projectControl.copyTarget': 'renderReactSide',
+    'FLOW.projectControl.newlyCreated': 'renderReactSide',
+    // 'FLOW.selectedControl.selectedSurveyGroup': 'renderReactSide',
+    'FLOW.projectControl.currentProject': 'renderReactSide',
   }),
   {
     init() {
