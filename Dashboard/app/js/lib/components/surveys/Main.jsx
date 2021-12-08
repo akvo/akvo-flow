@@ -5,7 +5,6 @@ import ForlderList from './FolderList';
 
 export default class Main extends React.Component {
   state = {
-    surveyGroups: this.props.surveyGroups,
     isFolderEdit: null,
     inputValue: null,
   };
@@ -61,7 +60,10 @@ export default class Main extends React.Component {
     if (isMoving || isCopying) classes += ' highLighted';
 
     if (isFolderEmpty) classes = 'aFolder folderEmpty';
-    if (FLOW.projectControl.newlyCreated === FLOW.projectControl.get('content'))
+    if (
+      FLOW.projectControl.newlyCreated &&
+      Number(FLOW.projectControl.newlyCreated.id) === surveyGroup.keyId
+    )
       classes += ' newlyCreated';
 
     return classes;
@@ -107,29 +109,28 @@ export default class Main extends React.Component {
 
   render() {
     const contextData = {
-      surveys: this.state.surveys,
-      surveyGroups: this.state.surveyGroups,
       strings: this.props.strings,
       currentFolder: this.props.currentFolders,
 
-      // Functions
       formatDate: this.formatDate,
       language: this.language,
-      isProjectFolderEmpty: this.isProjectFolderEmpty,
-      isProjectFolder: this.isProjectFolder,
-      listItemClassProperty: this.listItemClassProperty,
-      listClassProperty: this.listClassProperty,
-      isNewProject: this.isNewProject,
-      hideFolderSurveyDeleteButton: this.props.hideFolderSurveyDeleteButton,
 
-      // Actions
+      folderModifierFunction: {
+        isProjectFolderEmpty: this.isProjectFolderEmpty,
+        isProjectFolder: this.isProjectFolder,
+        isNewProject: this.isNewProject,
+      },
+
+      classProperty: {
+        list: this.listClassProperty,
+        listItem: this.listItemClassProperty,
+      },
+
+      displayContentFunction: this.props.displayContentFunction,
+      actions: this.props.actions,
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
-      selectProject: this.props.selectProject,
-      beginMoveProject: this.props.beginMoveProject,
-      beginCopyProject: this.props.beginCopyProject,
-      deleteSurveyGroup: this.props.deleteSurveyGroup,
     };
 
     return (
@@ -146,27 +147,15 @@ export default class Main extends React.Component {
 
 Main.propTypes = {
   strings: PropTypes.object.isRequired,
-  surveyGroups: PropTypes.object,
-  isFolder: PropTypes.bool,
-  isFolderEdit: PropTypes.bool,
   currentFolders: PropTypes.array,
-  beginMoveProject: PropTypes.func,
-  beginCopyProject: PropTypes.func,
-  deleteSurveyGroup: PropTypes.func,
-  selectProject: PropTypes.func,
+  actions: PropTypes.object,
   toggleEditFolderName: PropTypes.func,
-  hideFolderSurveyDeleteButton: PropTypes.func,
+  displayContentFunction: PropTypes.object,
 };
 
 Main.defaultProps = {
-  surveyGroups: null,
-  isFolder: false,
-  isFolderEdit: false,
   currentFolders: [],
-  beginMoveProject: () => null,
-  beginCopyProject: () => null,
-  deleteSurveyGroup: () => null,
-  selectProject: () => null,
+  actions: null,
   toggleEditFolderName: () => null,
-  hideFolderSurveyDeleteButton: () => null,
+  displayContentFunction: null,
 };

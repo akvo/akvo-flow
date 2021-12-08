@@ -7,19 +7,17 @@ export default function Folder({
   surveyGroup,
 
   // Functions
-  listItemClassProperty,
-  hideFolderSurveyDeleteButton,
+  classProperty,
+  displayContentFunction,
 
   // Actions
+  actions,
   toggleEditFolderName,
   editFolderName,
   saveFolderName,
-  selectProject,
-  beginMoveProject,
-  deleteSurveyGroup,
 }) {
   return (
-    <li key={surveyGroup.keyId} className={listItemClassProperty(surveyGroup)}>
+    <li key={surveyGroup.keyId} className={classProperty.listItem(surveyGroup)}>
       {/* Buttons to toggle */}
       {surveyGroup.isEdit ? (
         <a
@@ -30,13 +28,15 @@ export default function Folder({
           {strings.editFolderName}
         </a>
       ) : (
-        <a
-          onClick={() => toggleEditFolderName(surveyGroup.keyId)}
-          onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
-          className="editFolderName"
-        >
-          {strings.editFolderName}
-        </a>
+        displayContentFunction.showSurveyEditButton && (
+          <a
+            onClick={() => toggleEditFolderName(surveyGroup.keyId)}
+            onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
+            className="editFolderName"
+          >
+            {strings.editFolderName}
+          </a>
+        )
       )}
 
       {/* Show input when edit button is clicked */}
@@ -48,8 +48,8 @@ export default function Folder({
         />
       ) : (
         <a
-          onClick={() => selectProject(surveyGroup.keyId)}
-          onKeyDown={() => selectProject(surveyGroup.keyId)}
+          onClick={() => actions.selectProject(surveyGroup.keyId)}
+          onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
         >
           <h2>{surveyGroup.code}</h2>
         </a>
@@ -57,25 +57,27 @@ export default function Folder({
 
       <nav>
         <ul>
-          {!hideFolderSurveyDeleteButton(surveyGroup) && (
+          {!displayContentFunction.hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
-                onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
-                onKeyDown={() => deleteSurveyGroup(surveyGroup.keyId)}
+                onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
+                onKeyDown={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
               >
                 {strings.delete}
               </a>
             </li>
           )}
-
-          <li className="moveSurvey">
-            <a
-              onClick={() => beginMoveProject(surveyGroup.keyId)}
-              onKeyDown={() => beginMoveProject(surveyGroup.keyId)}
-            >
-              {strings.move}
-            </a>
-          </li>
+          {displayContentFunction.showSurveyMoveButton(surveyGroup) &&
+            !classProperty.listItem(surveyGroup).includes('newlyCreated') && (
+              <li className="moveSurvey">
+                <a
+                  onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
+                  onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
+                >
+                  {strings.move}
+                </a>
+              </li>
+            )}
         </ul>
       </nav>
     </li>
@@ -87,32 +89,27 @@ Folder.propTypes = {
   surveyGroup: PropTypes.object,
 
   // Functions
-  listItemClassProperty: PropTypes.func,
+  classProperty: PropTypes.object,
   selectProject: PropTypes.func,
-  isProjectFolderEmpty: PropTypes.func,
-  hideFolderSurveyDeleteButton: PropTypes.func,
+  displayContentFunction: PropTypes.object,
 
   // Actions
+  actions: PropTypes.object,
+  saveFolderName: PropTypes.func,
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
-  saveFolderName: PropTypes.func,
-  beginMoveProject: PropTypes.func,
-  deleteSurveyGroup: PropTypes.func,
 };
 
 Folder.defaultProps = {
   surveyGroup: null,
 
   // Functions
-  listItemClassProperty: () => null,
-  isProjectFolderEmpty: () => null,
-  hideFolderSurveyDeleteButton: () => null,
-
+  displayContentFunction: null,
+  classProperty: null,
   // Actions
+  actions: null,
+  saveFolderName: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
-  saveFolderName: () => null,
   selectProject: () => null,
-  beginMoveProject: () => null,
-  deleteSurveyGroup: () => null,
 };

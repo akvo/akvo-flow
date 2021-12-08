@@ -5,23 +5,16 @@ import PropTypes from 'prop-types';
 export default function SurveyListItem({
   strings,
   surveyGroup,
-
-  // Functions
+  actions,
   formatDate,
   language,
-  hideFolderSurveyDeleteButton,
-
-  // Actions
-  selectProject,
-  beginMoveProject,
-  beginCopyProject,
-  deleteSurveyGroup,
+  displayContentFunction,
 }) {
   return (
     <li key={surveyGroup.keyId} className="aSurvey">
       <a
-        onClick={() => selectProject(surveyGroup.keyId)}
-        onKeyDown={() => selectProject(surveyGroup.keyId)}
+        onClick={() => actions.selectProject(surveyGroup.keyId)}
+        onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
       >
         <h2>{surveyGroup.code}</h2>
       </a>
@@ -44,43 +37,47 @@ export default function SurveyListItem({
       </ul>
       <nav>
         <ul>
-          <li className="editSurvey">
-            <a
-              onClick={() => selectProject(surveyGroup.keyId)}
-              onKeyDown={() => selectProject(surveyGroup.keyId)}
-            >
-              {strings.edit}
-            </a>
-          </li>
+          {displayContentFunction.showSurveyEditButton && (
+            <li className="editSurvey">
+              <a
+                onClick={() => actions.selectProject(surveyGroup.keyId)}
+                onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
+              >
+                {strings.edit}
+              </a>
+            </li>
+          )}
+          {displayContentFunction.showSurveyMoveButton && (
+            <li className="moveSurvey">
+              <a
+                onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
+                onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
+              >
+                {strings.move}
+              </a>
+            </li>
+          )}
 
-          <li className="moveSurvey">
-            <a
-              onClick={() => beginMoveProject(surveyGroup.keyId)}
-              onKeyDown={() => beginMoveProject(surveyGroup.keyId)}
-            >
-              {strings.move}
-            </a>
-          </li>
-
-          {!hideFolderSurveyDeleteButton(surveyGroup) && (
+          {!displayContentFunction.hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
-                onClick={() => deleteSurveyGroup(surveyGroup.keyId)}
-                onKeyDown={() => deleteSurveyGroup(surveyGroup.keyId)}
+                onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
+                onKeyDown={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
               >
                 {strings.delete}
               </a>
             </li>
           )}
-
-          <li className="copySurvey">
-            <a
-              onClick={() => beginCopyProject(surveyGroup.keyId)}
-              onKeyDown={() => beginCopyProject(surveyGroup.keyId)}
-            >
-              {strings.copy}
-            </a>
-          </li>
+          {displayContentFunction.showSurveyCopyButton && (
+            <li className="copySurvey">
+              <a
+                onClick={() => actions.beginCopyProject(surveyGroup.keyId)}
+                onKeyDown={() => actions.beginCopyProject(surveyGroup.keyId)}
+              >
+                {strings.copy}
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
     </li>
@@ -90,32 +87,16 @@ export default function SurveyListItem({
 SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
-
-  // Functions
+  actions: PropTypes.object,
   formatDate: PropTypes.func,
   language: PropTypes.func,
-  listItemClassProperty: PropTypes.func,
-  hideFolderSurveyDeleteButton: PropTypes.func,
-
-  // Actions
-  selectProject: PropTypes.func,
-  beginMoveProject: PropTypes.func,
-  beginCopyProject: PropTypes.func,
-  deleteSurveyGroup: PropTypes.func,
+  displayContentFunction: PropTypes.object,
 };
 
 SurveyListItem.defaultProps = {
   surveyGroup: null,
-
-  // Functions
+  actions: null,
   formatDate: () => null,
   language: () => null,
-  listItemClassProperty: () => null,
-  hideFolderSurveyDeleteButton: () => null,
-
-  // Actions
-  selectProject: () => null,
-  beginMoveProject: () => null,
-  beginCopyProject: () => null,
-  deleteSurveyGroup: () => null,
+  displayContentFunction: null,
 };

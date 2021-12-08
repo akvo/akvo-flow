@@ -11,42 +11,34 @@ export default function FolderList() {
     // Functions
     formatDate,
     language,
-    isProjectFolderEmpty,
-    isProjectFolder,
-    listItemClassProperty,
-    listClassProperty,
-    hideFolderSurveyDeleteButton,
+    classProperty,
+    folderModifierFunction,
+    displayContentFunction,
 
     // Actions
+    actions,
     toggleEditFolderName,
     editFolderName,
     saveFolderName,
-    selectProject,
-    beginMoveProject,
-    beginCopyProject,
-    deleteSurveyGroup,
   } = useContext(SurveysContext);
 
   return (
     <section id="allSurvey" className="surveysList">
-      <ul className={listClassProperty()}>
+      <ul className={classProperty.list()}>
         {currentFolder.map(surveyGroup => {
-          return isProjectFolder(surveyGroup) ? (
+          return folderModifierFunction.isProjectFolder(surveyGroup) ? (
             <Folder
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
               // Functions
-              isProjectFolderEmpty={isProjectFolderEmpty}
-              listItemClassProperty={listItemClassProperty}
-              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
+              classProperty={classProperty}
+              displayContentFunction={displayContentFunction}
               // Actions
               toggleEditFolderName={toggleEditFolderName}
               editFolderName={editFolderName}
               saveFolderName={saveFolderName}
-              selectProject={selectProject}
-              beginMoveProject={beginMoveProject}
-              deleteSurveyGroup={deleteSurveyGroup}
+              actions={actions}
             />
           ) : (
             <SurveyListItem
@@ -56,13 +48,9 @@ export default function FolderList() {
               // Function
               formatDate={formatDate}
               language={language}
-              listItemClassProperty={listItemClassProperty}
-              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
+              displayContentFunction={displayContentFunction}
               // Actions
-              selectProject={selectProject}
-              beginMoveProject={beginMoveProject}
-              beginCopyProject={beginCopyProject}
-              deleteSurveyGroup={deleteSurveyGroup}
+              actions={actions}
             />
           );
         })}

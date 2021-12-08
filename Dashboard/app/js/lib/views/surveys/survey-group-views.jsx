@@ -314,16 +314,22 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        surveyGroups: this.get('surveyGroups'),
-        content: this.content,
-        classNameBindings: this.classProperty,
         currentFolders: this.currentFolders().map(item => item._data.attributes),
-        selectProject: this.selectProject,
-        beginMoveProject: this.beginMoveProject,
-        beginCopyProject: this.beginCopyProject,
-        deleteSurveyGroup: this.deleteSurveyGroup,
-        classProperty: this.classProperty,
-        hideFolderSurveyDeleteButton: this.hideFolderSurveyDeleteButton,
+
+        displayContentFunction: {
+          showSurveyCopyButton: this.showSurveyCopyButton,
+          showSurveyMoveButton: this.showSurveyMoveButton,
+          showSurveyEditButton: this.showSurveyEditButton,
+          hideFolderSurveyDeleteButton: this.hideFolderSurveyDeleteButton,
+        },
+
+        actions: {
+          selectProject: this.selectProject,
+          beginMoveProject: this.beginMoveProject,
+          beginCopyProject: this.beginCopyProject,
+          deleteSurveyGroup: this.deleteSurveyGroup,
+        },
+
         strings: {
           editFolderName: Ember.String.loc('_edit_folder_name'),
           created: Ember.String.loc('_created'),
@@ -378,9 +384,9 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
 
     currentFolders() {
       const self = FLOW.projectControl;
-      const currentProject = FLOW.projectControl.get('currentProject');
+      const currentProject = self.get('currentProject');
       const parentId = currentProject ? currentProject.get('keyId') : 0;
-      return FLOW.projectControl
+      return self
         .get('content')
         .filter(project => project.get('parentId') === parentId)
         .sort((a, b) => {
@@ -400,14 +406,12 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
     },
 
     beginMoveProject(surveyGroupId) {
-      const surveyGroup = this.surveyGroups;
-      const moveTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      const moveTarget = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
       FLOW.projectControl.set('moveTarget', moveTarget);
     },
 
     beginCopyProject(surveyGroupId) {
-      const surveyGroup = this.surveyGroups;
-      const copyTarget = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      const copyTarget = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
       FLOW.projectControl.set('copyTarget', copyTarget);
     },
 
@@ -418,27 +422,24 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       FLOW.selectedControl.set('selectedSurveyGroup', null);
     },
 
-    hideFolderSurveyDeleteButton(project) {
-      const c = project;
+    hideFolderSurveyDeleteButton(surveyGroup) {
       const permissions = FLOW.projectControl.get('currentFolderPermissions');
-      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || c.surveyList !== null;
+      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || surveyGroup.surveyList !== null;
     },
 
-    showSurveyEditButton() {
-      const survey = this.get('content');
+    showSurveyEditButton(surveyGroup) {
       return (
-        FLOW.permControl.canEditSurvey(survey) || FLOW.projectControl.get('newlyCreated') === survey
+        FLOW.permControl.canEditSurvey(surveyGroup) ||
+        FLOW.projectControl.get('newlyCreated') === surveyGroup
       );
     },
 
-    showSurveyMoveButton() {
-      const survey = this.get('content');
-      return FLOW.permControl.canEditSurvey(survey);
+    showSurveyMoveButton(surveyGroup) {
+      return FLOW.permControl.canEditSurvey(surveyGroup);
     },
 
-    showSurveyCopyButton() {
-      const survey = this.get('content');
-      return FLOW.permControl.canEditSurvey(survey);
+    showSurveyCopyButton(surveyGroup) {
+      return FLOW.permControl.canEditSurvey(surveyGroup);
     },
   }
 );
