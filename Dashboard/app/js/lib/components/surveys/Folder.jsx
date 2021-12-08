@@ -20,6 +20,7 @@ export default function Folder({
 }) {
   return (
     <li key={surveyGroup.keyId} className={listItemClassProperty(surveyGroup)}>
+      {/* Buttons to toggle */}
       {surveyGroup.isEdit ? (
         <a
           onClick={() => saveFolderName(surveyGroup.keyId)}
@@ -38,6 +39,7 @@ export default function Folder({
         </a>
       )}
 
+      {/* Show input when edit button is clicked */}
       {surveyGroup.isEdit ? (
         <input
           type="text"
@@ -84,26 +86,33 @@ Folder.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
 
+  // Functions
   listItemClassProperty: PropTypes.func,
+  selectProject: PropTypes.func,
+  isProjectFolderEmpty: PropTypes.func,
+  hideFolderSurveyDeleteButton: PropTypes.func,
+
+  // Actions
   toggleEditFolderName: PropTypes.func,
   editFolderName: PropTypes.func,
   saveFolderName: PropTypes.func,
-  selectProject: PropTypes.func,
-  isProjectFolderEmpty: PropTypes.func,
   beginMoveProject: PropTypes.func,
   deleteSurveyGroup: PropTypes.func,
-  hideFolderSurveyDeleteButton: PropTypes.func,
 };
 
 Folder.defaultProps = {
   surveyGroup: null,
+
+  // Functions
   listItemClassProperty: () => null,
+  isProjectFolderEmpty: () => null,
+  hideFolderSurveyDeleteButton: () => null,
+
+  // Actions
   toggleEditFolderName: () => null,
   editFolderName: () => null,
   saveFolderName: () => null,
   selectProject: () => null,
-  isProjectFolderEmpty: () => null,
   beginMoveProject: () => null,
   deleteSurveyGroup: () => null,
-  hideFolderSurveyDeleteButton: () => null,
 };

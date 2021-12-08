@@ -10,6 +10,7 @@ export default function FolderList() {
 
     // Functions
     formatDate,
+    language,
     isProjectFolderEmpty,
     isProjectFolder,
     listItemClassProperty,
@@ -35,28 +36,33 @@ export default function FolderList() {
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
-              listItemClassProperty={listItemClassProperty}
+              // Functions
               isProjectFolderEmpty={isProjectFolderEmpty}
+              listItemClassProperty={listItemClassProperty}
+              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
+              // Actions
               toggleEditFolderName={toggleEditFolderName}
               editFolderName={editFolderName}
               saveFolderName={saveFolderName}
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}
               deleteSurveyGroup={deleteSurveyGroup}
-              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
             />
           ) : (
             <SurveyListItem
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
-              listItemClassProperty={listItemClassProperty}
+              // Function
               formatDate={formatDate}
+              language={language}
+              listItemClassProperty={listItemClassProperty}
+              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
+              // Actions
               selectProject={selectProject}
               beginMoveProject={beginMoveProject}
               beginCopyProject={beginCopyProject}
               deleteSurveyGroup={deleteSurveyGroup}
-              hideFolderSurveyDeleteButton={hideFolderSurveyDeleteButton}
             />
           );
         })}

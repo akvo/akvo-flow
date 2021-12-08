@@ -16,6 +16,11 @@ export default class Main extends React.Component {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   };
 
+  language = surveyGroup => {
+    const langs = { en: 'English', es: 'Español', fr: 'Français' };
+    return langs[surveyGroup.defaultLanguageCode];
+  };
+
   isProjectFolderEmpty = folder => {
     const id = folder !== undefined && folder.keyId;
 
@@ -109,6 +114,7 @@ export default class Main extends React.Component {
 
       // Functions
       formatDate: this.formatDate,
+      language: this.language,
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
       listItemClassProperty: this.listItemClassProperty,

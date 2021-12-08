@@ -8,27 +8,15 @@ export default function SurveyListItem({
 
   // Functions
   formatDate,
+  language,
   hideFolderSurveyDeleteButton,
+
   // Actions
   selectProject,
   beginMoveProject,
   beginCopyProject,
   deleteSurveyGroup,
 }) {
-  const language = () => {
-    let languageFullWord = '';
-    if (surveyGroup.defaultLanguageCode === 'en') {
-      languageFullWord = 'English';
-    }
-    if (surveyGroup.defaultLanguageCode === 'es') {
-      languageFullWord = 'Español';
-    }
-    if (surveyGroup.defaultLanguageCode === 'fr') {
-      languageFullWord = 'Français';
-    }
-    return languageFullWord;
-  };
-
   return (
     <li key={surveyGroup.keyId} className="aSurvey">
       <a
@@ -51,7 +39,7 @@ export default function SurveyListItem({
         </li>
         <li className="surveyLanguage">
           <span>{strings.language}</span>
-          <p>{language()}</p>
+          <p>{language(surveyGroup)}</p>
         </li>
       </ul>
       <nav>
@@ -102,22 +90,32 @@ export default function SurveyListItem({
 SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
+
+  // Functions
   formatDate: PropTypes.func,
+  language: PropTypes.func,
   listItemClassProperty: PropTypes.func,
+  hideFolderSurveyDeleteButton: PropTypes.func,
+
+  // Actions
   selectProject: PropTypes.func,
   beginMoveProject: PropTypes.func,
   beginCopyProject: PropTypes.func,
   deleteSurveyGroup: PropTypes.func,
-  hideFolderSurveyDeleteButton: PropTypes.func,
 };
 
 SurveyListItem.defaultProps = {
   surveyGroup: null,
+
+  // Functions
   formatDate: () => null,
+  language: () => null,
   listItemClassProperty: () => null,
+  hideFolderSurveyDeleteButton: () => null,
+
+  // Actions
   selectProject: () => null,
   beginMoveProject: () => null,
   beginCopyProject: () => null,
   deleteSurveyGroup: () => null,
-  hideFolderSurveyDeleteButton: () => null,
 };
