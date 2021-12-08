@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import React from 'react';
 import PropTypes from 'prop-types';
 import SurveysContext from './surveys-context';
@@ -39,16 +38,18 @@ export default class Main extends React.Component {
     return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
   };
 
-  listItemClassProperty = project => {
+  listItemClassProperty = surveyGroup => {
     let classes = 'aSurvey';
 
     const isMoving =
-      FLOW.projectControl.moveTarget && project.keyId === Number(FLOW.projectControl.moveTarget.id);
+      FLOW.projectControl.moveTarget &&
+      surveyGroup.keyId === Number(FLOW.projectControl.moveTarget.id);
     const isCopying =
-      FLOW.projectControl.copyTarget && project.keyId === Number(FLOW.projectControl.copyTarget.id);
+      FLOW.projectControl.copyTarget &&
+      surveyGroup.keyId === Number(FLOW.projectControl.copyTarget.id);
 
-    const isFolder = this.isProjectFolder(project);
-    const isFolderEmpty = this.isProjectFolderEmpty(project);
+    const isFolder = this.isProjectFolder(surveyGroup);
+    const isFolderEmpty = this.isProjectFolderEmpty(surveyGroup);
 
     if (isFolder) classes += ' aFolder';
 
@@ -107,7 +108,6 @@ export default class Main extends React.Component {
       currentFolder: this.props.currentFolders,
 
       // Functions
-
       formatDate: this.formatDate,
       isProjectFolderEmpty: this.isProjectFolderEmpty,
       isProjectFolder: this.isProjectFolder,
