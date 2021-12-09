@@ -24,9 +24,10 @@ export default function FolderList() {
     <section id="allSurvey" className="surveysList">
       <ul className={classProperty.list()}>
         {currentFolder.map(surveyGroup => {
+          const keyId = surveyGroup.keyId ? surveyGroup.keyId : 0;
           return helperFunctions.isProjectFolder(surveyGroup) ? (
             <Folder
-              key={surveyGroup.keyId}
+              key={keyId}
               strings={strings}
               surveyGroup={surveyGroup}
               // Functions
@@ -40,7 +41,7 @@ export default function FolderList() {
             />
           ) : (
             <SurveyListItem
-              key={surveyGroup.keyId}
+              key={keyId}
               strings={strings}
               surveyGroup={surveyGroup}
               // Function
