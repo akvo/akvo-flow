@@ -8,7 +8,7 @@ export default function Folder({
 
   // Functions
   classProperty,
-  displayContentFunction,
+  displayContentFunctions,
 
   // Actions
   actions,
@@ -28,7 +28,7 @@ export default function Folder({
           {strings.editFolderName}
         </a>
       ) : (
-        displayContentFunction.showSurveyEditButton && (
+        displayContentFunctions.showSurveyEditButton && (
           <a
             onClick={() => toggleEditFolderName(surveyGroup.keyId)}
             onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
@@ -57,7 +57,7 @@ export default function Folder({
 
       <nav>
         <ul>
-          {!displayContentFunction.hideFolderSurveyDeleteButton(surveyGroup) && (
+          {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
                 onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
@@ -67,7 +67,7 @@ export default function Folder({
               </a>
             </li>
           )}
-          {displayContentFunction.showSurveyMoveButton(surveyGroup) &&
+          {displayContentFunctions.showSurveyMoveButton(surveyGroup) &&
             !classProperty.listItem(surveyGroup).includes('newlyCreated') && (
               <li className="moveSurvey">
                 <a
@@ -90,8 +90,7 @@ Folder.propTypes = {
 
   // Functions
   classProperty: PropTypes.object,
-  selectProject: PropTypes.func,
-  displayContentFunction: PropTypes.object,
+  displayContentFunctions: PropTypes.object,
 
   // Actions
   actions: PropTypes.object,
@@ -104,12 +103,11 @@ Folder.defaultProps = {
   surveyGroup: null,
 
   // Functions
-  displayContentFunction: null,
+  displayContentFunctions: null,
   classProperty: null,
   // Actions
   actions: null,
   saveFolderName: () => null,
   toggleEditFolderName: () => null,
   editFolderName: () => null,
-  selectProject: () => null,
 };

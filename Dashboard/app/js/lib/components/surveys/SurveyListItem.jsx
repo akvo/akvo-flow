@@ -6,9 +6,8 @@ export default function SurveyListItem({
   strings,
   surveyGroup,
   actions,
-  formatDate,
-  language,
-  displayContentFunction,
+  helperFunctions,
+  displayContentFunctions,
 }) {
   return (
     <li key={surveyGroup.keyId} className="aSurvey">
@@ -21,23 +20,23 @@ export default function SurveyListItem({
       <ul className="surveyInfo floats-in">
         <li className="dateCreated">
           <span>{strings.created}</span>
-          <p>{formatDate(surveyGroup.createdDateTime)}</p>
+          <p>{helperFunctions.formatDate(surveyGroup.createdDateTime)}</p>
         </li>
         <li className="responseNumber">
           <span>{strings.responses}</span>
         </li>
         <li className="dateModified">
           <span>{strings.modified}</span>
-          <p>{formatDate(surveyGroup.lastUpdateDateTime)}</p>
+          <p>{helperFunctions.formatDate(surveyGroup.lastUpdateDateTime)}</p>
         </li>
         <li className="surveyLanguage">
           <span>{strings.language}</span>
-          <p>{language(surveyGroup)}</p>
+          <p>{helperFunctions.language(surveyGroup)}</p>
         </li>
       </ul>
       <nav>
         <ul>
-          {displayContentFunction.showSurveyEditButton && (
+          {displayContentFunctions.showSurveyEditButton && (
             <li className="editSurvey">
               <a
                 onClick={() => actions.selectProject(surveyGroup.keyId)}
@@ -47,7 +46,7 @@ export default function SurveyListItem({
               </a>
             </li>
           )}
-          {displayContentFunction.showSurveyMoveButton && (
+          {displayContentFunctions.showSurveyMoveButton && (
             <li className="moveSurvey">
               <a
                 onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
@@ -58,7 +57,7 @@ export default function SurveyListItem({
             </li>
           )}
 
-          {!displayContentFunction.hideFolderSurveyDeleteButton(surveyGroup) && (
+          {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
                 onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
@@ -68,7 +67,7 @@ export default function SurveyListItem({
               </a>
             </li>
           )}
-          {displayContentFunction.showSurveyCopyButton && (
+          {displayContentFunctions.showSurveyCopyButton && (
             <li className="copySurvey">
               <a
                 onClick={() => actions.beginCopyProject(surveyGroup.keyId)}
@@ -88,15 +87,13 @@ SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
   surveyGroup: PropTypes.object,
   actions: PropTypes.object,
-  formatDate: PropTypes.func,
-  language: PropTypes.func,
-  displayContentFunction: PropTypes.object,
+  helperFunctions: PropTypes.object,
+  displayContentFunctions: PropTypes.object,
 };
 
 SurveyListItem.defaultProps = {
   surveyGroup: null,
   actions: null,
-  formatDate: () => null,
-  language: () => null,
-  displayContentFunction: null,
+  helperFunctions: null,
+  displayContentFunctions: null,
 };

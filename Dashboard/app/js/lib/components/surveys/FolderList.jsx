@@ -9,11 +9,9 @@ export default function FolderList() {
     currentFolder,
 
     // Functions
-    formatDate,
-    language,
     classProperty,
-    folderModifierFunction,
-    displayContentFunction,
+    helperFunctions,
+    displayContentFunctions,
 
     // Actions
     actions,
@@ -26,14 +24,14 @@ export default function FolderList() {
     <section id="allSurvey" className="surveysList">
       <ul className={classProperty.list()}>
         {currentFolder.map(surveyGroup => {
-          return folderModifierFunction.isProjectFolder(surveyGroup) ? (
+          return helperFunctions.isProjectFolder(surveyGroup) ? (
             <Folder
               key={surveyGroup.keyId}
               strings={strings}
               surveyGroup={surveyGroup}
               // Functions
               classProperty={classProperty}
-              displayContentFunction={displayContentFunction}
+              displayContentFunctions={displayContentFunctions}
               // Actions
               toggleEditFolderName={toggleEditFolderName}
               editFolderName={editFolderName}
@@ -46,9 +44,8 @@ export default function FolderList() {
               strings={strings}
               surveyGroup={surveyGroup}
               // Function
-              formatDate={formatDate}
-              language={language}
-              displayContentFunction={displayContentFunction}
+              helperFunctions={helperFunctions}
+              displayContentFunctions={displayContentFunctions}
               // Actions
               actions={actions}
             />
