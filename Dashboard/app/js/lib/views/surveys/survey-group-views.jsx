@@ -343,7 +343,7 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       };
     },
 
-    surveyGroups: FLOW.store.find(FLOW.SurveyGroup),
+    surveyGroups: null,
 
     selectProject(surveyGroupId) {
       const self = FLOW.projectControl;
@@ -386,6 +386,7 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       const self = FLOW.projectControl;
       const currentProject = self.get('currentProject');
       const parentId = currentProject ? currentProject.get('keyId') : 0;
+      this.set('surveyGroups', self.get('content'));
       return self
         .get('content')
         .filter(project => project.get('parentId') === parentId)
