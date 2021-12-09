@@ -9,66 +9,6 @@ export default class Main extends React.Component {
     inputValue: null,
   };
 
-  formatDate = datetime => {
-    if (datetime === '') return '';
-    const date = new Date(parseInt(datetime, 10));
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-  };
-
-  language = surveyGroup => {
-    const langs = { en: 'English', es: 'Español', fr: 'Français' };
-    return langs[surveyGroup.defaultLanguageCode];
-  };
-
-  isProjectFolderEmpty = folder => {
-    const id = folder !== undefined && folder.keyId;
-
-    const children = FLOW.projectControl
-      .get('content')
-      .filter(project => project.get('parentId') === id);
-
-    return children.length === 0;
-  };
-
-  isProjectFolder = surveyGroup => {
-    return surveyGroup === null || surveyGroup.projectType === 'PROJECT_FOLDER';
-  };
-
-  isNewProject = currentProject => {
-    return currentProject && currentProject.code === 'New survey';
-  };
-
-  listClassProperty = () => {
-    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
-  };
-
-  listItemClassProperty = surveyGroup => {
-    let classes = 'aSurvey';
-
-    const isMoving =
-      FLOW.projectControl.moveTarget &&
-      surveyGroup.keyId === Number(FLOW.projectControl.moveTarget.id);
-    const isCopying =
-      FLOW.projectControl.copyTarget &&
-      surveyGroup.keyId === Number(FLOW.projectControl.copyTarget.id);
-
-    const isFolder = this.isProjectFolder(surveyGroup);
-    const isFolderEmpty = this.isProjectFolderEmpty(surveyGroup);
-
-    if (isFolder) classes += ' aFolder';
-
-    if (isMoving || isCopying) classes += ' highLighted';
-
-    if (isFolderEmpty) classes = 'aFolder folderEmpty';
-    if (
-      FLOW.projectControl.newlyCreated &&
-      Number(FLOW.projectControl.newlyCreated.id) === surveyGroup.keyId
-    )
-      classes += ' newlyCreated';
-
-    return classes;
-  };
-
   editFolderName = inputValue => {
     this.setState({ inputValue });
   };
@@ -111,22 +51,9 @@ export default class Main extends React.Component {
     const contextData = {
       strings: this.props.strings,
       currentFolder: this.props.currentFolders,
-
-      formatDate: this.formatDate,
-      language: this.language,
-
-      folderModifierFunction: {
-        isProjectFolderEmpty: this.isProjectFolderEmpty,
-        isProjectFolder: this.isProjectFolder,
-        isNewProject: this.isNewProject,
-      },
-
-      classProperty: {
-        list: this.listClassProperty,
-        listItem: this.listItemClassProperty,
-      },
-
-      displayContentFunction: this.props.displayContentFunction,
+      helperFunctions: this.props.helperFunctions,
+      classProperty: this.props.classProperty,
+      displayContentFunctions: this.props.displayContentFunctions,
       actions: this.props.actions,
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
@@ -149,13 +76,17 @@ Main.propTypes = {
   strings: PropTypes.object.isRequired,
   currentFolders: PropTypes.array,
   actions: PropTypes.object,
+  helperFunctions: PropTypes.object,
+  classProperty: PropTypes.object,
   toggleEditFolderName: PropTypes.func,
-  displayContentFunction: PropTypes.object,
+  displayContentFunctions: PropTypes.object,
 };
 
 Main.defaultProps = {
   currentFolders: [],
   actions: null,
+  helperFunctions: null,
+  classProperty: null,
   toggleEditFolderName: () => null,
-  displayContentFunction: null,
+  displayContentFunctions: null,
 };
