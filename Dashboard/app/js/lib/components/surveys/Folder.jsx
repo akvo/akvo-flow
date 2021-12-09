@@ -86,7 +86,7 @@ export default function Folder({
 
 Folder.propTypes = {
   strings: PropTypes.object.isRequired,
-  surveyGroup: PropTypes.object,
+  surveyGroup: PropTypes.object.isRequired,
 
   // Functions
   classProperty: PropTypes.object,
@@ -100,9 +100,6 @@ Folder.propTypes = {
 };
 
 Folder.defaultProps = {
-  surveyGroup: null,
-
-  // Functions
   displayContentFunctions: null,
   classProperty: null,
   // Actions

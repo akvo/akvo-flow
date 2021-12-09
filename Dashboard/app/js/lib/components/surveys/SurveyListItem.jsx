@@ -85,14 +85,13 @@ export default function SurveyListItem({
 
 SurveyListItem.propTypes = {
   strings: PropTypes.object.isRequired,
-  surveyGroup: PropTypes.object,
+  surveyGroup: PropTypes.object.isRequired,
   actions: PropTypes.object,
   helperFunctions: PropTypes.object,
   displayContentFunctions: PropTypes.object,
 };
 
 SurveyListItem.defaultProps = {
-  surveyGroup: null,
   actions: null,
   helperFunctions: null,
   displayContentFunctions: null,
