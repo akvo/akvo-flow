@@ -294,6 +294,7 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
+      this.listItemClassProperty = this.listItemClassProperty.bind(this);
       this.selectProject = this.selectProject.bind(this);
       this.beginMoveProject = this.beginMoveProject.bind(this);
       this.beginCopyProject = this.beginCopyProject.bind(this);
@@ -316,18 +317,24 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       return {
         currentFolders: this.currentFolders().map(item => item._data.attributes),
 
-        displayContentFunction: {
+        classProperty: {
+          list: this.listClassProperty,
+          listItem: this.listItemClassProperty,
+        },
+
+        helperFunctions: {
+          language: this.language,
+          formatDate: this.formatDate,
+          isProjectFolder: this.isProjectFolder,
+          isNewProject: this.isNewProject,
+          isProjectFolderEmpty: this.isProjectFolderEmpty,
+        },
+
+        displayContentFunctions: {
           showSurveyCopyButton: this.showSurveyCopyButton,
           showSurveyMoveButton: this.showSurveyMoveButton,
           showSurveyEditButton: this.showSurveyEditButton,
           hideFolderSurveyDeleteButton: this.hideFolderSurveyDeleteButton,
-        },
-
-        actions: {
-          selectProject: this.selectProject,
-          beginMoveProject: this.beginMoveProject,
-          beginCopyProject: this.beginCopyProject,
-          deleteSurveyGroup: this.deleteSurveyGroup,
         },
 
         strings: {
@@ -340,10 +347,97 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
           delete: Ember.String.loc('_delete'),
           copy: Ember.String.loc('_copy'),
         },
+
+        actions: {
+          selectProject: this.selectProject,
+          beginMoveProject: this.beginMoveProject,
+          beginCopyProject: this.beginCopyProject,
+          deleteSurveyGroup: this.deleteSurveyGroup,
+        },
       };
     },
 
     surveyGroups: null,
+
+    formatDate(datetime) {
+      if (datetime === '') return '';
+      const date = new Date(parseInt(datetime, 10));
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    },
+
+    language(surveyGroup) {
+      const langs = { en: 'English', es: 'Español', fr: 'Français' };
+      return langs[surveyGroup.defaultLanguageCode];
+    },
+
+    hideFolderSurveyDeleteButton(surveyGroup) {
+      const permissions = FLOW.projectControl.get('currentFolderPermissions');
+      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || surveyGroup.surveyList !== null;
+    },
+
+    showSurveyEditButton(surveyGroup) {
+      return (
+        FLOW.permControl.canEditSurvey(surveyGroup) ||
+        FLOW.projectControl.get('newlyCreated') === surveyGroup
+      );
+    },
+
+    showSurveyMoveButton(surveyGroup) {
+      return FLOW.permControl.canEditSurvey(surveyGroup);
+    },
+
+    showSurveyCopyButton(surveyGroup) {
+      return FLOW.permControl.canEditSurvey(surveyGroup);
+    },
+
+    isProjectFolderEmpty(folder) {
+      const id = folder !== undefined && folder.keyId;
+
+      const children = this.surveyGroups.filter(project => project.get('parentId') === id);
+
+      return children.length === 0;
+    },
+
+    isProjectFolder(surveyGroup) {
+      return surveyGroup === null || surveyGroup.projectType === 'PROJECT_FOLDER';
+    },
+
+    isNewProject(currentProject) {
+      return currentProject && currentProject.code === 'New survey';
+    },
+
+    listClassProperty() {
+      return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget
+        ? 'actionProcess'
+        : '';
+    },
+
+    listItemClassProperty(surveyGroup) {
+      let classes = 'aSurvey';
+
+      const isMoving =
+        FLOW.projectControl.moveTarget &&
+        surveyGroup.keyId === Number(FLOW.projectControl.moveTarget.id);
+      const isCopying =
+        FLOW.projectControl.copyTarget &&
+        surveyGroup.keyId === Number(FLOW.projectControl.copyTarget.id);
+
+      const isFolder = this.isProjectFolder(surveyGroup);
+      const isFolderEmpty = this.isProjectFolderEmpty(surveyGroup);
+
+      if (isFolder) classes += ' aFolder';
+
+      if (isMoving || isCopying) classes += ' highLighted';
+
+      if (isFolderEmpty) classes = 'aFolder folderEmpty';
+      if (
+        FLOW.projectControl.newlyCreated &&
+        Number(FLOW.projectControl.newlyCreated.id) === surveyGroup.keyId
+      )
+        classes += ' newlyCreated';
+
+      return classes;
+    },
 
     selectProject(surveyGroupId) {
       const self = FLOW.projectControl;
@@ -421,26 +515,6 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       surveyGroup.deleteRecord();
       FLOW.store.commit();
       FLOW.selectedControl.set('selectedSurveyGroup', null);
-    },
-
-    hideFolderSurveyDeleteButton(surveyGroup) {
-      const permissions = FLOW.projectControl.get('currentFolderPermissions');
-      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || surveyGroup.surveyList !== null;
-    },
-
-    showSurveyEditButton(surveyGroup) {
-      return (
-        FLOW.permControl.canEditSurvey(surveyGroup) ||
-        FLOW.projectControl.get('newlyCreated') === surveyGroup
-      );
-    },
-
-    showSurveyMoveButton(surveyGroup) {
-      return FLOW.permControl.canEditSurvey(surveyGroup);
-    },
-
-    showSurveyCopyButton(surveyGroup) {
-      return FLOW.permControl.canEditSurvey(surveyGroup);
     },
   }
 );
