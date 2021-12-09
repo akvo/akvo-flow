@@ -21,8 +21,8 @@ export default function Folder({
       {/* Buttons to toggle */}
       {surveyGroup.isEdit ? (
         <a
-          onClick={() => saveFolderName(surveyGroup.keyId)}
-          onKeyDown={() => saveFolderName(surveyGroup.keyId)}
+          onClick={() => saveFolderName(surveyGroup)}
+          onKeyDown={() => saveFolderName(surveyGroup)}
           className="editingFolderName"
         >
           {strings.editFolderName}
@@ -30,8 +30,8 @@ export default function Folder({
       ) : (
         displayContentFunctions.showSurveyEditButton && (
           <a
-            onClick={() => toggleEditFolderName(surveyGroup.keyId)}
-            onKeyDown={() => toggleEditFolderName(surveyGroup.keyId)}
+            onClick={() => toggleEditFolderName(surveyGroup)}
+            onKeyDown={() => toggleEditFolderName(surveyGroup)}
             className="editFolderName"
           >
             {strings.editFolderName}

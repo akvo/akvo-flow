@@ -272,14 +272,6 @@ FLOW.ProjectMainView = FLOW.View.extend({
   }).property('FLOW.projectControl.currentProjectPath'),
 });
 
-FLOW.ProjectList = FLOW.View.extend({
-  tagName: 'ul',
-  classNameBindings: ['classProperty'],
-  classProperty: Ember.computed(() =>
-    FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : ''
-  ).property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget'),
-});
-
 FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.projectControl.content.isLoaded': 'renderReactSide',
@@ -441,8 +433,7 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
 
     selectProject(surveyGroupId) {
       const self = FLOW.projectControl;
-      const surveyGroup = this.surveyGroups;
-      const project = surveyGroup.find(item => item.get('keyId') === surveyGroupId);
+      const project = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
       // the target should not be openable while being moved. Prevents moving it into itself.
       if (self.moveTarget !== null && self.moveTarget.get('keyId') === surveyGroupId) {
         return;

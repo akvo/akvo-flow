@@ -5,7 +5,6 @@ import ForlderList from './FolderList';
 
 export default class Main extends React.Component {
   state = {
-    isFolderEdit: null,
     inputValue: null,
   };
 
@@ -13,27 +12,22 @@ export default class Main extends React.Component {
     this.setState({ inputValue });
   };
 
-  toggleEditFolderName = surveyGroupId => {
-    const surveyGroupToEdit = this.props.currentFolders.find(
-      surveyGroup => surveyGroup.keyId === surveyGroupId
-    );
-    surveyGroupToEdit.isEdit = true;
+  toggleEditFolderName = surveyGroup => {
+    surveyGroup.isEdit = true;
 
-    this.setState(state => ({
-      isFolderEdit: !state.isFolderEdit,
-    }));
+    this.setState({
+      inputValue: null,
+    });
   };
 
-  saveFolderName = surveyGroupId => {
-    const surveyGroupToEdit = this.props.currentFolders.find(
-      surveyGroup => surveyGroup.keyId === surveyGroupId
-    );
-
-    // Delete an object property
-    delete surveyGroupToEdit.isEdit;
+  saveFolderName = surveyGroup => {
+    // Deletes an object property
+    delete surveyGroup.isEdit;
 
     if (this.state.inputValue !== null) {
-      const folderToEdit = FLOW.projectControl.find(item => item.get('keyId') === surveyGroupId);
+      const folderToEdit = FLOW.projectControl.find(
+        item => item.get('keyId') === surveyGroup.keyId
+      );
 
       folderToEdit.set('name', this.state.inputValue);
       folderToEdit.set('code', this.state.inputValue);
@@ -42,9 +36,10 @@ export default class Main extends React.Component {
       FLOW.store.commit();
     }
 
-    this.setState(state => ({
-      isFolderEdit: !state.isFolderEdit,
-    }));
+    // Resets input value to prevent it from modifying the name of all selected folder
+    this.setState({
+      inputValue: null,
+    });
   };
 
   render() {
