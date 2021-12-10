@@ -309,6 +309,17 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       return {
         currentFolders: this.currentFolders().map(item => item._data.attributes),
 
+        strings: {
+          editFolderName: Ember.String.loc('_edit_folder_name'),
+          created: Ember.String.loc('_created'),
+          modified: Ember.String.loc('_modified'),
+          language: Ember.String.loc('_language'),
+          edit: Ember.String.loc('_edit'),
+          move: Ember.String.loc('_move'),
+          delete: Ember.String.loc('_delete'),
+          copy: Ember.String.loc('_copy'),
+        },
+
         classProperty: {
           list: this.listClassProperty,
           listItem: this.listItemClassProperty,
@@ -329,17 +340,6 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
           hideFolderSurveyDeleteButton: this.hideFolderSurveyDeleteButton,
         },
 
-        strings: {
-          editFolderName: Ember.String.loc('_edit_folder_name'),
-          created: Ember.String.loc('_created'),
-          modified: Ember.String.loc('_modified'),
-          language: Ember.String.loc('_language'),
-          edit: Ember.String.loc('_edit'),
-          move: Ember.String.loc('_move'),
-          delete: Ember.String.loc('_delete'),
-          copy: Ember.String.loc('_copy'),
-        },
-
         actions: {
           selectProject: this.selectProject,
           beginMoveProject: this.beginMoveProject,
@@ -357,29 +357,29 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     },
 
-    language(surveyGroup) {
+    language(project) {
       const langs = { en: 'English', es: 'Español', fr: 'Français' };
-      return langs[surveyGroup.defaultLanguageCode];
+      return langs[project.defaultLanguageCode];
     },
 
-    hideFolderSurveyDeleteButton(surveyGroup) {
+    hideFolderSurveyDeleteButton(project) {
       const permissions = FLOW.projectControl.get('currentFolderPermissions');
-      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || surveyGroup.surveyList !== null;
+      return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || project.surveyList !== null;
     },
 
-    showSurveyEditButton(surveyGroup) {
+    showSurveyEditButton(project) {
       return (
-        FLOW.permControl.canEditSurvey(surveyGroup) ||
-        FLOW.projectControl.get('newlyCreated') === surveyGroup
+        FLOW.permControl.canEditSurvey(project) ||
+        FLOW.projectControl.get('newlyCreated') === project
       );
     },
 
-    showSurveyMoveButton(surveyGroup) {
-      return FLOW.permControl.canEditSurvey(surveyGroup);
+    showSurveyMoveButton(project) {
+      return FLOW.permControl.canEditSurvey(project);
     },
 
-    showSurveyCopyButton(surveyGroup) {
-      return FLOW.permControl.canEditSurvey(surveyGroup);
+    showSurveyCopyButton(project) {
+      return FLOW.permControl.canEditSurvey(project);
     },
 
     isProjectFolderEmpty(folder) {
@@ -390,8 +390,8 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       return children.length === 0;
     },
 
-    isProjectFolder(surveyGroup) {
-      return surveyGroup === null || surveyGroup.projectType === 'PROJECT_FOLDER';
+    isProjectFolder(project) {
+      return project === null || project.projectType === 'PROJECT_FOLDER';
     },
 
     isNewProject(currentProject) {
@@ -404,18 +404,18 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
         : '';
     },
 
-    listItemClassProperty(surveyGroup) {
+    listItemClassProperty(project) {
       let classes = 'aSurvey';
 
       const isMoving =
         FLOW.projectControl.moveTarget &&
-        surveyGroup.keyId === Number(FLOW.projectControl.moveTarget.id);
+        project.keyId === Number(FLOW.projectControl.moveTarget.id);
       const isCopying =
         FLOW.projectControl.copyTarget &&
-        surveyGroup.keyId === Number(FLOW.projectControl.copyTarget.id);
+        project.keyId === Number(FLOW.projectControl.copyTarget.id);
 
-      const isFolder = this.isProjectFolder(surveyGroup);
-      const isFolderEmpty = this.isProjectFolderEmpty(surveyGroup);
+      const isFolder = this.isProjectFolder(project);
+      const isFolderEmpty = this.isProjectFolderEmpty(project);
 
       if (isFolder) classes += ' aFolder';
 
@@ -424,18 +424,18 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       if (isFolderEmpty) classes = 'aFolder folderEmpty';
       if (
         FLOW.projectControl.newlyCreated &&
-        Number(FLOW.projectControl.newlyCreated.id) === surveyGroup.keyId
+        Number(FLOW.projectControl.newlyCreated.id) === project.keyId
       )
         classes += ' newlyCreated';
 
       return classes;
     },
 
-    selectProject(surveyGroupId) {
+    selectProject(projectId) {
       const self = FLOW.projectControl;
-      const project = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
+      const project = this.surveyGroups.find(item => item.get('keyId') === projectId);
       // the target should not be openable while being moved. Prevents moving it into itself.
-      if (self.moveTarget !== null && self.moveTarget.get('keyId') === surveyGroupId) {
+      if (self.moveTarget !== null && self.moveTarget.get('keyId') === projectId) {
         return;
       }
 
@@ -491,18 +491,18 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
         });
     },
 
-    beginMoveProject(surveyGroupId) {
-      const moveTarget = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
+    beginMoveProject(projectId) {
+      const moveTarget = this.surveyGroups.find(item => item.get('keyId') === projectId);
       FLOW.projectControl.set('moveTarget', moveTarget);
     },
 
-    beginCopyProject(surveyGroupId) {
-      const copyTarget = this.surveyGroups.find(item => item.get('keyId') === surveyGroupId);
+    beginCopyProject(projectId) {
+      const copyTarget = this.surveyGroups.find(item => item.get('keyId') === projectId);
       FLOW.projectControl.set('copyTarget', copyTarget);
     },
 
-    deleteSurveyGroup(surveyGroupId) {
-      const surveyGroup = FLOW.store.find(FLOW.SurveyGroup, surveyGroupId);
+    deleteSurveyGroup(projectId) {
+      const surveyGroup = FLOW.store.find(FLOW.SurveyGroup, projectId);
       surveyGroup.deleteRecord();
       FLOW.store.commit();
       FLOW.selectedControl.set('selectedSurveyGroup', null);
