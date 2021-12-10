@@ -44,6 +44,7 @@ export default function Folder({
         <input
           type="text"
           defaultValue={surveyGroup.code}
+          onBlur={() => setTimeout(() => saveFolderName(surveyGroup), 200)}
           onChange={e => editFolderName(e.target.value)}
         />
       ) : (

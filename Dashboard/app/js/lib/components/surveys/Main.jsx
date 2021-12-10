@@ -12,22 +12,20 @@ export default class Main extends React.Component {
     this.setState({ inputValue });
   };
 
-  toggleEditFolderName = surveyGroup => {
-    surveyGroup.isEdit = true;
+  toggleEditFolderName = project => {
+    project.isEdit = true;
 
     this.setState({
       inputValue: null,
     });
   };
 
-  saveFolderName = surveyGroup => {
+  saveFolderName = project => {
     // Deletes an object property
-    delete surveyGroup.isEdit;
+    delete project.isEdit;
 
     if (this.state.inputValue !== null) {
-      const folderToEdit = FLOW.projectControl.find(
-        item => item.get('keyId') === surveyGroup.keyId
-      );
+      const folderToEdit = FLOW.projectControl.find(item => item.get('keyId') === project.keyId);
 
       folderToEdit.set('name', this.state.inputValue);
       folderToEdit.set('code', this.state.inputValue);
@@ -53,6 +51,7 @@ export default class Main extends React.Component {
       toggleEditFolderName: this.toggleEditFolderName,
       editFolderName: this.editFolderName,
       saveFolderName: this.saveFolderName,
+      focusOut: this.focusOut,
     };
 
     return (
