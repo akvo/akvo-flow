@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -5,10 +6,10 @@ import PropTypes from 'prop-types';
 class Surveys extends React.Component {
   state = {
     currentProject: this.props.currentProject,
+    selectedSurvey: this.props.selectedSurvey,
   };
 
   render() {
-    console.log(this.props.showDataApprovalDetails);
     // const strings = {
     //   addNewForm: Ember.String.loc('_add_new_form'),
     //   chooseDataApprovalGroup: Ember.String.loc('_choose_data_approval_group'),
@@ -68,7 +69,8 @@ class Surveys extends React.Component {
                 <h3>{Ember.String.loc('_survey_basics')} </h3>{' '}
                 {!this.props.helperFunctions.isNewProject() && (
                   <a
-                    //   {{action "toggleShowProjectDetails" target="this"}}
+                    onClick={this.props.actions.toggleShowProjectDetails}
+                    onKeyDown={this.props.actions.toggleShowProjectDetails}
                     className="button"
                   >
                     {this.props.helperFunctions.visibleProjectBasics()
@@ -83,7 +85,11 @@ class Surveys extends React.Component {
                   >
                     <label>{Ember.String.loc('_survey_title')}</label>
                     {/* {{view Ember.TextField id="projectTitle" valueBinding="this.state.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}} */}
-
+                    <input
+                      type="text"
+                      id="projectTitle"
+                      defaultValue={this.state.currentProject.name}
+                    />
                     <ul className="projectSelect floats-in">
                       <li>
                         <label>{Ember.String.loc('_language')}:</label>
@@ -137,14 +143,14 @@ class Surveys extends React.Component {
                                 <label htmlFor="enableDataApproval" className="labelcheckbox">
                                   <input type="checkbox" id="enableDataApproval" />
                                   {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} */}
-                                  {Ember.String.loc('_enable_data_approval')}
+                                  {Ember.String.loc('_enable_data_approval')}{' '}
                                   <a
                                     className="helpIcon tooltip"
                                     data-title={Ember.String.loc('_enable_data_approval_tooltip')}
                                   >
                                     ?
                                   </a>
-                                </label>
+                                </label>{' '}
                                 {this.props.helperFunctions.showDataApprovalList && (
                                   <>
                                     {/* {{view Ember.Select
@@ -154,23 +160,28 @@ class Surveys extends React.Component {
                                         selectionBinding="FLOW.projectControl.dataApprovalGroup"
                                         disabledBinding="view.disableFolderSurveyInputField"
                                     promptBinding="Ember.STRINGS._choose_data_approval_group"}} */}
-
+                                    <select>
+                                      <option>
+                                        {Ember.String.loc('_choose_data_approval_group')}
+                                      </option>
+                                      {this.props.dataApprovalGroup &&
+                                        this.props.dataApprovalGroup.map(dataApproval => (
+                                          <option value={dataApproval.keyId}>
+                                            {dataApproval.name}
+                                          </option>
+                                        ))}
+                                    </select>
                                     {this.props.showDataApprovalDetails ? (
                                       <>
-                                        {' '}
-                                        <select>
-                                          <option>
-                                            {Ember.String.loc('_choose_data_approval_group')}
-                                          </option>
-                                          {/* {this.props.dataApprovalGroup.map(dataApproval => (
-                                            <option value={dataApproval.keyId}>
-                                              {dataApproval.name}
-                                            </option>
-                                          ))} */}
-                                        </select>
                                         <div className="hideShow">
-                                          <a>
-                                            {/* // {{action toggleShowDataApprovalDetails target="view"}} */}
+                                          <a
+                                            onClick={
+                                              this.props.actions.toggleShowDataApprovalDetails
+                                            }
+                                            onKeyDown={
+                                              this.props.actions.toggleShowDataApprovalDetails
+                                            }
+                                          >
                                             {Ember.String.loc('_hide_approval')}
                                           </a>
                                         </div>
@@ -212,17 +223,21 @@ class Surveys extends React.Component {
                                                 {/* {{/each}} */}
                                               </ul>
                                             </div>
-                                            {/* {{/if}}
-                                                     {{/view}}
-                                                 {{/each}} */}
+
+                                            {/* {{/view}}
+                                                 {{/each}}  */}
                                           </ul>
                                         </div>
                                         {/* {{/view}} */}
                                       </>
                                     ) : (
                                       <div className="hideShow">
-                                        <a>
-                                          {/* {{action toggleShowDataApprovalDetails target="view"}} */}
+                                        <a
+                                          onClick={this.props.actions.toggleShowDataApprovalDetails}
+                                          onKeyDown={
+                                            this.props.actions.toggleShowDataApprovalDetails
+                                          }
+                                        >
                                           {Ember.String.loc('_show_approval')}
                                         </a>
                                       </div>
@@ -292,6 +307,7 @@ class Surveys extends React.Component {
                       ))}
                     <nav className="tabNav floats-in">
                       <ul>
+                        {/* NEED TO BE SEPARATED */}
                         {/* {{#view FLOW.FormTabView contentBinding="form"}}  */}
                         {FLOW.surveyControl.orderedForms.map(data => {
                           const form = data._data.attributes;
@@ -313,13 +329,10 @@ class Surveys extends React.Component {
                     <section className="formsContainer">
                       <div
                         id="form01"
-                        // {{bindAttr className="view.isPublished:published"}}
+                        className={this.props.helperFunctions.isPublished() ? 'published' : ''}
                       >
-                        {FLOW.selectedControl.selectedSurvey && (
-                          <h3>{FLOW.selectedControl.selectedSurvey._data.attributes.name}</h3>
-                        )
-                        // {{view FLOW.FormView}}
-                        }
+                        <h3>{this.state.selectedSurvey && this.state.selectedSurvey.name}</h3>
+                        {/* {{view FLOW.FormView}} */}
                       </div>
                     </section>
                   </div>
@@ -335,10 +348,18 @@ class Surveys extends React.Component {
 
 Surveys.propTypes = {
   currentProject: PropTypes.object.isRequired,
+  selectedSurvey: PropTypes.object.isRequired,
   helperFunctions: PropTypes.object.isRequired,
   showDataApproval: PropTypes.bool.isRequired,
   showDataApprovalDetails: PropTypes.bool.isRequired,
   arrangedContent: PropTypes.array.isRequired,
+  actions: PropTypes.object,
+  dataApprovalGroup: PropTypes.array,
+};
+
+Surveys.defaultProps = {
+  dataApprovalGroup: null,
+  actions: () => null,
 };
 
 export default Surveys;

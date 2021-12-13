@@ -19,12 +19,16 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedLanguage': 'updateSelectedLanguage',
     currentRegistrationForm: 'updateSelectedRegistrationForm',
+    'this.showProjectDetails': 'renderReactSide',
+    'this.showDataApprovalDetails': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
       this.visibleProjectBasics = this.visibleProjectBasics.bind(this);
+      this.toggleShowProjectDetails = this.toggleShowProjectDetails.bind(this);
+      this.toggleShowDataApprovalDetails = this.toggleShowDataApprovalDetails.bind(this);
       this.updateSelectedLanguage = this.updateSelectedLanguage.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
@@ -50,6 +54,11 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         //   .get('dataApprovalGroup')
         //   .getEach('_data')
         //   .getEach('attributes'),
+        selectedSurvey:
+          FLOW.selectedControl.selectedSurvey &&
+          FLOW.selectedControl.selectedSurvey._data.attributes,
+        approvalGroups: FLOW.router.approvalGroupController.content,
+        approvalSteps: FLOW.router.approvalStepsController.content,
         showDataApproval: FLOW.Env.enableDataApproval,
         showProjectDetails: this.showProjectDetails,
         showDataApprovalDetails: this.showDataApprovalDetails,
@@ -64,6 +73,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           copy: Ember.String.loc('_copy'),
         },
         helperFunctions: {
+          isPublished: this.isPublished,
           formCount: this.formCount,
           hasForms: this.hasForms,
           classProperty: this.classProperty,
@@ -71,6 +81,10 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           visibleProjectBasics: this.visibleProjectBasics,
           showAddNewFormButton: this.showAddNewFormButton,
           showDataApprovalList: this.showDataApprovalList,
+        },
+        actions: {
+          toggleShowProjectDetails: this.toggleShowProjectDetails,
+          toggleShowDataApprovalDetails: this.toggleShowDataApprovalDetails,
         },
       };
     },
@@ -139,6 +153,10 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       }
     },
 
+    toggleShowDataApprovalDetails() {
+      this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
+    },
+
     classProperty(project) {
       const form = project;
       const currentProject = FLOW.projectControl.get('currentProject');
@@ -193,7 +211,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       );
     },
 
-    isPublished: Ember.computed(() => {
+    isPublished() {
       let form;
       if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
         form = FLOW.selectedControl.get('selectedSurvey');
@@ -202,7 +220,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         FLOW.selectedControl.set('selectedSurvey', form);
       }
       return form && form.get('status') === 'PUBLISHED';
-    }).property('FLOW.selectedControl.selectedSurvey.status'),
+    },
 
     disableFolderSurveyInputField: Ember.computed(() => {
       const permissions = FLOW.projectControl.get('currentFolderPermissions');
@@ -216,10 +234,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
 
     showDataApprovalList() {
       FLOW.projectControl.currentProject.get('requireDataApproval');
-    },
-
-    toggleShowDataApprovalDetails() {
-      this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
     },
   }
 );
