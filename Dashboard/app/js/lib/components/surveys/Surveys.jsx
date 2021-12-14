@@ -10,10 +10,6 @@ class Surveys extends React.Component {
   };
 
   render() {
-    // const strings = {
-    //   orderedApproval: Ember.String.loc('_ordered_approval'),
-    // };
-
     return (
       <div className="floats-in">
         <div id="pageWrap" className="widthConstraint belowHeader">
@@ -155,50 +151,66 @@ class Surveys extends React.Component {
                                             {this.props.strings.hideApproval}
                                           </a>
                                         </div>
-                                        {/* {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}} */}
-                                        <div className="approvalDetail">
-                                          <h2>name</h2>
-                                          <p>
-                                            {/* {{#if ordered}}  */}
-                                            {
-                                              this.props.strings.orderedApproval
-                                            } {/* {{else}} */}{' '}
-                                            {this.props.strings.unorderedApproval}
-                                            {/* {{/if}} */}
-                                          </p>
-                                          <ul className="approvalSteps">
-                                            {/* {{#each step in FLOW.router.approvalStepsController}} */}
-                                            {/* {{#view FLOW.SurveyApprovalStepView stepBinding="step"}} */}
-                                            <li>
-                                              <h4>{/* {{view.step.title}} */}</h4>{' '}
-                                              <a>
-                                                {/* {{action toggleShowResponsibleUsers target="view"}} */}
-                                                {this.props.strings.responsibleUser}
-                                              </a>
-                                            </li>
-                                            {/* {{#if view.showResponsibleUsers}} */}
-                                            <div>
-                                              <ul className="responsibleUsers">
-                                                {/* {{#each user in FLOW.router.userListController}} */}
-                                                {/* {{#view FLOW.ApprovalResponsibleUserView
-                                                                                 userBinding="user"
-                                                                                 stepBinding="view.step"}} */}
-                                                <li>
-                                                  {/* {{view Ember.Checkbox
-                                                                                        checkedBinding="view.isResponsibleUser"}}
-                                                                                 {{view.user.userName}} */}
-                                                  <input type="checkBox" />
-                                                </li>
-                                                {/* {{/view}} */}
-                                                {/* {{/each}} */}
-                                              </ul>
-                                            </div>
 
-                                            {/* {{/view}}
-                                                 {{/each}}  */}
+                                        <div className="approvalDetail">
+                                          <h2>
+                                            {this.props.approvalGroups &&
+                                              this.props.approvalGroups.name}
+                                          </h2>
+                                          <p>
+                                            {this.props.approvalGroups &&
+                                            this.props.approvalGroups.ordered
+                                              ? this.props.strings.orderedApproval
+                                              : this.props.strings.unorderedApproval}
+                                          </p>
+                                          {/* CAN BE SEPARATED */}
+                                          <ul className="approvalSteps">
+                                            {this.props.approvalSteps &&
+                                              this.props.approvalSteps.map(step => (
+                                                <>
+                                                  <li>
+                                                    <h4>{step && step.title}</h4>{' '}
+                                                    <a
+                                                      onClick={
+                                                        this.props.actions
+                                                          .toggleShowResponsibleUsers
+                                                      }
+                                                      onKeyDown={
+                                                        this.props.actions
+                                                          .toggleShowResponsibleUsers
+                                                      }
+                                                    >
+                                                      {this.props.strings.responsibleUser}
+                                                    </a>
+                                                  </li>
+                                                  {this.props.showResponsibleUsers && (
+                                                    <div>
+                                                      <ul className="responsibleUsers">
+                                                        {this.props.userList.map(user => (
+                                                          // {{#view FLOW.ApprovalResponsibleUserView
+                                                          //                                userBinding="user"
+                                                          //                                stepBinding="view.step"}}
+                                                          <li>
+                                                            <input
+                                                              type="checkBox"
+                                                              // checkedBinding="view.isResponsibleUser"
+                                                              onChange={() =>
+                                                                this.props.actions.isResponsibleUser(
+                                                                  user.keyId,
+                                                                  user
+                                                                )
+                                                              }
+                                                              // view.user.userName
+                                                            />
+                                                          </li>
+                                                        ))}
+                                                      </ul>
+                                                    </div>
+                                                  )}
+                                                </>
+                                              ))}
                                           </ul>
                                         </div>
-                                        {/* {{/view}} */}
                                       </>
                                     ) : (
                                       <div className="hideShow">
@@ -318,17 +330,27 @@ class Surveys extends React.Component {
 
 Surveys.propTypes = {
   strings: PropTypes.object.isRequired,
+  step: PropTypes.object,
+  approvalGroups: PropTypes.object,
   currentProject: PropTypes.object.isRequired,
-  selectedSurvey: PropTypes.object.isRequired,
+  selectedSurvey: PropTypes.object,
   helperFunctions: PropTypes.object.isRequired,
   showDataApproval: PropTypes.bool.isRequired,
   showDataApprovalDetails: PropTypes.bool.isRequired,
+  showResponsibleUsers: PropTypes.bool.isRequired,
+  userList: PropTypes.array,
   arrangedContent: PropTypes.array.isRequired,
+  approvalSteps: PropTypes.array,
   actions: PropTypes.object,
   dataApprovalGroup: PropTypes.array,
 };
 
 Surveys.defaultProps = {
+  step: null,
+  userList: null,
+  approvalSteps: null,
+  approvalGroups: null,
+  selectedSurvey: null,
   dataApprovalGroup: null,
   actions: () => null,
 };

@@ -21,6 +21,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     currentRegistrationForm: 'updateSelectedRegistrationForm',
     'this.showProjectDetails': 'renderReactSide',
     'this.showDataApprovalDetails': 'renderReactSide',
+    'this.showResponsibleUsers': 'renderReactSide',
   }),
   {
     init() {
@@ -29,7 +30,9 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       this.visibleProjectBasics = this.visibleProjectBasics.bind(this);
       this.toggleShowProjectDetails = this.toggleShowProjectDetails.bind(this);
       this.toggleShowDataApprovalDetails = this.toggleShowDataApprovalDetails.bind(this);
+      this.toggleShowResponsibleUsers = this.toggleShowResponsibleUsers.bind(this);
       this.updateSelectedLanguage = this.updateSelectedLanguage.bind(this);
+      this.isResponsibleUser = this.isResponsibleUser.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
 
@@ -50,18 +53,23 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           .get('arrangedContent')
           .getEach('_data')
           .getEach('attributes'),
-        // dataApprovalGroup: FLOW.projectControl
-        //   .get('dataApprovalGroup')
-        //   .getEach('_data')
-        //   .getEach('attributes'),
+        dataApprovalGroup:
+          FLOW.projectControl.get('dataApprovalGroup') &&
+          FLOW.projectControl
+            .get('dataApprovalGroup')
+            .getEach('_data')
+            .getEach('attributes'),
         selectedSurvey:
           FLOW.selectedControl.selectedSurvey &&
           FLOW.selectedControl.selectedSurvey._data.attributes,
         approvalGroups: FLOW.router.approvalGroupController.content,
         approvalSteps: FLOW.router.approvalStepsController.content,
         showDataApproval: FLOW.Env.enableDataApproval,
+        step: this.step,
+        userList: FLOW.router.userListController.content,
         showProjectDetails: this.showProjectDetails,
         showDataApprovalDetails: this.showDataApprovalDetails,
+        showResponsibleUsers: this.showResponsibleUsers,
         helperFunctions: {
           isPublished: this.isPublished,
           formCount: this.formCount,
@@ -75,6 +83,8 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         actions: {
           toggleShowProjectDetails: this.toggleShowProjectDetails,
           toggleShowDataApprovalDetails: this.toggleShowDataApprovalDetails,
+          toggleShowResponsibleUsers: this.toggleShowResponsibleUsers,
+          isResponsibleUser: this.isResponsibleUser,
         },
 
         strings: {
@@ -115,6 +125,54 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     monitoringGroupEnabled: false,
     currentRegistrationForm: null,
     showDataApprovalDetails: false,
+
+    step: null,
+    user: null,
+    showResponsibleUsers: false,
+
+    isResponsibleUser(key, isCheckedValue) {
+      const step = this.get('step');
+      const user = this.get('user');
+
+      if (!step || !user) {
+        return false;
+      }
+
+      // create a new list to force enabling of 'Save' button for surveys
+      // when a user is added or removed from approver list
+      const approverUserList = Ember.A();
+      if (!Ember.empty(step.get('approverUserList'))) {
+        approverUserList.pushObjects(step.get('approverUserList'));
+      }
+
+      // setter
+      if (arguments.length > 1) {
+        if (isCheckedValue) {
+          approverUserList.addObject(user.get('keyId'));
+        } else {
+          approverUserList.removeObject(user.get('keyId'));
+        }
+        step.set('approverUserList', approverUserList);
+      }
+
+      // getter
+      return approverUserList.contains(user.get('keyId'));
+    },
+
+    toggleShowResponsibleUsers() {
+      this.toggleProperty('showResponsibleUsers');
+      this.loadUsers();
+    },
+
+    /*
+     * load the users list if not present
+     */
+    loadUsers() {
+      const users = FLOW.router.userListController.get('content');
+      if (Ember.empty(users)) {
+        FLOW.router.userListController.set('content', FLOW.User.find());
+      }
+    },
 
     /* computer property for setting / getting the value of the current
   registration form */

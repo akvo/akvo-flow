@@ -13,5 +13,9 @@ node_modules
 test_assets
 tmp
 
+# Cache
+.clj-kondo
+.lsp
+
 # Ruby env build output
 vendor
