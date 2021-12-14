@@ -22,6 +22,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     'this.showProjectDetails': 'renderReactSide',
     'this.showDataApprovalDetails': 'renderReactSide',
     'this.showResponsibleUsers': 'renderReactSide',
+    'FLOW.projectControl.currentProject.@each': 'renderReactSide',
   }),
   {
     init() {
@@ -42,6 +43,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
+      console.log( FLOW.projectControl.currentProject._data.attributes);
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -79,6 +81,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           visibleProjectBasics: this.visibleProjectBasics,
           showAddNewFormButton: this.showAddNewFormButton,
           showDataApprovalList: this.showDataApprovalList,
+          disableFolderSurveyInputField: this.disableFolderSurveyInputField,
         },
         actions: {
           toggleShowProjectDetails: this.toggleShowProjectDetails,
@@ -300,10 +303,10 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       return form && form.get('status') === 'PUBLISHED';
     },
 
-    disableFolderSurveyInputField: Ember.computed(() => {
+    disableFolderSurveyInputField() {
       const permissions = FLOW.projectControl.get('currentFolderPermissions');
       return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
-    }).property('FLOW.projectControl.currentProjectPath'),
+    },
 
     showAddNewFormButton() {
       const survey = FLOW.projectControl.get('currentProject');
