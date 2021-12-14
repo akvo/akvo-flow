@@ -11,33 +11,7 @@ class Surveys extends React.Component {
 
   render() {
     // const strings = {
-    //   addNewForm: Ember.String.loc('_add_new_form'),
-    //   chooseDataApprovalGroup: Ember.String.loc('_choose_data_approval_group'),
-    //   chooseRegistrationForm: Ember.String.loc('_choose_the_registration_form'),
-    //   collapse: Ember.String.loc('_collapse'),
-    //   enabled: Ember.String.loc('_enabled'),
-    //   enableDataApproval: Ember.String.loc('_enable_data_approval'),
-    //   enableMonitoringFeatures: Ember.String.loc('_enable_monitoring_features'),
-    //   form: Ember.String.loc('_forms'),
-    //   hideApproval: Ember.String.loc('_hide_approval'),
-    //   id: Ember.String.loc('_id'),
-    //   language: Ember.String.loc('_language'),
-    //   markAsTemplate: Ember.String.loc('_mark_as_template'),
-    //   monitoring: Ember.String.loc('_monitoring'),
-    //   noForm: Ember.String.loc('_no_forms_in_this_survey'),
-    //   notEnabled: Ember.String.loc('_not_enabled'),
     //   orderedApproval: Ember.String.loc('_ordered_approval'),
-    //   responsibleUser: Ember.String.loc('_responsible_users'),
-    //   show: Ember.String.loc('_show'),
-    //   showApproval: Ember.String.loc('_show_approval'),
-    //   surveyBasics: Ember.String.loc('_survey_basics'),
-    //   surveyTitle: Ember.String.loc('_survey_title'),
-    //   unorderedApproval: Ember.String.loc('_unordered_approval'),
-    //   tooltip: {
-    //     chooseRegistrationForm: Ember.String.loc('_choose_the_registration_form_tooltip'),
-    //     enableDataApproval: Ember.String.loc('_enable_data_approval_tooltip'),
-    //     markAsTemplate: Ember.String.loc('_mark_as_template_tooltip'),
-    //   },
     // };
 
     return (
@@ -48,25 +22,25 @@ class Surveys extends React.Component {
               <h2>{this.state.currentProject.name}</h2>
               <ul className="projectSummary">
                 <li>
-                  {Ember.String.loc('_forms')}
+                  {this.props.strings.form}
                   <span className="projectForm">{this.props.helperFunctions.formCount()}</span>
                 </li>
                 {/* Should we display the ID as we do with forms?  */}
                 <li className="hidden">
-                  {Ember.String.loc('_id')}
+                  {this.props.strings.id}
                   <span className="projectForm">{this.state.currentProject.keyId}</span>
                 </li>
                 <li>
-                  {Ember.String.loc('_monitoring')}
+                  {this.props.strings.monitoring}
                   <span className="projectMonitoring">
                     {this.state.currentProject.monitoringGroup
-                      ? Ember.String.loc('_enabled')
-                      : Ember.String.loc('_not_enabled')}
+                      ? this.props.strings.enabled
+                      : this.props.strings.notEnabled}
                   </span>
                 </li>
               </ul>
               <section className="projectDetails">
-                <h3>{Ember.String.loc('_survey_basics')} </h3>{' '}
+                <h3>{this.props.strings.surveyBasics} </h3>{' '}
                 {!this.props.helperFunctions.isNewProject() && (
                   <a
                     onClick={this.props.actions.toggleShowProjectDetails}
@@ -74,8 +48,8 @@ class Surveys extends React.Component {
                     className="button"
                   >
                     {this.props.helperFunctions.visibleProjectBasics()
-                      ? Ember.String.loc('_collapse')
-                      : Ember.String.loc('_show')}
+                      ? this.props.strings.collapse
+                      : this.props.strings.show}
                   </a>
                 )}
                 {this.props.helperFunctions.visibleProjectBasics() && (
@@ -83,7 +57,7 @@ class Surveys extends React.Component {
                     className="projectDetailForm"
                     //   {{action 'saveProject' on='submit' target="FLOW.projectControl"}}
                   >
-                    <label>{Ember.String.loc('_survey_title')}</label>
+                    <label>{this.props.strings.surveyTitle}</label>
                     {/* {{view Ember.TextField id="projectTitle" valueBinding="this.state.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}} */}
                     <input
                       type="text"
@@ -92,7 +66,7 @@ class Surveys extends React.Component {
                     />
                     <ul className="projectSelect floats-in">
                       <li>
-                        <label>{Ember.String.loc('_language')}:</label>
+                        <label>{this.props.strings.language}:</label>
                         {/* {{view Ember.Select
                        contentBinding="FLOW.languageControl.content"
                        selectionBinding="view.selectedLanguage"
@@ -111,17 +85,15 @@ class Surveys extends React.Component {
                         <label htmlFor="enableMonitoring" className="labelcheckbox">
                           <input type="checkbox" id="enableMonitoring" />
                           {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.monitoringGroup" id="enableMonitoring" disabledBinding="view.disableFolderSurveyInputField"}} */}
-                          {Ember.String.loc('_enable_monitoring_features')}
+                          {this.props.strings.enableMonitoringFeatures}
                         </label>
                         {this.state.currentProject.monitoringGroup && (
                           <>
                             <p className="monitoringHint">
-                              {Ember.String.loc('_choose_the_registration_form')}:{' '}
+                              {this.props.strings.chooseRegistrationForm}:{' '}
                               <a
                                 className="helpIcon tooltip"
-                                data-title={Ember.String.loc(
-                                  '_choose_the_registration_form_tooltip'
-                                )}
+                                data-title={this.props.strings.tooltip.chooseRegistrationForm}
                               >
                                 ?
                               </a>
@@ -143,10 +115,10 @@ class Surveys extends React.Component {
                                 <label htmlFor="enableDataApproval" className="labelcheckbox">
                                   <input type="checkbox" id="enableDataApproval" />
                                   {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} */}
-                                  {Ember.String.loc('_enable_data_approval')}{' '}
+                                  {this.props.strings.enableDataApproval}{' '}
                                   <a
                                     className="helpIcon tooltip"
-                                    data-title={Ember.String.loc('_enable_data_approval_tooltip')}
+                                    data-title={this.props.strings.tooltip.enableDataApproval}
                                   >
                                     ?
                                   </a>
@@ -161,9 +133,7 @@ class Surveys extends React.Component {
                                         disabledBinding="view.disableFolderSurveyInputField"
                                     promptBinding="Ember.STRINGS._choose_data_approval_group"}} */}
                                     <select>
-                                      <option>
-                                        {Ember.String.loc('_choose_data_approval_group')}
-                                      </option>
+                                      <option>{this.props.strings.chooseDataApprovalGroup}</option>
                                       {this.props.dataApprovalGroup &&
                                         this.props.dataApprovalGroup.map(dataApproval => (
                                           <option value={dataApproval.keyId}>
@@ -182,7 +152,7 @@ class Surveys extends React.Component {
                                               this.props.actions.toggleShowDataApprovalDetails
                                             }
                                           >
-                                            {Ember.String.loc('_hide_approval')}
+                                            {this.props.strings.hideApproval}
                                           </a>
                                         </div>
                                         {/* {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}} */}
@@ -190,10 +160,10 @@ class Surveys extends React.Component {
                                           <h2>name</h2>
                                           <p>
                                             {/* {{#if ordered}}  */}
-                                            {Ember.String.loc(
-                                              '_ordered_approval'
-                                            )} {/* {{else}} */}{' '}
-                                            {Ember.String.loc('_unordered_approval')}
+                                            {
+                                              this.props.strings.orderedApproval
+                                            } {/* {{else}} */}{' '}
+                                            {this.props.strings.unorderedApproval}
                                             {/* {{/if}} */}
                                           </p>
                                           <ul className="approvalSteps">
@@ -203,7 +173,7 @@ class Surveys extends React.Component {
                                               <h4>{/* {{view.step.title}} */}</h4>{' '}
                                               <a>
                                                 {/* {{action toggleShowResponsibleUsers target="view"}} */}
-                                                {Ember.String.loc('_responsible_users')}
+                                                {this.props.strings.responsibleUser}
                                               </a>
                                             </li>
                                             {/* {{#if view.showResponsibleUsers}} */}
@@ -238,7 +208,7 @@ class Surveys extends React.Component {
                                             this.props.actions.toggleShowDataApprovalDetails
                                           }
                                         >
-                                          {Ember.String.loc('_show_approval')}
+                                          {this.props.strings.showApproval}
                                         </a>
                                       </div>
                                     )}
@@ -253,10 +223,10 @@ class Surveys extends React.Component {
                         <label htmlFor="markAsTemplate" className="labelcheckbox">
                           <input type="checkBox" id="markAsTemplate" />
                           {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.template" id="markAsTemplate" disabledBinding="view.disableFolderSurveyInputField"}}  */}
-                          {Ember.String.loc('_mark_as_template')}
+                          {this.props.strings.markAsTemplate}
                           <a
                             className="helpIcon tooltip"
-                            data-title={Ember.String.loc('_mark_as_template_tooltip')}
+                            data-title={this.props.strings.tooltip.markAsTemplate}
                           >
                             ?
                           </a>
@@ -271,7 +241,7 @@ class Surveys extends React.Component {
                 {!this.props.helperFunctions.hasForms() && (
                   <ul>
                     <li className="formList">
-                      <p className="noForms">{Ember.String.loc('_no_forms_in_this_survey')}</p>
+                      <p className="noForms">{this.props.strings.noForm}</p>
                     </li>
                     {this.props.helperFunctions.showAddNewFormButton() && (
                       <li>
@@ -279,7 +249,7 @@ class Surveys extends React.Component {
                           className="addMenuAction aBtn addNewForm"
                           //    {{action "createForm" target="FLOW.surveyControl"}}
                         >
-                          {Ember.String.loc('_add_new_form')}
+                          {this.props.strings.addNewForm}
                         </a>
                       </li>
                     )}
@@ -299,7 +269,7 @@ class Surveys extends React.Component {
                                 //   {{action "createForm" target="FLOW.surveyControl"}}
                                 className="button addFormBtn"
                               >
-                                {Ember.String.loc('_add_new_form')}
+                                {this.props.strings.addNewForm}
                               </a>
                             </li>
                           </ul>
@@ -347,6 +317,7 @@ class Surveys extends React.Component {
 }
 
 Surveys.propTypes = {
+  strings: PropTypes.object.isRequired,
   currentProject: PropTypes.object.isRequired,
   selectedSurvey: PropTypes.object.isRequired,
   helperFunctions: PropTypes.object.isRequired,
