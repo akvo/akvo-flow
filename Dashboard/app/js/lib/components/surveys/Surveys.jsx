@@ -11,8 +11,42 @@ class Surveys extends React.Component {
 
   toggleMonitoringGroup = () => {
     this.setState(state => ({
-      currentProject: { ...state, monitoringGroup: !state.currentProject.monitoringGroup },
+      currentProject: {
+        ...state.currentProject,
+        monitoringGroup: !state.currentProject.monitoringGroup,
+      },
     }));
+  };
+
+  toggleDataApproval = () => {
+    this.setState(state => ({
+      currentProject: {
+        ...state.currentProject,
+        requireDataApproval: !state.currentProject.requireDataApproval,
+      },
+    }));
+  };
+
+  toggleTemplate = () => {
+    this.setState(state => ({
+      currentProject: {
+        ...state.currentProject,
+        template: !state.currentProject.template,
+      },
+    }));
+  };
+
+  getSurveyTitle = inputValue => {
+    if (inputValue.length > 0) {
+      this.setState(state => ({
+        currentProject: {
+          ...state.currentProject,
+          code: inputValue,
+          name: inputValue,
+          path: `${FLOW.projectControl.currentProjectPath}/${inputValue}`,
+        },
+      }));
+    }
   };
 
   render() {
@@ -60,12 +94,12 @@ class Surveys extends React.Component {
                     //   {{action 'saveProject' on='submit' target="FLOW.projectControl"}}
                   >
                     <label>{this.props.strings.surveyTitle}</label>
-                    {/* {{view Ember.TextField id="projectTitle" valueBinding="this.state.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}} */}
                     <input
                       type="text"
                       id="projectTitle"
                       defaultValue={this.state.currentProject.name}
                       disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
+                      onChange={e => this.getSurveyTitle(e.target.value)}
                     />
                     <ul className="projectSelect floats-in">
                       <li>
@@ -129,8 +163,8 @@ class Surveys extends React.Component {
                                     type="checkbox"
                                     id="enableDataApproval"
                                     disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
+                                    onChange={this.toggleDataApproval}
                                   />
-                                  {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} */}
                                   {this.props.strings.enableDataApproval}{' '}
                                   <a
                                     className="helpIcon tooltip"
@@ -139,7 +173,7 @@ class Surveys extends React.Component {
                                     ?
                                   </a>
                                 </label>{' '}
-                                {this.props.helperFunctions.showDataApprovalList && (
+                                {this.state.currentProject.requireDataApproval && (
                                   <>
                                     {/* {{view Ember.Select
                                         contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
@@ -215,7 +249,6 @@ class Surveys extends React.Component {
                                                           <li>
                                                             <input
                                                               type="checkBox"
-                                                              // checkedBinding="view.isResponsibleUser"
                                                               onChange={() =>
                                                                 this.props.actions.isResponsibleUser(
                                                                   user.keyId,
@@ -259,8 +292,8 @@ class Surveys extends React.Component {
                             type="checkBox"
                             id="markAsTemplate"
                             disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
+                            onChange={this.toggleTemplate}
                           />
-                          {/* {{view Ember.Checkbox checkedBinding="this.state.currentProject.template" id="markAsTemplate" disabledBinding="view.disableFolderSurveyInputField"}}  */}
                           {this.props.strings.markAsTemplate}
                           <a
                             className="helpIcon tooltip"
@@ -340,7 +373,11 @@ class Surveys extends React.Component {
                         className={this.props.helperFunctions.isPublished() ? 'published' : ''}
                       >
                         <h3>{this.state.selectedSurvey && this.state.selectedSurvey.name}</h3>
+
+                        {/* FORM */}
                         {/* {{view FLOW.FormView}} */}
+
+                        {/* FORM */}
                       </div>
                     </section>
                   </div>

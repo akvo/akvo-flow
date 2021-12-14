@@ -22,7 +22,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     'this.showProjectDetails': 'renderReactSide',
     'this.showDataApprovalDetails': 'renderReactSide',
     'this.showResponsibleUsers': 'renderReactSide',
-    'FLOW.projectControl.currentProject.@each': 'renderReactSide',
   }),
   {
     init() {
@@ -43,7 +42,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      console.log( FLOW.projectControl.currentProject._data.attributes);
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -190,6 +188,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         registrationForm = FLOW.surveyControl.content.filter(
           item => item.get('keyId') === formId
         )[0];
+
         this.set('currentRegistrationForm', registrationForm);
       }
       return registrationForm;
@@ -314,7 +313,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     showDataApprovalList() {
-      FLOW.projectControl.currentProject.get('requireDataApproval');
+      return FLOW.projectControl.currentProject.get('requireDataApproval');
     },
   }
 );
