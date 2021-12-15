@@ -318,7 +318,8 @@ class Surveys extends React.Component {
                       <li>
                         <a
                           className="addMenuAction aBtn addNewForm"
-                          //    {{action "createForm" target="FLOW.surveyControl"}}
+                          onClick={this.props.actions.createForm}
+                          onKeyDown={this.props.actions.createForm}
                         >
                           {this.props.strings.addNewForm}
                         </a>
@@ -337,7 +338,8 @@ class Surveys extends React.Component {
                           <ul>
                             <li>
                               <a
-                                //   {{action "createForm" target="FLOW.surveyControl"}}
+                                onClick={this.props.actions.createForm}
+                                onKeyDown={this.props.actions.createForm}
                                 className="button addFormBtn"
                               >
                                 {this.props.strings.addNewForm}
@@ -348,23 +350,19 @@ class Surveys extends React.Component {
                       ))}
                     <nav className="tabNav floats-in">
                       <ul>
-                        {/* NEED TO BE SEPARATED */}
-                        {/* {{#view FLOW.FormTabView contentBinding="form"}}  */}
-                        {FLOW.surveyControl.orderedForms.map(data => {
-                          const form = data._data.attributes;
+                        {/* Form list */}
+                        {this.props.orderedForms.map(form => {
+                          const formKeyId = form.keyId !== undefined ? form.keyId : 1;
                           return (
                             <li
-                              key={form.keyId}
+                              key={formKeyId}
                               className={this.props.helperFunctions.classProperty(form)}
                             >
-                              <a>
-                                {/* {{action "selectForm" form target="FLOW.surveyControl"}} */}
-                                {form.name}
-                              </a>
+                              <a>{form.name}</a>
                             </li>
                           );
                         })}
-                        {/* {{/view}} */}
+                        {/* Form list */}
                       </ul>
                     </nav>
                     <section className="formsContainer">
@@ -397,6 +395,7 @@ Surveys.propTypes = {
   approvalGroups: PropTypes.object,
   currentProject: PropTypes.object.isRequired,
   selectedSurvey: PropTypes.object,
+  orderedForms: PropTypes.array,
   helperFunctions: PropTypes.object.isRequired,
   showDataApproval: PropTypes.bool.isRequired,
   showDataApprovalDetails: PropTypes.bool.isRequired,
@@ -414,6 +413,7 @@ Surveys.defaultProps = {
   approvalSteps: null,
   approvalGroups: null,
   selectedSurvey: null,
+  orderedForms: [],
   dataApprovalGroup: null,
   actions: () => null,
 };

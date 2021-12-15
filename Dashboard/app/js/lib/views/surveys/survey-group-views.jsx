@@ -22,15 +22,17 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     'this.showProjectDetails': 'renderReactSide',
     'this.showDataApprovalDetails': 'renderReactSide',
     'this.showResponsibleUsers': 'renderReactSide',
+    'FLOW.surveyControl.content.@each.keyId': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
-      this.visibleProjectBasics = this.visibleProjectBasics.bind(this);
+      this.createForm = this.createForm.bind(this);
       this.toggleShowProjectDetails = this.toggleShowProjectDetails.bind(this);
       this.toggleShowDataApprovalDetails = this.toggleShowDataApprovalDetails.bind(this);
       this.toggleShowResponsibleUsers = this.toggleShowResponsibleUsers.bind(this);
+      this.visibleProjectBasics = this.visibleProjectBasics.bind(this);
       this.updateSelectedLanguage = this.updateSelectedLanguage.bind(this);
       this.isResponsibleUser = this.isResponsibleUser.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
@@ -59,6 +61,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
             .get('dataApprovalGroup')
             .getEach('_data')
             .getEach('attributes'),
+        orderedForms: FLOW.surveyControl.content.getEach('_data').getEach('attributes'),
         selectedSurvey:
           FLOW.selectedControl.selectedSurvey &&
           FLOW.selectedControl.selectedSurvey._data.attributes,
@@ -70,6 +73,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         showProjectDetails: this.showProjectDetails,
         showDataApprovalDetails: this.showDataApprovalDetails,
         showResponsibleUsers: this.showResponsibleUsers,
+
         helperFunctions: {
           isPublished: this.isPublished,
           formCount: this.formCount,
@@ -81,11 +85,13 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           showDataApprovalList: this.showDataApprovalList,
           disableFolderSurveyInputField: this.disableFolderSurveyInputField,
         },
+
         actions: {
           toggleShowProjectDetails: this.toggleShowProjectDetails,
           toggleShowDataApprovalDetails: this.toggleShowDataApprovalDetails,
           toggleShowResponsibleUsers: this.toggleShowResponsibleUsers,
           isResponsibleUser: this.isResponsibleUser,
+          createForm: this.createForm,
         },
 
         strings: {
@@ -131,6 +137,69 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     user: null,
     showResponsibleUsers: false,
 
+    classProperty(project) {
+      const form = project;
+      const currentProject = FLOW.projectControl.get('currentProject');
+      let classString = 'aFormTab';
+
+      if (form === null || currentProject === null) return classString;
+
+      // Return "aFormTab" "current" and/or "registrationForm"
+      const isActive =
+        project && form.keyId === Number(FLOW.selectedControl.get('selectedSurvey').get('id'));
+      const isRegistrationForm =
+        currentProject.get('monitoringGroup') &&
+        form.keyId === currentProject.get('newLocaleSurveyId');
+
+      if (isActive) classString += ' current';
+      if (isRegistrationForm) classString += ' registrationForm';
+
+      return classString;
+    },
+
+    formCount() {
+      return FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0;
+    },
+
+    hasForms() {
+      return FLOW.projectControl.get('formCount') > 0;
+    },
+
+    isNewProject() {
+      const currentProject = FLOW.projectControl.get('currentProject');
+      return currentProject && currentProject.get('code') === 'New survey';
+    },
+
+    visibleProjectBasics() {
+      return this.isNewProject() || this.showProjectDetails;
+    },
+
+    isPublished() {
+      let form;
+      if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
+        form = FLOW.selectedControl.get('selectedSurvey');
+      } else if (FLOW.surveyControl.content.get('isLoaded')) {
+        form = FLOW.surveyControl.content.get('firstObject');
+        FLOW.selectedControl.set('selectedSurvey', form);
+      }
+      return form && form.get('status') === 'PUBLISHED';
+    },
+
+    disableFolderSurveyInputField() {
+      const permissions = FLOW.projectControl.get('currentFolderPermissions');
+      return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
+    },
+
+    showAddNewFormButton() {
+      const survey = FLOW.projectControl.get('currentProject');
+      return FLOW.permControl.canEditSurvey(survey);
+    },
+
+    showDataApprovalList() {
+      return FLOW.projectControl.currentProject.get('requireDataApproval');
+    },
+
+    // Approval responsible user
     isResponsibleUser(key, isCheckedValue) {
       const step = this.get('step');
       const user = this.get('user');
@@ -237,40 +306,34 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
     },
 
-    classProperty(project) {
-      const form = project;
-      const currentProject = FLOW.projectControl.get('currentProject');
-      let classString = 'aFormTab';
-
-      if (form === null || currentProject === null) return classString;
-
-      // Return "aFormTab" "current" and/or "registrationForm"
-      const isActive = form.keyId === Number(FLOW.selectedControl.get('selectedSurvey').get('id'));
-      const isRegistrationForm =
-        currentProject.get('monitoringGroup') &&
-        form.keyId === currentProject.get('newLocaleSurveyId');
-
-      if (isActive) classString += ' current';
-      if (isRegistrationForm) classString += ' registrationForm';
-
-      return classString;
+    refresh() {
+      const sg = FLOW.selectedControl.get('selectedSurveyGroup');
+      this.set(
+        'content',
+        FLOW.store.filter(FLOW.Survey, item => item.get('surveyGroupId') === sg.get('keyId'))
+      );
     },
 
-    formCount() {
-      return FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0;
-    },
-
-    hasForms() {
-      return FLOW.projectControl.get('formCount') > 0;
-    },
-
-    isNewProject() {
-      const currentProject = FLOW.projectControl.get('currentProject');
-      return currentProject && currentProject.get('code') === 'New survey';
-    },
-
-    visibleProjectBasics() {
-      return this.isNewProject() || this.showProjectDetails;
+    createForm() {
+      const code = Ember.String.loc('_new_form').trim();
+      const path = `${FLOW.projectControl.get('currentProjectPath')}/${code}`;
+      const ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
+      ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
+      const newForm = FLOW.store.createRecord(FLOW.Survey, {
+        name: code,
+        code,
+        path,
+        defaultLanguageCode: 'en',
+        requireApproval: false,
+        status: 'NOT_PUBLISHED',
+        surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+        version: '1.0',
+        ancestorIds,
+      });
+      FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
+      FLOW.selectedControl.set('selectedSurvey', newForm);
+      FLOW.store.commit();
+      this.refresh();
     },
 
     updateSelectedLanguage() {
@@ -289,31 +352,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         'newLocaleSurveyId',
         this.currentRegistrationForm.get('keyId')
       );
-    },
-
-    isPublished() {
-      let form;
-      if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
-        form = FLOW.selectedControl.get('selectedSurvey');
-      } else if (FLOW.surveyControl.content.get('isLoaded')) {
-        form = FLOW.surveyControl.content.get('firstObject');
-        FLOW.selectedControl.set('selectedSurvey', form);
-      }
-      return form && form.get('status') === 'PUBLISHED';
-    },
-
-    disableFolderSurveyInputField() {
-      const permissions = FLOW.projectControl.get('currentFolderPermissions');
-      return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
-    },
-
-    showAddNewFormButton() {
-      const survey = FLOW.projectControl.get('currentProject');
-      return FLOW.permControl.canEditSurvey(survey);
-    },
-
-    showDataApprovalList() {
-      return FLOW.projectControl.currentProject.get('requireDataApproval');
     },
   }
 );

@@ -815,28 +815,6 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
    })
   },
 
-  createForm() {
-    const code = Ember.String.loc('_new_form').trim();
-    const path = `${FLOW.projectControl.get('currentProjectPath')}/${code}`;
-    const ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
-    ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-    const newForm = FLOW.store.createRecord(FLOW.Survey, {
-      name: code,
-      code,
-      path,
-      defaultLanguageCode: 'en',
-      requireApproval: false,
-      status: 'NOT_PUBLISHED',
-      surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
-      version: '1.0',
-      ancestorIds,
-    });
-    FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
-    FLOW.selectedControl.set('selectedSurvey', newForm);
-    FLOW.store.commit();
-    this.refresh();
-  },
-
   deleteForm() {
     const keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     const survey = FLOW.store.find(FLOW.Survey, keyId);
