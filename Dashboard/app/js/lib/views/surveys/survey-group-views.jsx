@@ -23,6 +23,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     'this.showDataApprovalDetails': 'renderReactSide',
     'this.showResponsibleUsers': 'renderReactSide',
     'FLOW.surveyControl.content.@each.keyId': 'renderReactSide',
+    'FLOW.selectedControl.selectedSurvey': 'renderReactSide',
   }),
   {
     init() {
@@ -61,7 +62,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
             .get('dataApprovalGroup')
             .getEach('_data')
             .getEach('attributes'),
-        orderedForms: FLOW.surveyControl.content.getEach('_data').getEach('attributes'),
+        orderedForms: FLOW.surveyControl.content,
         selectedSurvey:
           FLOW.selectedControl.selectedSurvey &&
           FLOW.selectedControl.selectedSurvey._data.attributes,
@@ -93,6 +94,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           toggleShowResponsibleUsers: this.toggleShowResponsibleUsers,
           isResponsibleUser: this.isResponsibleUser,
           createForm: this.createForm,
+          selectForm: this.selectForm,
         },
 
         strings: {
@@ -335,6 +337,15 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       FLOW.selectedControl.set('selectedSurvey', newForm);
       FLOW.store.commit();
       this.refresh();
+    },
+
+    selectForm(project) {
+      FLOW.selectedControl.set('selectedSurvey', project);
+      //  we don't allow copying or moving between forms
+      FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+      FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
+      FLOW.selectedControl.set('selectedForMoveQuestion', null);
+      FLOW.selectedControl.set('selectedForCopyQuestion', null);
     },
 
     updateSelectedLanguage() {

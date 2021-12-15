@@ -351,14 +351,20 @@ class Surveys extends React.Component {
                     <nav className="tabNav floats-in">
                       <ul>
                         {/* Form list */}
-                        {this.props.orderedForms.map(form => {
+                        {this.props.orderedForms.map(project => {
+                          const form = project._data.attributes;
                           const formKeyId = form.keyId !== undefined ? form.keyId : 1;
                           return (
                             <li
                               key={formKeyId}
                               className={this.props.helperFunctions.classProperty(form)}
                             >
-                              <a>{form.name}</a>
+                              <a
+                                onClick={() => this.props.actions.selectForm(project)}
+                                onKeyDown={() => this.props.actions.selectForm(project)}
+                              >
+                                {form.name}
+                              </a>
                             </li>
                           );
                         })}
@@ -371,7 +377,6 @@ class Surveys extends React.Component {
                         className={this.props.helperFunctions.isPublished() ? 'published' : ''}
                       >
                         <h3>{this.state.selectedSurvey && this.state.selectedSurvey.name}</h3>
-
                         {/* FORM */}
                         {/* {{view FLOW.FormView}} */}
 
@@ -395,7 +400,7 @@ Surveys.propTypes = {
   approvalGroups: PropTypes.object,
   currentProject: PropTypes.object.isRequired,
   selectedSurvey: PropTypes.object,
-  orderedForms: PropTypes.array,
+  orderedForms: PropTypes.object,
   helperFunctions: PropTypes.object.isRequired,
   showDataApproval: PropTypes.bool.isRequired,
   showDataApprovalDetails: PropTypes.bool.isRequired,
@@ -414,7 +419,7 @@ Surveys.defaultProps = {
   approvalSteps: null,
   approvalGroups: null,
   selectedSurvey: null,
-  orderedForms: [],
+  orderedForms: null,
   dataApprovalGroup: null,
   actions: () => null,
 };

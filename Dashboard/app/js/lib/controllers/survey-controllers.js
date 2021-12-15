@@ -833,15 +833,6 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     FLOW.previewControl.set('showPreviewPopup', true);
   },
 
-  selectForm(evt) {
-    FLOW.selectedControl.set('selectedSurvey', evt.context);
-    //  we don't allow copying or moving between forms
-    FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
-    FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-    FLOW.selectedControl.set('selectedForMoveQuestion', null);
-    FLOW.selectedControl.set('selectedForCopyQuestion', null);
-  },
-
   /* retrieve a survey and check based on its path whether the user
   is allowed to delete survey instances related to the survey */
   userCanDeleteData(surveyId) {
