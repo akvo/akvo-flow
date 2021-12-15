@@ -65,6 +65,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         selectedSurvey:
           FLOW.selectedControl.selectedSurvey &&
           FLOW.selectedControl.selectedSurvey._data.attributes,
+        languages: FLOW.languageControl.content,
         approvalGroups: FLOW.router.approvalGroupController.content,
         approvalSteps: FLOW.router.approvalStepsController.content,
         showDataApproval: FLOW.Env.enableDataApproval,

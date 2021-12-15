@@ -113,7 +113,7 @@ class Surveys extends React.Component {
                         <select
                           disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
                         >
-                          {FLOW.languageControl.content.map(language => (
+                          {this.props.languages.map(language => (
                             <option key={language.value}>{language.label}</option>
                           ))}
                         </select>
@@ -405,6 +405,7 @@ Surveys.propTypes = {
   approvalSteps: PropTypes.array,
   actions: PropTypes.object,
   dataApprovalGroup: PropTypes.array,
+  languages: PropTypes.array.isRequired,
 };
 
 Surveys.defaultProps = {
