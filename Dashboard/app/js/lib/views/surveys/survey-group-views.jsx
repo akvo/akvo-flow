@@ -18,18 +18,24 @@ FLOW.ProjectListView = FLOW.View.extend(template('navSurveys/project-list'));
 FLOW.ProjectView = FLOW.ReactComponentView.extend(
   observe({
     'this.selectedLanguage': 'updateSelectedLanguage',
-    currentRegistrationForm: 'updateSelectedRegistrationForm',
+    'this.currentRegistrationForm': 'updateSelectedRegistrationForm',
     'this.showProjectDetails': 'renderReactSide',
     'this.showDataApprovalDetails': 'renderReactSide',
     'this.showResponsibleUsers': 'renderReactSide',
     'FLOW.surveyControl.content.@each.keyId': 'renderReactSide',
     'FLOW.selectedControl.selectedSurvey': 'renderReactSide',
+    'FLOW.projectControl.currentProject': 'renderReactSide',
+    'FLOW.projectControl.currentProject.newLocaleSurveyId': 'renderReactSide',
+    'FLOW.projectControl.currentProject.monitoringGroup': 'renderReactSide',
+    'FLOW.projectControl.currentProject.requireDataApproval': 'renderReactSide',
+    'FLOW.projectControl.currentProject.template': 'renderReactSide',
   }),
   {
     init() {
       this._super();
       this.getProps = this.getProps.bind(this);
       this.createForm = this.createForm.bind(this);
+      this.selectedRegistrationForm = this.selectedRegistrationForm.bind(this);
       this.toggleShowProjectDetails = this.toggleShowProjectDetails.bind(this);
       this.toggleShowDataApprovalDetails = this.toggleShowDataApprovalDetails.bind(this);
       this.toggleShowResponsibleUsers = this.toggleShowResponsibleUsers.bind(this);
@@ -51,11 +57,8 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        currentProject: FLOW.projectControl.currentProject._data.attributes,
-        arrangedContent: FLOW.surveyControl
-          .get('arrangedContent')
-          .getEach('_data')
-          .getEach('attributes'),
+        currentProject: this.project()._data.attributes,
+        arrangedContent: FLOW.surveyControl.get('arrangedContent'),
         dataApprovalGroup:
           FLOW.projectControl.get('dataApprovalGroup') &&
           FLOW.projectControl
@@ -95,6 +98,10 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           isResponsibleUser: this.isResponsibleUser,
           createForm: this.createForm,
           selectForm: this.selectForm,
+          selectedRegistrationForm: this.selectedRegistrationForm,
+          toggleMonitoringGroup: this.toggleMonitoringGroup,
+          toggleDataApproval: this.toggleDataApproval,
+          toggleTemplate: this.toggleTemplate,
         },
 
         strings: {
@@ -151,13 +158,34 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       const isActive =
         project && form.keyId === Number(FLOW.selectedControl.get('selectedSurvey').get('id'));
       const isRegistrationForm =
-        currentProject.get('monitoringGroup') &&
+        // currentProject.get('monitoringGroup') &&
         form.keyId === currentProject.get('newLocaleSurveyId');
 
       if (isActive) classString += ' current';
       if (isRegistrationForm) classString += ' registrationForm';
 
       return classString;
+    },
+
+    toggleMonitoringGroup() {
+      FLOW.projectControl.currentProject.set(
+        'monitoringGroup',
+        !FLOW.projectControl.currentProject.get('monitoringGroup')
+      );
+    },
+
+    toggleDataApproval() {
+      FLOW.projectControl.currentProject.set(
+        'requireDataApproval',
+        !FLOW.projectControl.currentProject.get('requireDataApproval')
+      );
+    },
+
+    toggleTemplate() {
+      FLOW.projectControl.currentProject.set(
+        'template',
+        !FLOW.projectControl.currentProject.get('template')
+      );
     },
 
     formCount() {
@@ -249,36 +277,39 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
 
     /* computer property for setting / getting the value of the current
   registration form */
-    selectedRegistrationForm: Ember.computed(function(key, value) {
+    selectedRegistrationForm(key, value) {
+      const selectedSurvey = FLOW.surveyControl
+        .get('arrangedContent')
+        .filter(item => item.get('keyId') === value)[0]._data.attributes;
+
       if (arguments.length > 1) {
-        this.set('currentRegistrationForm', value);
+        this.set('currentRegistrationForm', selectedSurvey);
       }
 
-      let registrationForm = this.get('currentRegistrationForm');
+      let registrationForm = this.currentRegistrationForm;
       if (!registrationForm) {
         const formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
-        registrationForm = FLOW.surveyControl.content.filter(
-          item => item.get('keyId') === formId
-        )[0];
-
-        this.set('currentRegistrationForm', registrationForm);
+        registrationForm = FLOW.surveyControl.content.filter(item => item.get('keyId') === formId);
+        this.set('currentRegistrationForm', registrationForm[0]);
       }
       return registrationForm;
-    }).property('FLOW.projectControl.currentProject'),
+    },
 
     /*
      * property for setting the currently selected approval group
      */
-    selectedApprovalGroup: Ember.computed(() => {
+    selectedApprovalGroup() {
       const approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
       const approvalGroupList = FLOW.router.approvalGroupListController.get('content');
       const approvalGroup =
         approvalGroupList &&
         approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
       return approvalGroup;
-    }).property('FLOW.projectControl.currentProject'),
+    },
 
-    project: Ember.computed(() => FLOW.projectControl.get('currentProject')).property(),
+    project() {
+      return FLOW.projectControl.get('currentProject');
+    },
 
     toggleShowProjectDetails() {
       this.set('showProjectDetails', !this.get('showProjectDetails'));
@@ -354,15 +385,15 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
     },
 
-    showMonitoringGroupCheckbox: Ember.computed(
-      () => FLOW.projectControl.get('formCount') < 2
-    ).property('FLOW.projectControl.formCount'),
+    showMonitoringGroupCheckbox() {
+      return FLOW.projectControl.get('formCount') < 2;
+    },
 
     updateSelectedRegistrationForm() {
-      if (!this.get('currentRegistrationForm')) return;
+      if (!this.currentRegistrationForm) return;
       FLOW.projectControl.currentProject.set(
         'newLocaleSurveyId',
-        this.currentRegistrationForm.get('keyId')
+        this.currentRegistrationForm.keyId
       );
     },
   }
