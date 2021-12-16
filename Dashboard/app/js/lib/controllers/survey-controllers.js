@@ -495,14 +495,14 @@ FLOW.projectControl = Ember.ArrayController.create({
   }).property('this.currentProject.dataApprovalGroupId'),
 
   saveProject() {
-    const currentProject = this.get('currentProject');
+    const currentProject = FLOW.projectControl.currentProject || this.get('currentProject');
     const currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
       const name = currentProject.get('name').trim();
       currentProject.set('name', name);
       currentProject.set('code', name);
-      currentProject.set('path', this.get('currentProjectPath'));
+      currentProject.set('path', FLOW.projectControl.get("currentProjectPath") || this.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {

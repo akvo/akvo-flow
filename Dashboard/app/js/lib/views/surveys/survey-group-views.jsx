@@ -24,7 +24,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     'this.showResponsibleUsers': 'renderReactSide',
     'FLOW.surveyControl.content.@each.keyId': 'renderReactSide',
     'FLOW.selectedControl.selectedSurvey': 'renderReactSide',
-    'FLOW.projectControl.currentProject': 'renderReactSide',
     'FLOW.projectControl.currentProject.newLocaleSurveyId': 'renderReactSide',
     'FLOW.projectControl.currentProject.monitoringGroup': 'renderReactSide',
     'FLOW.projectControl.currentProject.requireDataApproval': 'renderReactSide',
@@ -51,7 +50,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      console.log(this.showAddNewFormButton());
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -104,6 +102,8 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           toggleDataApproval: this.toggleDataApproval,
           toggleTemplate: this.toggleTemplate,
           updateSelectedLanguage: this.updateSelectedLanguage,
+          saveProject: FLOW.projectControl.saveProject,
+          getSurveyTitle: this.getSurveyTitle,
         },
 
         strings: {
@@ -172,7 +172,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         'monitoringGroup',
         !FLOW.projectControl.currentProject.get('monitoringGroup')
       );
-      console.log(FLOW.projectControl.currentProject.get('monitoringGroup'));
     },
 
     toggleDataApproval() {
@@ -378,6 +377,15 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
       FLOW.selectedControl.set('selectedForMoveQuestion', null);
       FLOW.selectedControl.set('selectedForCopyQuestion', null);
+    },
+
+    getSurveyTitle(inputValue) {
+      if (inputValue.length > 0) {
+        FLOW.projectControl.currentProject.set('name', inputValue);
+        FLOW.projectControl.currentProject.set('code', inputValue);
+        const path = `${FLOW.projectControl.get('currentProjectPath')}/${inputValue}`;
+        FLOW.projectControl.currentProject.set('path', path);
+      }
     },
 
     updateSelectedLanguage(value) {

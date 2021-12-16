@@ -8,18 +8,15 @@ class Surveys extends React.Component {
     currentProject: this.props.currentProject,
   };
 
-  getSurveyTitle = inputValue => {
-    if (inputValue.length > 0) {
-      this.setState(state => ({
-        currentProject: {
-          ...state.currentProject,
-          code: inputValue,
-          name: inputValue,
-          path: `${FLOW.projectControl.currentProjectPath}/${inputValue}`,
-        },
-      }));
-    }
-  };
+  editProject(inputValue) {
+    this.setState(state => ({
+      currentProject: {
+        ...state.currentProject,
+        name: inputValue,
+      },
+    }));
+    this.props.actions.getSurveyTitle(inputValue);
+  }
 
   render() {
     return (
@@ -61,27 +58,18 @@ class Surveys extends React.Component {
                   </a>
                 )}
                 {this.props.helperFunctions.visibleProjectBasics() && (
-                  <form
-                    className="projectDetailForm"
-                    //   {{action 'saveProject' on='submit' target="FLOW.projectControl"}}
-                  >
+                  <form className="projectDetailForm" onBlur={this.props.actions.saveProject}>
                     <label>{this.props.strings.surveyTitle}</label>
                     <input
                       type="text"
                       id="projectTitle"
                       defaultValue={this.state.currentProject.name}
                       disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
-                      onChange={e => this.getSurveyTitle(e.target.value)}
+                      onChange={e => this.editProject(e.target.value)}
                     />
                     <ul className="projectSelect floats-in">
                       <li>
                         <label>{this.props.strings.language}:</label>
-                        {/* {{view Ember.Select
-                       contentBinding="FLOW.languageControl.content"
-                       selectionBinding="view.selectedLanguage"
-                       optionLabelPath="content.label"
-                       optionValuePath="content.value"
-                       disabledBinding="view.disableFolderSurveyInputField"}} */}
                         <select
                           disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
                           onChange={e => this.props.actions.updateSelectedLanguage(e.target.value)}
@@ -136,12 +124,6 @@ class Surveys extends React.Component {
                                 );
                               })}
                             </select>
-                            {/* {{view Ember.Select
-                                contentBinding="FLOW.surveyControl.arrangedContent"
-                                selectionBinding="view.selectedRegistrationForm"
-                                optionLabelPath="content.code"
-                                optionValuePath="content.keyId"
-                                disabledBinding="view.disableFolderSurveyInputField"}} */}
 
                             {this.props.showDataApproval && (
                               <>
