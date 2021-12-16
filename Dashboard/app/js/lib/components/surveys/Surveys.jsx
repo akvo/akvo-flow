@@ -6,16 +6,6 @@ import PropTypes from 'prop-types';
 class Surveys extends React.Component {
   state = {
     currentProject: this.props.currentProject,
-    selectedSurvey: this.props.selectedSurvey,
-  };
-
-  toggleTemplate = () => {
-    this.setState(state => ({
-      currentProject: {
-        ...state.currentProject,
-        template: !state.currentProject.template,
-      },
-    }));
   };
 
   getSurveyTitle = inputValue => {
@@ -333,7 +323,7 @@ class Surveys extends React.Component {
               <section className="forms">
                 {this.props.helperFunctions.hasForms() && (
                   <div id="tabs">
-                    {this.state.currentProject.monitoringGroup &&
+                    {FLOW.projectControl.currentProject.get('monitoringGroup') &&
                       (this.props.helperFunctions.showAddNewFormButton() && (
                         <nav className="menuTopbar">
                           <ul>
@@ -377,7 +367,7 @@ class Surveys extends React.Component {
                         id="form01"
                         className={this.props.helperFunctions.isPublished() ? 'published' : ''}
                       >
-                        <h3>{this.state.selectedSurvey && this.state.selectedSurvey.name}</h3>
+                        <h3>{this.props.selectedSurvey && this.props.selectedSurvey.name}</h3>
                         {/* FORM */}
                         {/* {{view FLOW.FormView}} */}
 

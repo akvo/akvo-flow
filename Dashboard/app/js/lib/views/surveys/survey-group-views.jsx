@@ -51,7 +51,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
-      console.log(FLOW.languageControl.content);
+      console.log(this.showAddNewFormButton());
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -159,9 +159,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       // Return "aFormTab" "current" and/or "registrationForm"
       const isActive =
         project && form.keyId === Number(FLOW.selectedControl.get('selectedSurvey').get('id'));
-      const isRegistrationForm =
-        // currentProject.get('monitoringGroup') &&
-        form.keyId === currentProject.get('newLocaleSurveyId');
+      const isRegistrationForm = form.keyId === currentProject.get('newLocaleSurveyId');
 
       if (isActive) classString += ' current';
       if (isRegistrationForm) classString += ' registrationForm';
@@ -174,6 +172,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         'monitoringGroup',
         !FLOW.projectControl.currentProject.get('monitoringGroup')
       );
+      console.log(FLOW.projectControl.currentProject.get('monitoringGroup'));
     },
 
     toggleDataApproval() {
@@ -224,7 +223,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     showAddNewFormButton() {
-      const survey = FLOW.projectControl.get('currentProject');
+      const survey = FLOW.projectControl.currentProject;
       return FLOW.permControl.canEditSurvey(survey);
     },
 
