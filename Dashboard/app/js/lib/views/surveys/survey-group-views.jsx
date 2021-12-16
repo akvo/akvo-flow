@@ -51,6 +51,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
+      console.log(FLOW.languageControl.content);
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -102,6 +103,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           toggleMonitoringGroup: this.toggleMonitoringGroup,
           toggleDataApproval: this.toggleDataApproval,
           toggleTemplate: this.toggleTemplate,
+          updateSelectedLanguage: this.updateSelectedLanguage,
         },
 
         strings: {
@@ -379,10 +381,16 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       FLOW.selectedControl.set('selectedForCopyQuestion', null);
     },
 
-    updateSelectedLanguage() {
+    updateSelectedLanguage(value) {
+      const getLanguage = FLOW.languageControl.content.filter(
+        language => language.get('value') === value
+      );
+
+      if (getLanguage.length !== 0) this.set('selectedLanguage', getLanguage[0]);
+
       const currentProject = FLOW.projectControl.get('currentProject');
-      if (currentProject)
-        currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
+
+      if (currentProject) currentProject.set('defaultLanguageCode', this.selectedLanguage.value);
     },
 
     showMonitoringGroupCheckbox() {

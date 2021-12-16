@@ -94,9 +94,12 @@ class Surveys extends React.Component {
                        disabledBinding="view.disableFolderSurveyInputField"}} */}
                         <select
                           disabled={this.props.helperFunctions.disableFolderSurveyInputField()}
+                          onChange={e => this.props.actions.updateSelectedLanguage(e.target.value)}
                         >
                           {this.props.languages.map(language => (
-                            <option key={language.value}>{language.label}</option>
+                            <option key={language.value} value={language.value}>
+                              {language.label}
+                            </option>
                           ))}
                         </select>
                       </li>
