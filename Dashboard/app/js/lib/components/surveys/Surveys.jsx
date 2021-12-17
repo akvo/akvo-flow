@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import PropTypes from 'prop-types';
+import Form from './Form';
 
 class Surveys extends React.Component {
   state = {
@@ -352,7 +353,7 @@ class Surveys extends React.Component {
                         <h3>{this.props.selectedSurvey && this.props.selectedSurvey.name}</h3>
                         {/* FORM */}
                         {/* {{view FLOW.FormView}} */}
-
+                        <Form />
                         {/* FORM */}
                       </div>
                     </section>
