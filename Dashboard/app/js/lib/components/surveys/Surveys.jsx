@@ -352,8 +352,10 @@ class Surveys extends React.Component {
                       >
                         <h3>{this.props.selectedSurvey && this.props.selectedSurvey.name}</h3>
                         {/* FORM */}
-                        {/* {{view FLOW.FormView}} */}
-                        <Form />
+                        <Form
+                          strings={this.props.strings}
+                          helperFunctions={this.props.helperFunctions}
+                        />
                         {/* FORM */}
                       </div>
                     </section>

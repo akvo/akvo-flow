@@ -41,6 +41,11 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       this.visibleProjectBasics = this.visibleProjectBasics.bind(this);
       this.updateSelectedLanguage = this.updateSelectedLanguage.bind(this);
       this.isResponsibleUser = this.isResponsibleUser.bind(this);
+
+      // FORM
+      this.form = this.form.bind(this);
+      this.showFormDeleteButton = this.showFormDeleteButton.bind(this);
+      this.visibleFormBasics = this.visibleFormBasics.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
     },
 
@@ -50,6 +55,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
     },
 
     renderReactSide() {
+      console.log(this.disableFormPublishButton());
       const props = this.getProps();
       this.reactRender(<Surveys {...props} />);
     },
@@ -88,22 +94,30 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           showAddNewFormButton: this.showAddNewFormButton,
           showDataApprovalList: this.showDataApprovalList,
           disableFolderSurveyInputField: this.disableFolderSurveyInputField,
+          // Form helper functiions
+          showFormPublishButton: this.showFormPublishButton,
+          showFormDeleteButton: this.showFormDeleteButton,
+          visibleFormBasics: this.visibleFormBasics,
+          showFormTranslationsButton: this.showFormTranslationsButton,
+          isNewForm: this.isNewForm,
+          disableFormFields: this.disableFormFields,
+          disableFormPublishButton: this.disableFormPublishButton,
         },
 
         actions: {
           toggleShowProjectDetails: this.toggleShowProjectDetails,
           toggleShowDataApprovalDetails: this.toggleShowDataApprovalDetails,
           toggleShowResponsibleUsers: this.toggleShowResponsibleUsers,
+          toggleMonitoringGroup: this.toggleMonitoringGroup,
+          toggleDataApproval: this.toggleDataApproval,
+          toggleTemplate: this.toggleTemplate,
           isResponsibleUser: this.isResponsibleUser,
           createForm: this.createForm,
           selectForm: this.selectForm,
           selectedRegistrationForm: this.selectedRegistrationForm,
-          toggleMonitoringGroup: this.toggleMonitoringGroup,
-          toggleDataApproval: this.toggleDataApproval,
-          toggleTemplate: this.toggleTemplate,
           updateSelectedLanguage: this.updateSelectedLanguage,
-          saveProject: FLOW.projectControl.saveProject,
           getSurveyTitle: this.getSurveyTitle,
+          saveProject: FLOW.projectControl.saveProject,
         },
 
         strings: {
@@ -129,25 +143,93 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
           surveyBasics: Ember.String.loc('_survey_basics'),
           surveyTitle: Ember.String.loc('_survey_title'),
           unorderedApproval: Ember.String.loc('_unordered_approval'),
+
+          // Form strings
+          publish: Ember.String.loc('_publish'),
+          preview: Ember.String.loc('_preview'),
+          delete: Ember.String.loc('_delete'),
+          version: Ember.String.loc('_version'),
+
+          questions: Ember.String.loc('_questions'),
+          formBasic: Ember.String.loc('_form_basics'),
+
+          formTitle: Ember.String.loc('_form_title'),
+          formApiUrl: Ember.String.loc('_form_api_url'),
+          manageTranslations: Ember.String.loc('_manage_translations'),
+          manageNotifications: Ember.String.loc('_manage_notifications'),
+
           tooltip: {
             chooseRegistrationForm: Ember.String.loc('_choose_the_registration_form_tooltip'),
             enableDataApproval: Ember.String.loc('_enable_data_approval_tooltip'),
             markAsTemplate: Ember.String.loc('_mark_as_template_tooltip'),
+
+            // Form tooltip strings
+            formApiUrl: Ember.String.loc('_form_api_url_tooltip'),
           },
         },
       };
     },
 
+    // FORM
+
+    showFormBasics: false,
+
+    form() {
+      return FLOW.selectedControl.get('selectedSurvey');
+    },
+
+    showFormDeleteButton() {
+      const form = FLOW.selectedControl.get('selectedSurvey');
+      return FLOW.permControl.canEditForm(form);
+    },
+
+    showFormPublishButton() {
+      const form = FLOW.selectedControl.selectedSurvey;
+      return FLOW.permControl.canEditForm(form);
+    },
+
+    isNewForm() {
+      const form = FLOW.selectedControl.get('selectedSurvey');
+      return form && form.get('code').toLowerCase() === 'new form';
+    },
+
+    visibleFormBasics() {
+      console.log(this.showFormBasics, 'showFormBasic');
+      return this.isNewForm() || this.showFormBasics;
+    },
+
+    showFormTranslationsButton() {
+      const form = FLOW.selectedControl.selectedSurvey;
+      return FLOW.permControl.canEditForm(form);
+    },
+
+    disableFormFields() {
+      const form = FLOW.selectedControl.selectedSurvey;
+      return !FLOW.permControl.canEditForm(form);
+    },
+
+    disableFormPublishButton() {
+      const form = FLOW.selectedControl.selectedSurvey;
+      console.log(form.get('status'), 'state');
+      const questionsLoading =
+        FLOW.questionControl.content && !FLOW.questionControl.content.isLoaded;
+      return questionsLoading || form.get('status') === 'PUBLISHED';
+    },
+
+    // FORM
+    step: null,
+    user: null,
     showProjectDetails: false,
     showAdvancedSettings: false,
     selectedLanguage: null,
     monitoringGroupEnabled: false,
     currentRegistrationForm: null,
     showDataApprovalDetails: false,
-
-    step: null,
-    user: null,
     showResponsibleUsers: false,
+
+    project() {
+      return FLOW.projectControl.get('currentProject');
+    },
 
     classProperty(project) {
       const form = project;
@@ -165,27 +247,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       if (isRegistrationForm) classString += ' registrationForm';
 
       return classString;
-    },
-
-    toggleMonitoringGroup() {
-      FLOW.projectControl.currentProject.set(
-        'monitoringGroup',
-        !FLOW.projectControl.currentProject.get('monitoringGroup')
-      );
-    },
-
-    toggleDataApproval() {
-      FLOW.projectControl.currentProject.set(
-        'requireDataApproval',
-        !FLOW.projectControl.currentProject.get('requireDataApproval')
-      );
-    },
-
-    toggleTemplate() {
-      FLOW.projectControl.currentProject.set(
-        'template',
-        !FLOW.projectControl.currentProject.get('template')
-      );
     },
 
     formCount() {
@@ -275,6 +336,27 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
       }
     },
 
+    toggleMonitoringGroup() {
+      FLOW.projectControl.currentProject.set(
+        'monitoringGroup',
+        !FLOW.projectControl.currentProject.get('monitoringGroup')
+      );
+    },
+
+    toggleDataApproval() {
+      FLOW.projectControl.currentProject.set(
+        'requireDataApproval',
+        !FLOW.projectControl.currentProject.get('requireDataApproval')
+      );
+    },
+
+    toggleTemplate() {
+      FLOW.projectControl.currentProject.set(
+        'template',
+        !FLOW.projectControl.currentProject.get('template')
+      );
+    },
+
     /* computer property for setting / getting the value of the current
   registration form */
     selectedRegistrationForm(key, value) {
@@ -305,10 +387,6 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         approvalGroupList &&
         approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
       return approvalGroup;
-    },
-
-    project() {
-      return FLOW.projectControl.get('currentProject');
     },
 
     toggleShowProjectDetails() {

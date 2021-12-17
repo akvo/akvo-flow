@@ -23,7 +23,26 @@ FLOW.FormView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
-     
+      return {
+        strings: {
+          publish: Ember.String.loc('_publish'),
+          preview: Ember.String.loc('_preview'),
+          delete: Ember.String.loc('_delete'),
+          version: Ember.String.loc('_version'),
+          id: Ember.String.loc('_id'),
+          question: Ember.String.loc('_questions'),
+          formBasic: Ember.String.loc('_form_basics'),
+          collapse: Ember.String.loc('_collapse'),
+          formTitle: Ember.String.loc('_form_title'),
+          formApiUrl: Ember.String.loc('_form_api_url'),
+          manageTranslations: Ember.String.loc('_manage_translations'),
+          manageNotifications: Ember.String.loc('_manage_notifications'),
+          show: Ember.String.loc('_show'),
+          tooltip: {
+            formApiUrl: Ember.String.loc('_form_api_url_tooltip'),
+          },
+        },
+      };
     },
 
     showFormBasics: false,
