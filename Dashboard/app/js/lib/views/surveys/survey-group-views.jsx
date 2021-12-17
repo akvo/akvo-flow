@@ -86,6 +86,7 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
 
         // Form
         form: this.form()._data.attributes,
+        questionCount: FLOW.projectControl.get('questionCount'),
 
         helperFunctions: {
           isPublished: this.isPublished,

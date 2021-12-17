@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function Form({ strings, helperFunctions, form }) {
+function Form({ strings, helperFunctions, form, questionCount }) {
   return (
     // {{#with FLOW.selectedControl.selectedSurvey as form}}
     <div id="form01" className="aformContainer">
@@ -49,15 +49,15 @@ function Form({ strings, helperFunctions, form }) {
       <ul className="formSummary">
         <li>
           {strings.version}
-          <span className="formVersion">form.version</span>
+          <span className="formVersion">{form.version}</span>
         </li>
         <li>
           <span className="upCase">{strings.id}</span>
-          <span className="formID">form.keyId</span>
+          <span className="formID">{form.keyId}</span>
         </li>
         <li>
           {strings.questions}
-          <span className="formQuestionCount">FLOW.projectControl.questionCount</span>
+          <span className="formQuestionCount">{questionCount}</span>
         </li>
       </ul>
       <section className="formDetails">
@@ -148,11 +148,13 @@ Form.propTypes = {
   strings: PropTypes.object.isRequired,
   form: PropTypes.object,
   helperFunctions: PropTypes.object,
+  questionCount: PropTypes.number,
 };
 
 Form.defaultProps = {
   form: null,
   helperFunctions: null,
+  questionCount: null,
 };
 
 export default Form;

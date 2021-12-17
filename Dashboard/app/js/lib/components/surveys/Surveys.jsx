@@ -356,6 +356,7 @@ class Surveys extends React.Component {
                           strings={this.props.strings}
                           form={this.props.form}
                           helperFunctions={this.props.helperFunctions}
+                          questionCount={this.props.questionCount}
                         />
                         {/* FORM */}
                       </div>
@@ -389,6 +390,7 @@ Surveys.propTypes = {
   dataApprovalGroup: PropTypes.array,
   languages: PropTypes.array.isRequired,
   form: PropTypes.object,
+  questionCount: PropTypes.number,
 };
 
 Surveys.defaultProps = {
@@ -401,6 +403,7 @@ Surveys.defaultProps = {
   dataApprovalGroup: null,
   actions: () => null,
   form: null,
+  questionCount: null,
 };
 
 export default Surveys;
