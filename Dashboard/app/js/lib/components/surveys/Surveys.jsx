@@ -354,6 +354,7 @@ class Surveys extends React.Component {
                         {/* FORM */}
                         <Form
                           strings={this.props.strings}
+                          form={this.props.form}
                           helperFunctions={this.props.helperFunctions}
                         />
                         {/* FORM */}
@@ -387,6 +388,7 @@ Surveys.propTypes = {
   actions: PropTypes.object,
   dataApprovalGroup: PropTypes.array,
   languages: PropTypes.array.isRequired,
+  form: PropTypes.object,
 };
 
 Surveys.defaultProps = {
@@ -398,6 +400,7 @@ Surveys.defaultProps = {
   orderedForms: null,
   dataApprovalGroup: null,
   actions: () => null,
+  form: null,
 };
 
 export default Surveys;

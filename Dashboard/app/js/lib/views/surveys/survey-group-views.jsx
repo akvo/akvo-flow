@@ -84,6 +84,9 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
         showDataApprovalDetails: this.showDataApprovalDetails,
         showResponsibleUsers: this.showResponsibleUsers,
 
+        // Form
+        form: this.form()._data.attributes,
+
         helperFunctions: {
           isPublished: this.isPublished,
           formCount: this.formCount,
@@ -210,9 +213,8 @@ FLOW.ProjectView = FLOW.ReactComponentView.extend(
 
     disableFormPublishButton() {
       const form = FLOW.selectedControl.selectedSurvey;
-      console.log(form.get('status'), 'state');
       const questionsLoading =
-        FLOW.questionControl.content && !FLOW.questionControl.content.isLoaded;
+        FLOW.questionControl.content && FLOW.questionControl.content.isLoaded;
       return questionsLoading || form.get('status') === 'PUBLISHED';
     },
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function Form({ strings, helperFunctions }) {
+function Form({ strings, helperFunctions, form }) {
   return (
     // {{#with FLOW.selectedControl.selectedSurvey as form}}
     <div id="form01" className="aformContainer">
@@ -146,10 +146,12 @@ function Form({ strings, helperFunctions }) {
 
 Form.propTypes = {
   strings: PropTypes.object.isRequired,
+  form: PropTypes.object,
   helperFunctions: PropTypes.object,
 };
 
 Form.defaultProps = {
+  form: null,
   helperFunctions: null,
 };
 
