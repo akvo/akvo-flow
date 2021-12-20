@@ -68,17 +68,16 @@ export default function Folder({
               </a>
             </li>
           )}
-          {displayContentFunctions.showSurveyMoveButton(surveyGroup) &&
-            !classProperty.listItem(surveyGroup).includes('newlyCreated') && (
-              <li className="moveSurvey">
-                <a
-                  onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
-                  onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
-                >
-                  {strings.move}
-                </a>
-              </li>
-            )}
+          {displayContentFunctions.showSurveyMoveButton(surveyGroup) && (
+            <li className="moveSurvey">
+              <a
+                onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
+                onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
+              >
+                {strings.move}
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
     </li>
