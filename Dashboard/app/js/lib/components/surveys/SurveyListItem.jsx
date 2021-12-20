@@ -9,6 +9,11 @@ export default function SurveyListItem({
   helperFunctions,
   displayContentFunctions,
 }) {
+  const surveyCount = FLOW.store.filter(
+    FLOW.Survey,
+    item => item.get('surveyGroupId') === surveyGroup.keyId
+  ).content.length;
+
   return (
     <li key={surveyGroup.keyId} className="aSurvey">
       <a
@@ -57,7 +62,7 @@ export default function SurveyListItem({
             </li>
           )}
 
-          {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && (
+          {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && surveyCount === 0 && (
             <li className="deleteSurvey">
               <a
                 onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
@@ -67,7 +72,7 @@ export default function SurveyListItem({
               </a>
             </li>
           )}
-          {displayContentFunctions.showSurveyCopyButton && (
+          {displayContentFunctions.showSurveyCopyButton && surveyCount > 0 && (
             <li className="copySurvey">
               <a
                 onClick={() => actions.beginCopyProject(surveyGroup.keyId)}
