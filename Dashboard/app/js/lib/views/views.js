@@ -801,9 +801,14 @@ FLOW.DateField2 = Ember.TextField.extend({
 
 // surveys views
 FLOW.NavSurveysView = Ember.View.extend(template('navSurveys/nav-surveys'));
+
 FLOW.NavSurveysMainView = Ember.View.extend(
   template('navSurveys/nav-surveys-main')
 );
+
+FLOW.ProjectListView = FLOW.ProjectItemView;
+
+FLOW.ProjectView = FLOW.View.extend(template('navSurveys/project'));
 
 FLOW.ManageNotificationsView = Ember.View.extend(
   template('navSurveys/manage-notifications')
