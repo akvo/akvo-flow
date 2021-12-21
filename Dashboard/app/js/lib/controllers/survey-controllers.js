@@ -378,12 +378,11 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.createNewProject(false);
   },
 
-  createNewProject(folder) {
+  createNewProject(isFolder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
-
-    const name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
-    const projectType = folder ? 'PROJECT_FOLDER' : 'PROJECT';
+    const name = isFolder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
+    const projectType = isFolder ? 'PROJECT_FOLDER' : 'PROJECT';
     const path = `${this.get('currentProjectPath')}/${name}`;
 
     const newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
@@ -393,6 +392,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       parentId: currentFolderId,
       projectType,
     });
+
     FLOW.store.commit();
 
     this.set('newlyCreated', newRecord);
