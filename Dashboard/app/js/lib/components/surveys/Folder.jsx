@@ -1,0 +1,125 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default function Folder({
+  strings,
+  surveyGroup,
+
+  // Functions
+  classProperty,
+  helperFunctions,
+  displayContentFunctions,
+
+  // Actions
+  actions,
+  toggleEditFolderName,
+  editFolderName,
+  saveFolderName,
+}) {
+  return (
+    <li key={surveyGroup.keyId} className={classProperty.listItem(surveyGroup)}>
+      {/* Buttons to toggle */}
+      {surveyGroup.isEdit ? (
+        <a
+          onClick={() => saveFolderName(surveyGroup)}
+          onKeyDown={() => saveFolderName(surveyGroup)}
+          className="editingFolderName"
+        >
+          {strings.editFolderName}
+        </a>
+      ) : (
+        displayContentFunctions.showSurveyEditButton && (
+          <a
+            onClick={() => toggleEditFolderName(surveyGroup)}
+            onKeyDown={() => toggleEditFolderName(surveyGroup)}
+            className="editFolderName"
+          >
+            {strings.editFolderName}
+          </a>
+        )
+      )}
+
+      {/* Show input when edit button is clicked */}
+      {surveyGroup.isEdit ? (
+        <input
+          type="text"
+          defaultValue={surveyGroup.code}
+          onBlur={() => setTimeout(() => saveFolderName(surveyGroup), 200)}
+          onChange={e => editFolderName(e.target.value)}
+        />
+      ) : (
+        <a
+          onClick={() => actions.selectProject(surveyGroup.keyId)}
+          onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
+        >
+          <h2>{surveyGroup.code}</h2>
+        </a>
+      )}
+
+      <nav>
+        <ul>
+          {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && (
+            <li className="deleteSurvey">
+              <a
+                onClick={() =>
+                  !helperFunctions.isActivateButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  !helperFunctions.isActivateButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
+              >
+                {strings.delete}
+              </a>
+            </li>
+          )}
+
+          {displayContentFunctions.showSurveyMoveButton(surveyGroup) && (
+            <li className="moveSurvey">
+              <a
+                onClick={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
+              >
+                {strings.move}
+              </a>
+            </li>
+          )}
+        </ul>
+      </nav>
+    </li>
+  );
+}
+
+Folder.propTypes = {
+  strings: PropTypes.object.isRequired,
+  surveyGroup: PropTypes.object.isRequired,
+
+  // Functions
+  classProperty: PropTypes.object,
+  helperFunctions: PropTypes.object,
+  displayContentFunctions: PropTypes.object,
+
+  // Actions
+  actions: PropTypes.object,
+  saveFolderName: PropTypes.func,
+  toggleEditFolderName: PropTypes.func,
+  editFolderName: PropTypes.func,
+};
+
+Folder.defaultProps = {
+  displayContentFunctions: null,
+  classProperty: null,
+  helperFunctions: null,
+
+  // Actions
+  actions: null,
+  saveFolderName: () => null,
+  toggleEditFolderName: () => null,
+  editFolderName: () => null,
+};
