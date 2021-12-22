@@ -7,6 +7,7 @@ export default function SurveyListItem({
   surveyGroup,
   actions,
   helperFunctions,
+  classProperty,
   displayContentFunctions,
 }) {
   const surveyCount = FLOW.store.filter(
@@ -15,7 +16,7 @@ export default function SurveyListItem({
   ).content.length;
 
   return (
-    <li key={surveyGroup.keyId} className="aSurvey">
+    <li key={surveyGroup.keyId} className={classProperty.listItem(surveyGroup)}>
       <a
         onClick={() => actions.selectProject(surveyGroup.keyId)}
         onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
@@ -95,6 +96,7 @@ SurveyListItem.propTypes = {
   surveyGroup: PropTypes.object.isRequired,
   actions: PropTypes.object,
   helperFunctions: PropTypes.object,
+  classProperty: PropTypes.object.isRequired,
   displayContentFunctions: PropTypes.object,
 };
 

@@ -103,6 +103,7 @@ Folder.propTypes = {
 Folder.defaultProps = {
   displayContentFunctions: null,
   classProperty: null,
+
   // Actions
   actions: null,
   saveFolderName: () => null,

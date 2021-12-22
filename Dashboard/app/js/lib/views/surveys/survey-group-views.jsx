@@ -415,13 +415,15 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
         project.keyId === Number(FLOW.projectControl.copyTarget.id);
 
       const isFolder = this.isProjectFolder(project);
+
       const isFolderEmpty = this.isProjectFolderEmpty(project);
 
-      if (isFolder) classes += ' aFolder';
+      if (isFolder) classes = ' aFolder';
 
       if (isMoving || isCopying) classes += ' highLighted';
 
-      if (isFolderEmpty) classes = 'aFolder folderEmpty';
+      if (isFolderEmpty) classes += ' folderEmpty';
+
       if (
         FLOW.projectControl.newlyCreated &&
         Number(FLOW.projectControl.newlyCreated.id) === project.keyId

@@ -47,6 +47,7 @@ export default function FolderList() {
               // Function
               helperFunctions={helperFunctions}
               displayContentFunctions={displayContentFunctions}
+              classProperty={classProperty}
               // Actions
               actions={actions}
             />
