@@ -63,11 +63,11 @@ export default function Folder({
             <li className="deleteSurvey">
               <a
                 onClick={() =>
-                  !helperFunctions.isActivateButton() &&
+                  helperFunctions.isActivatedButton() &&
                   actions.deleteSurveyGroup(surveyGroup.keyId)
                 }
                 onKeyDown={() =>
-                  !helperFunctions.isActivateButton() &&
+                  helperFunctions.isActivatedButton() &&
                   actions.deleteSurveyGroup(surveyGroup.keyId)
                 }
               >
