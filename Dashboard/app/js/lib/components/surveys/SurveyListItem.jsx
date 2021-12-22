@@ -56,8 +56,12 @@ export default function SurveyListItem({
           {displayContentFunctions.showSurveyMoveButton && (
             <li className="moveSurvey">
               <a
-                onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
-                onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
+                onClick={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
               >
                 {strings.move}
               </a>
@@ -67,8 +71,14 @@ export default function SurveyListItem({
           {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && surveyCount === 0 && (
             <li className="deleteSurvey">
               <a
-                onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
-                onKeyDown={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
+                onClick={() =>
+                  helperFunctions.isActivatedButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
               >
                 {strings.delete}
               </a>
@@ -78,8 +88,12 @@ export default function SurveyListItem({
           {displayContentFunctions.showSurveyCopyButton && surveyCount > 0 && (
             <li className="copySurvey">
               <a
-                onClick={() => actions.beginCopyProject(surveyGroup.keyId)}
-                onKeyDown={() => actions.beginCopyProject(surveyGroup.keyId)}
+                onClick={() =>
+                  helperFunctions.isActivatedButton() && actions.beginCopyProject(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() && actions.beginCopyProject(surveyGroup.keyId)
+                }
               >
                 {strings.copy}
               </a>

@@ -8,6 +8,7 @@ export default function Folder({
 
   // Functions
   classProperty,
+  helperFunctions,
   displayContentFunctions,
 
   // Actions
@@ -61,8 +62,14 @@ export default function Folder({
           {!displayContentFunctions.hideFolderSurveyDeleteButton(surveyGroup) && (
             <li className="deleteSurvey">
               <a
-                onClick={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
-                onKeyDown={() => actions.deleteSurveyGroup(surveyGroup.keyId)}
+                onClick={() =>
+                  !helperFunctions.isActivateButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  !helperFunctions.isActivateButton() &&
+                  actions.deleteSurveyGroup(surveyGroup.keyId)
+                }
               >
                 {strings.delete}
               </a>
@@ -72,8 +79,12 @@ export default function Folder({
           {displayContentFunctions.showSurveyMoveButton(surveyGroup) && (
             <li className="moveSurvey">
               <a
-                onClick={() => actions.beginMoveProject(surveyGroup.keyId)}
-                onKeyDown={() => actions.beginMoveProject(surveyGroup.keyId)}
+                onClick={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() && actions.beginMoveProject(surveyGroup.keyId)
+                }
               >
                 {strings.move}
               </a>
@@ -91,6 +102,7 @@ Folder.propTypes = {
 
   // Functions
   classProperty: PropTypes.object,
+  helperFunctions: PropTypes.object,
   displayContentFunctions: PropTypes.object,
 
   // Actions
@@ -103,6 +115,7 @@ Folder.propTypes = {
 Folder.defaultProps = {
   displayContentFunctions: null,
   classProperty: null,
+  helperFunctions: null,
 
   // Actions
   actions: null,

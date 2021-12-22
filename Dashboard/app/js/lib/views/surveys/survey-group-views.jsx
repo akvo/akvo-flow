@@ -331,6 +331,7 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
           isProjectFolder: this.isProjectFolder,
           isNewProject: this.isNewProject,
           isProjectFolderEmpty: this.isProjectFolderEmpty,
+          isActivatedButton: this.isActivatedButton,
         },
 
         displayContentFunctions: {
@@ -402,6 +403,10 @@ FLOW.ProjectItemView = FLOW.ReactComponentView.extend(
       return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget
         ? 'actionProcess'
         : '';
+    },
+
+    isActivatedButton() {
+      return FLOW.projectControl.moveTarget === null || FLOW.projectControl.copyTarget === null;
     },
 
     listItemClassProperty(project) {

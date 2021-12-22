@@ -32,6 +32,7 @@ export default function FolderList() {
               surveyGroup={surveyGroup}
               // Functions
               classProperty={classProperty}
+              helperFunctions={helperFunctions}
               displayContentFunctions={displayContentFunctions}
               // Actions
               toggleEditFolderName={toggleEditFolderName}
