@@ -45,8 +45,12 @@ export default function SurveyListItem({
           {displayContentFunctions.showSurveyEditButton && (
             <li className="editSurvey">
               <a
-                onClick={() => actions.selectProject(surveyGroup.keyId)}
-                onKeyDown={() => actions.selectProject(surveyGroup.keyId)}
+                onClick={() =>
+                  helperFunctions.isActivatedButton() && actions.selectProject(surveyGroup.keyId)
+                }
+                onKeyDown={() =>
+                  helperFunctions.isActivatedButton() && actions.selectProject(surveyGroup.keyId)
+                }
               >
                 {strings.edit}
               </a>
