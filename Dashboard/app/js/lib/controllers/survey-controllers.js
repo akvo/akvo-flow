@@ -249,25 +249,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     return result.reverse();
   }).property('@each', 'currentProject'),
 
-  currentFolders: Ember.computed(function () {
-    const self = this;
-    const currentProject = this.get('currentProject');
-    const parentId = currentProject ? currentProject.get('keyId') : 0;
-    return this.get('content').filter(project => project.get('parentId') === parentId).sort((a, b) => {
-      if (self.isProjectFolder(a) && self.isProject(b)) {
-        return -1;
-      } if (self.isProject(a) && self.isProjectFolder(b)) {
-        return 1;
-      }
-      const aCode = a.get('code') || a.get('name');
-      const bCode = b.get('code') || b.get('name');
-      if (aCode === bCode) return 0;
-      if (aCode === 'New survey' || aCode === 'New folder') return -1;
-      if (bCode === 'New survey' || bCode === 'New folder') return 1;
-      return aCode.localeCompare(bCode);
-    });
-  }).property('@each', 'currentProject', 'moveTarget'),
-
   formCount: Ember.computed(() => (FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0)).property('FLOW.surveyControl.content.@each'),
 
   questionCount: Ember.computed(() => {
@@ -397,12 +378,11 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.createNewProject(false);
   },
 
-  createNewProject(folder) {
+  createNewProject(isFolder) {
     const currentFolder = this.get('currentProject');
     const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
-
-    const name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
-    const projectType = folder ? 'PROJECT_FOLDER' : 'PROJECT';
+    const name = isFolder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
+    const projectType = isFolder ? 'PROJECT_FOLDER' : 'PROJECT';
     const path = `${this.get('currentProjectPath')}/${name}`;
 
     const newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
@@ -412,27 +392,10 @@ FLOW.projectControl = Ember.ArrayController.create({
       parentId: currentFolderId,
       projectType,
     });
+
     FLOW.store.commit();
 
     this.set('newlyCreated', newRecord);
-  },
-
-  deleteProject(evt) {
-    const project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
-    project.deleteRecord();
-    FLOW.store.commit();
-  },
-
-  /* start moving a folder. Confusingly, the target is what will move */
-  beginMoveProject(evt) {
-    this.set('newlyCreated', null);
-    this.set('moveTarget', evt.context);
-    this.set('moveTargetType', this.isProjectFolder(evt.context) ? 'folder' : 'survey');
-  },
-
-  beginCopyProject(evt) {
-    this.set('newlyCreated', null);
-    this.set('copyTarget', evt.context);
   },
 
   cancelMoveProject() {
