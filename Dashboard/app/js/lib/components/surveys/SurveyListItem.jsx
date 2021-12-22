@@ -51,6 +51,7 @@ export default function SurveyListItem({
               </a>
             </li>
           )}
+
           {displayContentFunctions.showSurveyMoveButton && (
             <li className="moveSurvey">
               <a
@@ -72,6 +73,7 @@ export default function SurveyListItem({
               </a>
             </li>
           )}
+
           {displayContentFunctions.showSurveyCopyButton && surveyCount > 0 && (
             <li className="copySurvey">
               <a

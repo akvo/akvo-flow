@@ -68,6 +68,7 @@ export default function Folder({
               </a>
             </li>
           )}
+
           {displayContentFunctions.showSurveyMoveButton(surveyGroup) && (
             <li className="moveSurvey">
               <a
