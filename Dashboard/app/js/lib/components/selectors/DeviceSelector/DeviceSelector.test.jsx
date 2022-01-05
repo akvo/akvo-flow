@@ -50,9 +50,6 @@ describe('DeviceSelector Tests', () => {
     const accordion = wrapper.getByTestId('accordion');
     const panel = wrapper.getByTestId('panel');
 
-    // close accordion
-    fireEvent.click(accordion);
-
     // expect panel display to be closed
     expect(panel).toHaveStyle('display: none');
 
