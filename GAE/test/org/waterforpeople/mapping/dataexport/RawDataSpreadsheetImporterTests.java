@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019-2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019-2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -342,8 +342,8 @@ class RawDataSpreadsheetImporterTests {
     @Test
     void testValidateGeoshapes() {
         RawDataSpreadsheetImporter importer = new RawDataSpreadsheetImporter();
-        assertFalse(importer.validateGeoshape(INVALID_GEOSHAPE));
-        assertTrue(importer.validateGeoshape(VALID_GEOSHAPE));
+        assertFalse(importer.validateGeoshape(INVALID_GEOSHAPE, null));
+        assertTrue(importer.validateGeoshape(VALID_GEOSHAPE, null));
     }
 
     @AfterAll

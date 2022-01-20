@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -40,6 +40,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -48,6 +50,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
+import org.geojson.GeoJsonObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -725,7 +728,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 case GEOSHAPE:
                     String geoshapeString = ExportImportUtils.parseCellAsString(cell);
-                    if (validateGeoshape(geoshapeString)) {
+                    if (validateGeoshape(geoshapeString, cell)) {
                         val = geoshapeString;
                     }
                     break;
@@ -751,8 +754,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    protected boolean validateGeoshape(String geoShapeString) {
-        return false;
+    protected boolean validateGeoshape(String geoShapeString, Cell cell) {
+        try {
+            GeoJsonObject geoJson = new ObjectMapper().readValue(geoShapeString, GeoJsonObject.class);
+        } catch (JsonProcessingException e) {
+            String cellAddress = null;
+            if (cell != null) {
+                cellAddress = cell.getAddress().toString();
+            }
+            log.warning("Invalid GeoJSON string in sheet. Cell: (" + cellAddress + ")");
+            return false;
+        }
+        return true;
     }
 
     private Map<String, Object> parsedOptionValue(String optionNode, boolean other) {
