@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -68,6 +70,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
     private static final FlowJsonObjectWriter JSON_OBJECT_WRITER = new FlowJsonObjectWriter();
+    private static final FlowJsonObjectReader JSON_OBJECT_READER = new FlowJsonObjectReader();
 
     private boolean otherValuesInSeparateColumns = false; //until we find one
 
@@ -720,6 +723,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     val = null;
                     break;
 
+                case GEOSHAPE:
+                    String geoshapeString = ExportImportUtils.parseCellAsString(cell);
+                    if (validateGeoshape(geoshapeString)) {
+                        val = geoshapeString;
+                    }
+                    break;
+
                 default:
                     val = ExportImportUtils.parseCellAsString(cell);
                     break;
@@ -739,6 +749,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 }
             }
         }
+    }
+
+    protected boolean validateGeoshape(String geoShapeString) {
+        return false;
     }
 
     private Map<String, Object> parsedOptionValue(String optionNode, boolean other) {
