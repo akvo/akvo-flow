@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2021 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -57,6 +57,7 @@ import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
 import org.akvo.flow.xml.PublishedForm;
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -858,6 +859,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cells.addAll(geoCellValues(value));
                 break;
 
+            case GEOSHAPE:
+                cells.add(geoShapeValue(value));
+                break;
+
             case CASCADE:
                 if (questionDto.getLevelNames() != null) {
                     cells.addAll(cascadeCellValues(value, questionDto.getLevelNames().size()));
@@ -957,6 +962,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         return cells;
+    }
+
+    /*
+     * Larger geoshapes with many points exceed the character limit of a cell
+     * in Excel, so we limit the characters to prevent this error. We truncate
+     * the geoshape but keep the original in the database
+     *
+     */
+    protected static String geoShapeValue(String value) {
+        if (value.length() > SpreadsheetVersion.EXCEL2007.getMaxTextLength()) {
+            return value.substring(0, SpreadsheetVersion.EXCEL2007.getMaxTextLength());
+        }
+        return value;
     }
 
     /*
