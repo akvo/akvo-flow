@@ -762,7 +762,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (cell != null) {
                 cellAddress = cell.getAddress().toString();
             }
-            log.warning("Invalid GeoJSON string in sheet. Cell: (" + cellAddress + ")");
+            log.warning("Invalid GeoJSON string in sheet. Cell: (" + cellAddress + "):" + e.getMessage());
             return false;
         }
         return true;
