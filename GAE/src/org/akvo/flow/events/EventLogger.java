@@ -31,6 +31,7 @@ import net.sf.jsr107cache.Cache;
 import org.akvo.flow.events.EventUtils.*;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -157,8 +158,8 @@ public class EventLogger {
             // create event source
             // get the authentication information. This seems to contain the userId, but
             // according to the documentation, should hold the 'password'
-            final Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            final SecurityContext securityContext = SecurityContextHolder.getContext();
+            final Authentication authentication = securityContext.getAuthentication();
 
             Map<String, Object> eventSource = newSource(authentication.getPrincipal());
 
@@ -201,8 +202,8 @@ public class EventLogger {
             // create event source
             // get the authentication information. This seems to contain the userId, but
             // according to the documentation, should hold the 'password'
-            final Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            final SecurityContext securityContext = SecurityContextHolder.getContext();
+            final Authentication authentication = securityContext.getAuthentication();
             Object principal = authentication.getPrincipal();
 
             Map<String, Object> eventSource = newSource(principal);

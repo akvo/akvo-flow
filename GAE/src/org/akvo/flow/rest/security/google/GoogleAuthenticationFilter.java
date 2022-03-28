@@ -31,6 +31,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -56,7 +57,8 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
         User googleUser = UserServiceFactory.getUserService().getCurrentUser();
 
         if (shouldClearSession(authentication, googleUser)) {
@@ -77,7 +79,8 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
 
                 try {
                     authentication = authenticationManager.authenticate(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    final SecurityContext securityContext = SecurityContextHolder.getContext();
+                    securityContext.setAuthentication(authentication);
                 } catch (AuthenticationException e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                     failureHandler.onAuthenticationFailure((HttpServletRequest) request,

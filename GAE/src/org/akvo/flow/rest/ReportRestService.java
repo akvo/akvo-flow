@@ -31,6 +31,8 @@ import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.rest.security.AppRole;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -181,8 +183,9 @@ public class ReportRestService {
         	statusDto.setMessage("Nonexistent id");
         	return response;
         }
-        Object deleter = SecurityContextHolder.getContext()
-                .getAuthentication().getCredentials();
+        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        final Authentication authentication = securityContext.getAuthentication();
+        Object deleter = authentication.getCredentials();
         if (r.getUser() == null || !r.getUser().equals(deleter)) { //wrong user
         	statusDto.setMessage("You may not delete other users' reports");
         	return response;

@@ -37,6 +37,8 @@ import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.akvo.flow.rest.security.user.GaeUser;
 
@@ -101,12 +103,14 @@ public class CurrentUserServlet extends HttpServlet {
     }
 
     public static User getCurrentUser() {
-        if (SecurityContextHolder.getContext() == null
-                || SecurityContextHolder.getContext().getAuthentication() == null) {
+        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        if (securityContext == null
+                || securityContext.getAuthentication() == null) {
             return null;
         }
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
 
         if (principal instanceof GaeUser) {
             GaeUser user = (GaeUser) principal;
