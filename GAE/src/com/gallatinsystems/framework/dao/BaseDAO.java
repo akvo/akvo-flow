@@ -38,6 +38,7 @@ import net.sf.jsr107cache.CacheException;
 import org.akvo.flow.domain.SecuredObject;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -107,10 +108,10 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
         Long who = 0L;
-        if (SecurityContextHolder.getContext() != null
-                && SecurityContextHolder.getContext().getAuthentication() != null ) {
-            final Object credentials = SecurityContextHolder.getContext()
-                    .getAuthentication().getCredentials();
+        SecurityContext context = SecurityContextHolder.getContext();
+        if ( context != null
+                && context.getAuthentication() != null ) {
+            final Object credentials = context.getAuthentication().getCredentials();
             if (credentials instanceof Long) {
                 who = (Long) credentials;
             }
@@ -379,8 +380,8 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList) {
-        final Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
+        final SecurityContext context = SecurityContextHolder.getContext();
+        final Authentication authentication = context.getAuthentication();
         final Long userId = (Long) authentication.getCredentials();
         return filterByUserAuthorizationObjectId(allObjectsList, userId);
     }

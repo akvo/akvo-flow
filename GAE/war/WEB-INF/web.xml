@@ -77,7 +77,15 @@
         <servlet-name>DeviceApplicationRestService</servlet-name>
         <url-pattern>/deviceapprest</url-pattern>
     </servlet-mapping>
-        <servlet>
+    <servlet>
+        <servlet-name>PostUserRegistrationServlet</servlet-name>
+        <servlet-class>org.akvo.flow.servlet.PostUserRegistrationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PostUserRegistrationServlet</servlet-name>
+        <url-pattern>/post_registration</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>DeviceTimeRestService</servlet-name>
         <servlet-class>org.waterforpeople.mapping.app.web.DeviceTimeRestService</servlet-class>
     </servlet>
