@@ -53,16 +53,19 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
 
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
+        RestResponse resp = new RestResponse();
         PostUserRegistrationRestRequest request = (PostUserRegistrationRestRequest) req;
         if (!MAIN_DOMAIN.equalsIgnoreCase(request.getDomain()) || !DEMO_DOMAIN.equalsIgnoreCase(request.getDomain())) {
-            return new RestResponse();
+            resp.setMessage("Not valid registration domain");
+            return resp;
         }
 
         User newUser = addUser(request.getEmail(), request.getFullName());
         SurveyGroup folder = addFolder(newUser.getUserName(), newUser.getKey().getId());
         addAuthorization(newUser, folder);
 
-        return new RestResponse();
+        resp.setMessage("Registration completed");
+        return resp;
     }
 
     private User addUser(String email, String fullName) {
@@ -70,7 +73,9 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
         newUser.setEmailAddress(email);
         newUser.setUserName(fullName);
 
-        return userDao.save(newUser);
+        User saved = userDao.save(newUser);
+
+        return saved;
     }
 
     private SurveyGroup addFolder(String folderName, Long creationUserId) {
@@ -80,7 +85,9 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
         folder.setCode(folderName);
         folder.setCreateUserId(creationUserId);
 
-        return folderDao.save(folder);
+        SurveyGroup saved = folderDao.save(folder);
+
+        return saved;
     }
 
     private void addAuthorization(User newUser, SurveyGroup folder) {
