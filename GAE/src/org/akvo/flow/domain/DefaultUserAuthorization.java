@@ -16,6 +16,7 @@
 
 package org.akvo.flow.domain;
 
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserAuthorization;
@@ -30,7 +31,12 @@ public class DefaultUserAuthorization {
 
     public static UserAuthorization getOrCreateDefaultAuthorization(Long newUserId, Long folderId) {
         UserRole role = getOrCreateDefaultUserRole();
-        UserAuthorization auth = new UserAuthorization();
+        UserAuthorization auth = new UserAuthorizationDAO().findUserAuthorization(newUserId, role.getKey().getId(), folderId);
+        if (auth != null) {
+            return auth;
+        }
+
+        auth = new UserAuthorization();
         auth.setUserId(newUserId);
         auth.setRoleId(role.getKey().getId());
         auth.setSecuredObjectId(folderId);
