@@ -33,6 +33,7 @@ import org.akvo.flow.rest.dto.PostUserRegistrationRestRequest;
 import org.akvo.flow.rest.security.AppRole;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class PostUserRegistrationServlet extends AbstractRestApiServlet {
@@ -98,6 +99,8 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
         folder.setCode(folderName);
         folder.setCreateUserId(creationUserId);
         folder.setParentId(new RootFolder().getObjectId());
+        folder.setPath("/" + folder.getCode());
+        folder.setAncestorIds(Arrays.asList(0L));
 
         SurveyGroup saved = folderDao.save(folder);
 
