@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -54,6 +54,7 @@ public class EnvServlet extends HttpServlet {
     public static final String SHOW_BULK_IMAGE_UPLOAD = "showBulkImageUpload";
     public static final String PUBLISH_ASSEMBLED_FORM = "publishAssembledForm";
     public static final String SHOW_FORM_INSTANCE_API_URL = "showFormInstanceApiUrl";
+    public static final String WEBFORM_V2_ENABLED = "enableWebFormV2";
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
@@ -80,6 +81,7 @@ public class EnvServlet extends HttpServlet {
         properties.add(SHOW_BULK_IMAGE_UPLOAD);
         properties.add(PUBLISH_ASSEMBLED_FORM);
         properties.add(SHOW_FORM_INSTANCE_API_URL);
+        properties.add(WEBFORM_V2_ENABLED);
     }
 
     @Override
@@ -157,6 +159,8 @@ public class EnvServlet extends HttpServlet {
         if (!"false".equalsIgnoreCase(props.get(SHOW_MAPS_PROPERTY_KEY))) {
             props.put(SHOW_MAPS_PROPERTY_KEY, "true");
         }
+
+        props.put(WEBFORM_V2_ENABLED, Boolean.toString("true".equalsIgnoreCase(props.get(WEBFORM_V2_ENABLED))));
 
         if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
                 || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
