@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/*
+* Generate stats for web forms submissions.  A helper script is used that wraps up necessary parameters
+* Assumes that the webforms always has as a submitter "Akvo Flow Web"
+ */
 public class InstanceWithWebFormSubmissions implements Process {
         @Override
         public void execute(DatastoreService ds, String[] args) throws Exception {
