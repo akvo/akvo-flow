@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 date_now=$(date '+%Y-%m-%d')
 
-echo 'bucket,service,instances' > /tmp/tmp.csv
+echo 'alias,instances,count' > /tmp/tmp.csv
 
 # Expecting akvo-flow-server-config as sibling folder for this repo
 list=$(find ../../../akvo-flow-server-config -type f -name appengine-web.xml \
@@ -12,11 +12,11 @@ do
     service=$(grep "<application>" "${word}"\
         | sed 's/<.*>\(.*\)<.*>/\1/' \
         | sed 's/\ //g')
-    instance=$(grep "alias" "${word}"\
+    alias=$(grep "alias" "${word}"\
         | sed 's/.*value="\([^"]*\).*/\1/' \
         | cut -d '.' -f 1)
     count=$(./instance_with_webforms.sh "${service}" "${date_now}")
-    echo "${service},${instance},${count}" \
+    echo "${alias},${count}" \
         | sed 's/\ //g' >> /tmp/tmp.csv;
 done;
 
