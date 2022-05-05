@@ -51,6 +51,7 @@ public class EnvServlet extends HttpServlet {
     public static final String SHOW_MAPS_PROPERTY_KEY = "showMapsTab";
     public static final String CADDISFLY_TESTS_FILE_URL_KEY = "caddisflyTestsFileUrl";
     public static final String WEBFORM_REDIRECTION_URL = "webFormRedirectionUrl";
+    public static final String WEBFORM_V2_URL_GENERATE_ENDPOINT = "webFormV2GenerateEndpoint";
     public static final String SHOW_BULK_IMAGE_UPLOAD = "showBulkImageUpload";
     public static final String PUBLISH_ASSEMBLED_FORM = "publishAssembledForm";
     public static final String SHOW_FORM_INSTANCE_API_URL = "showFormInstanceApiUrl";
