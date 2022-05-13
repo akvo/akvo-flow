@@ -16,6 +16,7 @@
 
 	<target name="compile">
 		<mkdir dir="${build}" />
+		<copy file="${gae}/target/akvo-flow-classes.jar" tofile="${lib}/akvo-flow-classes.jar"/>
 		<javac source="1.8" target="1.8" encoding="UTF8" srcdir="src" destdir="${build}"
 			classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
