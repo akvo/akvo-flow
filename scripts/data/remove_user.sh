@@ -5,7 +5,8 @@ set -eu
 
 APP_ID=$1
 SERVICE_ACCOUNT="sa-$APP_ID@$APP_ID.iam.gserviceaccount.com"
-P12_FILE_PATH="$FLOW_SERVER_CONFIG/$1/$1.p12"
+REPOS_HOME="$(cd $(dirname "$0")/../../.. && pwd)"
+P12_FILE_PATH="$REPOS_HOME/akvo-flow-server-config/$1/$1.p12"
 
 echo "$1 "
 java -cp bin:"lib/*" \
