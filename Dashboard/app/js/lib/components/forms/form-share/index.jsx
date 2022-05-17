@@ -16,8 +16,12 @@ export default class WebFormShare extends React.Component {
     this.setState({ modalOpen: !modalOpen });
   };
 
-  copyToClipboard = () => {
-    navigator.clipboard.writeText(this.props.data.shareUrl);
+  copyToClipboard = (event) => {
+    if (event.target.id === 'copy-link-v1') {
+        navigator.clipboard.writeText(this.props.data.shareUrl);
+    } else {
+        navigator.clipboard.writeText(this.props.data.shareUrlV2);
+    }
     this.setState({ copyToClipboard: true });
     trackEvent('Webform URL copied');
   };
@@ -32,7 +36,7 @@ export default class WebFormShare extends React.Component {
   };
 
   render() {
-    const { valid, shareUrl } = this.props.data;
+    const { valid, shareUrl, shareUrlV2 } = this.props.data;
     return (
       <>
         <li>
@@ -56,25 +60,39 @@ export default class WebFormShare extends React.Component {
             />
           </div>
 
-          <div className="modal-body">
+        <div className="modal-body">
             <div className="form-link">
               {shareUrl ? (
                 <>
                   <div className="link">
                     <span>{shareUrl}</span>
-                    <a onClick={this.copyToClipboard} href="#">
+                    <button id="copy-link-v1" onClick={this.copyToClipboard}>
                       Copy link
-                    </a>
+                    </button>
                   </div>
                   {this.state.copyToClipboard && <span>Copied to clipboard</span>}
-
-                  <div className="password">
-                    <span>Password: webform</span>
-                  </div>
                 </>
               ) : (
                 <p>Loading URL.....</p>
               )}
+            </div>
+            <div className="form-link">
+                {shareUrlV2 ? (
+                    <>
+                    <div className="link">
+                        <span>{shareUrlV2}</span>
+                        <button id="copy-link-v2" onClick={this.copyToClipboard}>
+                            Copy link
+                        </button>
+                    </div>
+                    {this.state.copyToClipboard && <span>Copied to clipboard</span>}
+                    </>
+                ) : (
+                    <p>Loading URL.....</p>
+                )}
+            </div>
+            <div className="password">
+                <span>Password: webform</span>
             </div>
 
             <div className="action-button">
@@ -82,7 +100,7 @@ export default class WebFormShare extends React.Component {
                 Done
               </button>
             </div>
-          </div>
+        </div>
         </Modal>
       </>
     );

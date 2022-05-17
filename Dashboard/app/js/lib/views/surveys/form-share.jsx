@@ -12,6 +12,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
     'FLOW.questionControl.content.isLoaded': 'formValidation',
     'FLOW.questionGroupControl.content.isLoaded': 'formValidation',
     'FLOW.surveyControl.webformId': 'renderReactSide',
+    'FLOW.surveyControl.webformIdV2': 'renderReactSide',
   }),
   {
     init() {
@@ -44,6 +45,9 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
           shareUrl:
             FLOW.surveyControl.webformId &&
             `${window.location.origin}/webforms/${FLOW.surveyControl.webformId}`,
+          shareUrlV2:
+            FLOW.surveyControl.webformIdV2 &&
+            `${window.location.origin}/${FLOW.surveyControl.webformIdV2}`,
         },
         actions: {
           getShareURL: this.getShareURL,
