@@ -8,7 +8,8 @@ import './style.scss';
 export default class WebFormShare extends React.Component {
   state = {
     modalOpen: false,
-    copyToClipboard: false,
+    copyButtonText: 'Copy link',
+    copyButtonV2Text: 'Copy link',
   };
 
   toggleModal = () => {
@@ -19,10 +20,12 @@ export default class WebFormShare extends React.Component {
   copyToClipboard = (event) => {
     if (event.target.id === 'copy-link-v1') {
         navigator.clipboard.writeText(this.props.data.shareUrl);
+        this.setState({ copyButtonText: 'Copied!'});
     } else {
         navigator.clipboard.writeText(this.props.data.shareUrlV2);
+        this.setState({ copyButtonV2Text: 'Copied!'});
     }
-    this.setState({ copyToClipboard: true });
+    setTimeout(() => { this.setState({ copyButtonText: 'Copy link', copyButtonV2Text: 'Copy link'}) }, 900);
     trackEvent('Webform URL copied');
   };
 
@@ -50,57 +53,53 @@ export default class WebFormShare extends React.Component {
         </li>
 
         <Modal isOpen={this.state.modalOpen} toggleModal={this.toggleModal} id="form-share-modal">
-          <div className="modal-header">
+            <div className="modal-header">
             <h3>Share all questions as a webform</h3>
 
             <i
-              className="fa fa-times icon"
-              onClick={this.toggleModal}
-              onKeyDown={this.toggleModal}
+                className="fa fa-times icon"
+                onClick={this.toggleModal}
+                onKeyDown={this.toggleModal}
             />
-          </div>
-
-        <div className="modal-body">
-            <div className="form-link">
-              {shareUrl ? (
-                <>
-                  <div className="link">
-                    <span>{shareUrl}</span>
-                    <button id="copy-link-v1" onClick={this.copyToClipboard}>
-                      Copy link
-                    </button>
-                  </div>
-                  {this.state.copyToClipboard && <span>Copied to clipboard</span>}
-                </>
-              ) : (
-                <p>Loading URL.....</p>
-              )}
             </div>
-            <div className="form-link">
-                {shareUrlV2 ? (
-                    <>
+
+            <div className="modal-body">
+                <div className="form-link">
+                {shareUrl ? (
                     <div className="link">
-                        <span>{shareUrlV2}</span>
-                        <button id="copy-link-v2" onClick={this.copyToClipboard}>
-                            Copy link
+                        <span>{shareUrl}</span>
+                        <span className="version">v1</span>
+                        <button id="copy-link-v1" onClick={this.copyToClipboard}>
+                            {this.state.copyButtonText}
                         </button>
                     </div>
-                    {this.state.copyToClipboard && <span>Copied to clipboard</span>}
-                    </>
                 ) : (
                     <p>Loading URL.....</p>
                 )}
-            </div>
-            <div className="password">
-                <span>Password: webform</span>
-            </div>
+                </div>
+                <div className="form-link">
+                    {shareUrlV2 ? (
+                        <div className="link">
+                            <span>{shareUrlV2}</span>
+                            <span className="version">v2</span>
+                            <button id="copy-link-v2" onClick={this.copyToClipboard}>
+                                {this.state.copyButtonV2Text}
+                            </button>
+                        </div>
+                    ) : (
+                        <p>Loading URL.....</p>
+                )}
+                </div>
+                <div className="password">
+                    <span>Password: webform</span>
+                </div>
 
-            <div className="action-button">
-              <button onClick={this.toggleModal} type="button" className="button">
-                Done
-              </button>
+                <div className="action-button">
+                    <button onClick={this.toggleModal} type="button" className="button">
+                        Done
+                    </button>
+                </div>
             </div>
-        </div>
         </Modal>
       </>
     );

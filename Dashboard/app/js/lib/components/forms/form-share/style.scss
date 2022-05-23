@@ -20,6 +20,7 @@
       .link {
         display: flex;
         align-items: center;
+        margin-bottom: 10px;
 
         span {
           font-size: 15px;
@@ -30,9 +31,9 @@
           border-radius: 4px;
         }
 
-        a {
-          font-weight: bold;
-          font-size: 15px;
+        .version {
+            float: right;
+            width: 10px;
         }
 
         & ~ span {
@@ -45,20 +46,14 @@
     }
 
     .password {
-        margin-top: 12px;
-
         span {
           font-size: 15px;
           font-weight: 500;
         }
       }
 
-    .action-button {
-      margin-top: 3em;
-
-      .button {
+    .action-button .button {
         padding: 10px 13px;
-      }
     }
   }
 }
