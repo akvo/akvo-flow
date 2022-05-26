@@ -53,32 +53,32 @@ export default class WebFormShare extends React.Component {
         </li>
 
         <Modal isOpen={this.state.modalOpen} toggleModal={this.toggleModal} id="form-share-modal">
-            <div className="modal-header">
+          <div className="modal-header">
             <h3>Share all questions as a webform</h3>
 
             <i
-                className="fa fa-times icon"
-                onClick={this.toggleModal}
-                onKeyDown={this.toggleModal}
+              className="fa fa-times icon"
+              onClick={this.toggleModal}
+              onKeyDown={this.toggleModal}
             />
-            </div>
+          </div>
 
-            <div className="modal-body">
-                <div className="form-link">
-                {shareUrl ? (
-                    <div className="link">
-                        <span>{shareUrl}</span>
-                        <span className="version">v1</span>
-                        <button id="copy-link-v1" onClick={this.copyToClipboard}>
+          <div className="modal-body">
+            <div className="form-link">
+              {shareUrl ? (
+                <div className="link">
+                  <span>{shareUrl}</span>
+                  <span className="version">v1</span>
+                  <button id="copy-link-v1" onClick={this.copyToClipboard}>
                             {this.state.copyButtonText}
                         </button>
-                    </div>
-                ) : (
-                    <p>Loading URL.....</p>
-                )}
                 </div>
-                {showWebFormV2 &&
-                    (<div className="form-link">
+              ) : (
+                <p>Loading URL.....</p>
+              )}
+            </div>
+            {showWebFormV2 &&
+              <div className="form-link">
                     {shareUrlV2 ? (
                         <div className="link">
                             <span>{shareUrlV2}</span>
