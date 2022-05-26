@@ -66,6 +66,9 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "alias", isAttribute = true)
     private String alias;
 
+    @JacksonXmlProperty(localName = "webFormPassword", isAttribute = true)
+    private String wPassword = "webform";
+
     public XmlForm() {
     }
 

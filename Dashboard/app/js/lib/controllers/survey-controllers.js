@@ -579,6 +579,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
   sortAscending: true,
   orderedForms: null,
   webformId: null,
+  webformIdV2: null,
 
   setPublishedContent() {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
@@ -929,8 +930,9 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
 
     $.ajax({
       url,
-      success: (data) =>{
+      success: (data) => {
         this.set('webformId', data.webformId);
+        this.set('webformIdV2', data.webformIdV2);
       },
       error: function(xhr) {
         console.error(xhr)
