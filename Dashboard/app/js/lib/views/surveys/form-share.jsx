@@ -48,6 +48,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
           shareUrlV2:
             FLOW.surveyControl.webformIdV2 &&
             `${window.location.origin}/${FLOW.surveyControl.webformIdV2}`,
+          showWebFormV2: FLOW.Env.enableWebFormV2,
         },
         actions: {
           getShareURL: this.getShareURL,

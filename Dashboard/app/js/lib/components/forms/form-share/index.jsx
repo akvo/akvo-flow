@@ -39,7 +39,7 @@ export default class WebFormShare extends React.Component {
   };
 
   render() {
-    const { valid, shareUrl, shareUrlV2 } = this.props.data;
+    const { valid, shareUrl, shareUrlV2, showWebFormV2 } = this.props.data;
     return (
       <>
         <li>
@@ -77,7 +77,8 @@ export default class WebFormShare extends React.Component {
                     <p>Loading URL.....</p>
                 )}
                 </div>
-                <div className="form-link">
+                {showWebFormV2 &&
+                    (<div className="form-link">
                     {shareUrlV2 ? (
                         <div className="link">
                             <span>{shareUrlV2}</span>
@@ -88,8 +89,8 @@ export default class WebFormShare extends React.Component {
                         </div>
                     ) : (
                         <p>Loading URL.....</p>
-                )}
-                </div>
+                    )}
+                    </div>)}
                 <div className="password">
                     <span>Password: webform</span>
                 </div>
