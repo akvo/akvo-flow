@@ -86,11 +86,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.handleSurveySelect(this.selectedSurveyGroupId);
       this.setupDevices();
 
-      // track page view
-      trackPageView(
-        `Assignments Page - ${FLOW.selectedControl.selectedSurveyAssignment.get('name')}`
-      );
-
       // react render
       this.renderReactSide();
     },

@@ -1,6 +1,8 @@
 // ***********************************************//
 //                 Router
 // ***********************************************//
+import { trackPageView } from 'akvo-flow/analytics';
+
 require('akvo-flow/core-common');
 
 FLOW.Router = Ember.Router.extend({
@@ -106,6 +108,8 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
+
+          trackPageView('Folder & Survey Page');
         },
       }),
 
@@ -213,6 +217,8 @@ FLOW.Router = Ember.Router.extend({
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           router.set('devicesSubnavController.selected', 'currentDevices');
+
+          trackPageView('Devices Page');
         },
       }),
 
@@ -222,6 +228,7 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDevicesController').connectOutlet('assignSurveysOverview');
           FLOW.surveyAssignmentControl.populate();
           router.set('devicesSubnavController.selected', 'assignSurveys');
+          trackPageView('Assignments Page');
         },
       }),
 
@@ -239,6 +246,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('surveyBootstrap');
           router.set('devicesSubnavController.selected', 'surveyBootstrap');
+          trackPageView('Manual Survey Transfer Page');
         },
       }),
     }),
@@ -290,6 +298,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
+
+          trackPageView('Inspect Data Page');
         },
       }),
 
@@ -298,6 +308,8 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navDataController').connectOutlet('bulkUpload');
           router.set('datasubnavController.selected', 'bulkUpload');
+
+          trackPageView('Bulk Upload Data Page');
         },
       }),
 
@@ -306,6 +318,8 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navDataController').connectOutlet('bulkUploadImages');
           router.set('datasubnavController.selected', 'bulkUploadImages');
+
+          trackPageView('Bulk Upload Images Page');
         },
       }),
 
@@ -315,6 +329,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('dataCleaning');
           router.set('datasubnavController.selected', 'dataCleaning');
           router.resetState();
+
+          trackPageView('Data Cleaning Page');
         },
       }),
 
@@ -324,6 +340,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
+
+          trackPageView('Monitoring Datapoints Page');
         },
       }),
 
@@ -334,6 +352,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('reportsList');
           router.set('datasubnavController.selected', 'exportReports');
           router.resetState();
+
+          trackPageView('Data Exports Page');
         },
       }),
 
@@ -352,6 +372,8 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
           router.get('navDataController').connectOutlet('chartReports');
           router.set('datasubnavController.selected', 'chartReports');
+
+          trackPageView('Data Charts Page');
         },
       }),
     }),
@@ -383,6 +405,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('navResourcesController').connectOutlet('cascadeResources');
           router.set('resourcesSubnavController.selected', 'cascadeResources');
           FLOW.cascadeResourceControl.populate();
+
+          trackPageView('Cascade Resources Page');
         },
       }),
 
@@ -392,6 +416,8 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navResourcesController').connectOutlet('dataApproval');
           router.set('resourcesSubnavController.selected', 'approvalGroup');
+
+          trackPageView('Data Approval Page');
         },
 
         doAddApprovalGroup(router) {
@@ -458,6 +484,8 @@ FLOW.Router = Ember.Router.extend({
         FLOW.selectedControl.set('selectedSurveyGroup', null);
         router.get('applicationController').connectOutlet('navMaps');
         router.set('navigationController.selected', 'navMaps');
+
+        trackPageView('Maps Page');
       },
     }),
 
@@ -467,6 +495,8 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets(router) {
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
+
+        trackPageView('Users Page');
       },
     }),
 
@@ -478,6 +508,8 @@ FLOW.Router = Ember.Router.extend({
         router.set('navigationController.selected', 'navMessages');
         FLOW.messageControl.populate();
         router.resetState();
+
+        trackPageView('Messages Page');
       },
     }),
 
@@ -500,6 +532,8 @@ FLOW.Router = Ember.Router.extend({
           router.get('applicationController').connectOutlet('stats');
           FLOW.router.reportsController.populate();
           router.set('navigationController.selected', 'navStats');
+
+          trackPageView('Stats Page');
         },
       }),
 
