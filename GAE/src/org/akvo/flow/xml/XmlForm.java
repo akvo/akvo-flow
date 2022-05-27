@@ -200,6 +200,10 @@ public final class XmlForm {
         this.surveyId = Long.parseLong(surveyId);
     }
 
+    public String getwPassword() { return wPassword; }
+
+    public void setwPassword(String wPassword) { this.wPassword = wPassword; }
+
     public List<XmlAltText> getAltText() {
         return altText;
     }
