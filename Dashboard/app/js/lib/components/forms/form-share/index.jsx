@@ -69,38 +69,39 @@ export default class WebFormShare extends React.Component {
                 <div className="link">
                   <span>{shareUrl}</span>
                   <span className="version">v1</span>
-                  <button id="copy-link-v1" onClick={this.copyToClipboard}>
-                            {this.state.copyButtonText}
-                        </button>
+                  <button type="button" id="copy-link-v1" onClick={this.copyToClipboard}>
+                    {this.state.copyButtonText}
+                  </button>
                 </div>
               ) : (
                 <p>Loading URL.....</p>
               )}
             </div>
-            {showWebFormV2 &&
+            {showWebFormV2 && (
               <div className="form-link">
-                    {shareUrlV2 ? (
-                        <div className="link">
-                            <span>{shareUrlV2}</span>
-                            <span className="version">v2</span>
-                            <button id="copy-link-v2" onClick={this.copyToClipboard}>
-                                {this.state.copyButtonV2Text}
-                            </button>
-                        </div>
-                    ) : (
-                        <p>Loading URL.....</p>
-                    )}
-                    </div>)}
-                <div className="password">
-                    <span>Password: webform</span>
-                </div>
-
-                <div className="action-button">
-                    <button onClick={this.toggleModal} type="button" className="button">
-                        Done
+                {shareUrlV2 ? (
+                  <div className="link">
+                    <span>{shareUrlV2}</span>
+                    <span className="version">v2</span>
+                    <button type="button" id="copy-link-v2" onClick={this.copyToClipboard}>
+                      {this.state.copyButtonV2Text}
                     </button>
-                </div>
+                  </div>
+                ) : (
+                  <p>Loading URL.....</p>
+                )}
+              </div>
+            )}
+            <div className="password">
+              <span>Password: webform</span>
             </div>
+
+            <div className="action-button">
+              <button onClick={this.toggleModal} type="button" className="button">
+                Done
+              </button>
+            </div>
+          </div>
         </Modal>
       </>
     );
