@@ -4,7 +4,7 @@ services:
     image: alpine
     command: tail -f /dev/null
     links:
-     - s3:akvoflowsandbox.s3.amazonaws.com
+     - s3:s3.amazonaws.com
      - fake-flow-services:services.akvoflow.local
     ports:
      - 8888:8888

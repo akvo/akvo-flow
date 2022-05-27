@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015,2018,2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018,2020,2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -53,6 +53,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     private String defaultLanguageCode;
     private Boolean requireApproval;
     private Boolean webForm;
+    private String webFormUriV2;
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
@@ -118,6 +119,14 @@ public class Survey extends BaseDomain implements SecuredObject {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getWebFormUriV2() {
+        return webFormUriV2;
+    }
+
+    public void setWebFormUriV2(String webFormUriV2) {
+        this.webFormUriV2 = webFormUriV2;
     }
 
     public Double getVersion() {

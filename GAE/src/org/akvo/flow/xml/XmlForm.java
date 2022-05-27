@@ -66,6 +66,9 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "alias", isAttribute = true)
     private String alias;
 
+    @JacksonXmlProperty(localName = "webFormPassword", isAttribute = true)
+    private String wPassword = "webform";
+
     public XmlForm() {
     }
 
@@ -196,6 +199,10 @@ public final class XmlForm {
     public void setSurveyId(String surveyId) {
         this.surveyId = Long.parseLong(surveyId);
     }
+
+    public String getwPassword() { return wPassword; }
+
+    public void setwPassword(String wPassword) { this.wPassword = wPassword; }
 
     public List<XmlAltText> getAltText() {
         return altText;

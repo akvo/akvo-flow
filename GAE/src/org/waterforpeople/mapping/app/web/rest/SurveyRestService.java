@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import org.akvo.flow.util.OneTimePadCypher;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -150,18 +152,29 @@ public class SurveyRestService {
     // get a webformId if question type webform constraints are ok
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/webform_id")
     @ResponseBody
-    public Map<String, String> webformUrl(@PathVariable("id") Long id) {
+    public Map<String, String> webformUrl(@PathVariable("id") Long formId) {
         final Map<String, String> response = new HashMap<String, String>();
 
-        List<Question> questions = questionDao.listQuestionsBySurvey(id);
-        Survey survey = surveyDao.getById(id);
+        Survey survey = surveyDao.getById(formId);
+        if (survey == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No form found with id: " + formId);
+        }
+
+        List<Question> questions = questionDao.listQuestionsBySurvey(formId);
         boolean validWebForm = WebForm.validWebForm(surveyGroupDao.getByKey(survey.getSurveyGroupId()), survey, questions);
 
         if(validWebForm){
             survey.setWebForm(validWebForm);
+            if (WebForm.isWebFormV2Enabled()) {
+                survey.setWebFormUriV2(WebForm.generateWebFormV2Uri(formId));
+            }
+
             surveyDao.save(survey);
             response.put("webformId", OneTimePadCypher.encrypt(PropertyUtil.getProperty(RestAuthFilter.REST_PRIVATE_KEY_PROP),
-                    id.toString()));
+                    formId.toString()));
+            if (WebForm.isWebFormV2Enabled()) {
+                response.put("webformIdV2", survey.getWebFormUriV2());
+            }
         } else {
             throw new SurveyNotValidAsWebformException(
                 "Webforms don't support monitoring surveys, or repeatable question groups or the following question types: geoshape, signature or caddisfly");

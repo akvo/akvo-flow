@@ -82,7 +82,7 @@ public class FormAssemblyRestService {
                 throw new ResponseStatusException(INTERNAL_SERVER_ERROR, message, new Exception(uc.getMessage()));
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage());
+            log.log(Level.SEVERE, "Failed to convert form to XML: " + e.getMessage(), e);
             throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Failed to assemble form, id " + formId, e);
         }
     }
@@ -128,7 +128,7 @@ public class FormAssemblyRestService {
                     "application/zip",
                     true);
         } catch (IOException e) {
-            log.severe("Error uploading zip file: " + e.toString());
+            log.log(Level.SEVERE, "Error uploading zip file: " + e.toString(), e);
             return false;
         }
     }
