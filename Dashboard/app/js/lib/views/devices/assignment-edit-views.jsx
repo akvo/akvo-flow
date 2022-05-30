@@ -3,7 +3,7 @@ import React from 'react';
 import AssignmentsEditView from 'akvo-flow/components/devices/AssignmentsEditView';
 import { formatDate } from 'akvo-flow/utils';
 import observe from 'akvo-flow/mixins/observe';
-import { trackPageView, trackEvent } from 'akvo-flow/analytics';
+import { trackEvent } from 'akvo-flow/analytics';
 
 require('akvo-flow/views/react-component');
 
