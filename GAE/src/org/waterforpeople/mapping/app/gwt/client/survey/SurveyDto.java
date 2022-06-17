@@ -39,6 +39,7 @@ public class SurveyDto extends BaseDto {
     private List<Long> ancestorIds;
     private String alias;
     private String webFormUriV2;
+    private String webFormPassword;
 
     private Map<String, TranslationDto> translationMap;
 
@@ -173,4 +174,8 @@ public class SurveyDto extends BaseDto {
     public String getWebFormUriV2() { return webFormUriV2; }
 
     public void setWebFormUriV2(String webFormUriV2) { this.webFormUriV2 = webFormUriV2; }
+
+    public String getWebFormPassword() { return webFormPassword; }
+
+    public void setWebFormPassword(String webFormPassword) { this.webFormPassword = webFormPassword; }
 }

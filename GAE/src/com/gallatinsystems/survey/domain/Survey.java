@@ -54,6 +54,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     private Boolean requireApproval;
     private Boolean webForm;
     private String webFormUriV2;
+    private String webFormPassword;
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
@@ -128,6 +129,10 @@ public class Survey extends BaseDomain implements SecuredObject {
     public void setWebFormUriV2(String webFormUriV2) {
         this.webFormUriV2 = webFormUriV2;
     }
+
+    public String getWebFormPassword() { return webFormPassword; }
+
+    public void setWebFormPassword(String webFormPassword) { this.webFormPassword = webFormPassword; }
 
     public Double getVersion() {
         if (version == null) {
