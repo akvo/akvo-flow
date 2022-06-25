@@ -111,6 +111,7 @@ class FlowXmlObjectWriterTests {
         form1.setName("This is a form");
         form1.setVersion(11.0);
         form1.setSurveyGroupId(123L);
+        form1.setWebFormPassword("webform");
 
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
@@ -159,6 +160,8 @@ class FlowXmlObjectWriterTests {
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(12.0);
+        form1.setWebFormPassword("webform");
+
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
         qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
@@ -260,6 +263,8 @@ class FlowXmlObjectWriterTests {
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(12.0);
+        form1.setWebFormPassword("webform");
+
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
         qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
@@ -313,6 +318,7 @@ class FlowXmlObjectWriterTests {
         form1.setName("This is a form");
         form1.setVersion(12.0);
         form1.setSurveyGroupId(123L);
+        form1.setWebFormPassword("webform");
 
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
@@ -384,6 +390,7 @@ class FlowXmlObjectWriterTests {
         form1.setName("This is a form");
         form1.setVersion(11.0);
         form1.setSurveyGroupId(123L);
+        form1.setWebFormPassword("webform");
 
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
@@ -478,6 +485,7 @@ class FlowXmlObjectWriterTests {
         form1.setName("This is a form");
         form1.setVersion(12.0);
         form1.setSurveyGroupId(123L);
+        form1.setWebFormPassword("webform");
 
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
@@ -525,6 +533,7 @@ class FlowXmlObjectWriterTests {
         form1.setName("This is a form");
         form1.setVersion(11.0);
         form1.setSurveyGroupId(123L);
+        form1.setWebFormPassword("webform");
 
         HashMap<String, Translation> translationHashMap = createTranslationMap("Formulario", "es", form1.getObjectId(),
                 form1.getObjectId(), Translation.ParentType.SURVEY_NAME);
