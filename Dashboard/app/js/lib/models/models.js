@@ -146,6 +146,7 @@ FLOW.Survey = FLOW.BaseModel.extend({
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
   webFormUriV2: DS.attr('string'),
+  webFormPassword: DS.attr('string'),
 
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`

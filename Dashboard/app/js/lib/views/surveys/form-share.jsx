@@ -21,6 +21,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
       this.renderReactSide = this.renderReactSide.bind(this);
       this.getProps = this.getProps.bind(this);
       this.getShareURL = this.getShareURL.bind(this);
+      this.setWebformPassword = this.setWebformPassword.bind(this);
 
       this.valid = false;
     },
@@ -49,9 +50,11 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
             FLOW.surveyControl.webformIdV2 &&
             `${window.location.origin}/${FLOW.surveyControl.webformIdV2}`,
           showWebFormV2: FLOW.Env.enableWebFormV2,
+          webformPassword: FLOW.selectedControl.selectedSurvey.get('webFormPassword') || '',
         },
         actions: {
           getShareURL: this.getShareURL,
+          setWebformPassword: this.setWebformPassword,
         },
       };
     },
@@ -97,6 +100,14 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
     getShareURL() {
       FLOW.surveyControl.webformUrl();
+    },
+
+    setWebformPassword(pass) {
+      const form = FLOW.selectedControl.get('selectedSurvey');
+      if (pass !== form.get('webformPassword')) {
+        form.set('webFormPassword', pass);
+        form.set('status', 'NOT_PUBLISHED');
+      }
     },
   }
 );

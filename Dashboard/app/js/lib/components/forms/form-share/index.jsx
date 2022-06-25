@@ -38,6 +38,16 @@ export default class WebFormShare extends React.Component {
     this.props.actions.getShareURL();
   };
 
+  closeModal = () => {
+    this.toggleModal();
+
+    FLOW.store.commit();
+  };
+
+  setWebformPassword = event => {
+    this.props.actions.setWebformPassword(event.target.value);
+  };
+
   render() {
     const { valid, shareUrl, shareUrlV2, showWebFormV2 } = this.props.data;
     return (
@@ -77,6 +87,10 @@ export default class WebFormShare extends React.Component {
                 <p>Loading URL.....</p>
               )}
             </div>
+            <div className="password">
+              <span>Password: webform</span>
+            </div>
+
             {showWebFormV2 && (
               <div className="form-link">
                 {shareUrlV2 ? (
@@ -93,11 +107,20 @@ export default class WebFormShare extends React.Component {
               </div>
             )}
             <div className="password">
-              <span>Password: webform</span>
+              <span>
+                Password:{' '}
+                <input
+                  type="text"
+                  id="webform-pass"
+                  placeholder="Password"
+                  defaultValue={this.props.data.webformPassword || ''}
+                  onBlur={this.setWebformPassword}
+                />
+              </span>
             </div>
 
             <div className="action-button">
-              <button onClick={this.toggleModal} type="button" className="button">
+              <button onClick={this.closeModal} type="button" className="button">
                 Done
               </button>
             </div>
