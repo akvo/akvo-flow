@@ -86,9 +86,9 @@ export default class WebFormShare extends React.Component {
               ) : (
                 <p>Loading URL.....</p>
               )}
-            </div>
-            <div className="password">
-              <span>Password: webform</span>
+              <div className="password">
+                <span>Password: webform</span>
+              </div>
             </div>
 
             {showWebFormV2 && (
@@ -104,21 +104,20 @@ export default class WebFormShare extends React.Component {
                 ) : (
                   <p>Loading URL.....</p>
                 )}
+                <div className="password">
+                  <span>
+                    Password:{' '}
+                    <input
+                      type="text"
+                      id="webform-pass"
+                      placeholder="Password"
+                      defaultValue={this.props.data.webformPassword || ''}
+                      onBlur={this.setWebformPassword}
+                    />
+                  </span>
+                </div>
               </div>
             )}
-            <div className="password">
-              <span>
-                Password:{' '}
-                <input
-                  type="text"
-                  id="webform-pass"
-                  placeholder="Password"
-                  defaultValue={this.props.data.webformPassword || ''}
-                  onBlur={this.setWebformPassword}
-                />
-              </span>
-            </div>
-
             <div className="action-button">
               <button onClick={this.closeModal} type="button" className="button">
                 Done

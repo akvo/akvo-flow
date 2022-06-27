@@ -2,7 +2,7 @@
   top: 30%;
   left: 25%;
   width: 50%;
-  height: 246px;
+  height: 350px;
   padding: 20px 2em;
 
   .modal-header {
@@ -17,10 +17,15 @@
 
   .modal-body {
     .form-link {
+      margin-bottom: 25px;
+      border-radius: 5px;
+      border: 1px solid #CCCCCC;
+      padding: 5px;
+
       .link {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
 
         span {
           font-size: 15px;
