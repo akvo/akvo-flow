@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Stichting Akvo (Akvo Foundation)
+ * Copyright (C) 2021,2022 Stichting Akvo (Akvo Foundation)
  *
  * This file is part of Akvo Flow.
  *
@@ -53,6 +53,7 @@ public class FormMapper {
         form.setCreatedDateTime(surveyDto.getCreatedDateTime());
         form.setLastUpdateDateTime(surveyDto.getLastUpdateDateTime());
         form.setAncestorIds(surveyDto.getAncestorIds());
+        form.setWebFormPassword(surveyDto.getWebFormPassword());
         TreeMap<Integer, QuestionGroup> groupMap = questionGroupMapper.mapGroups(surveyDto.getQuestionGroupList());
         form.setQuestionGroupMap(groupMap);
         return form;

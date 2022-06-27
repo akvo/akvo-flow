@@ -2,7 +2,7 @@
   top: 30%;
   left: 25%;
   width: 50%;
-  height: 246px;
+  height: 350px;
   padding: 20px 2em;
 
   .modal-header {
@@ -17,9 +17,15 @@
 
   .modal-body {
     .form-link {
+      margin-bottom: 25px;
+      border-radius: 5px;
+      border: 1px solid #CCCCCC;
+      padding: 5px;
+
       .link {
         display: flex;
         align-items: center;
+        margin-bottom: 5px;
 
         span {
           font-size: 15px;
@@ -30,9 +36,9 @@
           border-radius: 4px;
         }
 
-        a {
-          font-weight: bold;
-          font-size: 15px;
+        .version {
+            float: right;
+            width: 10px;
         }
 
         & ~ span {
@@ -42,23 +48,17 @@
           margin-left: 10px;
         }
       }
+    }
 
-      .password {
-        margin-top: 12px;
-
+    .password {
         span {
           font-size: 15px;
           font-weight: 500;
         }
       }
-    }
 
-    .action-button {
-      margin-top: 3em;
-
-      .button {
+    .action-button .button {
         padding: 10px 13px;
-      }
     }
   }
 }
