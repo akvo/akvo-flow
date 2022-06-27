@@ -16,7 +16,6 @@
 
 package org.akvo.flow.xml;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gallatinsystems.survey.domain.Translation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +65,9 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "alias", isAttribute = true)
     private String alias;
 
+    @JacksonXmlProperty(localName = "webFormPassword", isAttribute = true)
+    private String webFormPassword;
+
     public XmlForm() {
     }
 
@@ -85,6 +87,7 @@ public final class XmlForm {
         version = form.getVersion().toString();
         app = appStr;
         this.alias = alias;
+        webFormPassword = form.getWebFormPassword();
         // Translations, if any
         // Initializing an empty list prevents empty <altText/> tag when there are no translations
         altText = new ArrayList<>();
@@ -196,6 +199,10 @@ public final class XmlForm {
     public void setSurveyId(String surveyId) {
         this.surveyId = Long.parseLong(surveyId);
     }
+
+    public String getWebFormPassword() { return webFormPassword; }
+
+    public void setWebFormPassword(String webFormPassword) { this.webFormPassword = webFormPassword; }
 
     public List<XmlAltText> getAltText() {
         return altText;
