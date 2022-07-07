@@ -26,9 +26,13 @@ import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
 import org.akvo.flow.domain.DefaultUserAuthorization;
+import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.rest.dto.PostUserRegistrationRestRequest;
+import org.akvo.flow.rest.security.AppRole;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class PostUserRegistrationServlet extends AbstractRestApiServlet {
     private final String MAIN_DOMAIN = "www";
@@ -50,34 +54,55 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
 
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
+        RestResponse resp = new RestResponse();
         PostUserRegistrationRestRequest request = (PostUserRegistrationRestRequest) req;
-        if (!MAIN_DOMAIN.equalsIgnoreCase(request.getDomain()) || !DEMO_DOMAIN.equalsIgnoreCase(request.getDomain())) {
-            return new RestResponse();
+        if (!MAIN_DOMAIN.equalsIgnoreCase(request.getDomain()) && !DEMO_DOMAIN.equalsIgnoreCase(request.getDomain())) {
+            resp.setMessage("Not valid registration domain");
+            return resp;
         }
 
         User newUser = addUser(request.getEmail(), request.getUserName());
         SurveyGroup folder = addFolder(newUser.getUserName(), newUser.getKey().getId());
         addAuthorization(newUser, folder);
 
-        return new RestResponse();
+        resp.setMessage("Registration completed");
+        return resp;
     }
 
     private User addUser(String email, String userName) {
-        User newUser = new User();
+        User newUser = userDao.findUserByEmail(email);
+        if (newUser != null) {
+            return newUser;
+        }
+        newUser = new User();
         newUser.setEmailAddress(email);
         newUser.setUserName(userName);
+        newUser.setPermissionList(Integer.toString(AppRole.ROLE_USER.getLevel()));
+        newUser.setSuperAdmin(false);
 
-        return userDao.save(newUser);
+        User saved = userDao.save(newUser);
+
+        return saved;
     }
 
     private SurveyGroup addFolder(String folderName, Long creationUserId) {
-        SurveyGroup folder = new SurveyGroup();
+        SurveyGroup folder = folderDao.findBySurveyGroupName(folderName);
+        if (folder != null) {
+            return folder;
+        }
+
+        folder = new SurveyGroup();
         folder.setProjectType(SurveyGroup.ProjectType.PROJECT_FOLDER);
         folder.setName(folderName);
         folder.setCode(folderName);
         folder.setCreateUserId(creationUserId);
+        folder.setParentId(new RootFolder().getObjectId());
+        folder.setPath("/" + folder.getCode());
+        folder.setAncestorIds(Arrays.asList(0L));
 
-        return folderDao.save(folder);
+        SurveyGroup saved = folderDao.save(folder);
+
+        return saved;
     }
 
     private void addAuthorization(User newUser, SurveyGroup folder) {

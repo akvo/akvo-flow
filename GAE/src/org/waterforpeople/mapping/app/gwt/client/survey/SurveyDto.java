@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012,2020 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2020,2022 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -38,6 +38,8 @@ public class SurveyDto extends BaseDto {
     private Long sourceId = null;
     private List<Long> ancestorIds;
     private String alias;
+    private String webFormUriV2;
+    private String webFormPassword;
 
     private Map<String, TranslationDto> translationMap;
 
@@ -168,4 +170,12 @@ public class SurveyDto extends BaseDto {
     public void setAlias(String alias) {
         this.alias = alias;
     }
+
+    public String getWebFormUriV2() { return webFormUriV2; }
+
+    public void setWebFormUriV2(String webFormUriV2) { this.webFormUriV2 = webFormUriV2; }
+
+    public String getWebFormPassword() { return webFormPassword; }
+
+    public void setWebFormPassword(String webFormPassword) { this.webFormPassword = webFormPassword; }
 }

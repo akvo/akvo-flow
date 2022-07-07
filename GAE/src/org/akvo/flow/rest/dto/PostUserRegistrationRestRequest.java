@@ -43,7 +43,7 @@ public class PostUserRegistrationRestRequest extends RestRequest {
         }
 
         if (req.getParameter(USERNAME_PARAM) != null) {
-            setDomain(req.getParameter(USERNAME_PARAM));
+            setUserName(req.getParameter(USERNAME_PARAM));
         }
     }
 

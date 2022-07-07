@@ -681,6 +681,9 @@ FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
   showMapsButton: Ember.computed(() => FLOW.Env.showMapsTab).property(
     'FLOW.Env.showMapsTab'
   ),
+  showResourcesButton: Ember.computed(() =>
+    FLOW.permControl.get('canManageCascadeResources') || FLOW.permControl.get('canManageDataAppoval')
+  ).property(),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',

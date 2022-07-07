@@ -3,7 +3,7 @@ import React from 'react';
 import AssignmentsEditView from 'akvo-flow/components/devices/AssignmentsEditView';
 import { formatDate } from 'akvo-flow/utils';
 import observe from 'akvo-flow/mixins/observe';
-import { trackPageView, trackEvent } from 'akvo-flow/analytics';
+import { trackEvent } from 'akvo-flow/analytics';
 
 require('akvo-flow/views/react-component');
 
@@ -85,11 +85,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // load intial forms for selected survey group
       this.handleSurveySelect(this.selectedSurveyGroupId);
       this.setupDevices();
-
-      // track page view
-      trackPageView(
-        `Assignments Page - ${FLOW.selectedControl.selectedSurveyAssignment.get('name')}`
-      );
 
       // react render
       this.renderReactSide();
