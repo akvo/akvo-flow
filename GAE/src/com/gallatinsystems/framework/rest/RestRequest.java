@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +38,7 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
  * @author Christopher Fagiani
  */
 public abstract class RestRequest implements Serializable {
+    private static Logger log = Logger.getLogger(RestRequest.class.getName());
     private static final long serialVersionUID = -8356057661356968219L;
     public static final String ACTION_PARAM = "action";
     private static final String STARTROW_PARAM = "startRow";
@@ -212,6 +215,7 @@ public abstract class RestRequest implements Serializable {
     public void validate() throws RestValidationException {
         populateErrors();
         if (validationErrorList != null && validationErrorList.size() > 0) {
+            log.log(Level.SEVERE, "Validation errors: " + validationErrorList.toString());
             throw new RestValidationException(validationErrorList,
                     "Validation error", null);
         }
