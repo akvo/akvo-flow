@@ -23,15 +23,12 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
-import com.gallatinsystems.user.domain.UserRole;
 import org.akvo.flow.domain.DefaultUserAuthorization;
 import org.akvo.flow.rest.dto.PostUserRegistrationRestRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.logging.Logger;
 
 public class PostUserRegistrationServlet extends AbstractRestApiServlet {
     private final String MAIN_DOMAIN = "www";
@@ -58,17 +55,17 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
             return new RestResponse();
         }
 
-        User newUser = addUser(request.getEmail(), request.getFullName());
+        User newUser = addUser(request.getEmail(), request.getUserName());
         SurveyGroup folder = addFolder(newUser.getUserName(), newUser.getKey().getId());
         addAuthorization(newUser, folder);
 
         return new RestResponse();
     }
 
-    private User addUser(String email, String fullName) {
+    private User addUser(String email, String userName) {
         User newUser = new User();
         newUser.setEmailAddress(email);
-        newUser.setUserName(fullName);
+        newUser.setUserName(userName);
 
         return userDao.save(newUser);
     }

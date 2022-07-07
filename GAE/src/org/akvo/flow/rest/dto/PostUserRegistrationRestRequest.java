@@ -24,13 +24,13 @@ import javax.servlet.http.HttpServletRequest;
 public class PostUserRegistrationRestRequest extends RestRequest {
     public static final String EMAIL_PARAM = "email";
     public static final String DOMAIN_PARAM = "domain";
-    public static final String FULLNAME_PARAM = "fullName";
+    public static final String USERNAME_PARAM = "userName";
 
     private String email;
 
     private String domain;
 
-    private String fullName;
+    private String userName;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
@@ -42,8 +42,8 @@ public class PostUserRegistrationRestRequest extends RestRequest {
             setDomain(req.getParameter(DOMAIN_PARAM));
         }
 
-        if (req.getParameter(FULLNAME_PARAM) != null) {
-            setDomain(req.getParameter(FULLNAME_PARAM));
+        if (req.getParameter(USERNAME_PARAM) != null) {
+            setDomain(req.getParameter(USERNAME_PARAM));
         }
     }
 
@@ -59,8 +59,8 @@ public class PostUserRegistrationRestRequest extends RestRequest {
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
                     RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
         }
-        if (getFullName() == null) {
-            String errorMsg = FULLNAME_PARAM + " is mandatory";
+        if (getUserName() == null) {
+            String errorMsg = USERNAME_PARAM + " is mandatory";
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
                     RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
         }
@@ -74,7 +74,7 @@ public class PostUserRegistrationRestRequest extends RestRequest {
 
     public void setDomain(String domain) { this.domain = domain; }
 
-    public String getFullName() { return fullName; }
+    public String getUserName() { return userName; }
 
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setUserName(String userName) { this.userName = userName; }
 }
