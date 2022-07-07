@@ -23,10 +23,8 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
-import com.gallatinsystems.user.domain.UserRole;
 import org.akvo.flow.domain.DefaultUserAuthorization;
 import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.rest.dto.PostUserRegistrationRestRequest;
@@ -63,7 +61,7 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
             return resp;
         }
 
-        User newUser = addUser(request.getEmail(), request.getFullName());
+        User newUser = addUser(request.getEmail(), request.getUserName());
         SurveyGroup folder = addFolder(newUser.getUserName(), newUser.getKey().getId());
         addAuthorization(newUser, folder);
 
@@ -71,14 +69,14 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
         return resp;
     }
 
-    private User addUser(String email, String fullName) {
+    private User addUser(String email, String userName) {
         User newUser = userDao.findUserByEmail(email);
         if (newUser != null) {
             return newUser;
         }
         newUser = new User();
         newUser.setEmailAddress(email);
-        newUser.setUserName(fullName);
+        newUser.setUserName(userName);
         newUser.setPermissionList(Integer.toString(AppRole.ROLE_USER.getLevel()));
         newUser.setSuperAdmin(false);
 
