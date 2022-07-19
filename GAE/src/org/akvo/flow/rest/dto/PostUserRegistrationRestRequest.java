@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 public class PostUserRegistrationRestRequest extends RestRequest {
     public static final String EMAIL_PARAM = "email";
     public static final String DOMAIN_PARAM = "domain";
-    public static final String USERNAME_PARAM = "userName";
 
     private String email;
 
@@ -36,14 +35,11 @@ public class PostUserRegistrationRestRequest extends RestRequest {
     protected void populateFields(HttpServletRequest req) throws Exception {
         if (req.getParameter(EMAIL_PARAM) != null) {
             setEmail(req.getParameter(EMAIL_PARAM));
+            setUserName(this.email.substring(0, this.email.indexOf("@")));
         }
 
         if (req.getParameter(DOMAIN_PARAM) != null) {
             setDomain(req.getParameter(DOMAIN_PARAM));
-        }
-
-        if (req.getParameter(USERNAME_PARAM) != null) {
-            setUserName(req.getParameter(USERNAME_PARAM));
         }
     }
 
@@ -56,11 +52,6 @@ public class PostUserRegistrationRestRequest extends RestRequest {
         }
         if (getDomain() == null) {
             String errorMsg = DOMAIN_PARAM + " is mandatory";
-            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-                    RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
-        }
-        if (getUserName() == null) {
-            String errorMsg = USERNAME_PARAM + " is mandatory";
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
                     RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
         }
