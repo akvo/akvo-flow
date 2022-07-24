@@ -32,7 +32,6 @@ import org.akvo.flow.rest.security.AppRole;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class PostUserRegistrationServlet extends AbstractRestApiServlet {
     private final String MAIN_DOMAIN = "www";
@@ -107,7 +106,7 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
 
     private void addAuthorization(User newUser, SurveyGroup folder) {
         UserAuthorization authorization = DefaultUserAuthorization
-                .getOrCreateDefaultAuthorization(newUser.getKey().getId(), folder.getKey().getId());
+                .getOrCreateDefaultAuthorization(newUser.getKey().getId(), folder.getKey().getId(), folder.getName());
         new UserAuthorizationDAO().save(authorization);
     }
 

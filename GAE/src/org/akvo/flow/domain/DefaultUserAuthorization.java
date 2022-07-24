@@ -29,7 +29,7 @@ public class DefaultUserAuthorization {
 
     private static final String DEFAULT_USER_ROLE_NAME = "DefaultUserRole";
 
-    public static UserAuthorization getOrCreateDefaultAuthorization(Long newUserId, Long folderId) {
+    public static UserAuthorization getOrCreateDefaultAuthorization(Long newUserId, Long folderId, String folderName) {
         UserRole role = getOrCreateDefaultUserRole();
         UserAuthorization auth = new UserAuthorizationDAO().findUserAuthorization(newUserId, role.getKey().getId(), folderId);
         if (auth != null) {
@@ -40,6 +40,7 @@ public class DefaultUserAuthorization {
         auth.setUserId(newUserId);
         auth.setRoleId(role.getKey().getId());
         auth.setSecuredObjectId(folderId);
+        auth.setObjectPath("/" + folderName);
 
         return auth;
     }

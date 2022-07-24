@@ -40,7 +40,7 @@ public class DefaultUserAuthorizationTest {
 
     @Test
     void testDefaultUserAuthorizationCreation()  {
-        UserAuthorization defaultAuth = DefaultUserAuthorization.getOrCreateDefaultAuthorization(12345L, 678910L);
+        UserAuthorization defaultAuth = DefaultUserAuthorization.getOrCreateDefaultAuthorization(12345L, 678910L, "Folder Default");
         UserRole role = new UserRoleDao().findUserRoleByName("DefaultUserRole");
 
         assertNotNull(role);
