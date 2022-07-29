@@ -261,7 +261,7 @@ public class TestHarnessServlet extends HttpServlet {
             String testResult = "OK";
 
             QuestionAnswerStore qas1 = new QuestionAnswerStore();
-            qas1.setArbitratyNumber(0L);
+            qas1.setArbitraryNumber(0L);
             qas1.setQuestionID("0");
             qas1.setSurveyId(0L);
             qas1.setSurveyInstanceId(0L);
@@ -270,7 +270,7 @@ public class TestHarnessServlet extends HttpServlet {
             qas1 = dao.save(qas1);
 
             QuestionAnswerStore qas2 = new QuestionAnswerStore();
-            qas2.setArbitratyNumber(1L);
+            qas2.setArbitraryNumber(1L);
             qas2.setQuestionID("1");
             qas2.setSurveyId(1L);
             qas2.setSurveyInstanceId(1L);
@@ -399,7 +399,7 @@ public class TestHarnessServlet extends HttpServlet {
         qas.setType(Question.Type.CASCADE.toString());
         qas.setValue(StringUtils.join(Arrays.asList(data), "|"));
         qas.setCollectionDate(new Date());
-        qas.setArbitratyNumber(0L);
+        qas.setArbitraryNumber(0L);
 
         Writer w;
         try {
