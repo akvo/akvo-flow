@@ -61,68 +61,81 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
 
-
+// TODO: Methods should be abstracted to allow for a custom date instead of being
+//  arbitrarily set to 1 year old/1 month, even if not explicitly used.
+//  Additionally, a whole new approach may be desirable in favor of scalability.
 public class CronCommanderServlet extends HttpServlet {
 
-    private static final int ONE_YEAR_AGO = -1;
-    private static final int ONE_MONTH_AGO = -1;
-    private static final int TWO_YEARS_AGO = -2;
-    private static final long serialVersionUID = 2287175129835274533L;
-    private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
+    // Reconsider necessity.
+    private final long serialVersionUID = 2287175129835274533L;
+    private final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String action = req.getParameter("action");
-        if ("buildMap".equals(action)) {
-            /*
-             * KMLHelper kmlHelper = new KMLHelper(); if (kmlHelper.checkCreateNewMap()) { Queue
-             * mapAssemblyQueue = QueueFactory.getQueue("mapAssembly"); TaskOptions task =
-             * url("/app_worker/mapassembly").param("action", action).param("action", "buildMap");
-             * mapAssemblyQueue.add(task); }
-             */
-        } else if ("purgeExpiredSurveys".equals(action)) {
-            purgeExpiredSurveys();
-        } else if ("purgeOrphanJobQueueRecords".equals(action)) {
-            purgeOrphanJobQueueRecords();
-        } else if ("generateNotifications".equals(action)) {
-            generateNotifications();
-        } else if ("purgeDeviceFileJobQueueRecords".equals(action)) {
-            purgeDeviceFileJobQueueRecords();
-        } else if ("purgeExpiredDevices".equals(action)) {
-            purgeExpiredDevices();
-        } else if ("extractImageFileGeotags".equals(action)) {
-            extractImageFileGeotags();
-        } else if ("purgeReportRecords".equals(action)) {
-            purgeReportRecords();
-        } else if ("purgeOldMessages".equals(action)) {
-            purgeOldMessages();
+        switch (action) {
+            case "buildMap":
+                /*
+                 * KMLHelper kmlHelper = new KMLHelper(); if (kmlHelper.checkCreateNewMap()) { Queue
+                 * mapAssemblyQueue = QueueFactory.getQueue("mapAssembly"); TaskOptions task =
+                 * url("/app_worker/mapassembly").param("action", action).param("action", "buildMap");
+                 * mapAssemblyQueue.add(task); }
+                 */
+                break;
+            case "purgeExpiredSurveys":
+                purgeExpiredSurveys();
+                break;
+            case "purgeOrphanJobQueueRecords":
+                purgeOrphanJobQueueRecords();
+                break;
+            case "generateNotifications":
+                generateNotifications();
+                break;
+            case "purgeDeviceFileJobQueueRecords":
+                purgeDeviceFileJobQueueRecords();
+                break;
+            case "purgeExpiredDevices":
+                purgeExpiredDevices();
+                break;
+            case "extractImageFileGeotags":
+                extractImageFileGeotags();
+                break;
+            case "purgeReportRecords":
+                purgeReportRecords();
+                break;
+            case "purgeOldMessages":
+                purgeOldMessages();
+                break;
         }
     }
 
     /**
-     * scans for and deletes Device entries that have not been seen in more than two years
+     * Scans for and deletes Device entries that have not been seen in more than a year.
      */
     private void purgeExpiredDevices() {
-        Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.info("Starting scan for Devices not seen since: " + deadline.getTime());
+        Date date = this.getModifiedDate(Calendar.YEAR, -1);
+
+        log.info("Starting scan for Devices not seen since: " + date);
+
         DeviceDAO deviceDao = new DeviceDAO();
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         SurveyAssignmentDao saDao = new SurveyAssignmentDao();
-        List<Device> deviceList = deviceDao.listAllWithBeaconBefore(deadline.getTime());
+        List<Device> deviceList = deviceDao.listAllWithBeaconBefore(date);
+
         log.info("Found " + deviceList.size() + " old Devices");
 
-        for (Device d: deviceList) { //Clean up everything referencing this device
-
+        for (Device d : deviceList) { // Clean up everything referencing this device
             long did = d.getKey().getId();
             List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
+
             if (djql.size() > 0) {
                 log.fine("Deleting " + djql.size() + " form assignments for device " + did);
                 dsjqDao.delete(djql);
             }
+
             List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(did);
+
             if (dfql.size() > 0) {
                 log.fine("Deleting " + dfql.size() + " file requests for device " + did);
                 dfjqDao.delete(dfql);
@@ -130,60 +143,72 @@ public class CronCommanderServlet extends HttpServlet {
 
             int affected = saDao.removeDevice(did);
             log.fine("Removed device " + did + " from " + affected + " assignments.");
-
         }
         deviceDao.delete(deviceList);
     }
 
     /**
-     * scans for and deletes Report entries that are more than one year old
+     * Scans for and deletes Report entries that are more than a year old.
      */
     private void purgeReportRecords() {
-        Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.info("Starting scan for Report entries older than: " + deadline.getTime());
+        Date date = this.getModifiedDate(Calendar.YEAR, -1);
+
+        log.info("Starting scan for Report entries older than: " + date);
+
         ReportDao reportDao = new ReportDao();
-        List<Report> reportList = reportDao.listAllCreatedBefore(deadline.getTime());
+        List<Report> reportList = reportDao.listAllCreatedBefore(date);
+
         log.fine("Deleting " + reportList.size() + " old Report entries");
         reportDao.delete(reportList);
     }
 
     /**
-     * scans for and deletes DeviceFileJobQueue entries that are either more than two years old
-     * or that refer to files that have been successfully uploaded.
+     * Scans for and deletes DeviceFileJobQueue entries that are either more
+     * than a year old or that refer to files that have been successfully uploaded.
      */
     private void purgeDeviceFileJobQueueRecords() {
-        Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.info("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
+        Date date = this.getModifiedDate(Calendar.YEAR, -1);
+
+        log.info("Starting scan for DFJQ entries, fulfilled or older than: " + date);
+
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");
+
         int retirees = 0;
+
         for (DeviceFileJobQueue item : dfjqList) {
-            if (item.getCreatedDateTime() != null
-                    && deadline.getTime().after(item.getCreatedDateTime())) {
-                //cheap case - old
+            if (item.getCreatedDateTime() != null && date.after(item.getCreatedDateTime())) {
+                // Cheap case - old
                 log.fine("Deleting old DFJQ entry: " + item.getKey().getId());
-                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
-                        item.getKey().getId());
+
+                SurveyTaskUtil.spawnDeleteTask(
+                        SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                        item.getKey().getId()
+                );
+
                 retirees++;
-            } else { //check the (now protected) image file in S3 store - need credentials
+            } else { // Check the (now protected) image file in S3 store - need credentials
                 try {
-                    String bucket =
-                            com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
-                    HttpURLConnection conn = (HttpURLConnection)
-                            S3Util.getConnection(bucket, "images/" + item.getFileName());
-                    log.fine("Checking for " + item.getFileName() +
-                            " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
+                    String bucket = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+                    HttpURLConnection conn = (HttpURLConnection) S3Util.getConnection(
+                            bucket, "images/" + item.getFileName()
+                    );
+
+                    log.fine("Checking for " + item.getFileName() + " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
+
                     if (conn.getResponseCode() == 200) {
-                        // best case - fulfilled
+                        // Best case - fulfilled
                         log.fine("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
-                        SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
-                                item.getKey().getId());
+
+                        SurveyTaskUtil.spawnDeleteTask(
+                                SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                                item.getKey().getId()
+                        );
+
                         retirees++;
                     }
                 } catch (Exception e) {
-                    log.warning("Error while connecing to " + item.getFileName() + "\n" + e.getMessage());
+                    log.warning("Error while connecting to " + item.getFileName() + "\n" + e.getMessage());
                 }
             }
         }
@@ -199,12 +224,13 @@ public class CronCommanderServlet extends HttpServlet {
 
     private void purgeExpiredSurveys() {
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
-        List<DeviceSurveyJobQueue> dsjqList = dsjqDao
-                .listAssignmentsWithEarlierExpirationDate(new Date());
-        for (DeviceSurveyJobQueue item : dsjqList) {
-            SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DSJQ_ACTION,
-                    item.getAssignmentId());
-        }
+        List<DeviceSurveyJobQueue> dsjqList = dsjqDao.listAssignmentsWithEarlierExpirationDate(new Date());
+
+        for (DeviceSurveyJobQueue item : dsjqList)
+            SurveyTaskUtil.spawnDeleteTask(
+                    SurveyTaskRequest.DELETE_DSJQ_ACTION,
+                    item.getAssignmentId()
+            );
     }
 
     /**
@@ -215,7 +241,7 @@ public class CronCommanderServlet extends HttpServlet {
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
         SurveyDAO surveyDao = new SurveyDAO();
         List<Key> surveyIdList = surveyDao.listSurveyIds();
-        List<Long> ids = new ArrayList<Long>();
+        List<Long> ids = new ArrayList<>();
 
         for (Key key : surveyIdList) {
             ids.add(key.getId());
@@ -224,6 +250,7 @@ public class CronCommanderServlet extends HttpServlet {
         for (DeviceSurveyJobQueue item : dsjqDao.listAllJobsInQueue()) {
             Long dsjqSurveyId = item.getSurveyID();
             boolean found = ids.contains(dsjqSurveyId);
+
             if (!found) {
                 log.info("found orphan assignmentId: " + item.getAssignmentId()
                         + " id: " + item.getId() + " survey: "
@@ -236,182 +263,196 @@ public class CronCommanderServlet extends HttpServlet {
     }
 
     /**
-     * scans for and extracts geotags from image answers less than 1 month old
-     * Intended to be run every day
+     * Scans for and extracts geotags from image answers less than one month old.
+     * <p>
+     * Intended to be run every day.
      */
     private void extractImageFileGeotags() {
-        Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.MONTH, ONE_MONTH_AGO);
-        log.info("Starting scan for image answers, newer than: " + deadline.getTime());
+        Date date = this.getModifiedDate(Calendar.MONTH, -1);
+
+        log.info("Starting scan for image answers, newer than: " + date);
+
+        int json = 0;
+        int nonJson = 0;
+
         QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
         String cursor = "";
-        int json = 0;
-        int nonjson = 0;
         Media media;
 
-        do {
-            List<QuestionAnswerStore> qaList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
-            if (qaList == null || qaList.size() == 0) break; //no more answers
+        while (true) {
+            List<QuestionAnswerStore> qaList = qaDao.listByTypeAndDate("IMAGE", null, date, cursor, 1000);
+
+            if (qaList == null || qaList.size() == 0) break; // No more answers
+
             cursor = QuestionAnswerStoreDao.getCursor(qaList);
 
-            //loop over this batch
+            // Loop over this batch
             for (QuestionAnswerStore item : qaList) {
                 boolean forceSave = false;
-                String v = item.getValue();
-                log.fine(String.format(" Old IMAGE value '%s'", v));
-                if (v != null && !v.trim().equals("")) {
-                    if (v.startsWith("{")) {
+                String value = item.getValue();
+
+                log.fine(String.format(" Old IMAGE value '%s'", value));
+
+                if (value != null && !value.trim().isEmpty()) {
+                    if (value.startsWith("{")) {
                         json++;
-                        //Parse it
-                        media = MediaResponse.parse(v);
-                        if (media.getLocation() != null) { //Best case: Already known (could check validity)
-                            continue; //Skip
-                        }
-                        //also want to skip if location is present, but null, to avoid re-evaluation
-                        if (v.matches("\"location\":null")) {
-                            log.fine(String.format("Null location in IMAGE %d: '%s'", item.getKey().getId(), v));
-                            continue; //Skip
+
+                        // Parse it
+                        media = MediaResponse.parse(value);
+
+                        // Best case: Already known (could check validity)
+                        if (media.getLocation() != null) continue; //Skip
+
+                        // Also want to skip if location is present, but null, to avoid re-evaluation
+                        if (value.matches("\"location\":null")) {
+                            log.fine(String.format("Null location in IMAGE %d: '%s'", item.getKey().getId(), value));
+                            continue; // Skip
                         }
                     } else {
-                        nonjson++;
-                        forceSave = true; //handle legacy values: convert them to JSON while we're here
-                        v = Paths.get(v).getFileName().toString(); //strip path, it is never used
+                        nonJson++;
+                        forceSave = true; // Handle legacy values: convert them to JSON while we're here
+                        value = Paths.get(value).getFileName().toString(); // Strip path, it is never used
                         media = new Media();
-                        media.setFilename(v);
+                        media.setFilename(value);
                     }
                 } else {
-                    log.warning(String.format("null or empty value for IMAGE %d: '%s'", item.getKey().getId(), v));
-                    continue; //Bad data - punt
+                    log.warning(String.format("null or empty value for IMAGE %d: '%s'", item.getKey().getId(), value));
+                    continue; // Bad data - punt
                 }
-                //No location known; must read the file
+
+                // No location known; must read the file
                 Location loc = new Location();
                 Boolean tagFound = fetchLocationFromJpegInS3(media.getFilename(), loc);
-                if (tagFound != null || forceSave) {
 
-                    if (tagFound == null) { // We cannot know (right now - the file may arrive later)
-                        v = MediaResponse.formatWithoutGeotag(media);
-                    } else { //We do know!
-                        if (tagFound.equals(Boolean.FALSE)) {
-                            loc = null; //There is no tag!
-                        }
+                if (tagFound != null || forceSave) {
+                    // We cannot know (right now - the file may arrive later)
+                    if (tagFound == null) value = MediaResponse.formatWithoutGeotag(media);
+                    else { // We do know!
+                        if (tagFound.equals(Boolean.FALSE)) loc = null; //There is no tag!
+
                         media.setLocation(loc);
-                        v = MediaResponse.formatWithGeotag(media);
+                        value = MediaResponse.formatWithGeotag(media);
                     }
-                    log.fine(String.format("New IMAGE value '%s'", v));
-                    item.setValue(v);
+
+                    log.fine(String.format("New IMAGE value '%s'", value));
+                    item.setValue(value);
 
                     qaDao.save(item);
                 }
 
             }
-        } while (true);
+        }
 
         log.fine("Found " + json + " JSON answers.");
-        log.fine("Found " + nonjson + " Non-JSON answers.");
+        log.fine("Found " + nonJson + " Non-JSON answers.");
     }
 
 
     /*
      * Sample exif command output:
-    [GPS] GPS Latitude - 59/1 17/1 25324/1000
-    [GPS] GPS Longitude - 17/1 57/1 7827/1000
-    [GPS] GPS Altitude - 0 metres
-    [GPS] GPS Time-Stamp - 00:42:48.000 UTC
-    [GPS] GPS Processing Method - NETWORK
-    [GPS] GPS Date Stamp - 2013:04:13
+     *  [GPS] GPS Latitude - 59/1 17/1 25324/1000
+     *  [GPS] GPS Longitude - 17/1 57/1 7827/1000
+     *  [GPS] GPS Altitude - 0 metres
+     *  [GPS] GPS Time-Stamp - 00:42:48.000 UTC
+     *  [GPS] GPS Processing Method - NETWORK
+     *  [GPS] GPS Date Stamp - 2013:04:13
      */
-    Boolean fetchLocationFromJpegInS3(String filename, Location loc) {
-        InputStream s = fetchImageFileFromS3(filename);
-        if (s != null) {
-            try {
-                Metadata metadata = JpegMetadataReader.readMetadata(s);
+    private Boolean fetchLocationFromJpegInS3(String filename, Location loc) {
+        InputStream image = fetchImageFileFromS3(filename);
 
-                log.fine("Using JpegMetadataReader");
-                Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
-                if (directory == null) { //No GPS tag
-                    return false;
-                }
+        if (image != null) try {
+            Metadata metadata = JpegMetadataReader.readMetadata(image);
 
-                Rational[] latTag = directory.getRationalArray(GpsDirectory.TAG_LATITUDE);
-                String latRefTag = directory.getString(GpsDirectory.TAG_LATITUDE_REF);
-                Rational[] lonTag = directory.getRationalArray(GpsDirectory.TAG_LONGITUDE);
-                String lonRefTag = directory.getString(GpsDirectory.TAG_LONGITUDE_REF);
-                Rational[] altTag = directory.getRationalArray(GpsDirectory.TAG_ALTITUDE);
-                Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
-                Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
-                if (latTag == null || lonTag == null) {
-                    return false; //Bad GPS tag
-                }
-                Double lat = latTag[0].doubleValue() + latTag[1].doubleValue()/60.0 + latTag[2].doubleValue()/3600.0;
-                if (latRefTag != null && latRefTag.contentEquals("S")) {
-                    lat = -lat;
-                }
-                Double lon = lonTag[0].doubleValue() + lonTag[1].doubleValue()/60.0 + lonTag[2].doubleValue()/3600.0;
-                if (lonRefTag != null && lonRefTag.contentEquals("W")) {
-                    lon = -lon;
-                }
-                if (lat == 0.0 || lon == 0.0) {
-                    return false; //While technically valid, treat as Bad GPS tag
-                }
-                Double alt;
-                if (altTag != null) {
-                    alt = altTag[0].doubleValue();
-                } else {
-                    alt = 0.0; //Optional; default to 0
-                }
-                if (altRefTag != null && altRefTag.equals(1)) { //0 = above, 1 below sea level
-                    alt = -alt;
-                }
-                Float acc;
-                if (accTag != null) {
-                    acc = accTag[0].floatValue();
-                } else {
-                    acc = 0.0f; //Optional; default to 0
-                }
-                loc.setLatitude(lat);
-                loc.setLongitude(lon);
-                loc.setAltitude(alt);
-                loc.setAccuracy(acc);
-                log.fine(String.format(" Extracted location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc));//Debug
-                return true;
-            } catch (JpegProcessingException e) {
-                log.warning("Could not process JPEG file: " + e.getMessage());
-            } catch (IOException e) {
-                log.warning("Could not read image file: " + e.getMessage());
-            }
+            log.fine("Using JpegMetadataReader");
+
+            Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+
+            if (directory == null) return false; // No GPS tag
+
+            Rational[] latTag = directory.getRationalArray(GpsDirectory.TAG_LATITUDE);
+            String latRefTag = directory.getString(GpsDirectory.TAG_LATITUDE_REF);
+            Rational[] lonTag = directory.getRationalArray(GpsDirectory.TAG_LONGITUDE);
+            String lonRefTag = directory.getString(GpsDirectory.TAG_LONGITUDE_REF);
+            Rational[] altTag = directory.getRationalArray(GpsDirectory.TAG_ALTITUDE);
+            Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
+            Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
+
+            if (latTag == null || lonTag == null) return false; // Bad GPS tag
+
+            double lat = latTag[0].doubleValue() + latTag[1].doubleValue() / 60.0 + latTag[2].doubleValue() / 3600.0;
+            double lon = lonTag[0].doubleValue() + lonTag[1].doubleValue() / 60.0 + lonTag[2].doubleValue() / 3600.0;
+            double alt = altTag != null ? altTag[0].doubleValue() : 0.0;
+            float acc = accTag != null ? accTag[0].floatValue() : 0.0f;
+
+            if (latRefTag != null && latRefTag.contentEquals("S")) lat = -lat;
+            if (lonRefTag != null && lonRefTag.contentEquals("W")) lon = -lon;
+            if (lat == 0.0 || lon == 0.0) return false; // While technically valid, treat as Bad GPS tag
+            if (altRefTag != null && altRefTag.equals(1)) alt = -alt; // 0 = above, 1 below sea level
+
+            loc.setLatitude(lat);
+            loc.setLongitude(lon);
+            loc.setAltitude(alt);
+            loc.setAccuracy(acc);
+
+            log.fine(String.format(" Extracted location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc)); // Debug
+
+            return true;
+        } catch (JpegProcessingException e) {
+            log.warning("Could not process JPEG file: " + e.getMessage());
+        } catch (IOException e) {
+            log.warning("Could not read image file: " + e.getMessage());
         }
-        return null; //Can't tell
+        return null; // Can't tell
     }
 
 
-    InputStream fetchImageFileFromS3(String filename) {
-        // attempt to retrieve image file
-        URLConnection conn = null;
+    private InputStream fetchImageFileFromS3(String filename) {
+        // Attempt to retrieve image file.
+        URLConnection conn;
         String s3bucket = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
-        filename = Paths.get(filename).getFileName().toString(); //strip path, it is not used in S3
+
+        filename = Paths.get(filename).getFileName().toString(); // Strip path, it is not used in S3
+
         log.fine("Fetching " + filename);
 
         try {
             conn = S3Util.getConnection(s3bucket, "images/" + filename);
             return new BufferedInputStream(conn.getInputStream());
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.warning("Could not fetch image file: " + e.getMessage());
             return null;
         }
     }
 
+
     /**
      * scans for and deletes Message entries that are more than one year old
      */
     private void purgeOldMessages() {
-        Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.info("Starting scan for Message entries older than: " + deadline.getTime());
+        Date date = this.getModifiedDate(Calendar.YEAR, -1);
+
+        log.info("Starting scan for Message entries older than: " + date);
+
         MessageDao messageDao = new MessageDao();
-        List<Key> purgable = messageDao.listKeysCreatedBefore(deadline.getTime());
+        List<Key> purgable = messageDao.listKeysCreatedBefore(date);
+
         log.fine("Deleting " + purgable.size() + " old Message entries");
+
         messageDao.deleteByKeys(purgable);
     }
 
+    /**
+     * Creates a calendar instance, modifies the field by the given amount
+     * and returns the resulting date.
+     *
+     * @param field  the field to modify
+     * @param amount the amount to modify the field by
+     * @return the resulting date
+     */
+    private Date getModifiedDate(int field, int amount) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(field, amount);
 
+        return calendar.getTime();
+    }
 }
