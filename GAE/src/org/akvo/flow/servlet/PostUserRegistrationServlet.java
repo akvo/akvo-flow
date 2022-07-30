@@ -16,6 +16,7 @@
 
 package org.akvo.flow.servlet;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -33,11 +34,9 @@ import org.akvo.flow.rest.security.AppRole;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
+import static org.waterforpeople.mapping.app.web.EnvServlet.SELF_ONBOARD_ENABLED;
+
 public class PostUserRegistrationServlet extends AbstractRestApiServlet {
-    private final String MAIN_DOMAIN = "www";
-
-    private final String DEMO_DOMAIN = "demo";
-
     private UserDao userDao = new UserDao();
 
     private SurveyGroupDAO folderDao = new SurveyGroupDAO();
@@ -55,8 +54,8 @@ public class PostUserRegistrationServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         RestResponse resp = new RestResponse();
         PostUserRegistrationRestRequest request = (PostUserRegistrationRestRequest) req;
-        if (!MAIN_DOMAIN.equalsIgnoreCase(request.getDomain()) && !DEMO_DOMAIN.equalsIgnoreCase(request.getDomain())) {
-            resp.setMessage("Not valid registration domain");
+        if (!"true".equalsIgnoreCase(PropertyUtil.getProperty(SELF_ONBOARD_ENABLED))) {
+            resp.setMessage("Not valid self onboarding instance");
             return resp;
         }
 

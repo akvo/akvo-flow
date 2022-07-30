@@ -56,6 +56,7 @@ public class EnvServlet extends HttpServlet {
     public static final String PUBLISH_ASSEMBLED_FORM = "publishAssembledForm";
     public static final String SHOW_FORM_INSTANCE_API_URL = "showFormInstanceApiUrl";
     public static final String WEBFORM_V2_ENABLED = "enableWebFormV2";
+    public static final String SELF_ONBOARD_ENABLED = "enableSelfOnboard";
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
@@ -83,6 +84,7 @@ public class EnvServlet extends HttpServlet {
         properties.add(PUBLISH_ASSEMBLED_FORM);
         properties.add(SHOW_FORM_INSTANCE_API_URL);
         properties.add(WEBFORM_V2_ENABLED);
+        properties.add(SELF_ONBOARD_ENABLED);
     }
 
     @Override
@@ -162,6 +164,8 @@ public class EnvServlet extends HttpServlet {
         }
 
         props.put(WEBFORM_V2_ENABLED, Boolean.toString("true".equalsIgnoreCase(props.get(WEBFORM_V2_ENABLED))));
+
+        props.put(SELF_ONBOARD_ENABLED, Boolean.toString("true".equalsIgnoreCase(props.get(SELF_ONBOARD_ENABLED))));
 
         if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
                 || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
