@@ -3,7 +3,7 @@ import React from 'react';
 import AssignmentsEditView from 'akvo-flow/components/devices/AssignmentsEditView';
 import { formatDate } from 'akvo-flow/utils';
 import observe from 'akvo-flow/mixins/observe';
-import { trackEvent } from 'akvo-flow/analytics';
+import { trackEvent, DEVICES_ASSIGNMENTS } from 'akvo-flow/analytics';
 
 require('akvo-flow/views/react-component');
 
@@ -258,9 +258,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // track assignment created/edited
       // check if assignment was updated or created
       if (sa.get('keyId')) {
-        trackEvent('Assignment Saved', 'Updated assignment');
+        trackEvent(DEVICES_ASSIGNMENTS, 'Updated assignment');
       } else {
-        trackEvent('Assignment Saved', 'Created new assignment');
+        trackEvent(DEVICES_ASSIGNMENTS, 'Created new assignment');
       }
 
       return true;
@@ -311,9 +311,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
-      trackEvent('Datapoint Assigned', 'All datapoints', numberOfAssignedAll);
+      trackEvent(DEVICES_ASSIGNMENTS, 'Datapoint Assigned', 'All datapoints', numberOfAssignedAll);
 
-      trackEvent('Datapoint Assigned', 'Filtered datapoints', numberOfAssignedByNameOrID);
+      trackEvent(DEVICES_ASSIGNMENTS, 'Datapoint Assigned', 'Filtered datapoints', numberOfAssignedByNameOrID);
 
       // wait half a second before transitioning back to the assignments list
       setTimeout(() => {

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { trackEvent } from 'akvo-flow/analytics';
+import { trackEvent, DATA_MONITOR } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
@@ -55,7 +55,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend(
         return;
       }
 
-      trackEvent('Data table view', 'Used "Monitoring data" table view');
+      trackEvent(DATA_MONITOR, 'Monitoring data');
 
       if (ident) {
         criteria.identifier = ident;

@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'akvo-flow/components/reusable/Modal';
-import { trackEvent } from 'akvo-flow/analytics';
+import { trackEvent, SURVEY_TAB } from 'akvo-flow/analytics';
 import './style.scss';
 
 export default class WebFormShare extends React.Component {
@@ -26,7 +26,7 @@ export default class WebFormShare extends React.Component {
         this.setState({ copyButtonV2Text: 'Copied!'});
     }
     setTimeout(() => { this.setState({ copyButtonText: 'Copy link', copyButtonV2Text: 'Copy link'}) }, 900);
-    trackEvent('Webform URL copied');
+    trackEvent(SURVEY_TAB, 'Webform URL copied');
   };
 
   openModal = () => {

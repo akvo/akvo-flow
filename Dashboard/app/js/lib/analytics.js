@@ -23,13 +23,13 @@ export function init() {
   })();
 }
 
-export const trackEvent = (eventType, ...values) => {
+const trackEvent = (eventType, ...values) => {
   if (typeof window._paq !== 'undefined') {
     window._paq.push(['trackEvent', eventType, ...values]);
   }
 };
 
-export const trackPageView = pageTitle => {
+const trackPageView = pageTitle => {
   if (typeof window._paq !== 'undefined') {
     const { origin, pathname } = window.location;
     window._paq.push(['setCustomUrl', `${origin}${pathname}`]);
@@ -37,4 +37,23 @@ export const trackPageView = pageTitle => {
   }
 };
 
-export default { trackEvent, trackPageView };
+const SURVEY_TAB = "Survey";
+const DEVICES_LIST = "Devices > List";
+const DEVICES_ASSIGNMENTS = "Devices > Assignments";
+const DEVICES_MANUAL_TRANSFER = "Devices > Manual survey transfer";
+const DATA_INSPECT = "Data > Inspect Data";
+const DATA_MONITOR = "Data > Monitoring Data";
+const DATA_CHARTS = "Data > Charts";
+const DATA_EXPORTS = "Data > Exports";
+const DATA_BULK_UPLOAD = "Data > Bulk Upload Data";
+const DATA_BULK_UPLOAD_IMAGES = "Data > Bulk Upload Images";
+const DATA_CLEANING = "Data > Data cleaning";
+const RESOURCES_CASCADE = "Resources > Cascade Resources";
+const RESOURCES_DATA_APPROVAL = "Resources > Data Approval";
+const MAPS = "Maps";
+const USERS = "Users List";
+const MESSAGES = "Messages";
+const STATS = "View Stats"
+
+
+export { trackEvent, trackPageView, SURVEY_TAB, DEVICES_LIST, DEVICES_ASSIGNMENTS, DEVICES_MANUAL_TRANSFER, DATA_INSPECT, DATA_MONITOR, DATA_CHARTS, DATA_EXPORTS, DATA_BULK_UPLOAD, DATA_BULK_UPLOAD_IMAGES, DATA_CLEANING, RESOURCES_CASCADE, RESOURCES_DATA_APPROVAL, MAPS, USERS, MESSAGES, STATS };

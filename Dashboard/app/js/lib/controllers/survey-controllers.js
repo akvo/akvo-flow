@@ -1,4 +1,4 @@
-import {trackEvent} from 'akvo-flow/analytics';
+import { SURVEY_TAB, trackEvent } from 'akvo-flow/analytics';
 import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
@@ -393,7 +393,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   createProject() {
-    trackEvent('Survey list view', 'Creating blank survey');
+    trackEvent(SURVEY_TAB, 'Creating blank survey');
     this.createNewProject(false);
   },
 
@@ -539,7 +539,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   copyTemplate(targetId) {
-    trackEvent('Survey list view', 'Creating survey from template');
+    trackEvent(SURVEY_TAB, 'Creating survey from template');
     const currentFolder = this.get('currentProject');
 
     FLOW.store.findQuery(FLOW.Action, {

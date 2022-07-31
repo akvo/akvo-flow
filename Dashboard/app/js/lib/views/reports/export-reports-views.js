@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { trackEvent } from 'akvo-flow/analytics';
+import { trackEvent, DATA_EXPORTS } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 /* global Ember, $, FLOW */
@@ -40,7 +40,7 @@ FLOW.ReportLoader = Ember.Object.create({
       'reports'
     );
 
-    trackEvent('Data exported', `Export Type`, exportType);
+    trackEvent(DATA_EXPORTS, `Export Type`, exportType);
   },
 
   showDialogMessage(header, message, action) {
