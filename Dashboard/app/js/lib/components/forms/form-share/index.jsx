@@ -26,7 +26,7 @@ export default class WebFormShare extends React.Component {
         this.setState({ copyButtonV2Text: 'Copied!'});
     }
     setTimeout(() => { this.setState({ copyButtonText: 'Copy link', copyButtonV2Text: 'Copy link'}) }, 900);
-    trackEvent(SURVEY_TAB, 'Webform URL copied');
+    trackEvent(SURVEY_TAB, 'Webform URL copied', event.target.id);
   };
 
   openModal = () => {
