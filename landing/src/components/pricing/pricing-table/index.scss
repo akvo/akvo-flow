@@ -1,0 +1,226 @@
+@import "../../../variables.scss";
+
+.pricing {
+  text-align: center;
+  max-width: 1440px;
+  @media (max-width: 600px) {
+    display: none;
+  }
+
+  @media (min-width: 601px) {
+    padding-left: 40px;
+    padding-right: 40px;
+    margin: 60px auto 50px auto;
+    button {
+      max-width: max-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h3 {
+      font-size: 24px;
+      line-height: 28px;
+      text-align: center;
+
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+    table {
+      margin: auto;
+      border-collapse: collapse !important;
+      .plan-type {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 20px;
+        text-align: center;
+        color: $grey;
+        border: unset;
+      }
+
+      .features {
+        border: unset;
+        td:first-of-type {
+          font-weight: 700;
+          font-size: 20px;
+          line-height: 24px;
+        }
+      }
+
+      .features + tr {
+        border-top: 20px solid transparent;
+      }
+
+      .support {
+        border-bottom: 33px solid transparent;
+      }
+
+      .most-popular {
+        border: unset;
+        div {
+          font-size: 16px;
+          line-height: 24px;
+          text-align: center;
+          background: #ffffff;
+          border-radius: 10px;
+          padding: 10px 19px;
+          margin: 12px 12px 25px 11px;
+        }
+      }
+
+      .plan-price {
+        border: unset;
+        .wrapper {
+          margin: 26px 0 11px 0;
+          div {
+            font-weight: 700;
+            font-size: 24px;
+            line-height: 28px;
+            margin-bottom: 11px;
+          }
+          span {
+            font-size: 14px;
+            line-height: 20px;
+            color: $grey;
+          }
+        }
+      }
+
+      tr {
+        border-top: 16px solid transparent;
+        .check path {
+          fill: $orange;
+        }
+        &:first-of-type td:nth-of-type(3) {
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px;
+        }
+        &:last-of-type td:nth-of-type(3) {
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
+        td:nth-of-type(2),
+        th:nth-of-type(2) {
+          padding: 0 27px 0 24px;
+        }
+        td:nth-of-type(3),
+        th:nth-of-type(3) {
+          background-color: #f1f2f4;
+          padding: 0 8px 0 8px;
+        }
+        td:nth-of-type(4),
+        th:nth-of-type(4) {
+          padding: 0 24px 0 27px;
+        }
+        td:not(:first-of-type) {
+          font-size: 14px;
+          line-height: 20px;
+          color: $black;
+        }
+
+        td {
+          text-align: right;
+          &:first-of-type {
+            max-width: 115px;
+            font-size: 16px;
+            line-height: 24px;
+            color: $black;
+          }
+          &:not(:first-of-type) {
+            text-align: center;
+          }
+        }
+      }
+    }
+    .note {
+      display: block;
+      font-size: 14px;
+      line-height: 20px;
+      color: $grey;
+      text-align: start;
+      margin-top: 30px;
+      margin-bottom: 0;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    padding-left: 156px;
+    padding-right: 156px;
+    margin: 67px auto 76px auto;
+    h3 {
+      font-size: 32px;
+      line-height: 36px;
+    }
+    table {
+      .plan-type {
+        font-size: 20px;
+        line-height: 24px;
+      }
+      .most-popular {
+        div {
+          font-weight: 700;
+          font-size: 18px;
+          line-height: 24px;
+          padding: 10px 15px;
+          margin: 14px auto;
+          max-width: max-content;
+        }
+      }
+
+      .features {
+        border: unset;
+        td:first-of-type {
+          font-size: 20px;
+          line-height: 24px;
+        }
+      }
+
+      .features + tr {
+        border-top: 24px solid transparent;
+      }
+
+      .support {
+        border-bottom: 34px solid transparent;
+      }
+
+      .plan-price {
+        border: unset;
+        .wrapper {
+          margin: 18px 0 12px 0;
+          div {
+            font-size: 32px;
+            line-height: 36px;
+            margin-bottom: 9px;
+          }
+        }
+      }
+
+      tr {
+        td:nth-of-type(2),
+        th:nth-of-type(2) {
+          padding: 0 83px 0 82px;
+        }
+
+        td:nth-of-type(3),
+        th:nth-of-type(3) {
+          padding: 0 56px 0 56px;
+        }
+
+        td:nth-of-type(4),
+        th:nth-of-type(4) {
+          padding: 0 0 0 27px;
+        }
+
+        td {
+          &:first-of-type {
+            max-width: 192px;
+            font-size: 18px;
+            line-height: 28px;
+          }
+        }
+      }
+    }
+    .note {
+      margin-top: 14px;
+      margin-bottom: 0;
+    }
+  }
+}

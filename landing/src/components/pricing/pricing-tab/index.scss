@@ -1,0 +1,115 @@
+@import "../../../variables.scss";
+
+.pricing-mobile {
+  padding: 30px 20px;
+  .tab-list {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    .list-item {
+      padding: 10px;
+      font-size: 12px;
+      line-height: 16px;
+      color: $grey;
+      border-bottom: 1px solid $grey;
+      cursor: pointer;
+      transition: all ease-out 0.5s;
+      &.selected {
+        color: $black;
+        border-bottom: 1px solid $orange;
+      }
+    }
+  }
+
+  .plan {
+    text-align: center;
+    .most-popular {
+      max-width: max-content;
+      margin: auto;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 22px;
+      padding: 10px 15px;
+      background-color: #ffffff;
+      border-radius: 10px;
+    }
+    .plan-name,
+    .plan-note {
+      color: $grey;
+    }
+    .plan-name,
+    .feature {
+      font-size: 16px;
+      line-height: 20px;
+    }
+    .plan-name {
+      margin-bottom: 12px;
+    }
+
+    .plan-price {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 28px;
+      margin-bottom: 10px;
+    }
+    .plan-note {
+      display: block;
+      font-size: 14px;
+      line-height: 20px;
+      margin-bottom: 15px;
+    }
+    button {
+      max-width: max-content;
+      margin: auto;
+    }
+  }
+
+  .features-table {
+    width: 100%;
+    max-width: calc(calc(136px * 2) + 8px);
+    margin: 20px auto;
+    margin: auto;
+    border-collapse: collapse !important;
+    .features-row {
+      border-top: 16px solid transparent;
+    }
+    .feature,
+    .feature-name {
+      font-size: 16px;
+      line-height: 22px;
+      text-align: right;
+      max-width: 136px;
+    }
+    .feature-name,
+    .feature-value {
+      width: 100%;
+      max-width: 136px;
+    }
+    .feature {
+      border-bottom: 20px solid transparent;
+    }
+    .feature-name {
+      display: block;
+    }
+
+    .feature-value {
+      text-align: center;
+      margin-left: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      .check path {
+        fill: $orange;
+      }
+    }
+  }
+  .note {
+    display: block;
+    font-size: 14px;
+    line-height: 20px;
+    color: $grey;
+    margin-top: 20px;
+  }
+  @media (min-width: 601px) {
+    display: none;
+  }
+}
