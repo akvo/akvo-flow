@@ -1,0 +1,141 @@
+@import "../../variables.scss";
+
+.contact {
+  max-width: 960px;
+  padding: 0 20px;
+  margin: 30px auto 34px auto;
+  .title {
+    font-size: 20px;
+    line-height: 24px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+  }
+  .contact-list {
+    margin-bottom: 34px;
+    .list-item {
+      position: relative;
+      padding-left: calc(40px + 15px);
+      &::before {
+        content: " ";
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        left: 0;
+        border-radius: 50%;
+        background-color: #fefaf0;
+        background-position: center;
+      }
+      &.address::before {
+        background-image: url("../../images/location.svg");
+      }
+      &.phone::before {
+        background-image: url("../../images/phone-icon.svg");
+      }
+      &:not(:last-of-type) {
+        margin-bottom: 16px;
+      }
+      b {
+        display: block;
+        width: 100%;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 20px;
+      }
+      span {
+        width: 100%;
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+  }
+
+  .card {
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fefaf0;
+    .card-title {
+      font-size: 32px;
+      line-height: 36px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      span {
+        color: $orange;
+      }
+    }
+    button {
+      max-width: max-content;
+      margin: auto;
+      font-weight: 400;
+    }
+  }
+
+  @media (min-width: 601px) {
+    padding: 0 40px;
+    margin: 50px auto;
+    .title {
+      font-size: 24px;
+      line-height: 28px;
+      margin-bottom: 50px;
+    }
+    .contact-list {
+      display: flex;
+      margin-bottom: 50px;
+      .list-item {
+        width: 50%;
+        margin-right: 16px;
+      }
+    }
+
+    .card {
+      padding: 30px;
+      .card-title {
+        font-size: 48px;
+        line-height: 52px;
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 156px;
+    margin: 70px auto 106px auto;
+    .title {
+      font-size: 32px;
+      line-height: 36px;
+      margin-bottom: 100px;
+    }
+    .contact-list {
+      display: flex;
+      margin-bottom: 100px;
+      .list-item {
+        width: 50%;
+        margin-right: 16px;
+        padding-left: calc(60px + 24px);
+        &::before {
+          content: " ";
+          width: 60px;
+          height: 60px;
+
+          margin-right: 24px;
+        }
+        &.address::before {
+          background-size: 14px 20px;
+        }
+
+        &.phone::before {
+          background-size: 18px;
+        }
+      }
+    }
+
+    .card {
+      padding: 50px;
+      .card-title {
+        font-size: 56px;
+        line-height: 64px;
+      }
+    }
+  }
+}
