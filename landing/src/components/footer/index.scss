@@ -1,0 +1,220 @@
+@import "../../variables.scss";
+.footer {
+  padding-top: calc(72px - 20px);
+  padding-bottom: 45px;
+  border-top: 1px solid #f1f2f4;
+
+  & > div {
+    margin: auto;
+    max-width: 1440px;
+    padding-left: 20px;
+    padding-right: 20px;
+    .wrapper {
+      display: flex;
+      flex-direction: column-reverse;
+      .flow-logo {
+        width: calc(100% / 4);
+        max-width: 25%;
+        margin-top: 10px;
+
+        &,
+        a {
+          height: 19.45px;
+        }
+        a {
+          width: 98px;
+          margin-right: auto;
+        }
+      }
+      .navigation-container {
+        width: 100%;
+        flex-wrap: wrap;
+
+        .navigation-section {
+          margin-right: 16px;
+
+          .title {
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: 700;
+            margin-top: 15px;
+            margin-bottom: 10px;
+          }
+          .navigation-list {
+            margin: 0;
+            .list-item {
+              width: 100%;
+              margin-bottom: 10px;
+              a,
+              & {
+                font-size: 12px;
+                line-height: 16px;
+                color: $grey;
+                transition: all ease-out 0.3s;
+                &:hover {
+                  color: $black;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .language-select {
+      margin-top: 50px;
+      width: 100%;
+      max-width: calc(103px - 40px);
+      height: 29px;
+      & * {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .custom-select {
+        max-height: calc(29px - 16px);
+        overflow: hidden;
+        padding-left: 30px;
+        position: relative;
+        border: 0;
+      }
+      .custom-select-trigger::before {
+        content: " ";
+        width: 24px;
+        height: 23px;
+        position: absolute;
+        top: 5px;
+        left: 0;
+        background-image: url("../../images/translate-icon.svg");
+        background-position: center;
+      }
+      .open-trigger svg path {
+        fill: currentColor;
+      }
+      .open-select {
+        max-height: 115px;
+      }
+      .custom-select-option:hover button {
+        color: $black;
+      }
+      svg {
+        width: 14px;
+        height: 8.6px;
+      }
+      ul {
+        margin-top: 12px;
+        margin-bottom: 0;
+      }
+    }
+    .copyright-wrapper {
+      display: flex;
+      text-align: center;
+      justify-content: space-between;
+
+      small {
+        font-size: 14px;
+        line-height: 20px;
+        color: $grey;
+        margin-top: 28px;
+        a {
+          color: $black;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 601px) {
+    background-image: url("../../images/footer-circle.svg");
+    background-position: left bottom;
+    & > div {
+      padding-left: 40px;
+      padding-right: 40px;
+      .wrapper {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        .flow-logo {
+          width: calc(100% / 4);
+          max-width: 25%;
+          margin-top: 8px;
+
+          a {
+            height: 32.1px;
+            display: block;
+            margin-left: auto;
+            margin-right: 0;
+            width: 162.59px;
+          }
+        }
+        .navigation-container {
+          display: flex;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          .navigation-section {
+            max-width: 25%;
+            .title {
+              font-size: 16px;
+              line-height: 20px;
+              margin-top: 20px;
+              margin-bottom: 20px;
+            }
+            .navigation-list {
+              margin: 0;
+              .list-item {
+                a,
+                & {
+                  font-size: 16px;
+                  line-height: 24px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .language-select {
+        max-width: calc(134px - 30px);
+        & * {
+          font-weight: 400;
+          font-size: 18px;
+          line-height: 24px;
+        }
+
+        svg {
+          width: unset;
+        }
+        ul {
+          margin-top: 24px;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    & > div {
+      padding-left: 156px;
+      padding-right: 156px;
+      .wrapper {
+        .navigation-container {
+          .navigation-section {
+            .title {
+              font-size: 20px;
+              line-height: 24px;
+            }
+            .navigation-list {
+              margin: 0;
+              .list-item {
+                a,
+                & {
+                  font-size: 18px;
+                  line-height: 24px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
