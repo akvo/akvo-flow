@@ -1,0 +1,136 @@
+@import "../../variables.scss";
+
+.testimonial {
+  text-align: center;
+  margin-top: 30px;
+  padding: 0 20px;
+  margin: 30px auto 0 auto;
+  .heading {
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 36px;
+    margin: 0;
+    margin-bottom: 30px;
+    span {
+      display: inline;
+      color: $orange;
+    }
+  }
+  .swiper {
+    .swiper-button-prev,
+    .swiper-button-next {
+      width: 44px;
+      height: 44px;
+      background-image: url("../../images/left-arrow.svg");
+      background-position: center;
+      border-radius: 50%;
+      background-color: #f1f2f4;
+      transition: all ease-out 0.3s;
+      &:hover {
+        background-color: #fefaf0;
+        box-shadow: 0px 12px 16px -4px rgba(51, 51, 51, 0.08),
+          0px 4px 6px -2px rgba(51, 51, 51, 0.03);
+      }
+      &::after {
+        content: "";
+      }
+    }
+
+    .swiper-button-next {
+      transform: rotate(180deg);
+      &:hover {
+        box-shadow: 0px -12px 16px -4px rgba(51, 51, 51, 0.08),
+          0px 4px 6px -2px rgba(51, 51, 51, 0.03);
+      }
+    }
+    .swiper-slide {
+      background-color: #fff;
+      & > div {
+        padding: 10px;
+        background: #f1f2f4;
+        box-shadow: 3px 3px 25px rgba(0, 0, 0, 0.05),
+          0px 8px 20px rgba(0, 0, 0, 0.04);
+        border-radius: 15px;
+        max-width: 60%;
+        margin: auto;
+      }
+      .wrapper {
+        background-color: #fff;
+        padding: 20px 20px 10px 20px;
+        border-radius: 10px;
+        .testimonial-quote {
+          margin: 0 0 30px 0;
+          q {
+            font-size: 14px;
+            line-height: 20px;
+          }
+        }
+
+        .container {
+          .testimonial-name {
+            font-size: 14px;
+            line-height: 18px;
+          }
+          .testimonial-role {
+            font-size: 14px;
+            line-height: 20px;
+          }
+        }
+
+        .testimonial-organisation-logo {
+          width: 100%;
+          max-width: 122.56px;
+        }
+      }
+    }
+  }
+  @media (min-width: 601px) {
+    margin-top: 50px;
+    padding: 0 40px;
+    .heading {
+      font-size: 48px;
+      line-height: 52px;
+    }
+    .swiper {
+      .swiper-slide {
+        .wrapper {
+          padding: 25px 25px 10px 25px;
+          .container {
+            .testimonial-name {
+              font-size: 16px;
+              line-height: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    margin-top: 127px;
+    padding: 0 156px;
+    .heading {
+      font-size: 56px;
+      line-height: 64px;
+    }
+    .swiper {
+      .swiper-slide {
+        & > div {
+          max-width: 744px;
+        }
+        .wrapper {
+          .container {
+            .testimonial-name {
+              font-size: 20px;
+              line-height: 24px;
+            }
+            .testimonial-role {
+              font-size: 18px;
+              line-height: 28px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
