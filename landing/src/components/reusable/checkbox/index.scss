@@ -1,0 +1,42 @@
+@import "../../../variables.scss";
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  input {
+    width: 100%;
+    max-width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    margin-left: 0;
+    border: 0;
+    background-color: #f1f2f4;
+    appearance: inherit;
+    border-radius: 4px;
+    transition: background-color ease-out 0.3s;
+    &:focus {
+      background-color: #f1f2f4;
+      border: 2px solid $grey;
+    }
+    &:checked {
+      appearance: inherit;
+      background-color: $orange;
+      position: relative;
+      background-image: url("../../../images/check.svg");
+      background-position: center;
+      background-size: 11px 9px;
+    }
+  }
+
+  label {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  @media (min-width: 1024px) {
+    label {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+}
