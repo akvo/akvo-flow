@@ -1,0 +1,145 @@
+@import "../../variables.scss";
+
+.subscribe {
+  margin-top: 30px;
+  padding-top: 25px;
+  padding-bottom: 36px;
+  border-top: 1px solid #f1f2f4;
+
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    justify-content: space-between;
+    max-width: 1440px;
+    padding-left: 20px;
+    padding-right: 0;
+
+    input::placeholder {
+      opacity: 0;
+    }
+
+    .subscribe-header {
+      flex-basis: 100%;
+      h3,
+      p {
+        font-size: 16px;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      h3 {
+        line-height: 20px;
+        margin-bottom: 10px;
+      }
+      p {
+        line-height: 22px;
+        color: $grey;
+        margin-bottom: 30px;
+      }
+    }
+    .form {
+      flex-wrap: wrap;
+      flex-basis: 100%;
+      .container,
+      .agreement {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .input-wrapper {
+        display: flex;
+        position: relative;
+        width: 100%;
+        margin-right: 20px;
+        margin-bottom: 20px;
+
+        .submit-button {
+          position: absolute;
+          top: calc(50% - 16.5px);
+          right: 2px;
+          background-color: transparent;
+          border: 0;
+          font-weight: 400;
+          font-size: 12px;
+          line-height: 16px;
+          color: $black;
+          padding: 8.5px 22px 8.5px 5px;
+          border-radius: 0;
+          transition: color ease-out 0.3s;
+
+          svg {
+            margin-left: 14px;
+          }
+        }
+        & input:valid + label + button {
+          color: $orange;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 601px) {
+    margin-top: 60px;
+    padding-top: 44px;
+    & > div {
+      padding-left: 40px;
+      padding-right: calc(40px - 20px);
+      .input-wrapper {
+        flex-basis: calc(50% - 20px);
+      }
+
+      .subscribe-header {
+        h3 {
+          font-size: 20px;
+          line-height: 24px;
+        }
+        p {
+          font-size: 16px;
+          line-height: 24px;
+          margin-bottom: 20px;
+        }
+      }
+      .form {
+        .input-wrapper {
+          .submit-button {
+            font-size: 16px;
+            line-height: 24px;
+            top: calc(50% - 20.5px);
+          }
+        }
+      }
+    }
+  }
+  @media (min-width: 1024px) {
+    margin-top: 90px;
+    padding-top: 61px;
+    & > div {
+      flex-wrap: nowrap;
+      padding-left: 156px;
+      padding-right: calc(156px - 20px);
+      .subscribe-header {
+        flex-basis: 41.5%;
+      }
+      .form {
+        flex-basis: 59.5%;
+        .input-wrapper {
+          .submit-button {
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 24px;
+          }
+        }
+      }
+      .subscribe-header {
+        h3 {
+          font-size: 24px;
+          line-height: 28px;
+        }
+        p {
+          font-size: 18px;
+          line-height: 28px;
+        }
+      }
+    }
+  }
+}
