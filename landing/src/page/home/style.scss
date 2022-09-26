@@ -1,0 +1,11 @@
+.home {
+  .pricing {
+    margin: 30px auto 64px auto;
+    @media (min-width: 601px) {
+      margin: 50px auto;
+    }
+    @media (min-width: 1024px) {
+      margin: 90px auto 127px auto;
+    }
+  }
+}
