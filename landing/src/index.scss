@@ -1,0 +1,50 @@
+@import "./variables.scss";
+
+body {
+  margin: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $black;
+  & * {
+    font-family: "Gilroy", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+    background-repeat: no-repeat;
+  }
+
+  a {
+    transition: all ease-out 0.3s;
+    text-decoration: none;
+  }
+
+  .flow-logo {
+    font-size: unset;
+    margin: 0;
+    a {
+      display: block;
+      background-image: url("../public/logo.svg");
+      background-position: 0 center;
+      background-size: cover;
+      text-indent: -9999px;
+    }
+  }
+
+  .toggle-menu {
+    display: none;
+  }
+
+  span {
+    color: $black;
+    display: block;
+  }
+
+  button,
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+}
