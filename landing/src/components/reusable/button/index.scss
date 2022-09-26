@@ -1,0 +1,40 @@
+@import "../../../variables.scss";
+
+button {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  border-radius: 50px;
+  border: 1.5px solid $orange;
+  color: $orange;
+  padding: 8.5px 25px;
+  cursor: pointer;
+  transition: all ease-out 0.3s;
+  @media (min-width: 601px) {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  @media (min-width: 1024px) {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+  }
+}
+.outlined {
+  background-color: transparent;
+  &:hover {
+    color: #ffffff;
+    background-color: $orange;
+  }
+}
+
+.filled {
+  color: #ffffff;
+  background-color: $orange;
+  &:hover {
+    color: $orange;
+    background-color: transparent;
+  }
+}
