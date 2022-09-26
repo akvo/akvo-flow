@@ -1,0 +1,152 @@
+@import "../../variables.scss";
+
+.key-features {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1440px;
+  padding-left: 20px;
+  padding-right: 20px;
+  .key-feature-image {
+    width: 100%;
+    max-width: 665px;
+    height: max-content;
+  }
+  .wrapper {
+    flex-basis: 100%;
+    .heading {
+      font-size: 20px;
+      line-height: 24px;
+      margin-bottom: 15px;
+    }
+
+    .accordion {
+      .container {
+        transition: all ease-out 0.5s;
+        .title {
+          display: flex;
+          align-items: center;
+          font-size: 14px;
+          line-height: 18px;
+          color: $grey;
+          margin-top: 0;
+          margin-bottom: 10px;
+          cursor: pointer;
+          &:hover {
+            color: $black;
+          }
+          &::before {
+            content: " ";
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: $grey;
+            transition: all ease-out 0.5s;
+          }
+        }
+        .paragraph-wrapper {
+          max-height: 0;
+          overflow: hidden;
+          padding: 0 0 0 18px;
+          border-left: 1px solid $grey;
+          .paragraph {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+            margin-bottom: 0;
+            margin-top: 0;
+            opacity: 0;
+            transition: all ease-out 0.3s;
+          }
+        }
+
+        &.active {
+          .title {
+            cursor: pointer;
+            color: $black;
+            &::before {
+              background-color: $orange;
+              transition: all ease-out 0.5s;
+            }
+          }
+          .paragraph-wrapper {
+            overflow: visible;
+            max-height: 200px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-left: 6px;
+            margin-right: 0;
+            padding: 3.5px 0 3.5px 18px;
+            transition: overflow ease-out 0.5s, max-height ease-out 0.5s;
+            .paragraph {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: 601px) {
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-top: 60px;
+
+    .wrapper {
+      flex-basis: 100%;
+      .heading {
+        font-size: 24px;
+        line-height: 28px;
+        margin-bottom: 30px;
+      }
+
+      .accordion {
+        .container {
+          .title {
+            font-size: 16px;
+            line-height: 20px;
+            margin-bottom: 20px;
+          }
+
+          &.active {
+            .paragraph-wrapper {
+              margin-top: 20px;
+              margin-bottom: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    padding-left: 156px;
+    padding-right: 156px;
+    margin-top: 90px;
+    flex-direction: row;
+    .key-feature-image {
+      width: 80%;
+    }
+    .wrapper {
+      flex-basis: 50%;
+
+      .heading {
+        font-size: 32px;
+        line-height: 36px;
+      }
+
+      .accordion {
+        .container {
+          .title {
+            font-size: 20px;
+            line-height: 24px;
+          }
+        }
+      }
+    }
+  }
+}
