@@ -1,0 +1,149 @@
+@import "../../variables.scss";
+
+.key-features-page {
+  padding: 0 20px;
+  margin-bottom: 40px;
+
+  @media (min-width: 601px) {
+    padding: 0 40px;
+    margin-bottom: 64px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 156px;
+    margin-bottom: calc(147px - 40px);
+  }
+
+  .key-feature-intro {
+    max-width: 551px;
+    margin: 30 auto 42px auto;
+    text-align: center;
+    .heading {
+      font-size: 20px;
+      line-height: 24px;
+      margin-bottom: 20px;
+      span {
+        color: $orange;
+      }
+    }
+    .paragraph {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    @media (min-width: 601px) {
+      margin: 50px auto;
+
+      .heading {
+        font-size: 24px;
+        line-height: 28px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      margin: 70px auto;
+      .heading {
+        font-size: 32px;
+        line-height: 36px;
+        margin-bottom: 30px;
+        span {
+          color: $orange;
+        }
+      }
+      .paragraph {
+        font-size: 18px;
+        line-height: 28px;
+      }
+    }
+  }
+  .features-list {
+    margin-top: 85px;
+
+    img {
+      width: 100%;
+      max-width: 552px;
+    }
+    .details {
+      margin-bottom: 20px;
+    }
+    .list-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      .title {
+        font-size: 20px;
+        line-height: 24px;
+        margin: 0;
+      }
+      .paragraph {
+        font-size: 14px;
+        line-height: 20px;
+        margin: 10px 0 20px 0;
+      }
+
+      @media (min-width: 601px) {
+        margin-bottom: 50px;
+        align-items: center;
+        justify-content: space-between;
+        .title {
+          font-size: 24px;
+          line-height: 28px;
+        }
+        img,
+        .details {
+          width: 50%;
+        }
+        .details {
+          margin-bottom: 0;
+          .paragraph {
+            margin: 20px 0;
+          }
+        }
+
+        &:nth-of-type(odd) {
+          .details {
+            margin-right: 16px;
+          }
+        }
+
+        &:nth-of-type(odd) {
+          flex-direction: row;
+          .details {
+            margin-right: 16px;
+          }
+        }
+        &:nth-of-type(even) {
+          flex-direction: row-reverse;
+          .details {
+            margin-left: 16px;
+          }
+        }
+      }
+
+      @media (min-width: 1024px) {
+        margin-bottom: 40px;
+        .title {
+          font-size: 32px;
+          line-height: 36px;
+        }
+        img,
+        .details {
+          width: 50%;
+        }
+        .paragraph {
+          margin: 20px 0 33px 0;
+        }
+        &:nth-of-type(odd) {
+          .details {
+            margin-right: 96px;
+          }
+        }
+        &:nth-of-type(even) {
+          .details {
+            margin-left: 96px;
+          }
+        }
+      }
+    }
+  }
+}
