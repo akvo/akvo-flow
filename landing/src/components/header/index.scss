@@ -1,0 +1,222 @@
+@import "../../variables.scss";
+.disabled-scroll {
+  overflow: hidden;
+}
+
+.header-wrapper {
+  position: relative;
+  min-height: 60px;
+
+  .menu-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 99;
+    transition: all ease-out 0.3s;
+    padding-top: 60px;
+    &.hide {
+      transform: translateY(-108%);
+    }
+    &.visible {
+      transform: translateY(0);
+    }
+    .menu-navigation-list {
+      margin: 0;
+      .menu-list-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        a {
+          display: block;
+          color: #000000;
+          font-size: 12px;
+          line-height: 16px;
+          padding: 20px;
+        }
+      }
+    }
+    .menu-extra-navigation {
+      margin-top: 330px;
+      a {
+        display: block;
+        max-width: max-content;
+        margin: auto;
+        &.login {
+          font-weight: 400;
+          font-size: 12px;
+          color: $grey;
+          line-height: 16px;
+          margin-top: 20px;
+        }
+      }
+    }
+    @media (min-width: 601px) {
+      display: none;
+    }
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    width: calc(100% - 40px);
+    display: flex;
+    align-items: center;
+    padding: 9.5px 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    .flow-logo {
+      &,
+      a {
+        width: 99.75px;
+        height: 20px;
+      }
+      margin-right: 50px;
+    }
+    a:not(.flow-logo a) {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      font-size: 16px;
+      color: $grey;
+      line-height: 24px;
+      overflow: hidden;
+
+      &:hover,
+      &.selected {
+        color: $black;
+        position: relative;
+        &::after {
+          opacity: 1;
+        }
+      }
+      &.selected::after {
+        content: " ";
+        display: block;
+        background-color: $grey;
+        height: 1px;
+        position: absolute;
+        bottom: 0;
+        width: 100px;
+      }
+    }
+
+    .toggle-menu-button {
+      border: 0;
+      padding: 20px;
+      max-height: 40px;
+      max-width: 40px;
+      position: relative;
+      text-indent: -9999px;
+      background-position: center;
+
+      &.opened-menu {
+        background-color: #fff;
+        background-image: url("../../images/menu-icon.svg");
+      }
+
+      &.closed-menu {
+        background-color: #fefaf0;
+        background-image: url("../../images/close-icon.svg");
+      }
+    }
+    .navigation {
+      width: 100%;
+      ul {
+        margin: 0;
+      }
+      &,
+      .navigation-list,
+      .extra-navigation {
+        display: flex;
+        align-items: center;
+        .list-item:not(:last-of-type) {
+          margin-right: 25px;
+        }
+      }
+
+      .extra-navigation {
+        width: 100%;
+        max-width: max-content;
+        margin-left: auto;
+        .nav-item:not(:last-child) {
+          margin-right: 14px;
+        }
+        .custom-select-container {
+          width: 61px;
+          height: 39px;
+          .custom-select {
+            border-radius: 10px;
+            max-width: calc(61px - 20px);
+            max-height: calc(37px - 16px);
+            overflow: hidden;
+            border: 1px solid #e7eeed;
+            transition: all ease-out 0.3s;
+
+            & * {
+              text-transform: uppercase;
+            }
+            svg {
+              position: relative;
+              bottom: -2px;
+              right: -4px;
+            }
+          }
+        }
+        .open-select {
+          max-height: 105px !important;
+        }
+      }
+
+      .extra-navigation .login,
+      .extra-navigation button,
+      .navigation-list {
+        display: none;
+      }
+    }
+  }
+
+  @media (min-width: 601px) {
+    min-height: 90px;
+    .header {
+      padding: 22.5px 40px;
+      width: calc(100% - 80px);
+      a:not(.flow-logo a) {
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .navigation {
+        .extra-navigation,
+        .extra-navigation button,
+        .navigation-list {
+          display: flex;
+        }
+        .extra-navigation {
+          .nav-item:not(:last-child) {
+            margin-right: 30px;
+          }
+          .custom-select {
+            & * {
+              font-weight: 700;
+            }
+          }
+        }
+      }
+      .toggle-menu-button {
+        display: none;
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .header {
+      padding: 22.5px 157px;
+      width: calc(100% - calc(157px * 2));
+      a:not(.flow-logo a) {
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+  }
+}
