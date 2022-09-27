@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.scss";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ReactComponent as DownArrow } from "../../images/down-arrow.svg";
 
 import Button from "../reusable/button";
@@ -8,9 +8,7 @@ import Dropdown from "../reusable/dropdown";
 
 const DISABLE_SCROLLING_CLASS = "disabled-scroll";
 
-const Header = () => {
-  const history = useHistory();
-  const [selected, setSelected] = useState(null);
+const Header = ({ selected, setSelected, history }) => {
   const [isShownMenu, setIsShownMenu] = useState(false);
   const { innerWidth } = window;
   const body = document.querySelector("body");

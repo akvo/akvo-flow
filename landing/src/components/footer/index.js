@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ReactComponent as RoundedArrow } from "../../images/rounded-arrow.svg";
 import Dropdown from "../reusable/dropdown";
 
-const Footer = () => {
+const Footer = ({ setSelected }) => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const languages = [
     { id: 1, value: "en", label: "English" },
@@ -31,13 +31,22 @@ const Footer = () => {
               <div className="title">Pages</div>
               <ul className="navigation-list">
                 <li className="list-item">
-                  <Link to="/key-features">Key features</Link>
+                  <Link
+                    onClick={() => setSelected("/key-features")}
+                    to="/key-features"
+                  >
+                    Key features
+                  </Link>
                 </li>
                 <li className="list-item">
-                  <Link to="/pricing">Pricing</Link>
+                  <Link onClick={() => setSelected("/pricing")} to="/pricing">
+                    Pricing
+                  </Link>
                 </li>
                 <li className="list-item">
-                  <Link to="/contact">Contact</Link>
+                  <Link onClick={() => setSelected("/contact")} to="/contact">
+                    Contact
+                  </Link>
                 </li>
               </ul>
             </div>

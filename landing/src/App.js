@@ -1,4 +1,4 @@
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import Footer from "./components/footer";
 import Header from "./components/header";
 import KeyFeaturesPage from "./page/key-features/index";
@@ -7,11 +7,19 @@ import Home from "./page/home";
 import Signup from "./page/signup";
 import PricingTab from "./components/pricing/pricing-tab/index";
 import PricingTable from "./components/pricing/pricing-table";
+import { useState, useEffect } from "react";
 
 function App() {
+  const history = useHistory();
+  const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    setSelected(history.location.pathname);
+  }, [selected]);
+
   return (
     <div className="App">
-      <Header />
+      <Header selected={selected} setSelected={setSelected} />
       <Switch>
         <Route exact path="/">
           <Home />
@@ -30,7 +38,7 @@ function App() {
           <Signup />
         </Route>
       </Switch>
-      <Footer />
+      <Footer setSelected={setSelected} />
     </div>
   );
 }
