@@ -1,13 +1,29 @@
 @import "./variables.scss";
 
+@font-face {
+  font-family: "FlowRoboto";
+  src: local("Roboto Regular"), local("Roboto_Regular"), local("roboto-regular");
+  src: url("./fonts/roboto-regular.woff2");
+  src: url("./fonts/roboto-regular.woff");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "FlowRoboto";
+  src: local("Roboto Bold"), local("Roboto_Bold"), local("roboto-bold");
+  src: url("./fonts/roboto-bold.woff2");
+  src: url("./fonts/roboto-bold.woff");
+  font-weight: 700;
+}
+
 body {
   margin: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $black;
   & * {
-    font-family: "Gilroy", -apple-system, BlinkMacSystemFont, "Segoe UI",
-      "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    font-family: "FlowRoboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
       "Helvetica Neue", sans-serif;
     background-repeat: no-repeat;
   }
