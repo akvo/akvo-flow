@@ -26,6 +26,10 @@
       background-position: center;
       background-size: 11px 9px;
     }
+    &:hover {
+      background-color: #fafafa;
+      border: 1px solid #f1f2f4;
+    }
   }
 
   label {
