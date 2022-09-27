@@ -52,7 +52,8 @@ const Footer = () => {
                 </li>
                 <li className="list-item">
                   <a
-                    href="https://docs.google.com/document/d/1d3ZyepJ2ox_h15JbuxoIT2J3V6W_rCEMTsG1ZFYh-ik/edit?usp=sharing"
+                    href="/akvo-saas-terms-of-service-final-september 2018.pdf"
+                    target="_self"
                     name="term-of-service"
                   >
                     Terms of Service
