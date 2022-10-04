@@ -23,7 +23,9 @@ const Footer = ({ setSelected }) => {
       <div>
         <div className="wrapper">
           <h1 className="flow-logo">
-            <Link to="/">Akvoflow</Link>
+            <Link onClick={() => setSelected("/")} to="/">
+              Akvoflow
+            </Link>
           </h1>
 
           <div className="navigation-container">

@@ -35,7 +35,7 @@ function App() {
           <PricingTab />
         </Route>
         <Route exact path="/signup">
-          <Signup />
+          <Signup setSelected={setSelected}/>
         </Route>
       </Switch>
       <Footer setSelected={setSelected} />

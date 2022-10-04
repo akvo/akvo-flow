@@ -43,7 +43,7 @@ const Overview = () => {
             Akvo Flow can easily adapt to your data needs. Our partners collect
             and use data to drive change all over the world.
           </p>
-          <Button type="filled" text="Start for free now" />
+          <Button type="filled" text="Start for free now" linkTo="/signup" />
           <img src={planetInfographic} alt="3d model planet infographic" />
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.scss";
 
 import { ReactComponent as DownArrow } from "../../images/large-arrow.svg";
@@ -9,7 +9,7 @@ import Dropdown from "../../components/reusable/dropdown/index";
 import Button from "../../components/reusable/button/index";
 import Checkbox from "../../components/reusable/checkbox/index";
 
-const Signup = () => {
+const Signup = ({ setSelected }) => {
   const [step, setStep] = useState(1);
   const { innerWidth } = window;
   const countries = [
@@ -41,6 +41,10 @@ const Signup = () => {
     },
     { id: 6, name: "Other", value: "other" },
   ];
+
+  useEffect(() => {
+    setSelected("/signup");
+  }, []);
 
   return (
     <div className="signup">

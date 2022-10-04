@@ -72,7 +72,6 @@
         width: 99.75px;
         height: 20px;
       }
-      margin-right: 50px;
     }
     a:not(.flow-logo a) {
       display: flex;
@@ -131,9 +130,6 @@
       .extra-navigation {
         display: flex;
         align-items: center;
-        .list-item:not(:last-of-type) {
-          margin-right: 25px;
-        }
       }
 
       .extra-navigation {
@@ -186,15 +182,31 @@
         font-size: 12px;
         line-height: 16px;
       }
+
+      .flow-logo {
+        margin-right: 30px;
+      }
+
       .navigation {
-        .extra-navigation,
+        &,
+        .navigation-list,
+        .extra-navigation {
+          .list-item:not(:last-of-type) {
+            margin-right: 20px;
+          }
+        }
+
+        .extra-navigation .login,
         .extra-navigation button,
         .navigation-list {
           display: flex;
         }
         .extra-navigation {
           .nav-item:not(:last-child) {
-            margin-right: 30px;
+            margin-right: 12px;
+          }
+          .custom-select-container{
+            margin-left: 8px;
           }
           .custom-select {
             & * {
@@ -216,6 +228,26 @@
       a:not(.flow-logo a) {
         font-size: 16px;
         line-height: 24px;
+      }
+
+      .flow-logo {
+        margin-right: 50px;
+      }
+
+      .navigation {
+        &,
+        .navigation-list,
+        .extra-navigation {
+          .list-item:not(:last-of-type) {
+            margin-right: 25px;
+          }
+        }
+
+        .extra-navigation {
+          .nav-item:not(:last-child) {
+            margin-right: 30px;
+          }
+        }
       }
     }
   }

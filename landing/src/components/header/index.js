@@ -8,7 +8,7 @@ import Dropdown from "../reusable/dropdown";
 
 const DISABLE_SCROLLING_CLASS = "disabled-scroll";
 
-const Header = ({ selected, setSelected, history }) => {
+const Header = ({ selected, setSelected }) => {
   const [isShownMenu, setIsShownMenu] = useState(false);
   const { innerWidth } = window;
   const body = document.querySelector("body");
@@ -30,7 +30,9 @@ const Header = ({ selected, setSelected, history }) => {
     <div className="header-wrapper">
       <header className="header">
         <h1 className="flow-logo">
-          <Link to="/">Akvoflow</Link>
+          <Link onClick={() => setSelected("/")} to="/">
+            Akvoflow
+          </Link>
         </h1>
         <nav className="navigation">
           <ul className="navigation-list">
@@ -111,7 +113,9 @@ const Header = ({ selected, setSelected, history }) => {
           </ul>
           <div className="menu-extra-navigation">
             <Button
-              action={() => setIsShownMenu(false)}
+              action={() => {
+                setIsShownMenu(false);
+              }}
               type="outlined"
               text="Free trial"
               linkTo="/signup"
