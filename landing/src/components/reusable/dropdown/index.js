@@ -29,7 +29,7 @@ const Dropdown = ({ selectData, className, Icon, textToDisplay = "En" }) => {
   useEffect(() => {
     document.addEventListener("mousedown", onCloseDropdown);
   }, [toggleDropdown]);
-console.log('toggleDropdown::::::', toggleDropdown);
+
   return (
     <div className={`custom-select-container ${className}`}>
       <div className={selectedOptionClass} ref={toggleRef}>

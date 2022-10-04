@@ -5,6 +5,7 @@ import { ReactComponent as DownArrow } from "../../images/down-arrow.svg";
 
 import Button from "../reusable/button";
 import Dropdown from "../reusable/dropdown";
+import { CONTACT, HOME, KEY_FEATURES, PRICING, SIGNUP } from "../../paths";
 
 const DISABLE_SCROLLING_CLASS = "disabled-scroll";
 
@@ -18,6 +19,7 @@ const Header = ({ selected, setSelected }) => {
     { id: 3, value: "Es", label: "Es" },
   ];
 
+  // Disable scroll when menu is activated
   useEffect(() => {
     if (isShownMenu && innerWidth < 601) {
       body.classList.add(DISABLE_SCROLLING_CLASS);
@@ -30,7 +32,7 @@ const Header = ({ selected, setSelected }) => {
     <div className="header-wrapper">
       <header className="header">
         <h1 className="flow-logo">
-          <Link onClick={() => setSelected("/")} to="/">
+          <Link onClick={() => setSelected(HOME)} to={HOME}>
             Akvoflow
           </Link>
         </h1>
@@ -38,27 +40,27 @@ const Header = ({ selected, setSelected }) => {
           <ul className="navigation-list">
             <li className="list-item">
               <Link
-                to="/key-features"
-                onClick={() => setSelected("/key-features")}
-                className={"/key-features" === selected ? `selected` : ""}
+                to={KEY_FEATURES}
+                onClick={() => setSelected(KEY_FEATURES)}
+                className={KEY_FEATURES === selected ? `selected` : ""}
               >
                 Key features
               </Link>
             </li>
             <li className="list-item">
               <Link
-                to="/pricing"
-                onClick={() => setSelected("/pricing")}
-                className={"/pricing" === selected ? `selected` : ""}
+                to={PRICING}
+                onClick={() => setSelected(PRICING)}
+                className={PRICING === selected ? `selected` : ""}
               >
                 Pricing
               </Link>
             </li>
             <li className="list-item">
               <Link
-                to="/contact"
-                onClick={() => setSelected("/contact")}
-                className={"/contact" === selected ? `selected` : ""}
+                to={CONTACT}
+                onClick={() => setSelected(CONTACT)}
+                className={CONTACT === selected ? `selected` : ""}
               >
                 Contact
               </Link>
@@ -96,17 +98,17 @@ const Header = ({ selected, setSelected }) => {
         <nav className="menu-navigation">
           <ul className="menu-navigation-list">
             <li className="menu-list-item">
-              <Link onClick={() => setIsShownMenu(false)} to="/key-features">
+              <Link onClick={() => setIsShownMenu(false)} to={KEY_FEATURES}>
                 Key features
               </Link>
             </li>
             <li className="menu-list-item">
-              <Link onClick={() => setIsShownMenu(false)} to="/pricing">
+              <Link onClick={() => setIsShownMenu(false)} to={PRICING}>
                 Pricing
               </Link>
             </li>
             <li className="menu-list-item">
-              <Link onClick={() => setIsShownMenu(false)} to="/contact">
+              <Link onClick={() => setIsShownMenu(false)} to={CONTACT}>
                 Contact
               </Link>
             </li>
@@ -118,7 +120,7 @@ const Header = ({ selected, setSelected }) => {
               }}
               type="outlined"
               text="Free trial"
-              linkTo="/signup"
+              linkTo={SIGNUP}
             />
             <a
               onClick={() => setIsShownMenu(false)}
