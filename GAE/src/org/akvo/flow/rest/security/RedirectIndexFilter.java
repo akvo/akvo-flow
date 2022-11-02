@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static org.waterforpeople.mapping.app.web.EnvServlet.INDEX_REDIRECT_DISABLED;
+
 public class RedirectIndexFilter extends GenericFilterBean {
 
     private static final Logger logger = Logger.getLogger(RedirectIndexFilter.class.getName());
@@ -39,7 +41,9 @@ public class RedirectIndexFilter extends GenericFilterBean {
         String requestPath = httpRequest.getServletPath();
         logger.fine("Request path is: " + requestPath);
 
-        if ("/".equals(requestPath) || requestPath.startsWith("/index")) {
+        boolean indexRedirectIsActive = System.getProperty(INDEX_REDIRECT_DISABLED) == null;
+
+        if (("/".equals(requestPath) || requestPath.startsWith("/index")) && indexRedirectIsActive) {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             response.sendRedirect("/admin");
         } else {
