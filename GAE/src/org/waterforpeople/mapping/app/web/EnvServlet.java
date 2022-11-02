@@ -57,6 +57,8 @@ public class EnvServlet extends HttpServlet {
     public static final String SHOW_FORM_INSTANCE_API_URL = "showFormInstanceApiUrl";
     public static final String WEBFORM_V2_ENABLED = "enableWebFormV2";
     public static final String SELF_ONBOARD_ENABLED = "enableSelfOnboard";
+    public static final String INDEX_REDIRECT_DISABLED = "disableIndexRedirect";
+
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
