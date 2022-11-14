@@ -58,6 +58,11 @@ public class ReplaceCaddisflyImage implements Process {
         }
     }
 
+    private String replaceImage(String jsonString) {
+        return jsonString.replaceAll("([:\"^[0-9a-zA-Z]]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{12}]+[:^.]+(?:jpg|png)+)", "\"image\":\"new-image.jpg\"");
+    }
+
+
     private List<Object> getCaddisflyResponses(DatastoreService ds, String questionId) {
         final Filter f = new FilterPredicate("questionID", FilterOperator.EQUAL, questionId);
         final Query q = new Query("QuestionAnswerStore").setFilter(f);
@@ -66,6 +71,7 @@ public class ReplaceCaddisflyImage implements Process {
         for (Entity e : pq.asList(FetchOptions.Builder.withDefaults())) {
             Text valueText = (Text) e.getProperty("valueText");
             Object value = valueText.getValue();
+            System.out.println(replaceImage(value.toString()));
             System.out.println(value);
             values.add(value);
         }
