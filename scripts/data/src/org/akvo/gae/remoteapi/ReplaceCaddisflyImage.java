@@ -28,9 +28,12 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
+import java.util.regex.Pattern;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  Search for responses to a specific question and add an argument to delete all the responses
@@ -65,15 +68,21 @@ public class ReplaceCaddisflyImage implements Process {
             Entity question = ds.get(KeyFactory.createKey("Question", questionId));
             replaceCaddisflyImage(ds, questionId.toString(), surveyInstanceId, newImage.toString());
         } catch (EntityNotFoundException e) {
-            System.out.println("Question not found: " + questionId);
+            System.out.println("ERROR: Question ID or Survey Instance ID Not Found");
             return;
         }
+        /* Remove system exit if don't want to notify unilog */
+        System.exit(0);
     }
 
     private String replaceImage(String jsonString, String newImage) {
-        final String regex = "([:\"^[0-9a-zA-Z]]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{12}]+[:^.]+(?:jpg|png)+\")";
-        String objectImage = String.format("\"image\":\"%s\"", newImage);
-        return jsonString.replaceAll(regex, objectImage);
+        final String regex = "([:\\-^[0-9a-zA-Z]{8}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{12}]+[:^.]+(?:jpg|png))";
+        Matcher m = Pattern.compile(regex).matcher(jsonString);
+        while (m.find()) {
+            String oldImage = m.group();
+            System.out.println(String.format("%1$s -> %2$s", oldImage, newImage));
+        }
+        return jsonString.replaceAll(regex, newImage);
     }
 
 
@@ -86,9 +95,8 @@ public class ReplaceCaddisflyImage implements Process {
         for (Entity e : pq.asList(FetchOptions.Builder.withDefaults())) {
             Text valueText = (Text) e.getProperty("valueText");
             Object value = valueText.getValue();
-            System.out.println(value.toString());
+            System.out.println(String.format("INSTANCE ID: %s", surveyInstanceId));
             String replacedValue = replaceImage(value.toString(), newImage);
-            System.out.println(replacedValue);
             e.setProperty("valueText", new Text(replacedValue));
             ds.put(e);
         }
