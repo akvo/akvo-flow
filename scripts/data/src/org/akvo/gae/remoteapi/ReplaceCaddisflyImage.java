@@ -46,36 +46,51 @@ public class ReplaceCaddisflyImage implements Process {
             System.exit(1);
         }
 
+        if (args.length == 1) {
+            System.out.println("Missing instance Id");
+            System.exit(1);
+        }
+
+        if (args.length == 2) {
+            System.out.println("Missing image url");
+            System.exit(1);
+        }
+
 
         final Long questionId = Long.parseLong(args[0].trim());
+        final Integer surveyInstanceId = Integer.parseInt(args[1].trim());
+        final String newImage = args[2];
 
         try {
             Entity question = ds.get(KeyFactory.createKey("Question", questionId));
-            List<Object> responseIds = getCaddisflyResponses(ds, questionId.toString());
+            replaceCaddisflyImage(ds, questionId.toString(), surveyInstanceId, newImage.toString());
         } catch (EntityNotFoundException e) {
             System.out.println("Question not found: " + questionId);
             return;
         }
     }
 
-    private String replaceImage(String jsonString) {
-        return jsonString.replaceAll("([:\"^[0-9a-zA-Z]]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{12}]+[:^.]+(?:jpg|png)+)", "\"image\":\"new-image.jpg\"");
+    private String replaceImage(String jsonString, String newImage) {
+        final String regex = "([:\"^[0-9a-zA-Z]]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{4}]+[:\\-^[0-9a-zA-Z]{12}]+[:^.]+(?:jpg|png)+\")";
+        String objectImage = String.format("\"image\":\"%s\"", newImage);
+        return jsonString.replaceAll(regex, objectImage);
     }
 
 
-    private List<Object> getCaddisflyResponses(DatastoreService ds, String questionId) {
-        final Filter f = new FilterPredicate("questionID", FilterOperator.EQUAL, questionId);
-        final Query q = new Query("QuestionAnswerStore").setFilter(f);
+    private void replaceCaddisflyImage(DatastoreService ds, String questionId, Integer surveyInstanceId, String newImage) {
+        final Filter filterQuestionId = new FilterPredicate("questionID", FilterOperator.EQUAL, questionId);
+        final Filter filterSurveyInstanceId = new FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, surveyInstanceId);
+        final Filter combined = Query.CompositeFilterOperator.and(filterQuestionId, filterSurveyInstanceId);
+        final Query q = new Query("QuestionAnswerStore").setFilter(combined);
         final PreparedQuery pq = ds.prepare(q);
-        final List<Object> values = new ArrayList<>();
         for (Entity e : pq.asList(FetchOptions.Builder.withDefaults())) {
             Text valueText = (Text) e.getProperty("valueText");
             Object value = valueText.getValue();
-            System.out.println(replaceImage(value.toString()));
-            System.out.println(value);
-            values.add(value);
+            System.out.println(value.toString());
+            String replacedValue = replaceImage(value.toString(), newImage);
+            System.out.println(replacedValue);
+            e.setProperty("valueText", new Text(replacedValue));
+            ds.put(e);
         }
-        System.out.println(String.format("Found %s responses...", values.size()));
-        return values;
     }
 }
