@@ -165,6 +165,7 @@
         <property name="questionID" direction="asc"/>
         <property name="surveyInstanceId" direction="asc"/>
         <property name="value" direction="asc"/>
+        <property name="createdDateTime" direction="asc"/>
     </datastore-index>
 
     <datastore-index kind="Question" ancestor="false" source="manual">
