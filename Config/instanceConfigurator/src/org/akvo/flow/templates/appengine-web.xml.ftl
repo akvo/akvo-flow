@@ -6,6 +6,12 @@
     <sessions-enabled>true</sessions-enabled>
     <threadsafe>true</threadsafe>
     <auto-id-policy>legacy</auto-id-policy>
+        <automatic-scaling>
+        <!-- Default is 20 -->
+        <max-instances>5</max-instances>
+        <!-- Default is 10 -->
+        <max-concurrent-requests>50</max-concurrent-requests>
+    </automatic-scaling>
     <static-files>
         <include path="/**.png" expiration="1000d 5h" />
         <include path="/**.jpg" expiration="1000d 5h" />
