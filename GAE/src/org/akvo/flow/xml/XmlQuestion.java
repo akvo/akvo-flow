@@ -62,6 +62,8 @@ public class XmlQuestion {
     private Boolean allowMultiple;
     @JacksonXmlProperty(localName = "personalData", isAttribute = true)
     private Boolean personalData;
+    @JacksonXmlProperty(localName = "answerStats", isAttribute = true)
+    private Boolean answerStats;
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
@@ -102,6 +104,9 @@ public class XmlQuestion {
         }
         if (Boolean.TRUE.equals(q.getPersonalData())) {
             personalData = Boolean.TRUE;
+        }
+        if (Boolean.TRUE.equals(q.getAnswerStats())) {
+            answerStats = Boolean.TRUE;
         }
         if (q.getTip() != null) {
             help = new XmlHelp(q);
@@ -238,6 +243,7 @@ public class XmlQuestion {
                 "',requireDoubleEntry='" + requireDoubleEntry +
                 "',locked='" + locked +
                 "',personalData='" + personalData +
+                "',answerStats='" + answerStats +
                 "',variableName='" + variableName +
                 "',localeNameFlag='" + localeNameFlag +
                 "',allowPoints='" + allowPoints +
@@ -414,5 +420,13 @@ public class XmlQuestion {
 
     public void setPersonalData(Boolean personalData) {
         this.personalData = personalData;
+    }
+
+    public Boolean getAnswerStats() {
+        return answerStats;
+    }
+
+    public void setAnswerStats(Boolean answerStats) {
+        this.answerStats = answerStats;
     }
 }
