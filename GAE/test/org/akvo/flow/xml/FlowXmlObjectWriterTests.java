@@ -57,7 +57,7 @@ class FlowXmlObjectWriterTests {
             "</question><question variableName=\"questionTwo\" id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
             "<validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/>" +
             "<text>This is question two</text></question>" +
-            "<question id=\"1003\" order=\"3\" personalData=\"true\" answerStats=\"false\" type=\"geoshape\" mandatory=\"false\" " +
+            "<question id=\"1003\" order=\"3\" personalData=\"true\" answerStats=\"true\" type=\"geoshape\" mandatory=\"false\" " +
             "localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\">" +
             "<text>This is question three</text></question>" +
             "<heading>This is a group</heading>" +
@@ -240,7 +240,7 @@ class FlowXmlObjectWriterTests {
         assertEquals("This is question three", xq3.getText());
         assertEquals(Boolean.FALSE, xq3.getMandatory());
         assertEquals(Boolean.TRUE, xq3.getPersonalData());
-        assertEquals(Boolean.FALSE, xq3.getAnswerStats());
+        assertEquals(Boolean.TRUE, xq3.getAnswerStats());
         assertEquals("geoshape", xq3.getType());
 
         //Convert Jackson tree into an XML string
