@@ -426,7 +426,7 @@ public class XmlQuestion {
         return answerStats;
     }
 
-    public void setAnswerStats(Boolean personalData) {
+    public void setAnswerStats(Boolean answerStats) {
         this.answerStats = answerStats;
     }
 }
