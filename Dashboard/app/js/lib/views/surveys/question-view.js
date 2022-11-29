@@ -53,6 +53,7 @@ FLOW.QuestionView = FLOW.View.extend(
     questionTooltipValidationFailure: false,
     caddisflyResourceUuid: null,
     personalData: null,
+    answerStats: null,
 
     showCaddisflyTests: Ember.computed(() =>
       FLOW.router.caddisflyResourceController.get('testsFileLoaded')
@@ -75,14 +76,16 @@ FLOW.QuestionView = FLOW.View.extend(
       .cacheable(),
 
     amQuestionPublishingError: Ember.computed(function() {
-      if (!FLOW.selectedControl.get('publishingErrors')) { return false; }
+      if (!FLOW.selectedControl.get('publishingErrors')) {
+        return false;
+      }
       const questionGroupId = this.content.get('questionGroupId');
       const questionId = this.content.get('keyId');
       const groupPublishingErrors = FLOW.selectedControl.get('publishingErrors')[questionGroupId];
       return Boolean(groupPublishingErrors && groupPublishingErrors.find(x => x === questionId));
     }).property('FLOW.selectedControl.publishingErrors'),
 
-    isTemplate: Ember.computed(function() {
+    isTemplate: Ember.computed(() => {
       return FLOW.selectedControl.selectedSurveyGroup.get('template');
     })
       .property('FLOW.selectedControl.selectedSurveyGroup')
@@ -218,6 +221,15 @@ FLOW.QuestionView = FLOW.View.extend(
       .property('this.type')
       .cacheable(),
 
+    showAnswerStats: Ember.computed(function() {
+      if (!this.type) {
+        return false;
+      }
+      return this.type.get('value') == 'NUMBER' || this.type.get('value') == 'OPTION';
+    })
+      .property('this.type')
+      .cacheable(),
+
     // TODO dependencies
     // TODO options
     doQuestionEdit() {
@@ -268,6 +280,7 @@ FLOW.QuestionView = FLOW.View.extend(
         FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid')
       );
       this.set('personalData', FLOW.selectedControl.selectedQuestion.get('personalData'));
+      this.set('answerStats', FLOW.selectedControl.selectedQuestion.get('answerStats'));
 
       FLOW.optionListControl.set('content', []);
 
@@ -492,6 +505,7 @@ FLOW.QuestionView = FLOW.View.extend(
       FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
       FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
       FLOW.selectedControl.selectedQuestion.set('personalData', this.get('personalData'));
+      FLOW.selectedControl.selectedQuestion.set('answerStats', this.get('answerStats'));
 
       const minVal = Ember.empty(this.get('minVal')) ? null : this.get('minVal');
       const maxVal = Ember.empty(this.get('maxVal')) ? null : this.get('maxVal');
@@ -616,7 +630,10 @@ FLOW.QuestionView = FLOW.View.extend(
       const { selectedQuestion } = FLOW.selectedControl;
       const questionKeyId = selectedQuestion.get('keyId');
       const variableName = this.get('variableName') || '';
-      if (FLOW.Env.mandatoryQuestionID && (variableName.match(/^\s*$/) || variableName.length == 0)) {
+      if (
+        FLOW.Env.mandatoryQuestionID &&
+        (variableName.match(/^\s*$/) || variableName.length == 0)
+      ) {
         args.failure(Ember.String.loc('_variable_name_mandatory'));
       } else if (!variableName.match(/^[A-Za-z0-9_-]*$/)) {
         args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
@@ -964,7 +981,7 @@ FLOW.QuestionView = FLOW.View.extend(
     },
 
     variableNameOptional: Ember.computed(() => {
-      return FLOW.Env.mandatoryQuestionID != true
+      return FLOW.Env.mandatoryQuestionID != true;
     }),
 
     validateVariableNameObserver() {
