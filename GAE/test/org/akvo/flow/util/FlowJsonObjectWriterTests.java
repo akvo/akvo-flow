@@ -93,7 +93,7 @@ class FlowJsonObjectWriterTests {
             // ignoring exception
         }
 
-        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
+        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"answerStats\":false,\"order\":0}";
         assertEquals(jsonStringExpected, jsonString);
     }
 
@@ -127,7 +127,7 @@ class FlowJsonObjectWriterTests {
             // ignoring exception
         }
 
-        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"tip\":\"Help\",\"text\":\"First Question\",\"translations\":[{\"languageCode\":\"es\",\"text\":\"Primera pregunta\",\"parentType\":\"QUESTION_TEXT\"},{\"languageCode\":\"es\",\"text\":\"Ayuda\",\"parentType\":\"QUESTION_TIP\"}],\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"order\":0}";
+        String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"tip\":\"Help\",\"text\":\"First Question\",\"translations\":[{\"languageCode\":\"es\",\"text\":\"Primera pregunta\",\"parentType\":\"QUESTION_TEXT\"},{\"languageCode\":\"es\",\"text\":\"Ayuda\",\"parentType\":\"QUESTION_TIP\"}],\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"personalData\":false,\"answerStats\":false,\"order\":0}";
         assertEquals(jsonStringExpected, jsonString);
     }
 
