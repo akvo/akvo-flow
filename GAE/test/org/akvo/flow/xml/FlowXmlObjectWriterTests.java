@@ -199,7 +199,7 @@ class FlowXmlObjectWriterTests {
         q3.setType(Question.Type.GEOSHAPE);
         q3.setMandatoryFlag(false);
         q3.setPersonalData(true);
-        q3.setAnswerStats(false);
+        q3.setAnswerStats(true);
         qm.put(3, q3);
 
         int questionCount = qm.size();
