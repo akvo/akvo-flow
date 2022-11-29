@@ -78,6 +78,7 @@ public class QuestionMapper {
         question.setLocaleNameFlag(questionDto.getLocaleNameFlag());
         question.setLocaleLocationFlag(questionDto.getLocaleLocationFlag());
         question.setPersonalData(questionDto.getPersonalData());
+        question.setAnswerStats(questionDto.getAnswerStats());
         question.setAllowPoints(questionDto.getAllowPoints());
         question.setAllowLine(questionDto.getAllowLine());
         question.setAllowPolygon(questionDto.getAllowPolygon());
