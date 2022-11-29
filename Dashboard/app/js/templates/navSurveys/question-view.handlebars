@@ -59,10 +59,12 @@
             <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.personalData"}}
 {{t _hold_personal_data}} {{tooltip _personal_data_tooltip}}</label>
 
-            {{#if view.showAnswerStats}}
-            <br/>
-            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.answerStats"}}
+            {{#if FLOW.Env.enableWebFormV2}}
+                {{#if view.showAnswerStats}}
+                    <br/>
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.answerStats"}}
 {{t _show_answer_stats}} {{tooltip _show_answer_stats_tooltip}}</label>
+                {{/if}}
             {{/if}}
 
             <!-- Question specific material -->
