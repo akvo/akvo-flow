@@ -65,6 +65,7 @@ public class QuestionDto extends BaseDto {
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
     private Boolean personalData;
+    private Boolean answerStats;
 
     /**
      * Geoshape question options
@@ -464,5 +465,13 @@ public class QuestionDto extends BaseDto {
 
     public void setPersonalData(Boolean personalData) {
         this.personalData = personalData;
+    }
+
+    public Boolean getAnswerStats() {
+        return answerStats;
+    }
+
+    public void setAnswerStats(Boolean answerStats) {
+        this.answerStats = answerStats;
     }
 }
