@@ -55,7 +55,7 @@ const PricingTable = () => {
               <Button type="filled" text="Get started" linkTo="/signup" />
             </td>
             <td>
-              <Button type="filled" text="Contact sales" linkTo="/signup" />
+              <Button type="filled" text="Contact sales" />
             </td>
           </tr>
           <tr className="languages">

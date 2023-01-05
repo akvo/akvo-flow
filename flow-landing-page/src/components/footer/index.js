@@ -3,9 +3,8 @@ import "./index.scss";
 import { Link } from "react-router-dom";
 import { ReactComponent as RoundedArrow } from "../../images/rounded-arrow.svg";
 import Dropdown from "../reusable/dropdown";
-import {HOME, CONTACT, KEY_FEATURES, PRICING } from "../../paths";
 
-const Footer = ({ setSelected }) => {
+const Footer = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const languages = [
     { id: 1, value: "en", label: "English" },
@@ -24,9 +23,7 @@ const Footer = ({ setSelected }) => {
       <div>
         <div className="wrapper">
           <h1 className="flow-logo">
-            <Link onClick={() => setSelected(HOME)} to={HOME}>
-              Akvoflow
-            </Link>
+            <Link to="/">Akvoflow</Link>
           </h1>
 
           <div className="navigation-container">
@@ -34,22 +31,13 @@ const Footer = ({ setSelected }) => {
               <div className="title">Pages</div>
               <ul className="navigation-list">
                 <li className="list-item">
-                  <Link
-                    onClick={() => setSelected(KEY_FEATURES)}
-                    to={KEY_FEATURES}
-                  >
-                    Key features
-                  </Link>
+                  <Link to="/key-features">Key features</Link>
                 </li>
                 <li className="list-item">
-                  <Link onClick={() => setSelected(PRICING)} to={PRICING}>
-                    Pricing
-                  </Link>
+                  <Link to="/pricing">Pricing</Link>
                 </li>
                 <li className="list-item">
-                  <Link onClick={() => setSelected(CONTACT)} to={CONTACT}>
-                    Contact
-                  </Link>
+                  <Link to="/contact">Contact</Link>
                 </li>
               </ul>
             </div>

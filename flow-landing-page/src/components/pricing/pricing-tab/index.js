@@ -4,7 +4,6 @@ import Button from "../../reusable/button";
 import { planData } from "../data";
 import { ReactComponent as Check } from "../../../images/check.svg";
 import { ReactComponent as Cross } from "../../../images/cross.svg";
-import { SIGNUP } from '../../../paths';
 
 const PricingTab = () => {
   const [selected, setSelected] = useState("flow-basic");
@@ -49,7 +48,7 @@ const PricingTab = () => {
               ? "Contact sales"
               : "Get started"
           }
-          linkTo={SIGNUP}
+          linkTo="/signup"
         />
       </div>
 
