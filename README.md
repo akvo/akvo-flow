@@ -85,9 +85,8 @@ To switch back to the dev setup:
 
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
-
     docker-compose exec -u akvo akvo-flow ./dev-deploy.sh akvoflowsandbox $FLOW_GH_TOKEN
-    
+
 ### Running Flow Services and Flow together locally
 
 If you want to run both Flow and Flow Services locally and talking to each other, you will need add some config to your `/etc/hosts`:
@@ -116,7 +115,7 @@ you will need to run:
 To package and install the Flow jar in your local maven repository. Then you can use this Flow jar as a dependency 
 in your local Flow Services dev environment. See Flow Services README for how to set it up.
 
-       
+
 ---
 
 <p>&nbsp;</p>
