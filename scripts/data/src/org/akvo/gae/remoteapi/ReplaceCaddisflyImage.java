@@ -93,11 +93,10 @@ public class ReplaceCaddisflyImage implements Process {
         final Query q = new Query("QuestionAnswerStore").setFilter(combined);
         final PreparedQuery pq = ds.prepare(q);
         for (Entity e : pq.asList(FetchOptions.Builder.withDefaults())) {
-            Text valueText = (Text) e.getProperty("valueText");
-            Object value = valueText.getValue();
+            String value = (String) e.getProperty("value");
             System.out.println(String.format("INSTANCE ID: %s", surveyInstanceId));
             String replacedValue = replaceImage(value.toString(), newImage);
-            e.setProperty("valueText", new Text(replacedValue));
+            e.setProperty("value", replacedValue);
             ds.put(e);
         }
     }
