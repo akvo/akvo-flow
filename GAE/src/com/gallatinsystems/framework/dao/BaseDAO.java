@@ -25,14 +25,7 @@ import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import net.sf.jsr107cache.CacheException;
 import org.akvo.flow.domain.SecuredObject;
@@ -43,25 +36,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
  *
- * @author Christopher Fagiani
  * @param <T> a persistent class that extends BaseDomain
+ * @author Christopher Fagiani
  */
 public class BaseDAO<T extends BaseDomain> {
     public static final int DEFAULT_RESULT_COUNT = 20;
@@ -78,8 +61,8 @@ public class BaseDAO<T extends BaseDomain> {
     protected Logger log;
 
     public enum CURSOR_TYPE {
-        all
-    };
+        all,
+    }
 
     public BaseDAO(Class<T> e) {
         setDomainClass(e);
@@ -90,11 +73,11 @@ public class BaseDAO<T extends BaseDomain> {
      * Injected version of the actual Class to pass for the persistentClass in the query creation.
      * This must be set before using this implementation class or any derived class.
      *
-     * @param e an instance of the type of object to use for this instance of the DAO
-     *            implementation.
+     * @param clazz an instance of the type of object to use for this instance of the DAO
+     *              implementation.
      */
-    public void setDomainClass(Class<T> e) {
-        this.concreteClass = e;
+    public void setDomainClass(Class<T> clazz) {
+        this.concreteClass = clazz;
     }
 
     /**
@@ -109,19 +92,20 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         Long who = 0L;
         SecurityContext context = SecurityContextHolder.getContext();
-        if ( context != null
-                && context.getAuthentication() != null ) {
+
+        if (context != null && context.getAuthentication() != null) {
             final Object credentials = context.getAuthentication().getCredentials();
-            if (credentials instanceof Long) {
-                who = (Long) credentials;
-            }
+            if (credentials instanceof Long) who = (Long) credentials;
         }
+
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);
+
         if (obj.getCreatedDateTime() == null) {
             obj.setCreatedDateTime(obj.getLastUpdateDateTime());
             obj.setCreateUserId(who);
         }
+
         obj = pm.makePersistent(obj);
         return obj;
     }
@@ -137,14 +121,11 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
             Long who = 0L;
-            if (SecurityContextHolder.getContext() != null
-                    && SecurityContextHolder.getContext().getAuthentication() != null ) {
-                final Object credentials = SecurityContextHolder.getContext()
-                        .getAuthentication().getCredentials();
-                if (credentials instanceof Long) {
-                    who = (Long) credentials;
-                }
+            if (SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+                final Object credentials = SecurityContextHolder.getContext().getAuthentication().getCredentials();
+                if (credentials instanceof Long) who = (Long) credentials;
             }
+
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
                 item.setLastUpdateUserId(who);
@@ -188,15 +169,15 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        E result = null;
         Key k = KeyFactory.stringToKey(keyString);
+
         try {
-            result = pm.getObjectById(clazz, k);
+            return pm.getObjectById(clazz, k);
         } catch (JDOObjectNotFoundException nfe) {
-            log.warning("No " + clazz.getCanonicalName() + " found with key: "
-                    + k);
+            log.warning("No " + clazz.getCanonicalName() + " found with key: " + k);
         }
-        return result;
+
+        return null;
     }
 
     /**
@@ -209,15 +190,14 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E getByKey(Key key, Class<E> clazz) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        E result = null;
 
         try {
-            result = pm.getObjectById(clazz, key);
+            return pm.getObjectById(clazz, key);
         } catch (JDOObjectNotFoundException nfe) {
-            log.warning("No " + clazz.getCanonicalName() + " found with key: "
-                    + key);
+            log.warning("No " + clazz.getCanonicalName() + " found with key: " + key);
         }
-        return result;
+
+        return null;
     }
 
     /**
@@ -246,14 +226,13 @@ public class BaseDAO<T extends BaseDomain> {
         try {
             result = pm.getObjectById(clazz, itemKey);
         } catch (JDOObjectNotFoundException nfe) {
-            log.warning("No " + clazz.getCanonicalName() + " found with id: "
-                    + id);
+            log.warning("No " + clazz.getCanonicalName() + " found with id: " + id);
         }
         return result;
     }
 
     /**
-     * lists all of the concreteClass instances in the datastore, using a page size.
+     * lists all the concreteClass instances in the datastore, using a page size.
      *
      * @return
      */
@@ -262,7 +241,7 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
-     * lists all of the concreteClass instances in the datastore. if we think we'll use this on
+     * lists all the concreteClass instances in the datastore. if we think we'll use this on
      * large tables, we should use Extents
      *
      * @return
@@ -279,7 +258,7 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
-     * lists all of the type passed in. if we think we'll use this on large tables, we should use
+     * lists all the type passed in. if we think we'll use this on large tables, we should use
      * Extents
      *
      * @return
@@ -289,25 +268,17 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(c);
 
-        if (cursorString != null
-                && !cursorString.trim().toLowerCase()
-                        .equals(Constants.ALL_RESULTS)) {
+        if (cursorString != null && !cursorString.trim().equalsIgnoreCase(Constants.ALL_RESULTS)) {
             Cursor cursor = Cursor.fromWebSafeString(cursorString);
-            Map<String, Object> extensionMap = new HashMap<String, Object>();
+            Map<String, Object> extensionMap = new HashMap<>();
             extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
             query.setExtensions(extensionMap);
         }
 
-        List<E> results = null;
+        if (pageSize == null) this.prepareCursor(cursorString, query);
+        else this.prepareCursor(cursorString, pageSize, query);
 
-        if (pageSize == null) {
-            this.prepareCursor(cursorString, query);
-        } else {
-            this.prepareCursor(cursorString, pageSize, query);
-        }
-
-        results = (List<E>) query.execute();
-        return results;
+        return (List<E>) query.execute();
     }
 
     /**
@@ -316,40 +287,33 @@ public class BaseDAO<T extends BaseDomain> {
      *
      * @return
      */
-    public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList,
-            Long userId) {
-        if (!concreteClass.isAssignableFrom(SurveyGroup.class)
-                && !concreteClass.isAssignableFrom(Survey.class)) {
-            throw new UnsupportedOperationException("Cannot filter "
-                    + concreteClass.getSimpleName());
+    public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList, Long userId) {
+        if (!concreteClass.isAssignableFrom(SurveyGroup.class) && !concreteClass.isAssignableFrom(Survey.class)) {
+            throw new UnsupportedOperationException("Cannot filter " + concreteClass.getSimpleName());
         }
 
         UserDao userDAO = new UserDao();
         User user = userDAO.getByKey(userId);
-        if (user.isSuperAdmin()) {
-            return allObjectsList;
-        }
+
+        if (user.isSuperAdmin()) return allObjectsList;
 
         UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
         List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
-        if (userAuthorizationList.isEmpty()) {
-            return Collections.emptyList();
-        }
+
+        if (userAuthorizationList.isEmpty()) return Collections.emptyList();
 
         Set<Long> securedObjectIds = new HashSet<>();
-        for (UserAuthorization auth : userAuthorizationList) {
-            if (auth.getSecuredObjectId() != null) {
-                securedObjectIds.add(auth.getSecuredObjectId());
-            }
-        }
+
+        for (UserAuthorization auth : userAuthorizationList)
+            if (auth.getSecuredObjectId() != null) securedObjectIds.add(auth.getSecuredObjectId());
 
         // Set of all ancestor ids of secured objects
         Set<Long> securedAncestorIds = new HashSet<>();
         for (Object obj : allObjectsList) {
             SecuredObject securedObject = (SecuredObject) obj;
-            if (securedObjectIds.contains(securedObject.getObjectId())) {
+
+            if (securedObjectIds.contains(securedObject.getObjectId()))
                 securedAncestorIds.addAll(securedObject.listAncestorIds());
-            }
         }
 
         Set<E> authorizedSet = new HashSet<>();
@@ -357,26 +321,20 @@ public class BaseDAO<T extends BaseDomain> {
             for (E obj : allObjectsList) {
                 SurveyGroup sg = (SurveyGroup) obj;
                 Long sgId = sg.getKey().getId();
-                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
-                        || securedObjectIds.contains(sgId)
-                        || securedAncestorIds.contains(sgId)) {
+                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds) || securedObjectIds.contains(sgId) || securedAncestorIds.contains(sgId)) {
                     authorizedSet.add(obj);
                 }
             }
         } else {
             for (E obj : allObjectsList) {
-                Survey s = (Survey) obj;
-                List<Long> ancestorIds = s.getAncestorIds();
-                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
-                    authorizedSet.add(obj);
-                }
+                Survey survey = (Survey) obj;
+                List<Long> ancestorIds = survey.getAncestorIds();
+
+                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) authorizedSet.add(obj);
             }
         }
 
-        List<E> authorizedList = new ArrayList<>();
-        authorizedList.addAll(authorizedSet);
-
-        return authorizedList;
+        return new ArrayList<>(authorizedSet);
     }
 
     public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList) {
@@ -396,8 +354,8 @@ public class BaseDAO<T extends BaseDomain> {
      */
     private boolean hasAuthorizedAncestors(List<Long> ancestorIds, Set<Long> securedObjectIds) {
         // use new List object to prevent side effects on SurveyGroup.ancestorIds property
-        List<Long> idsList = new ArrayList<Long>(ancestorIds);
-        return idsList != null && idsList.removeAll(securedObjectIds);
+        List<Long> idsList = new ArrayList<>(ancestorIds);
+        return idsList.removeAll(securedObjectIds);
     }
 
     /**
@@ -408,11 +366,9 @@ public class BaseDAO<T extends BaseDomain> {
      * @param propertyType
      * @return
      */
-    protected T findByProperty(String propertyName, Object propertyValue,
-            String propertyType) {
+    protected T findByProperty(String propertyName, Object propertyValue, String propertyType) {
         T result = null;
-        List<T> results = listByProperty(propertyName, propertyValue,
-                propertyType);
+        List<T> results = listByProperty(propertyName, propertyValue, propertyType);
         if (results.size() > 0) {
             result = results.get(0);
         }
@@ -445,13 +401,13 @@ public class BaseDAO<T extends BaseDomain> {
     /*
      * Retrieve a list of datastore entities by the keys provided
      */
-    public List<T> listByKeys(List<Long> idsList, Class<T> clazz){
-        if (idsList == null || idsList.isEmpty()) {
-            return Collections.emptyList();
-        }
+
+    public List<T> listByKeys(List<Long> idsList, Class<T> clazz) {
+        if (idsList == null || idsList.isEmpty()) return Collections.emptyList();
 
         PersistenceManager pm = PersistenceFilter.getManager();
         Set<Object> datastoreKeysList = new LinkedHashSet<>();
+
         for (Long id : idsList) {
             Key key = KeyFactory.createKey(clazz.getSimpleName(), id);
             Object objectId = pm.newObjectIdInstance(clazz, key);
@@ -477,20 +433,18 @@ public class BaseDAO<T extends BaseDomain> {
 
         return resultsList;
     }
-
     /*
      * Takes a list of IDs and retrieve the items on the list individually.
-     * This is only a fall back method for when there may be some elements
+     * This is only a fallback method for when there may be some elements
      * missing when attempting to batch retrieve with `listByKeys()`
      *
      */
+
     private List<T> listByKeysIndividually(List<Long> idsList) {
         List<T> resultsList = new ArrayList<>();
         for (Long id : idsList) {
             T item = getByKey(id);
-            if (item != null) {
-                resultsList.add(item);
-            }
+            if (item != null) resultsList.add(item);
         }
         return resultsList;
     }
@@ -506,10 +460,8 @@ public class BaseDAO<T extends BaseDomain> {
      * @param propertyType
      * @return
      */
-    protected List<T> listByProperty(String propertyName, Object propertyValue,
-            String propertyType) {
-        return listByProperty(propertyName, propertyValue, propertyType, null,
-                null, EQ_OP, concreteClass);
+    protected List<T> listByProperty(String propertyName, Object propertyValue, String propertyType) {
+        return listByProperty(propertyName, propertyValue, propertyType, null, null, EQ_OP, concreteClass);
     }
 
     /**
@@ -522,11 +474,8 @@ public class BaseDAO<T extends BaseDomain> {
      * @param clazz
      * @return
      */
-    protected <E extends BaseDomain> List<E> listByProperty(
-            String propertyName, Object propertyValue, String propertyType,
-            Class<E> clazz) {
-        return listByProperty(propertyName, propertyValue, propertyType, null,
-                null, EQ_OP, clazz);
+    protected <E extends BaseDomain> List<E> listByProperty(String propertyName, Object propertyValue, String propertyType, Class<E> clazz) {
+        return listByProperty(propertyName, propertyValue, propertyType, null, null, EQ_OP, clazz);
     }
 
     /**
@@ -542,11 +491,8 @@ public class BaseDAO<T extends BaseDomain> {
      * @param clazz
      * @return
      */
-    protected <E extends BaseDomain> List<E> listByProperty(
-            String propertyName, Object propertyValue, String propertyType,
-            String orderBy, Class<E> clazz) {
-        return listByProperty(propertyName, propertyValue, propertyType,
-                orderBy, null, EQ_OP, clazz);
+    protected <E extends BaseDomain> List<E> listByProperty(String propertyName, Object propertyValue, String propertyType, String orderBy, Class<E> clazz) {
+        return listByProperty(propertyName, propertyValue, propertyType, orderBy, null, EQ_OP, clazz);
     }
 
     /**
@@ -561,10 +507,8 @@ public class BaseDAO<T extends BaseDomain> {
      * @param orderByDir
      * @return
      */
-    protected List<T> listByProperty(String propertyName, Object propertyValue,
-            String propertyType, String orderByCol, String orderByDir) {
-        return listByProperty(propertyName, propertyValue,
-                propertyType, orderByCol, orderByDir, EQ_OP, concreteClass);
+    protected List<T> listByProperty(String propertyName, Object propertyValue, String propertyType, String orderByCol, String orderByDir) {
+        return listByProperty(propertyName, propertyValue, propertyType, orderByCol, orderByDir, EQ_OP, concreteClass);
     }
 
     /**
@@ -578,10 +522,8 @@ public class BaseDAO<T extends BaseDomain> {
      * @param orderByCol
      * @return
      */
-    protected List<T> listByProperty(String propertyName, Object propertyValue,
-            String propertyType, String orderByCol) {
-        return listByProperty(propertyName, propertyValue, propertyType,
-                orderByCol, null, EQ_OP, concreteClass);
+    protected List<T> listByProperty(String propertyName, Object propertyValue, String propertyType, String orderByCol) {
+        return listByProperty(propertyName, propertyValue, propertyType, orderByCol, null, EQ_OP, concreteClass);
     }
 
     /**
@@ -596,31 +538,23 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected <E extends BaseDomain> List<E> listByProperty(
-            String propertyName, Object propertyValue, String propertyType,
-            String orderByField, String orderByDir, String operator,
-            Class<E> clazz) {
+    protected <E extends BaseDomain> List<E> listByProperty(String propertyName, Object propertyValue, String propertyType, String orderByField, String orderByDir, String operator, Class<E> clazz) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        List<E> results = null;
 
         String paramName = propertyName + "Param";
-        if (paramName.contains(".")) {
-            paramName = paramName.substring(paramName.indexOf(".") + 1);
-        }
+
+        if (paramName.contains(".")) paramName = paramName.substring(paramName.indexOf(".") + 1);
+
         javax.jdo.Query query = pm.newQuery(clazz);
         query.setFilter(propertyName + " " + operator + " " + paramName);
 
-        if (orderByField != null) {
-            query.setOrdering(orderByField
-                    + (orderByDir != null ? " " + orderByDir : ""));
-        }
-        query.declareParameters(propertyType + " " + paramName);
-        if (propertyValue instanceof Date) {
-            query.declareImports("import java.util.Date");
-        }
-        results = (List<E>) query.execute(propertyValue);
+        if (orderByField != null) query.setOrdering(orderByField + (orderByDir != null ? " " + orderByDir : ""));
 
-        return results;
+        query.declareParameters(propertyType + " " + paramName);
+
+        if (propertyValue instanceof Date) query.declareImports("import java.util.Date");
+
+        return (List<E>) query.execute(propertyValue);
     }
 
     /**
@@ -646,7 +580,6 @@ public class BaseDAO<T extends BaseDomain> {
      * deletes an object from the db, by key
      *
      * @param <E>
-     * @param obj
      */
     public <E extends BaseDomain> void deleteByKey(Key k) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -665,42 +598,36 @@ public class BaseDAO<T extends BaseDomain> {
      * utility method to form a hash map of query parameters using an equality operator
      *
      * @param paramName - name of object property
-     * @param filter - in/out stringBuilder of query filters
-     * @param param -in/out stringBuilder of param names
-     * @param type - data type of field
-     * @param value - value to bind to param
-     * @param paramMap - in/out parameter map
+     * @param filter    - in/out stringBuilder of query filters
+     * @param param     -in/out stringBuilder of param names
+     * @param type      - data type of field
+     * @param value     - value to bind to param
+     * @param paramMap  - in/out parameter map
      */
-    protected void appendNonNullParam(String paramName, StringBuilder filter,
-            StringBuilder param, String type, Object value,
-            Map<String, Object> paramMap) {
-        appendNonNullParam(paramName, filter, param, type, value, paramMap,
-                EQ_OP);
+    protected void appendNonNullParam(String paramName, StringBuilder filter, StringBuilder param, String type, Object value, Map<String, Object> paramMap) {
+        appendNonNullParam(paramName, filter, param, type, value, paramMap, EQ_OP);
     }
 
     /**
      * utility method to form a hash map of query parameters
      *
      * @param paramName - name of object property
-     * @param filter - in/out stringBuilder of query filters
-     * @param param -in/out stringBuilder of param names
-     * @param type - data type of field
-     * @param value - value to bind to param
-     * @param paramMap - in/out parameter map
-     * @param operator - operator to use
+     * @param filter    - in/out stringBuilder of query filters
+     * @param param     -in/out stringBuilder of param names
+     * @param type      - data type of field
+     * @param value     - value to bind to param
+     * @param paramMap  - in/out parameter map
+     * @param operator  - operator to use
      */
-    protected void appendNonNullParam(String paramName, StringBuilder filter,
-            StringBuilder param, String type, Object value,
-            Map<String, Object> paramMap, String operator) {
+    protected void appendNonNullParam(String paramName, StringBuilder filter, StringBuilder param, String type, Object value, Map<String, Object> paramMap, String operator) {
         if (value != null) {
             if (paramMap.keySet().size() > 0) {
                 filter.append(" && ");
                 param.append(", ");
             }
-            String paramValName = paramName + "Param"
-                    + paramMap.keySet().size();
-            filter.append(paramName).append(" ").append(operator).append(" ")
-                    .append(paramValName);
+
+            String paramValName = paramName + "Param" + paramMap.keySet().size();
+            filter.append(paramName).append(" ").append(operator).append(" ").append(paramValName);
             param.append(type).append(" ").append(paramValName);
             paramMap.put(paramValName, value);
         }
@@ -708,23 +635,15 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * gets a GAE datastore cursor based on the results list passed in. The list must be a non-null
-     * list of persistent entities (entites retrived from the datastore in the same session).
-     *
-     * @param results
-     * @return
+     * list of persistent entities (entities retrieved from the datastore in the same session).
      */
-    @SuppressWarnings("rawtypes")
-    public static String getCursor(List results) {
+    @SuppressWarnings("rawtypes") public static String getCursor(List results) {
         if (results != null && results.size() > 0) {
             Cursor cursor = JDOCursorHelper.getCursor(results);
-            if (cursor != null) {
-                return cursor.toWebSafeString();
-            } else {
-                return null;
-            }
+            return cursor != null ? cursor.toWebSafeString() : null;
         }
-        return null;
 
+        return null;
     }
 
     /**
@@ -735,22 +654,17 @@ public class BaseDAO<T extends BaseDomain> {
      * @param pageSize
      * @param query
      */
-    protected void prepareCursor(String cursorString, Integer pageSize,
-            javax.jdo.Query query) {
-        if (cursorString != null
-                && !cursorString.trim().toLowerCase()
-                        .equals(Constants.ALL_RESULTS)) {
+    protected void prepareCursor(String cursorString, Integer pageSize, javax.jdo.Query query) {
+        // TODO: Extracted repeated logic to a method.
+        if (cursorString != null && !cursorString.trim().equalsIgnoreCase(Constants.ALL_RESULTS)) {
             Cursor cursor = Cursor.fromWebSafeString(cursorString);
-            Map<String, Object> extensionMap = new HashMap<String, Object>();
+            Map<String, Object> extensionMap = new HashMap<>();
             extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
             query.setExtensions(extensionMap);
         }
+
         if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS)) {
-            if (pageSize == null) {
-                query.setRange(0, DEFAULT_RESULT_COUNT);
-            } else {
-                query.setRange(0, pageSize);
-            }
+            query.setRange(0, pageSize == null ? DEFAULT_RESULT_COUNT : pageSize);
         }
     }
 
@@ -793,9 +707,7 @@ public class BaseDAO<T extends BaseDomain> {
      * @throws CacheException
      */
     public String getCacheKey(BaseDomain object) throws CacheException {
-        if (object.getKey() == null) {
-            throw new CacheException("Trying to get cache key from an unsaved object");
-        }
+        assert object.getKey() != null : "Trying to get cache key from an unsaved object";
         return object.getClass().getSimpleName() + "-" + object.getKey().getId();
     }
 
@@ -807,9 +719,7 @@ public class BaseDAO<T extends BaseDomain> {
      * @throws CacheException
      */
     public String getCacheKey(String objectId) throws CacheException {
-        if (objectId == null) {
-            throw new CacheException("Trying to get cache key from an unsaved object");
-        }
+        assert objectId != null : "Trying to get cache key from an unsaved object";
         return concreteClass.getSimpleName() + "-" + objectId;
     }
 
@@ -822,8 +732,7 @@ public class BaseDAO<T extends BaseDomain> {
         int idsListSize = idsList.size();
         int start = 0;
         int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
-        int numberOfQueryRounds = (int) Math
-                .ceil((double) idsListSize / MAX_ALLOWED_FILTERED_ITEMS);
+        int numberOfQueryRounds = (int) Math.ceil((double) idsListSize / MAX_ALLOWED_FILTERED_ITEMS);
 
         for (int i = 0; i < numberOfQueryRounds; i++) {
             List<Long> idsToRetrieve = idsList.subList(start, end);
@@ -831,18 +740,18 @@ public class BaseDAO<T extends BaseDomain> {
             start = end;
             end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
         }
+
         return fetchedItems;
     }
 
     private List<T> listValuesByIdsList(List<Long> idsList, final String fieldName) {
-        if (idsList == null || idsList.isEmpty()) {
-            return Collections.emptyList();
-        }
+        if (idsList == null || idsList.isEmpty()) return Collections.emptyList();
+
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
-        @SuppressWarnings("unchecked")
-        List<T> results = (List<T>) query.execute(idsList);
+        @SuppressWarnings("unchecked") List<T> results = (List<T>) query.execute(idsList);
+
         return results;
     }
 
@@ -850,9 +759,12 @@ public class BaseDAO<T extends BaseDomain> {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         Query query = new Query(concreteClass.getSimpleName()).setKeysOnly();
         Query.FilterPredicate filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
+
         query.setFilter(filter);
+
         PreparedQuery preparedQuery = datastore.prepare(query);
         FetchOptions options = FetchOptions.Builder.withDefaults().prefetchSize(1000).chunkSize(1000);
+
         return preparedQuery.asList(options).size();
     }
 }

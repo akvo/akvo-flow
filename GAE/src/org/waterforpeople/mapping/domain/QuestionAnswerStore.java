@@ -35,7 +35,7 @@ public class QuestionAnswerStore extends BaseDomain {
     private static final long serialVersionUID = 3726562582080475960L;
 
     @Persistent
-    private Long arbitratyNumber;
+    private Long arbitraryNumber;
     @Persistent
     private String questionID;
     @Persistent
@@ -95,12 +95,12 @@ public class QuestionAnswerStore extends BaseDomain {
         this.collectionDate = collectionDate;
     }
 
-    public Long getArbitratyNumber() {
-        return arbitratyNumber;
+    public Long getArbitraryNumber() {
+        return arbitraryNumber;
     }
 
-    public void setArbitratyNumber(Long arbitratyNumber) {
-        this.arbitratyNumber = arbitratyNumber;
+    public void setArbitraryNumber(Long arbitraryNumber) {
+        this.arbitraryNumber = arbitraryNumber;
     }
 
     public String getType() {
@@ -112,17 +112,11 @@ public class QuestionAnswerStore extends BaseDomain {
     }
 
     public String getValue() {
-        if (value != null) {
-            return value;
-        }
-        if (valueText != null) {
-            return valueText.getValue();
-        }
-        return null;
+        return value == null ? (valueText == null ? null : valueText.getValue()) : value;
     }
 
     public void setValue(String value) {
-        // Explicitly set the non used property to null
+        // Explicitly set the non-used property to null
         // to avoid problems when reading the value
         if (value != null && value.length() > Constants.MAX_LENGTH) {
             this.value = null;
@@ -193,9 +187,7 @@ public class QuestionAnswerStore extends BaseDomain {
     }
     
     public static String getDatapointNameValue(String theType, String theValue) {
-        if (theType == null || theValue == null) {
-            return "";
-        }
+        if (theType == null || theValue == null) return "";
 
         String name;
         switch (theType) {
@@ -211,8 +203,8 @@ public class QuestionAnswerStore extends BaseDomain {
                 break;
         }
         
-        name = name.replaceAll("\\s+", " ");// Trim line breaks, multiple spaces, etc
-        name = name.replaceAll("\\s*\\|\\s*", " - ");// Replace pipes with hyphens
+        name = name.replaceAll("\\s+", " "); // Trim line breaks, multiple spaces, etc
+        name = name.replaceAll("\\s*\\|\\s*", " - "); // Replace pipes with hyphens
 
         return name.trim();
     }
