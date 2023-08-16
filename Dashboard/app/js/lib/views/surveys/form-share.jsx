@@ -48,7 +48,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
             `${window.location.origin}/webforms/${FLOW.surveyControl.webformId}`,
           shareUrlV2:
             FLOW.surveyControl.webformIdV2 &&
-            `${window.location.origin}/${FLOW.surveyControl.webformIdV2}`,
+            `https://webform.akvo.org/${FLOW.surveyControl.webformIdV2}`,
           showWebFormV2: FLOW.Env.enableWebFormV2,
           webformPassword: FLOW.selectedControl.selectedSurvey.get('webFormPassword') || '',
         },
