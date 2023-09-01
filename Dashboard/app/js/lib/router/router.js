@@ -99,9 +99,11 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysMain',
           });
-          FLOW.projectControl.populate();
-          FLOW.surveyControl.populateAll();
-          FLOW.cascadeResourceControl.populate();
+
+          FLOW.projectControl.populate()
+            .then(() => FLOW.surveyControl.populateAll())
+            .then(() => FLOW.cascadeResourceControl.populate());
+
           FLOW.projectControl.set('currentProject', null);
           FLOW.projectControl.set('newlyCreated', null);
           FLOW.selectedControl.set('selectedQuestionGroup', null);
