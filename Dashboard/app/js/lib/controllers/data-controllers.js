@@ -24,6 +24,15 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create(
     sortAscending: true,
 
     populate() {
+      const next = new Promise((resolve) => {
+        const unbind = FLOW.store.adapter.on('didFindAll', (type) => {
+          if (type !== FLOW.CascadeResource) {
+            return;
+          }
+          unbind();
+          resolve(type);
+        });
+      });
       this.set('content', FLOW.store.find(FLOW.CascadeResource));
       this.set(
         'published',
@@ -36,6 +45,7 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create(
           ),
         })
       );
+      return next;
     },
 
     setLevelNamesArray() {
