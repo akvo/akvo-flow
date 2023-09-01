@@ -174,8 +174,18 @@ FLOW.projectControl = Ember.ArrayController.create({
   isLoading: true,
 
   populate() {
+    const next = new Promise((resolve) => {
+      const unbind = FLOW.store.adapter.on('didFindAll', (type) => {
+        if (type !== FLOW.SurveyGroup) {
+          return;
+        }
+        unbind();
+        resolve(type);
+      });
+    });
     FLOW.store.find(FLOW.SurveyGroup);
     this.set('content', FLOW.store.filter(FLOW.SurveyGroup, () => true));
+    return next;
   },
 
   setCurrentProject(project) {
@@ -633,7 +643,17 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
   },
 
   populateAll() {
+    const next = new Promise((resolve) => {
+      const unbind = FLOW.store.adapter.on('didFindAll', (type) => {
+        if (type !== FLOW.Survey) {
+          return;
+        }
+        unbind();
+        resolve(type);
+      });
+    });
     FLOW.store.find(FLOW.Survey);
+    return next;
   },
 
   populate() {

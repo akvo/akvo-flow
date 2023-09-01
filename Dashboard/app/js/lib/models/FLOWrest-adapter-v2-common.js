@@ -1,7 +1,36 @@
 /* global DS */
 const { get } = Ember;
 
+const makeEventEmitter = () => ({
+  emit(event, ...args) {
+    let callbacks = this.events[event] || []
+    for (let i = 0, length = callbacks.length; i < length; i++) {
+      callbacks[i](...args)
+    }
+  },
+  events: {},
+  on(event, cb) {
+    if (this.events[event]) {
+      this.events[event].push(cb);
+    } else {
+      this.events[event] = [cb];
+    }
+    return () => {
+      this.events[event] = this.events[event] ? this.events[event].filter(i => cb !== i) : null;
+    };
+  },
+})
+
 DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
+  init() {
+    this._super();
+    this.emitter = makeEventEmitter()
+  },
+
+  on(event, callback) {
+    return this.emitter.on(event, callback)
+  },
+
   serializer: DS.RESTSerializer.extend({
     primaryKey() {
       return 'keyId';
@@ -192,6 +221,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
   didFindAll(store, type, json) {
     this._super(store, type, json);
+    this.emitter.emit('didFindAll', type)
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
     }
