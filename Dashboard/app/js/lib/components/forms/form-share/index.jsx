@@ -2,8 +2,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'akvo-flow/components/reusable/Modal';
+import Tooltip from 'akvo-flow/components/reusable/Tooltip';
 import { trackEvent, SURVEY_TAB } from 'akvo-flow/analytics';
 import './style.scss';
+
+function WebFormRestrictionInfo() {
+  return (
+    <div>
+     This feature is not available for the FLOW basic plan.
+    </div>
+  )
+}
 
 export default class WebFormShare extends React.Component {
   state = {
@@ -30,7 +39,7 @@ export default class WebFormShare extends React.Component {
   };
 
   openModal = () => {
-    if (!this.props.data.valid) {
+    if (!this.props.data.valid || this.props.data.restrictWebForm) {
       return;
     }
 
@@ -48,18 +57,32 @@ export default class WebFormShare extends React.Component {
     this.props.actions.setWebformPassword(event.target.value);
   };
 
+  getClassName = () => {
+    const common = 'previewNewSurvey';
+    if (!this.props.data.valid) {
+      return `${common} disabled`;
+    }
+    if (this.props.data.restrictWebForm) {
+      return `${common} restricted`;
+    }
+    return common;
+  }
+
   render() {
-    const { valid, shareUrl, shareUrlV2, showWebFormV2 } = this.props.data;
+    const { valid, shareUrl, shareUrlV2, showWebFormV2, restrictWebForm } = this.props.data;
+
     return (
       <>
         <li>
-          <a
-            onClick={this.openModal}
-            href="#"
-            className={`previewNewSurvey ${valid ? '' : 'disabled'}`}
-          >
-            Share as a webform
-          </a>
+          <Tooltip label={valid && restrictWebForm ? <WebFormRestrictionInfo /> : null}>
+            <a
+              onClick={this.openModal}
+              href="#"
+              className={this.getClassName()}
+            >
+              Share as a webform
+            </a>
+          </Tooltip>
         </li>
 
         <Modal isOpen={this.state.modalOpen} toggleModal={this.toggleModal} id="form-share-modal">
