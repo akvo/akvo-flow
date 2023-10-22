@@ -50,6 +50,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
             FLOW.surveyControl.webformIdV2 &&
             `https://webform.akvo.org/${FLOW.surveyControl.webformIdV2}`,
           showWebFormV2: FLOW.Env.enableWebFormV2,
+          restrictWebForm: FLOW.Env.enableSelfOnboard,
           webformPassword: FLOW.selectedControl.selectedSurvey.get('webFormPassword') || '',
         },
         actions: {
@@ -89,12 +90,11 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
           }
         }) === false;
 
-
       this.valid =
         isPublished &&
         isNonMonitoringSurveyOrMonitoringForm &&
         noIllegalQuestion;
-      
+
       this.renderReactSide();
     },
 
