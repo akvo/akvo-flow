@@ -62,9 +62,10 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
             query.setFilter(filterString.toString());
             query.declareParameters(paramString.toString());
         }
-        query.setOrdering("createdDateTime desc");
+
         @SuppressWarnings("unchecked")
         List<DataPointAssignment> selected = (List<DataPointAssignment>) query.executeWithMap(paramMap);
+        selected.sort((d1, d2) -> d2.getCreatedDateTime().compareTo(d1.getCreatedDateTime()));
 
         return selected;
     }
