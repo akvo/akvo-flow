@@ -144,5 +144,25 @@ $(document).ready(function () {
     $(".dataTables_paginate").addClass("floats-in");
     $(".dataTables_filter label > input").removeAttr("type").attr("type", "search");
 
-
+    if (FLOW.Env.enableSelfOnboard) {
+        // Submission count
+        $.get("/rest/count_form_submissions", function (data) {
+            const MAX_SUBMISSIONS = 300;
+            const PERCENTAGE_THRESHOLD = 80;
+            const value = data.value;
+            const percentage = (value / MAX_SUBMISSIONS) * 100;
+            // don't show if there are no submissions yet
+            if (!value) {
+                return;
+            }
+            // Show banner if greater than 80%
+            if (percentage >= PERCENTAGE_THRESHOLD) {
+                $(`<div id="submission-warning-banner">You have reached <strong>${Math.round(percentage)}% (${value}/300)</strong> of form submissions allowed in your FLOW Basic plan. Please contact <a href="mailto:support@akvo.org">support@akvo.org</a> to upgrade your plan and avoid blocking form submissions.</div>`).insertBefore("#header>div:first-child");
+                return;
+            }
+            // Show notification badge if less than 80%
+            $(`<div class="submission-count">Submissions <span class="submission-count-badge">${value} / 300</span></div>`)
+                .insertBefore("#header li.logOut");
+        });
+    }
 });
