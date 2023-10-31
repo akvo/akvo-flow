@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import com.gallatinsystems.common.util.MailUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -23,13 +25,18 @@ import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.CascadeResource.Status;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.Message;
+import org.akvo.flow.domain.UserFormSubmissionsCounter;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
@@ -37,8 +44,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Logger;
+
+import static org.waterforpeople.mapping.app.web.EnvServlet.SELF_ONBOARD_ENABLED;
 
 /**
  * Servlet used by app to trigger processing of new survey data
@@ -47,7 +58,7 @@ public class ProcessorServlet extends HttpServlet {
 
     private static final long serialVersionUID = -7062679258542909086L;
     private static final Logger log = Logger.getLogger(ProcessorServlet.class.getName());
-    
+
     private static final String ACTION_PARAM = "action";
     private static final String SUBMIT_ACTION = "submit";
     private static final String IMAGE_ACTION = "image";
@@ -60,7 +71,7 @@ public class ProcessorServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        
+
         String action = StringUtils.trim(req.getParameter(ACTION_PARAM));
         if (action == null) {
             log.info("No action specified for processor");
@@ -73,6 +84,8 @@ public class ProcessorServlet extends HttpServlet {
         String androidId = StringUtils.trim(req.getParameter(ANDROID_ID_PARAM));
         String imei = StringUtils.trim(req.getParameter(IMEI_PARAM));
         String checksum = StringUtils.trim(req.getParameter(CHECKSUM_PARAM));
+        Survey form = null;
+        Integer submissionCount = 0;
 
         if (SUBMIT_ACTION.equals(action)) {
             if (fileName == null) {
@@ -86,9 +99,34 @@ public class ProcessorServlet extends HttpServlet {
             Long formID = parseFormID(req);
             if (formID != null) {
                 SurveyDAO surveyDAO = new SurveyDAO();
-                if (surveyDAO.getById(formID) == null) {
+                form = surveyDAO.getById(formID);
+                if (form == null) {
                     log.warning("Form " + formID + " doesn't exist in the datastore");
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+            }
+
+            // Form submission restriction for the Basic instance
+            if ("true".equalsIgnoreCase(PropertyUtil.getProperty(SELF_ONBOARD_ENABLED)) && form != null
+                    && form.getCreateUserId() != null) {
+                UserFormSubmissionsCounter counter = new UserFormSubmissionsCounter(
+                        DatastoreServiceFactory.getDatastoreService());
+                User user = new UserDao().getByKey(form.getCreateUserId());
+                submissionCount = counter.countFor(user);
+
+                if (submissionCount == 240 || submissionCount == 300) {
+                    log.info("send mail");
+                    sendFormSubmissionRestrictionEmail(user, submissionCount);
+                }
+                if (submissionCount >= 300) {
+                    log.info("return error response");
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    PrintWriter out = resp.getWriter();
+                    out.print("{\"error\": \"Error, data not submitted!\"}");
+                    out.flush();
                     return;
                 }
             }
@@ -143,7 +181,6 @@ public class ProcessorServlet extends HttpServlet {
             final String message = StringUtils.trim(req.getParameter("message"));
             final CascadeResourceDao crDao = new CascadeResourceDao();
 
-
             try {
                 crId = Long.valueOf(StringUtils.trim(req.getParameter("cascadeResourceId")));
             } catch (NumberFormatException e) {
@@ -197,6 +234,23 @@ public class ProcessorServlet extends HttpServlet {
         }
 
         return null;
+    }
+
+    private void sendFormSubmissionRestrictionEmail(User user, Integer count) {
+        Long percentage = Math.round((((double) count) / 300) * 100);
+        String subject = String.format("%d%% limit reached", percentage);
+        String body_1 = String.format(
+                "Dear %s,\n\nYou have reached 80%% (240 / 300 forms) of the form submission limit of your FLOW Basic account. Form submissions will be blocked once the limit is reached.\n\nContact support@akvo.org to upgrade to a paid plan.\n\nRegards,\n\nThe FLOW Team",
+                user.getUserName());
+        String body_2 = String.format(
+                "Dear %s,\n\nYou have reached the form submission limit (300 forms). Form submissions are now blocked. You can still download your data. Please contact support@akvo.org to upgrade to a paid plan.\n\nRegards,\n\nThe FLOW Team",
+                user.getUserName());
+
+        TreeMap<String, String> recip = new TreeMap<>();
+        recip.put("support@akvo.org", "support@akvo.org");
+        recip.put(user.getEmailAddress(), user.getEmailAddress());
+        MailUtil.sendMail(PropertyUtil.getProperty("emailFromAddress"), "Akvo Flow", recip, subject,
+                (count >= 300) ? body_2 : body_1);
     }
 
 }
