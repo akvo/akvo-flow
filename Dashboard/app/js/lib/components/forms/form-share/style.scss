@@ -62,3 +62,15 @@
     }
   }
 }
+
+.aformContainer {
+  nav.newSurveyNav {
+    ul li a {
+      &.restricted {
+        &:hover {
+            cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
