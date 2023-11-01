@@ -6,14 +6,6 @@ import Tooltip from 'akvo-flow/components/reusable/Tooltip';
 import { trackEvent, SURVEY_TAB } from 'akvo-flow/analytics';
 import './style.scss';
 
-function WebFormRestrictionInfo() {
-  return (
-    <div>
-     This feature is not available for the FLOW basic plan.
-    </div>
-  )
-}
-
 export default class WebFormShare extends React.Component {
   state = {
     modalOpen: false,
@@ -70,11 +62,12 @@ export default class WebFormShare extends React.Component {
 
   render() {
     const { valid, shareUrl, shareUrlV2, showWebFormV2, restrictWebForm } = this.props.data;
+    const { webformNotAvailableText } = this.props.strings;
 
     return (
       <>
         <li>
-          <Tooltip label={valid && restrictWebForm ? <WebFormRestrictionInfo /> : null}>
+          <Tooltip label={valid && restrictWebForm ? <div>{webformNotAvailableText}</div> : null}>
             <a
               onClick={this.openModal}
               href="#"

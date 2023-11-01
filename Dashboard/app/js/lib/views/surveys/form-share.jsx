@@ -40,7 +40,9 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        strings: {},
+        strings: {
+          webformNotAvailableText: Ember.String.loc('_feature_not_available_on_basic_plan'),
+        },
         data: {
           valid: this.valid,
           shareUrl:
