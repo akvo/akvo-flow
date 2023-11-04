@@ -25,5 +25,14 @@
     <span class="loading">{{t _generating}}</span>
     <span class="exportDate">{{#if view.lastUpdateDateTime}}{{view.lastUpdateDateTime}}{{/if}}</span>
   </div>
+  <div class="exportDelete">
+    <span>
+      {{#if view.reportSuccess}}
+        <a {{action confirm FLOW.dialogControl.delReport target="FLOW.dialogControl" }}>
+          {{t _delete}}
+        </a>
+      {{/if}}
+    </span>
+  </div>
 </li>
 {{/if}}

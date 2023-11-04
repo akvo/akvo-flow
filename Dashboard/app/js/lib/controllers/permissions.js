@@ -105,6 +105,7 @@ FLOW.dialogControl = Ember.Object.create({
   delSI2: 'delSI2',
   delCR: 'delCR',
   delForm: 'delForm',
+  delReport: 'delReport',
   showDialog: false,
   message: null,
   header: null,
@@ -201,6 +202,12 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog', true);
         break;
 
+      case 'delReport':
+        this.set('header', Ember.String.loc('_are_you_sure_you_want_to_delete_this_report'));
+        this.set('message', Ember.String.loc('_this_cant_be_undo'));
+        this.set('showDialog', true);
+        break;
+
       default:
     }
   },
@@ -268,6 +275,11 @@ FLOW.dialogControl = Ember.Object.create({
       case 'delCR':
         this.set('showDialog', false);
         view.deleteResource(view, arguments);
+        break;
+
+      case 'delReport':
+        this.set('showDialog', false);
+        view.deleteReport(view, arguments);
         break;
 
       case 'reports':
