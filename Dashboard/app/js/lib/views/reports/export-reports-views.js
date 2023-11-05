@@ -378,6 +378,12 @@ FLOW.ReportListItemView = FLOW.View.extend(template('navReports/report'), {
   isNotStats: Ember.computed(function() {
     return this.content.get('reportType') !== 'STATISTICS';
   }).property('content'),
+
+  deleteReport() {
+    const report = FLOW.store.find(FLOW.Report, this.content.get('keyId'));
+    report.deleteRecord();
+    FLOW.store.commit();
+  },
 });
 
 FLOW.DataCleaningView = Ember.View.extend(
