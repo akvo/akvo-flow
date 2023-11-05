@@ -289,6 +289,11 @@ FLOW.projectControl = Ember.ArrayController.create({
     return this.get('formCount') > 0;
   }).property('this.formCount'),
 
+  userCanAddForm: Ember.computed(function () {
+    console.log('FLOW.projectControl#userCanAddForm', this.get('formCount'));
+    return !FLOW.Env.enableSelfOnboard && this.get('formCount') >= 1;
+  }).property('this.formCount'),
+
   currentProjectPath: Ember.computed(function () {
     const projectList = this.get('breadCrumbs');
     if (projectList.length === 0) {
