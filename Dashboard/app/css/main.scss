@@ -6747,3 +6747,30 @@ svg {
     }
   }
 }
+
+.fui-tooltip {
+  .fui-tooltip-ref {
+    &.no-action:hover {
+      cursor: not-allowed;
+    }
+  }
+  .fui-tooltip-text {
+    display: none;
+    position: absolute;
+    width: max-content;
+    background: #222;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 90%;
+    z-index: 9999999;
+  }
+  .fui-tooltip-arrow {
+    position: absolute;
+    background: #222;
+    width: 8px;
+    height: 8px;
+    transform: rotate(45deg);
+    z-index: 9999999;
+  }
+}
