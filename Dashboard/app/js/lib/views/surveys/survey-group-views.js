@@ -2,6 +2,7 @@
 
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
+import { initTooltip } from '../../tooltip';
 
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
@@ -24,6 +25,11 @@ FLOW.Project = FLOW.View.extend(observe({
   monitoringGroupEnabled: false,
   currentRegistrationForm: null,
   showDataApprovalDetails: false,
+
+  didInsertElement() {
+    console.log('FLOW.Project#didInsertElement', document.querySelectorAll("#tabs .fui-tooltip"));
+    initTooltip("#tabs .fui-tooltip");
+  },
 
   /* computer property for setting / getting the value of the current
   registration form */

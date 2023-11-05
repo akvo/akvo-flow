@@ -129,7 +129,9 @@
               <ul>
                   <li class="formList"><p class="noForms">{{t _no_forms_in_this_survey}}</p></li>
                   {{#if view.showAddNewFormButton}}
-                  <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>{{t _add_new_form}}</a></li>
+                  <li>
+                    <a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>{{t _add_new_form}}</a>
+                  </li>
                   {{/if}}
               </ul>
             {{/unless}}
@@ -140,22 +142,33 @@
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
                 {{#if FLOW.projectControl.currentProject.monitoringGroup}}
-                {{#if view.showAddNewFormButton}}
-                  <nav class="menuTopbar">
-                    <ul>
-                      <li>  <a {{action "createForm" target="FLOW.surveyControl"}} class="button addFormBtn" >{{t _add_new_form}}</a></li>
-                    </ul>
-                  </nav>                      
+                  {{#if view.showAddNewFormButton}}
+                    <nav class="menuTopbar">
+                      <ul>
+                        <li>
+                          <div class="fui-tooltip">
+                            {{#if FLOW.projectControl.userCanAddForm}}
+                              <a {{action "createForm" target="FLOW.surveyControl"}} class="button addFormBtn" >{{t _add_new_form}}</a>
+                            {{else}}
+                              <a class="button addFormBtn fui-tooltip-ref no-action" >{{t _add_new_form}}</a>
+                              <div class="fui-tooltip-text">
+                                You have reached the limit of form per survey
+                                <div class="fui-tooltip-arrow"></div>
+                              </div>
+                            {{/if}}
+                          </div>
+                        </li>
+                      </ul>
+                    </nav>
+                  {{/if}}
                 {{/if}}
-            {{/if}}
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl.orderedForms}}
                       {{#view FLOW.FormTabView contentBinding="form"}}
-                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
+                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a>
                       {{/view}}
                     {{/each}}
-
                   </ul>
                 </nav>
                 <section class="formsContainer">
