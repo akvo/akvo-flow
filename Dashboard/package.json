@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@babel/register": "7.0.0",
+    "@floating-ui/dom": "1.5.3",
+    "@floating-ui/react": "0.26.1",
     "dayjs": "1.8.12",
     "js-datepicker": "5.2.1",
     "lodash": "4.17.21",

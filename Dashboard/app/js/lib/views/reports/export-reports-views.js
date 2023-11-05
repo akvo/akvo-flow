@@ -2,6 +2,7 @@
 import { trackEvent, DATA_EXPORTS } from 'akvo-flow/analytics';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
+import { initTooltip } from '../../tooltip';
 /* global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
@@ -284,9 +285,13 @@ FLOW.ExportReportTypeView = Ember.View.extend(
 FLOW.ReportsListView = Ember.View.extend(template('navReports/reports-list'), {
   didInsertElement() {
     FLOW.router.reportsController.populate();
+    initTooltip(".generatedExports .fui-tooltip");
   },
 
   exportNewReport() {
+    if (!FLOW.router.reportsController.userCanCreateReport) {
+      return;
+    }
     FLOW.router.transitionTo('navData.exportReports');
   },
 });
@@ -378,6 +383,12 @@ FLOW.ReportListItemView = FLOW.View.extend(template('navReports/report'), {
   isNotStats: Ember.computed(function() {
     return this.content.get('reportType') !== 'STATISTICS';
   }).property('content'),
+
+  deleteReport() {
+    const report = FLOW.store.find(FLOW.Report, this.content.get('keyId'));
+    report.deleteRecord();
+    FLOW.store.commit();
+  },
 });
 
 FLOW.DataCleaningView = Ember.View.extend(
