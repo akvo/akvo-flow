@@ -1,6 +1,16 @@
 <div class="generatedExports">
   <h1>{{t _generated_reports}}</h1>
-  <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
+  <div class="fui-tooltip">
+    {{#if FLOW.router.reportsController.userCanCreateReport}}
+      <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
+    {{else}}
+      <a class="button exportNewBtn fui-tooltip-ref no-action">{{t _new_export}}</a>
+      <div class="fui-tooltip-text">
+        {{t _you_have_reached_the_limit_of_exports}}
+        <div class="fui-tooltip-arrow"></div>
+      </div>
+    {{/if}}
+  </div>
 </div>
 <section class="exportContainer">
   {{#if FLOW.router.reportsController.reportsAvailable}}
