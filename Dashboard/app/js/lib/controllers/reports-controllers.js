@@ -43,6 +43,7 @@ FLOW.ReportsController = Ember.ArrayController.extend(observe({
   content: null,
   reportsAvailable: false,
   reportsCheckScheduled: false,
+  userCanCreateReport: true,
 
   populate() {
     this.set('content', FLOW.store.find(FLOW.Report));
@@ -54,6 +55,7 @@ FLOW.ReportsController = Ember.ArrayController.extend(observe({
     const self = this;
     if (reports && !reports.isUpdating) {
       this.set('reportsAvailable', reports.content.length > 0);
+      this.set('userCanCreateReport', !(FLOW.Env.enableSelfOnboard && reports.content.length >= 1));
 
       if (!this.get('reportsCheckScheduled')) {
         this.set('reportsCheckScheduled', true);
