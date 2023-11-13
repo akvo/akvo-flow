@@ -290,7 +290,6 @@ FLOW.projectControl = Ember.ArrayController.create({
   }).property('this.formCount'),
 
   userCanAddForm: Ember.computed(function () {
-    console.log('FLOW.projectControl#userCanAddForm', this.get('formCount'));
     return !FLOW.Env.enableSelfOnboard && this.get('formCount') >= 1;
   }).property('this.formCount'),
 
