@@ -27,7 +27,6 @@ FLOW.Project = FLOW.View.extend(observe({
   showDataApprovalDetails: false,
 
   didInsertElement() {
-    console.log('FLOW.Project#didInsertElement', document.querySelectorAll("#tabs .fui-tooltip"));
     initTooltip("#tabs .fui-tooltip");
   },
 
@@ -62,6 +61,10 @@ FLOW.Project = FLOW.View.extend(observe({
 
   toggleShowProjectDetails() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
+    document.querySelector(".projectDetails").arrive(".projectDetailForm", function() {
+      initTooltip(".projectDetailForm .fui-tooltip");
+      document.querySelector(".projectDetails").unbindArrive();
+    });
   },
 
   /*
@@ -121,6 +124,13 @@ FLOW.Project = FLOW.View.extend(observe({
     const permissions = FLOW.projectControl.get('currentFolderPermissions');
     return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
   }).property('FLOW.projectControl.currentProjectPath'),
+
+  disableMonitoringFeature: Ember.computed(function () {
+    if (FLOW.Env.enableSelfOnboard) {
+      return true;
+    }
+    return this.get('disableFolderSurveyInputField');
+  }).property(),
 
   showAddNewFormButton: Ember.computed(() => {
     const survey = FLOW.projectControl.get('currentProject');
