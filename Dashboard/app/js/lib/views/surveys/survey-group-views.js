@@ -2,6 +2,7 @@
 
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
+import { initTooltip } from '../../tooltip';
 
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
@@ -24,6 +25,10 @@ FLOW.Project = FLOW.View.extend(observe({
   monitoringGroupEnabled: false,
   currentRegistrationForm: null,
   showDataApprovalDetails: false,
+
+  didInsertElement() {
+    initTooltip("#tabs .fui-tooltip");
+  },
 
   /* computer property for setting / getting the value of the current
   registration form */
@@ -56,6 +61,10 @@ FLOW.Project = FLOW.View.extend(observe({
 
   toggleShowProjectDetails() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
+    document.querySelector(".projectDetails").arrive(".projectDetailForm", function() {
+      initTooltip(".projectDetailForm .fui-tooltip");
+      document.querySelector(".projectDetails").unbindArrive();
+    });
   },
 
   /*
@@ -115,6 +124,13 @@ FLOW.Project = FLOW.View.extend(observe({
     const permissions = FLOW.projectControl.get('currentFolderPermissions');
     return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
   }).property('FLOW.projectControl.currentProjectPath'),
+
+  disableMonitoringFeature: Ember.computed(function () {
+    if (FLOW.Env.enableSelfOnboard) {
+      return true;
+    }
+    return this.get('disableFolderSurveyInputField');
+  }).property(),
 
   showAddNewFormButton: Ember.computed(() => {
     const survey = FLOW.projectControl.get('currentProject');
