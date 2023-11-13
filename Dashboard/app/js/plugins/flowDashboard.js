@@ -144,24 +144,27 @@ $(document).ready(function () {
     $(".dataTables_paginate").addClass("floats-in");
     $(".dataTables_filter label > input").removeAttr("type").attr("type", "search");
 
-    if (FLOW.Env.enableSelfOnboard) {
+    if (FLOW.Env.formSubmissionsLimit > 0) {
         // Submission count
         $.get("/rest/count_form_submissions", function (data) {
-            const MAX_SUBMISSIONS = 300;
-            const PERCENTAGE_THRESHOLD = 80;
+            const hardLimit = FLOW.Env.formSubmissionsLimit;
+            const softLimitPercentage = FLOW.Env.formSubmissionsSoftLimitPercentage;
+            const softLimit = Math.round(hardLimit * (softLimitPercentage / 100));
             const value = data.value;
-            const percentage = (value / MAX_SUBMISSIONS) * 100;
             // don't show if there are no submissions yet
             if (!value) {
                 return;
             }
-            // Show banner if greater than 80%
-            if (percentage >= PERCENTAGE_THRESHOLD) {
-                $(`<div id="submission-warning-banner">You have reached <strong>${Math.round(percentage)}% (${value}/300)</strong> of form submissions allowed in your FLOW Basic plan. Please contact <a href="mailto:support@akvo.org">support@akvo.org</a> to upgrade your plan and avoid blocking form submissions.</div>`).insertBefore("#header>div:first-child");
+            // Show banner if greater than softLimit
+            if (value >= softLimit) {
+                $(`<div id="submission-warning-banner">You have reached <strong>${Math.round((value/hardLimit) * 100)}% (${value}/${hardLimit})</strong> of form submissions allowed in your FLOW Basic plan. Please contact <a href="mailto:support@akvo.org">support@akvo.org</a> to upgrade your plan and avoid blocking form submissions. <a style="float: right; margin-right: 5px;">[x]</a></div>`).insertBefore("#header>div:first-child");
+                $('#submission-warning-banner').on('click', 'a', function () {
+                    $('#submission-warning-banner').remove();
+                });
                 return;
             }
-            // Show notification badge if less than 80%
-            $(`<div class="submission-count">Submissions <span class="submission-count-badge">${value} / 300</span></div>`)
+            // Show notification badge if less than softLimit
+            $(`<div class="submission-count">Submissions <span class="submission-count-badge">${value} / ${hardLimit}</span></div>`)
                 .insertBefore("#header li.logOut");
         });
     }

@@ -35,6 +35,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.FormSubmissionsLimit;
 import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.UserFormSubmissionsCounter;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +50,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import static org.waterforpeople.mapping.app.web.EnvServlet.SELF_ONBOARD_ENABLED;
+import static org.waterforpeople.mapping.app.web.EnvServlet.FORM_SUBMISSIONS_LIMIT;
+import static org.waterforpeople.mapping.app.web.EnvServlet.FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE;
 
 /**
  * Servlet used by app to trigger processing of new survey data
@@ -107,20 +109,21 @@ public class ProcessorServlet extends HttpServlet {
                 }
             }
 
+            FormSubmissionsLimit limiter = new FormSubmissionsLimit(getFormSubmissionsLimit(), getFormSubmissionSoftLimitPercentage());
+
             // Form submission restriction for the Basic instance
-            if ("true".equalsIgnoreCase(PropertyUtil.getProperty(SELF_ONBOARD_ENABLED)) && form != null
-                    && form.getCreateUserId() != null) {
+            if (limiter.getHardLimit() > 0) {
                 UserFormSubmissionsCounter counter = new UserFormSubmissionsCounter(
                         DatastoreServiceFactory.getDatastoreService());
                 User user = new UserDao().getByKey(form.getCreateUserId());
                 submissionCount = counter.countFor(user);
 
-                if (submissionCount == 240 || submissionCount == 300) {
-                    log.info("send mail");
+                if (submissionCount == limiter.getHardLimit() || submissionCount == limiter.getSoftLimit()) {
+                    log.info("Send submission restriction mail, submissionCount: " + submissionCount);
                     sendFormSubmissionRestrictionEmail(user, submissionCount);
                 }
-                if (submissionCount >= 300) {
-                    log.info("return error response");
+                if (submissionCount >= limiter.getHardLimit()) {
+                    log.info("Return hard limit error response");
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     resp.setContentType("application/json");
                     resp.setCharacterEncoding("UTF-8");
@@ -252,4 +255,19 @@ public class ProcessorServlet extends HttpServlet {
         MailUtil.sendMail("noreply@akvo.org", null, recip, subject, (count >= 300) ? body_2 : body_1);
     }
 
+    private Integer getFormSubmissionsLimit() {
+        try {
+            return Integer.valueOf(PropertyUtil.getProperty(FORM_SUBMISSIONS_LIMIT));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private Integer getFormSubmissionSoftLimitPercentage() {
+        try {
+            return Integer.valueOf(PropertyUtil.getProperty(FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }
