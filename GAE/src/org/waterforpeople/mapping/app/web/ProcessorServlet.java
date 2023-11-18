@@ -104,32 +104,45 @@ public class ProcessorServlet extends HttpServlet {
                 form = surveyDAO.getById(formID);
                 if (form == null) {
                     log.warning("Form " + formID + " doesn't exist in the datastore");
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    prepareJsonResponse(
+                            resp,
+                            HttpServletResponse.SC_NOT_FOUND,
+                            String.format(
+                                    "{\"error\": \"Form %d does not exist\", \"message\": \"It has probably been deleted\"}",
+                                    formID));
                     return;
                 }
             }
 
-            FormSubmissionsLimit limiter = new FormSubmissionsLimit(getFormSubmissionsLimit(), getFormSubmissionSoftLimitPercentage());
-
             // Form submission restriction for the Basic instance
-            if (limiter.getHardLimit() > 0) {
+            FormSubmissionsLimit limiter = new FormSubmissionsLimit(getFormSubmissionsLimit(),
+                    getFormSubmissionSoftLimitPercentage());
+            if (limiter.isEnabled()) {
                 UserFormSubmissionsCounter counter = new UserFormSubmissionsCounter(
                         DatastoreServiceFactory.getDatastoreService());
                 User user = new UserDao().getByKey(form.getCreateUserId());
+                // increment submissions count by 1 because this check occurs before the data is saved
                 submissionCount = counter.countFor(user) + 1;
 
                 if (submissionCount >= limiter.getSoftLimit()) {
                     log.info("Send submission restriction mail, submissionCount: " + submissionCount);
                     sendFormSubmissionRestrictionEmail(user, limiter, submissionCount);
                 }
+                if (submissionCount >= limiter.getSoftLimit() && submissionCount <= limiter.getHardLimit()) {
+                    log.info("Return hard limit error response");
+                    prepareJsonResponse(
+                            resp,
+                            HttpServletResponse.SC_OK,
+                            String.format(
+                                    "{\"warning\": \"Warning, reaching the limit soon\", \"message\": \"You have reached %d%% of the form submission limit\"}",
+                                    limiter.getPercentage(submissionCount)));
+                }
                 if (submissionCount > limiter.getHardLimit()) {
                     log.info("Return hard limit error response");
-                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    resp.setContentType("application/json");
-                    resp.setCharacterEncoding("UTF-8");
-                    PrintWriter out = resp.getWriter();
-                    out.print("{\"error\": \"Error, data not submitted!\"}");
-                    out.flush();
+                    prepareJsonResponse(
+                            resp,
+                            HttpServletResponse.SC_FORBIDDEN,
+                            "{\"error\": \"Error, data not submitted!\", \"message\": \"You have reached the form submission limit\"}");
                     return;
                 }
             }
@@ -240,8 +253,8 @@ public class ProcessorServlet extends HttpServlet {
     }
 
     private void sendFormSubmissionRestrictionEmail(User user, FormSubmissionsLimit limiter, Integer count) {
-        Long percentage = Math.round((((double) count) / limiter.getHardLimit()) * 100);
-        String subject = String.format("%d%% limit reached", percentage);
+        Long percentage = limiter.getPercentage(count);
+        String subject = String.format("%d%% limit reached", (percentage > 100) ? 100 : percentage);
         String body_1 = String.format(
                 "Dear %s,\n\nYou have reached %d%% (%d / %d forms) of the form submission limit of your FLOW Basic account. Form submissions will be blocked once the limit is reached.\n\nContact support@akvo.org to upgrade to a paid plan.\n\nRegards,\n\nThe FLOW Team",
                 user.getUserName(), percentage, count, limiter.getHardLimit());
@@ -252,7 +265,8 @@ public class ProcessorServlet extends HttpServlet {
         TreeMap<String, String> recip = new TreeMap<>();
         recip.put("support@akvo.org", "support@akvo.org");
         recip.put(user.getEmailAddress(), user.getEmailAddress());
-        MailUtil.sendMail("noreply@akvo.org", null, recip, subject, (count >= limiter.getHardLimit()) ? body_2 : body_1);
+        MailUtil.sendMail("noreply@akvo.org", null, recip, subject,
+                (count >= limiter.getHardLimit()) ? body_2 : body_1);
     }
 
     private Integer getFormSubmissionsLimit() {
@@ -269,5 +283,18 @@ public class ProcessorServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private HttpServletResponse prepareJsonResponse(HttpServletResponse response, int status, String jsonString) {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            PrintWriter out = response.getWriter();
+            out.print(jsonString);
+            out.flush();
+        } catch (IOException e) {
+        }
+        return response;
     }
 }

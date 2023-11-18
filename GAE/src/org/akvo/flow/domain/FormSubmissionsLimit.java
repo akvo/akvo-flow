@@ -21,4 +21,12 @@ public class FormSubmissionsLimit {
     public Integer getSoftLimit() {
         return this.softLimit;
     }
+
+    public boolean isEnabled() {
+        return this.hardLimit > 0;
+    }
+
+    public Long getPercentage(Integer count) {
+        return Math.round((((double) count) / hardLimit) * 100);
+    }
 }
