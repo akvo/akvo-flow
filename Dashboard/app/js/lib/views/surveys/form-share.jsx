@@ -40,7 +40,9 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
 
     getProps() {
       return {
-        strings: {},
+        strings: {
+          webformNotAvailableText: Ember.String.loc('_feature_not_available_on_basic_plan'),
+        },
         data: {
           valid: this.valid,
           shareUrl:
@@ -50,6 +52,7 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
             FLOW.surveyControl.webformIdV2 &&
             `https://webform.akvo.org/${FLOW.surveyControl.webformIdV2}`,
           showWebFormV2: FLOW.Env.enableWebFormV2,
+          restrictWebForm: FLOW.Env.enableSelfOnboard,
           webformPassword: FLOW.selectedControl.selectedSurvey.get('webFormPassword') || '',
         },
         actions: {
@@ -89,12 +92,11 @@ FLOW.WebFormShareView = FLOW.ReactComponentView.extend(
           }
         }) === false;
 
-
       this.valid =
         isPublished &&
         isNonMonitoringSurveyOrMonitoringForm &&
         noIllegalQuestion;
-      
+
       this.renderReactSide();
     },
 
