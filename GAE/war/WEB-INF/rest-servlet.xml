@@ -55,4 +55,5 @@
     <bean name="/user_auth" class="org.waterforpeople.mapping.app.web.rest.UserAuthorizationRestService" lazy-init="true" />
     <bean name="/users" class="org.waterforpeople.mapping.app.web.rest.UserRestService" lazy-init="true" />
     <bean name="/user_roles" class="org.waterforpeople.mapping.app.web.rest.UserRolesRestService" lazy-init="true" />
+    <bean name="/count_form_submissions" class="org.akvo.flow.rest.CountFormSubmissionsRestService" lazy-init="true" />
 </beans>

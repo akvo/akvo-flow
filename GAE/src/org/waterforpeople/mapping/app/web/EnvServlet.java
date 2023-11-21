@@ -58,6 +58,8 @@ public class EnvServlet extends HttpServlet {
     public static final String WEBFORM_V2_ENABLED = "enableWebFormV2";
     public static final String SELF_ONBOARD_ENABLED = "enableSelfOnboard";
     public static final String INDEX_REDIRECT_DISABLED = "disableIndexRedirect";
+    public static final String FORM_SUBMISSIONS_LIMIT = "formSubmissionsLimit";
+    public static final String FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE = "formSubmissionsSoftLimitPercentage";
 
 
     private static final ArrayList<String> properties = new ArrayList<String>();
@@ -87,6 +89,8 @@ public class EnvServlet extends HttpServlet {
         properties.add(SHOW_FORM_INSTANCE_API_URL);
         properties.add(WEBFORM_V2_ENABLED);
         properties.add(SELF_ONBOARD_ENABLED);
+        properties.add(FORM_SUBMISSIONS_LIMIT);
+        properties.add(FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE);
     }
 
     @Override
@@ -168,6 +172,19 @@ public class EnvServlet extends HttpServlet {
         props.put(WEBFORM_V2_ENABLED, Boolean.toString("true".equalsIgnoreCase(props.get(WEBFORM_V2_ENABLED))));
 
         props.put(SELF_ONBOARD_ENABLED, Boolean.toString("true".equalsIgnoreCase(props.get(SELF_ONBOARD_ENABLED))));
+
+        // Ensure formSubmissionsLimit is a number
+        try {
+            props.put(FORM_SUBMISSIONS_LIMIT, Integer.valueOf(props.get(FORM_SUBMISSIONS_LIMIT)).toString());
+        } catch (NumberFormatException e) {
+            props.put(FORM_SUBMISSIONS_LIMIT, "0");
+        }
+        // Ensure formSubmissionsSoftLimitPercentage is a number
+        try {
+            props.put(FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE, Integer.valueOf(props.get(FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE)).toString());
+        } catch (NumberFormatException e) {
+            props.put(FORM_SUBMISSIONS_SOFT_LIMIT_PERCENTAGE, "0");
+        }
 
         if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
                 || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
