@@ -605,6 +605,50 @@ header.top {
   }
 }
 
+#submission-warning-banner {
+  position: fixed;
+  top: 0;
+  z-index: 9999;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #212529;
+  background-color: #ffc107;
+}
+#submission-warning-banner strong {
+  font-weight: bold;
+}
+#submission-warning-banner a {
+  color: #dc3545;
+}
+#submission-warning-banner a:hover {
+  color: #9c1c28;
+}
+
+.submission-count {
+  position: absolute;
+  top: 7px;
+  right: 80px;
+  padding: 2px;
+  font-size: 14px;
+}
+
+.submission-count-badge {
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  font-size: .75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  //color: #fff;
+  //background-color: #6c757d;
+  //background-color: #dc3545!important;
+  color: #212529;
+  background-color: #ffc107;
+  border-radius: 0.4rem!important;
+}
+
 .logIn,
 .logOut {
   position: absolute;
