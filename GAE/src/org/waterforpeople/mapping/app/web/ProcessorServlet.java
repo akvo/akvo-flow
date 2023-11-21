@@ -124,12 +124,12 @@ public class ProcessorServlet extends HttpServlet {
                 // increment submissions count by 1 because this check occurs before the data is saved
                 submissionCount = counter.countFor(user) + 1;
 
-                if (submissionCount >= limiter.getSoftLimit()) {
+                if (shouldSendFormRestrictionEmail(limiter, submissionCount)) {
                     log.info("Send submission restriction mail, submissionCount: " + submissionCount);
                     sendFormSubmissionRestrictionEmail(user, limiter, submissionCount);
                 }
                 if (submissionCount >= limiter.getSoftLimit() && submissionCount <= limiter.getHardLimit()) {
-                    log.info("Return hard limit error response");
+                    log.info("Return soft limit error response");
                     prepareJsonResponse(
                             resp,
                             HttpServletResponse.SC_OK,
@@ -283,6 +283,23 @@ public class ProcessorServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private boolean shouldSendFormRestrictionEmail(FormSubmissionsLimit limiter, Integer submissionCount) {
+        // at hard limit
+        if (submissionCount >= limiter.getHardLimit()) {
+            return true;
+        }
+        // at soft limit
+        if (submissionCount == limiter.getSoftLimit()) {
+            return true;
+        }
+        // at between soft and hard limitt
+        Integer secondStop = Math.round((float) (limiter.getHardLimit() - limiter.getSoftLimit()) / 2) + limiter.getSoftLimit();
+        if (submissionCount == secondStop) {
+            return true;
+        }
+        return false;
     }
 
     private HttpServletResponse prepareJsonResponse(HttpServletResponse response, int status, String jsonString) {
