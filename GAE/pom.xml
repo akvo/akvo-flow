@@ -151,7 +151,7 @@
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.12.6.1</version><!-- has to be different from other jackson.version because of vulnerability -->
+        <version>2.12.7.1</version><!-- has to be different from other jackson.version because of vulnerability -->
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
