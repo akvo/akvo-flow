@@ -28,7 +28,7 @@
     <appengine.sdk.version>1.9.77</appengine.sdk.version>
     <jackson.version>2.12.6</jackson.version>
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
-    <apache.poi.version>3.17</apache.poi.version>
+    <apache.poi.version>4.1.1</apache.poi.version>
   </properties>
 
   <dependencies>
