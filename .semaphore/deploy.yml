@@ -2,7 +2,7 @@ version: v1.0
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2404
 blocks:
   - name: UAT2 deployment and flip
     run:
