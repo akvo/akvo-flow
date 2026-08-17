@@ -430,6 +430,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>restAuthFilter</filter-name>
+        <url-pattern>/rest/image_upload/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>restAuthFilter</filter-name>
         <url-pattern>/surveyrestapi</url-pattern>
     </filter-mapping>
     <filter-mapping>
