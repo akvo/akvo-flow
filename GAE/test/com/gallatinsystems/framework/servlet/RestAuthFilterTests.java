@@ -133,4 +133,46 @@ public class RestAuthFilterTests {
 
         assertTrue(restAuthFilter.validateHashParam(mockHttpRequest));
     }
+
+    @Test
+    void testImageUploadSignedRequestPasses() throws ServletException, IOException {
+        // Models POST /rest/image_upload with ts/h in the query string and the
+        // image as a multipart part (NOT a request parameter).
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setMethod("POST");
+        req.setRequestURI("/rest/image_upload/question/1/instance/2");
+        req.setContentType("multipart/form-data; boundary=----test");
+        req.addParameter("ts", "2020/07/17 16:03:36");
+        req.addParameter("h", "rxbqp5meI3SnePGjJtXvvG6PifQ=");
+
+        MockFilterConfig cfg = new MockFilterConfig();
+        cfg.addInitParameter("restPrivateKey", "very private");
+        cfg.addInitParameter("enableRestSecurity", "true");
+
+        RestAuthFilter filter = new RestAuthFilter();
+        filter.init(cfg);
+
+        assertTrue(filter.validateHashParam(req));
+    }
+
+    @Test
+    void testImageUploadUnsignedRequestRejected() throws ServletException, IOException {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setMethod("POST");
+        req.setRequestURI("/rest/image_upload/question/1/instance/2");
+        req.setContentType("multipart/form-data; boundary=----test");
+        // no ts / no h — an anonymous upload attempt
+
+        MockFilterConfig cfg = new MockFilterConfig();
+        cfg.addInitParameter("restPrivateKey", "very private");
+        cfg.addInitParameter("enableRestSecurity", "true");
+
+        RestAuthFilter filter = new RestAuthFilter();
+        filter.init(cfg);
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        filter.doFilter(req, res, new MockFilterChain());
+
+        assertEquals("Authorization failed", res.getErrorMessage());
+    }
 }
