@@ -8,6 +8,15 @@
   <groupId>org.akvo.flow</groupId>
   <artifactId>akvo-flow</artifactId>
 
+  <!-- Clojars refuses to accept artifacts whose POM declares no license. -->
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License v3.0 or later</name>
+      <url>https://www.gnu.org/licenses/agpl-3.0.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <distributionManagement>
     <repository>
       <id>clojars</id>
