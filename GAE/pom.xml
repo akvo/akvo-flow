@@ -34,7 +34,11 @@
     <archiveClasses>true</archiveClasses>
     <spring.version>5.3.20</spring.version>
     <spring.security.version>5.6.4</spring.security.version>
-    <appengine.sdk.version>1.9.77</appengine.sdk.version>
+    <appengine.sdk.version>2.0.38</appengine.sdk.version>
+    <!-- The JCache adapter was never republished on the 2.x line; 1.9.98 is the last
+         release. It is six classes with no declared dependencies, wrapping the public
+         MemcacheService API, so it rides along with the 2.x SDK unchanged. -->
+    <appengine.jsr107cache.version>1.9.98</appengine.jsr107cache.version>
     <jackson.version>2.12.6</jackson.version>
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
     <apache.poi.version>3.17</apache.poi.version>
@@ -172,15 +176,30 @@
         <artifactId>jackson-dataformat-xml</artifactId>
         <version>${jackson.version}</version>
     </dependency>
+    <!-- The SDK registers DatastoreCallbacksProcessor as an annotation processor, which is
+         what turns EventLogger's @PostPut/@PostDelete into the generated
+         WEB-INF/classes/META-INF/datastorecallbacks.xml that the change-event feed relies on.
+         The 1.9.x SDK shaded auto-common in; 2.x does not, so the processor needs it supplied
+         here or compilation dies on NoClassDefFoundError: MoreElements. Compile-time only. -->
+    <dependency>
+        <groupId>com.google.auto</groupId>
+        <artifactId>auto-common</artifactId>
+        <version>1.2.2</version>
+        <scope>provided</scope>
+    </dependency>
+    <!-- auto-common pulls Guava in at runtime scope, which is the wrong end: the processor
+         needs it on the compile classpath, and the deployed WAR does not want it at all.
+         Declaring it directly as provided puts it where it is needed and nowhere else. -->
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.0.1-jre</version>
+        <scope>provided</scope>
+    </dependency>
     <dependency>
        <groupId>com.google.appengine</groupId>
        <artifactId>appengine-jsr107cache</artifactId>
-       <version>${appengine.sdk.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-endpoints</artifactId>
-        <version>${appengine.sdk.version}</version>
+       <version>${appengine.jsr107cache.version}</version>
     </dependency>
     <dependency>
         <groupId>de.grundid.opendatalab</groupId>
@@ -334,7 +353,7 @@
      <dependency>
         <groupId>com.google.appengine</groupId>
         <artifactId>appengine-remote-api</artifactId>
-        <version>1.9.71</version>
+        <version>${appengine.sdk.version}</version>
         <scope>test</scope>
      </dependency>
   </dependencies>
@@ -359,9 +378,14 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>appengine-maven-plugin</artifactId>
-        <version>2.2.0</version>
+        <version>2.8.3</version>
         <configuration>
-            <stage.enableJarClasses>true</stage.enableJarClasses>
+            <!-- Must stay false. The DataNucleus JavaUtils patch in src/org/datanucleus/util
+                 works because a servlet container searches WEB-INF/classes before WEB-INF/lib.
+                 Jarring the classes would put the patch in WEB-INF/lib alongside
+                 datanucleus-core.jar, where load order between jars is undefined and the patch
+                 could silently lose. The app ships ~1,050 files, far under the 10,000 limit. -->
+            <stage.enableJarClasses>false</stage.enableJarClasses>
             <stage.enableJarSplitting>true</stage.enableJarSplitting>
             <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
             <deploy.bucket>gs://akvoflowsandbox-deployment</deploy.bucket>
