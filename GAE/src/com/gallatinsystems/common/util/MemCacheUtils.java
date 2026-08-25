@@ -28,7 +28,7 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
+import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 public class MemCacheUtils {
 
