@@ -17,11 +17,15 @@ FROM google/cloud-sdk:581.0.0
 # The Debian image installs gcloud from apt and disables the component manager, so the
 # Java staging component comes from apt too. Maven runs appengine:stage; the JDK is for
 # Maven itself, not for compiling, which still happens on JDK 8 in the builder image.
+# zip is not in the base image but ci/mvn-deploy.sh needs it to archive the staged
+# directory, which is what scripts/deploy/deploy.sh later unpacks for every other
+# instance -- without it UAT2 still deploys, but nothing else can.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         default-jdk-headless \
         maven \
         google-cloud-cli-app-engine-java \
+        zip \
     && rm -rf /var/lib/apt/lists/* \
     # GAE/pom.xml pins cloudSdkHome to /google-cloud-sdk, which is where the old builder
     # image kept it. Providing the same path here keeps the pom free of image-specific
