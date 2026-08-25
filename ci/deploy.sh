@@ -24,7 +24,7 @@ curl --location --silent --output ci/akvoflow-uat1.json \
 # has to be published to Docker Hub; it has no build context and its layers cache, so a
 # rebuild is cheap after the first run.
 log Building the deploy image
-docker build --tag "${DEPLOY_IMAGE}" --file ci/Dockerfile.gae-deploy - < ci/Dockerfile.gae-deploy
+docker build --tag "${DEPLOY_IMAGE}" - < ci/Dockerfile.gae-deploy
 
 log Staging and deploying
 
