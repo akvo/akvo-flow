@@ -8,6 +8,13 @@ function log {
 
 cd /app/src/GAE
 
+# This container runs as root, so everything Maven and gcloud write into the bind-mounted
+# working tree would otherwise be left root-owned for whoever runs next -- the developer
+# on a local deploy, or a later CI step. Hand it back on the way out however we exit.
+if [[ -n "${HOST_UID:-}" && -n "${HOST_GID:-}" ]]; then
+    trap 'chown -R "${HOST_UID}:${HOST_GID}" /app/src/GAE/target 2>/dev/null || true' EXIT
+fi
+
 gcloud auth activate-service-account --key-file=/app/src/ci/akvoflow-uat1.json
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
