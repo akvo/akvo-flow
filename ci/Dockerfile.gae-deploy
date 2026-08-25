@@ -1,18 +1,29 @@
-# Deploy-side toolchain for the App Engine gen2 (java21) runtime.
+# Staging and deploy toolchain for the App Engine gen2 (java21) runtime.
 #
-# This is deliberately separate from akvo/akvo-flow-builder. That image pins JDK 8,
-# node 12 and lein, and it must stay that way: the DataNucleus 3.1.3 enhancer wants
-# Java 8 bytecode, and the Dashboard build is wired to its node toolchain. Only the
-# deploy step needs to be modern, so only the deploy step moves.
+# This is deliberately separate from akvo/akvo-flow-builder, which stays as it is:
+# that image pins JDK 8, node 12 and lein, the DataNucleus 3.1.3 enhancer wants Java 8
+# bytecode, and the Dashboard build is wired to its node toolchain. Only the staging
+# and deploy step has to be modern, so only that step moves here.
 #
-# `gcloud app deploy` does its own staging for appengine-web.xml applications, which
-# is why appengine-maven-plugin is not on the critical path at all.
+# The old image cannot stage a gen2 application at all. Its bundled Cloud SDK (322.0.0,
+# December 2020) stages through the legacy AppCfg tool, which requires a <threadsafe>
+# element in appengine-web.xml -- exactly the element gen2 rejects. The two requirements
+# cannot both be satisfied, so no amount of configuration makes that image work.
+#
+# Built locally by ci/deploy.sh rather than pulled, so there is nothing to publish to
+# Docker Hub. There are no COPY instructions, so it builds with no context.
 FROM google/cloud-sdk:581.0.0
 
-# The Debian image installs gcloud from apt and disables the component manager,
-# so the Java staging component comes from apt as well.
+# The Debian image installs gcloud from apt and disables the component manager, so the
+# Java staging component comes from apt too. Maven runs appengine:stage; the JDK is for
+# Maven itself, not for compiling, which still happens on JDK 8 in the builder image.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        default-jre-headless \
+        default-jdk-headless \
+        maven \
         google-cloud-cli-app-engine-java \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    # GAE/pom.xml pins cloudSdkHome to /google-cloud-sdk, which is where the old builder
+    # image kept it. Providing the same path here keeps the pom free of image-specific
+    # detail and lets the plugin find the Java components.
+    && ln -s /usr/lib/google-cloud-sdk /google-cloud-sdk
