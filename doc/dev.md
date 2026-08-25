@@ -95,19 +95,35 @@ before doing any work.
 
 If you want to run both Flow and Flow Services locally and talking to each other, you will need add some config to your `/etc/hosts`:
 
-    127.0.0.1 services.akvoflow.local akvoflow.local
+    127.0.0.1 akvoflow.test services.akvoflow.test
 
 Then run:
 
     docker-compose -f docker-compose.together.yml up --build -d
 
-**You will need to access Flow using the url [http://akvoflow.local:8888/](http://akvoflow.local:8888/)**
+**You will need to access Flow using the url [http://akvoflow.test:8888/](http://akvoflow.test:8888/)**
 
 Then read the Flow Services documentation for the Flow Services specific instructions.   
 
 The DNS alias is required because the UI is sending to Flow Services the baseUrl of the Flow service, which Flow Services needs to resolve to the Flow container.
 The way Docker works, this baseUrl cannot be "localhost", as "localhost" for the Flow Service container is itself. 
-Adding a DNS entry allows for one level of indirection where "akvoflow.local" will be resolved to "127.0.0.1" for the Browser, while it resolves to the flow container for the flow-services container.
+Adding a DNS entry allows for one level of indirection where "akvoflow.test" will be resolved to "127.0.0.1" for the Browser, while it resolves to the flow container for the flow-services container.
+
+We use the `.test` TLD rather than `.local` because `.local` is the mDNS domain: on Linux hosts running
+Avahi with nss-mdns, the `hosts:` line in `/etc/nsswitch.conf` typically reads
+
+    hosts: mymachines mdns_minimal [NOTFOUND=return] resolve files ...
+
+`mdns_minimal` claims every `.local` name, finds nothing, and `[NOTFOUND=return]` aborts the lookup
+before `/etc/hosts` is ever consulted. `.test` is reserved by RFC 6761 for exactly this kind of local
+testing and no resolver special-cases it.
+
+Both hostnames are needed on the host, for different reasons. "akvoflow.test" is the URL you browse
+Flow with, and the one the UI hands to Flow Services as the Flow baseUrl. "services.akvoflow.test" is
+the `flowServices` property from [dev-appengine-web.xml](tests/dev-appengine-web.xml), which
+`EnvServlet` exports to the browser as `FLOW.Env.flowServices` -- the bulk upload and bulk image
+upload views POST to it directly from the browser, so your host has to resolve it too. Flow's own
+server-side calls to that name are resolved by Docker inside the container network.
 
 ### Changing report Java classes
 
