@@ -8,22 +8,8 @@ function log {
 
 cd /app/src/GAE
 
-# Everything this script shells out to. These used to fail at the point of use, which is
-# a poor place to find out: zip is on the last line, so a missing zip meant a full deploy
-# to production had already happened before anything complained. A second of checking
-# here turns that into an immediate, named failure.
-require_commands() {
-    local missing=()
-    local c
-    for c in "$@"; do
-	command -v "${c}" >/dev/null 2>&1 || missing+=("${c}")
-    done
-    if [[ ${#missing[@]} -gt 0 ]]; then
-	echo "Missing required command(s): ${missing[*]}" >&2
-	echo "They have to be provided by the deploy image, ci/Dockerfile.gae-deploy" >&2
-	exit 1
-    fi
-}
+# shellcheck source=ci/deploy-guards.sh
+. /app/src/ci/deploy-guards.sh
 
 require_commands curl gcloud gsutil mvn zip
 
@@ -50,25 +36,7 @@ curl --location --silent --fail --output "${descriptor}" \
      "https://raw.githubusercontent.com/akvo/${FLOW_CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml" \
     || { echo "Could not fetch appengine-web.xml for ${PROJECT_ID} from ${FLOW_CONFIG_REPO}" >&2; exit 1; }
 
-[[ -s "${descriptor}" ]] || { echo "Fetched appengine-web.xml is empty" >&2; exit 1; }
-grep -q "<appengine-web-app" "${descriptor}" \
-    || { echo "Fetched file is not an appengine-web.xml descriptor" >&2; exit 1; }
-
-# The only thing tying this repository to akvo-flow-server-config is the URL above, and
-# nothing notices when the two disagree. This build carries App Engine SDK 2.x and the
-# DataNucleus fix for JVM 9 and later, so it can only run on a second-generation runtime,
-# and java8 does not accept deployments at all any more. Merging the two repositories in
-# the wrong order used to produce several minutes of work and then an opaque failure;
-# now it says which repository is behind.
-if grep -q "<runtime>java8</runtime>" "${descriptor}"; then
-    echo "${PROJECT_ID} still declares <runtime>java8</runtime>." >&2
-    echo "This build only supports the second generation runtime. Update" >&2
-    echo "${PROJECT_ID}/appengine-web.xml on master of ${FLOW_CONFIG_REPO} first." >&2
-    exit 1
-fi
-
-grep -q "<app-engine-apis>true</app-engine-apis>" "${descriptor}" \
-    || { echo "${PROJECT_ID}/appengine-web.xml is missing <app-engine-apis>true</app-engine-apis>; Flow would deploy and then fail at its first datastore call" >&2; exit 1; }
+assert_gen2_descriptor "${descriptor}" "${PROJECT_ID}"
 
 log Staging app
 
