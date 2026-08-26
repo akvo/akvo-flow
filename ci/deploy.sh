@@ -23,8 +23,12 @@ curl --location --silent --output ci/akvoflow-uat1.json \
 # 2021 builder image predates. The image is built here rather than pulled so that nothing
 # has to be published to Docker Hub; it has no build context and its layers cache, so a
 # rebuild is cheap after the first run.
+#
+# --quiet keeps the base image pull from burying the rest of the job. That pull is over a
+# gigabyte and its progress lines dominated the log badly enough to make two earlier
+# failures unreadable. A failing build still prints the offending step and its error.
 log Building the deploy image
-docker build --tag "${DEPLOY_IMAGE}" - < ci/Dockerfile.gae-deploy
+docker build --quiet --tag "${DEPLOY_IMAGE}" - < ci/Dockerfile.gae-deploy
 
 log Staging and deploying
 
