@@ -75,9 +75,21 @@ To switch back to the dev setup:
 
     switch_to_local_tenant.sh
 
-To deploy the current state of the docker container to whatever tenant you last switched to, run:
+To deploy the current state of the working tree to whatever tenant you last switched to,
+run this **from the host**, not from inside the dev container:
 
-    docker-compose exec -u akvo akvo-flow ./dev-deploy.sh akvoflowsandbox $FLOW_GH_TOKEN
+    ./dev-deploy.sh akvoflowsandbox $FLOW_GH_TOKEN
+
+It used to be run inside the container, and it cannot be any more. The dev container is
+`akvo/akvo-flow-builder`, whose Cloud SDK dates from 2020 and stages through the legacy
+`AppCfg` tool; that tool requires a `<threadsafe>` element in `appengine-web.xml`, which
+the second generation runtime rejects outright. The script now builds and runs
+`ci/Dockerfile.gae-deploy` for you, which is the same image CI deploys from. The dev
+container itself is unchanged and is still where the application runs while you work.
+
+Only tenants already migrated to the second generation runtime can be deployed to. If you
+switch to one that still declares `<runtime>java8</runtime>`, the script says so and stops
+before doing any work.
 
 ## Running Flow Services and Flow together locally
 
