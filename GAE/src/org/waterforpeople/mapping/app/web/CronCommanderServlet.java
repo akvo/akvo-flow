@@ -236,6 +236,16 @@ public class CronCommanderServlet extends HttpServlet {
     }
 
     /**
+     * True when the image was read and carried no GPS tag: formatWithGeotag keeps nulls, so the
+     * value has "location":null. A file not yet in S3 omits the key entirely and is retried.
+     */
+    static boolean isKnownToHaveNoGeotag(String value) {
+        // contains, not matches: String.matches anchors the whole string, so against a JSON
+        // object it is always false and every untagged image was re-read from S3 on every run.
+        return value.contains("\"location\":null");
+    }
+
+    /**
      * scans for and extracts geotags from image answers less than 1 month old
      * Intended to be run every day
      */
@@ -267,8 +277,7 @@ public class CronCommanderServlet extends HttpServlet {
                         if (media.getLocation() != null) { //Best case: Already known (could check validity)
                             continue; //Skip
                         }
-                        //also want to skip if location is present, but null, to avoid re-evaluation
-                        if (v.matches("\"location\":null")) {
+                        if (isKnownToHaveNoGeotag(v)) {
                             log.fine(String.format("Null location in IMAGE %d: '%s'", item.getKey().getId(), v));
                             continue; //Skip
                         }
