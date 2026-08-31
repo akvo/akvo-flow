@@ -4,6 +4,11 @@ set -euo pipefail
 
 export SHELL=/bin/bash
 
+# Resolved before the cd to the temporary working directory further down.
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/deploy/platform-settings.sh
+source "${script_dir}/platform-settings.sh"
+
 if [[ "$#" -lt 3 ]]; then
     echo "Usage: ./scripts/deploy/run.sh <version> [flip|deploy] [all | <instance-id-1> <instance-id-2> ... <instance-id-n>]"
     exit 1
@@ -73,6 +78,14 @@ deploy_instance() {
 
     cp "${config}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
+    # The copy above only reaches the Java runtime. gcloud reads scaling from
+    # app.yaml, which was generated from UAT2's descriptor, so it needs the
+    # instance's own values written into it. Explicitly guarded: this function
+    # runs under parallel, which does not inherit set -e.
+    apply_platform_settings "${instance_id}" \
+	   "${config}/${instance_id}/appengine-web.xml" \
+	   "${staging_dir}/app.yaml" || return 1
+
     gcloud app deploy "${staging_dir}/app.yaml" \
 	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
 	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
@@ -82,6 +95,7 @@ deploy_instance() {
 	   --project="${instance_id}"
 }
 export -f deploy_instance
+export -f apply_platform_settings
 
 migrate_traffic() {
     gcloud app services set-traffic default \
