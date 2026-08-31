@@ -5,7 +5,7 @@ services:
     command: tail -f /dev/null
     links:
      - s3:s3.amazonaws.com
-     - fake-flow-services:services.akvoflow.local
+     - fake-flow-services:services.akvoflow.test
     ports:
      - 8888:8888
      - 5005:5005
