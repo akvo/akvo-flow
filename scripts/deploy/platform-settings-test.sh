@@ -109,6 +109,23 @@ sed -i '/max_instances/d' "${work}/nokey.yaml"
 apply_platform_settings akvoflow-z "${work}/nokey.xml" "${work}/nokey.yaml" >/dev/null 2>&1
 check "refuses rather than shipping UAT2's value" "1" "$?"
 
+echo "sourced into a strict shell"
+# deploy.sh runs `set -euo pipefail`, and only escapes this because parallel
+# invokes deploy_instance in a fresh shell that does not inherit -e. Anything
+# calling the function directly from that script would not be so lucky, so pin
+# the success path down under the strictest settings a caller might use.
+descriptor "${work}/strict.xml" '        <max-instances>7</max-instances>
+        <max-concurrent-requests>50</max-concurrent-requests>'
+staged_app_yaml "${work}/strict.yaml"
+(
+    set -eo pipefail
+    source ./platform-settings.sh
+    apply_platform_settings akvoflow-strict "${work}/strict.xml" "${work}/strict.yaml"
+) >/dev/null 2>&1
+check "does not abort a set -e caller" "0" "$?"
+check "and still rewrote the file" \
+      "  max_instances: 7" "$(grep '^  max_instances:' "${work}/strict.yaml")"
+
 echo
 if [[ "${failures}" -eq 0 ]]; then
     echo "all checks passed"
