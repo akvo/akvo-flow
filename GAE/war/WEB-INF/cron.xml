@@ -1,44 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Scheduled jobs.
+
+  Every entry carries <retry-parameters>. Without them App Engine retries a
+  failing cron job until its next scheduled run: a job failing every ~25s of
+  attempt produced roughly a thousand requests a day, on instances whose whole
+  traffic was two thousand. The retries are not free, they occupy the same
+  instances user requests need, and they never turn a job that cannot succeed
+  into one that can.
+
+  cron.xml has no file-level default, so the block is repeated per entry. A
+  test asserts every entry has one, which is the part that matters: the cost of
+  forgetting is paid by whichever instance the job fails on, silently, a
+  thousand times a day.
+-->
 <cronentries>
     <cron>
         <url>/cron/croncommander?action=purgeExpiredSurveys</url>
         <description>Purge expired Surveys from Device Survey Job Queue
         </description>
         <schedule>every 24 hours</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeOrphanJobQueueRecords</url>
         <description>Purge orphans from Survey Job Queue</description>
         <schedule>every 24 hours</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=generateNotifications</url>
         <description>Trigger Notification Processing</description>
         <schedule>every 24 hours</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeDeviceFileJobQueueRecords</url>
         <description>Purge fulfilled or ancient entries from Device File Job Queue</description>
         <schedule>every monday 00:00</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeReportRecords</url>
         <description>Purge ancient Reports</description>
         <schedule>every monday 00:05</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeExpiredDevices</url>
         <description>Purge expired Devices</description>
         <schedule>every monday 00:10</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=extractImageFileGeotags</url>
         <description>Extract geotags from legacy image answers</description>
         <schedule>every 24 hours</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeOldMessages</url>
         <description>Purge old messages</description>
         <schedule>every monday 00:15</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
     </cron>
 </cronentries>
