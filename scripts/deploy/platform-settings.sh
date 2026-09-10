@@ -59,10 +59,16 @@ apply_platform_settings() {
     [[ -s "${descriptor}" ]] || { echo "${instance_id}: ${descriptor} is missing or empty" >&2; return 1; }
     [[ -s "${app_yaml}" ]] || { echo "${instance_id}: ${app_yaml} is missing or empty" >&2; return 1; }
 
+    # The trailing `|| true` is load-bearing. grep exits 1 when it filters
+    # everything out, which here is the ordinary case: a descriptor holding
+    # nothing but the tags we understand. Under `set -e` plus `pipefail` -- what
+    # deploy.sh itself sets -- that status would abort the caller on the success
+    # path, before any of the rewriting below. Emptiness is what decides, so the
+    # status carries no information worth keeping.
     unknown=$(sed -n '/<automatic-scaling>/,/<\/automatic-scaling>/p' "${descriptor}" \
                   | grep -o '<[a-z][a-z-]*>' | tr -d '<>' \
                   | grep -vxE 'automatic-scaling|max-instances|max-concurrent-requests' \
-                  | sort -u)
+                  | sort -u) || true
     if [[ -n "${unknown}" ]]; then
         echo "${instance_id}: unsupported <automatic-scaling> setting(s): ${unknown//$'\n'/ }" >&2
         echo "Deploying would silently ignore them. Teach apply_platform_settings in" >&2
