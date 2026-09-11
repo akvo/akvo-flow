@@ -59,10 +59,20 @@ if [[ "${1}" == "all" ]]; then
     find "${config}" -name 'appengine-web.xml' | awk -F'/' '{print $2}' > instances.txt
     find "${config}" -name '.skip-deployment' | awk -F'/' '{print $2}' > skip.txt
 
-    cat < skip.txt |  while IFS= read -r line
-    do
-	sed -i "/$line/d" instances.txt
-    done
+    # Whole-line comparison. `sed -i "/$line/d"` deleted on a substring, so a
+    # marker for akvoflow-37 also removed akvoflow-370 -- and removal here is
+    # exactly the silent kind: the instance simply never appears in the fan-out,
+    # and nothing downstream can tell it was meant to.
+    #
+    # Harmless while the fleet stops at 231, but the markers now include
+    # two-digit instances and the numbering only climbs.
+    # Guarded because an empty skip.txt would otherwise empty the fan-out: with
+    # no records read from the first file, NR==FNR is still true for the first
+    # line of the second, and awk starts filing instances as skips.
+    if [[ -s skip.txt ]]; then
+        awk 'NR==FNR { skip[$0]; next } !($0 in skip)' skip.txt instances.txt > instances.kept
+        mv instances.kept instances.txt
+    fi
 else
     printf "%s\n" "$@" > instances.txt
 fi
