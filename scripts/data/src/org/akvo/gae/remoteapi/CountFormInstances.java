@@ -27,11 +27,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import java.io.File;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +55,16 @@ public class CountFormInstances implements Process {
   @Override
   public void execute(DatastoreService ds, String[] args) throws Exception {
 
-    if (args.length != 1) {
-      throw new IllegalArgumentException("Missing instance name");
+    if (args.length != 3) {
+      throw new IllegalArgumentException("Invalid arguments");
     }
 
     iName = args[0];
     System.out.printf("Processing %s\n", iName);
+
+    ZoneId gmtZone = ZoneId.of("GMT");
+    Date startDate = Date.from(LocalDate.parse(args[1]).atStartOfDay(gmtZone).toInstant());
+    Date endDate = Date.from(LocalDate.parse(args[2]).atTime(LocalTime.MAX).atZone(gmtZone).toInstant());
 
     String fileName = String.format("/tmp/form-instance-counts_%s.csv", iName);
     final File file = new File(fileName);
@@ -71,7 +75,7 @@ public class CountFormInstances implements Process {
         true);
     sb.append("\n");
     fetchSurveyGroups(ds);
-    fetchSurveys(ds);
+    fetchSurveys(ds, startDate, endDate);
     drawSurveyGroupsIn(0L, "", sb);
     FileUtils.write(file, sb.toString(), true);
     System.out.printf("%s form instance counts written\n # filename: %s\n", iName, fileName);
@@ -130,7 +134,7 @@ public class CountFormInstances implements Process {
     }
   }
 
-  private void fetchSurveys(DatastoreService ds) {
+  private void fetchSurveys(DatastoreService ds, Date startDate, Date endDate) throws Exception {
 
     final Query survey_q = new Query("Survey");
     final PreparedQuery survey_pq = ds.prepare(survey_q);
@@ -141,34 +145,10 @@ public class CountFormInstances implements Process {
       String surveyName = (String) s.getProperty("name");
       Long surveyGroup = (Long) s.getProperty("surveyGroupId");
       if (surveyGroup != null) {
-        // FILTER THE SURVEY ID
-        Filter fsi = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
-        // FILTER ONLY FOR THE LAST SEMESTER
-        Date dt = Date.from(ZonedDateTime.now().minusMonths(6).toInstant());
-        Filter fdt =
-            new FilterPredicate("createdDateTime", FilterOperator.GREATER_THAN_OR_EQUAL, dt);
-        Filter fmrg = CompositeFilterOperator.and(fsi, fdt);
-        /* END FILTER
-        / We should consider that not using setKeysOnly will return full entities
-        / Documentation :
-        / https://cloud.google.com/appengine/docs/standard/java/javadoc/com/google/appengine/api/datastore/Query.html#setKeysOnly
-        Query si =
-            new Query("SurveyInstance")
-                .setFilter(fmrg)
-                .addSort("createdDateTime", SortDirection.ASCENDING);
-        */
-        Query si = new Query("SurveyInstance").setFilter(fmrg).setKeysOnly();
-        long count = 0;
-        // Date surveyDate = null;
-        for (@SuppressWarnings("unused")
-        Entity sie : ds.prepare(si).asIterable(FetchOptions.Builder.withChunkSize(500))) {
-          // surveyDate = (Date) sie.getProperty("createdDateTime");
-          count++;
-        }
+
+        Long count = countSurveyInstance(ds, surveyId, startDate, endDate);
+
         if (count > 0) {
-          // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-          // String strDate = dateFormat.format(surveyDate);
-          // surveyDates.put(surveyId, strDate);
           surveyCounts.put(surveyId, count);
           surveyNames.put(surveyId, surveyName);
           surveyParents.put(surveyId, surveyGroup);
@@ -176,5 +156,21 @@ public class CountFormInstances implements Process {
         }
       }
     }
+  }
+
+  private Long countSurveyInstance(DatastoreService ds, Long surveyId, Date startDate, Date endDate) {
+    List<Filter> filters = new ArrayList<Filter>();
+    filters.add(new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
+    filters.add(new FilterPredicate("collectionDate", FilterOperator.GREATER_THAN_OR_EQUAL, startDate));
+    filters.add(new FilterPredicate("collectionDate", FilterOperator.LESS_THAN_OR_EQUAL, endDate));
+
+    Query q = new Query("SurveyInstance").setFilter(CompositeFilterOperator.and(filters)).setKeysOnly();
+    Long count = 0L;
+    Iterable<Entity> entities = ds.prepare(q).asIterable(FetchOptions.Builder.withChunkSize(500));
+    for (@SuppressWarnings("unused") Entity e : entities) {
+      count++;
+    }
+
+    return count;
   }
 }

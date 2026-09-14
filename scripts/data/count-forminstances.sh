@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# USAGE: ./count-forminstances.sh akvoflowsandbox
-
 getforminstancecount() {
     SERVICE_ACCOUNT="sa-$APP_ID@$APP_ID.iam.gserviceaccount.com"
     DIR_NAME="$(dirname "${THIS_SCRIPT}")/../../.."
@@ -19,17 +17,22 @@ getforminstancecount() {
          "${APP_ID}" \
          "${SERVICE_ACCOUNT}" \
          "${P12_FILE_PATH}" \
-         "${INSTANCE_NAME}"
+         "${INSTANCE_NAME}" \
+         "${START_DATE}" \
+         "${END_DATE}"
 }
 
 
-if [ "$#" -ne 1 ]
+if [ "$#" -ne 3 ]
 then
   echo "USAGE:"
-  echo "- Single instance : ./count-forminstances.sh <appengine-folder>"
-  echo "- All instances   : ./count-forminstances.sh --all"
+  echo "- Single instance : ./count-forminstances.sh <appengine-folder> <start_date:yyyy-MM-dd> <end_date:yyyy-MM-dd>"
+  echo "- All instances   : ./count-forminstances.sh --all <start_date:yyyy-MM-dd> <end_date:yyyy-MM-dd>"
   exit 1
 fi
+
+START_DATE="$2"
+END_DATE="$3"
 
 if [ "$1" == "--all" ]; then
     RANDOMCODE=$(echo "${RANDOM}" | md5sum | head -c 10)
