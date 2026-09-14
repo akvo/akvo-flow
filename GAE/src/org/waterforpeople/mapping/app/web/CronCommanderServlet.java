@@ -245,11 +245,51 @@ public class CronCommanderServlet extends HttpServlet {
         return value.contains("\"location\":null");
     }
 
+    static final int GEOTAG_PAGE_SIZE = 1000;
+
+    /**
+     * How many pages one run may examine before stopping and leaving the rest for tomorrow.
+     *
+     * The scan used to read every answer in the window in a single request, and on the
+     * instances holding the most data that exhausted an F1's 256MB: the process was killed,
+     * the request 503'd, and App Engine retried the job roughly a thousand times a day
+     * without it ever completing. Bounding the work is what lets the job finish and return
+     * 200, which is the only thing that stops the retries.
+     *
+     * Five is deliberately conservative rather than measured. The instances that failed give
+     * no usable figure -- they died 25 seconds in, before finishing a run -- so the number to
+     * beat is unknown and the cost of guessing high is the failure we are fixing. Raise it
+     * once a few runs have completed and the headroom is visible.
+     */
+    static final int GEOTAG_MAX_PAGES_PER_RUN = 5;
+
     /**
      * scans for and extracts geotags from image answers less than 1 month old
      * Intended to be run every day
      */
     private void extractImageFileGeotags() {
+        extractImageFileGeotags(GEOTAG_MAX_PAGES_PER_RUN, GEOTAG_PAGE_SIZE);
+    }
+
+    /**
+     * The bounded scan. Returns the number of answers examined, which is what the page limit
+     * actually caps and therefore the only thing worth asserting in a test.
+     *
+     * Stopping early loses nothing, because a run always resumes where the last one left off
+     * without storing a cursor. The query filters on lastUpdateDateTime and, carrying an
+     * inequality, is ordered by it -- so the oldest answers in the window come first. Every
+     * answer this scan rewrites goes through BaseDAO.save, which stamps lastUpdateDateTime
+     * with the current time and therefore moves it to the back of that order. Answers it skips
+     * are not rewritten, keep their timestamp, and fall out of the one-month window on their
+     * own. Either way the front of the query is the work still to do.
+     *
+     * That same stamping is why the window is not a fixed set: rewriting an answer puts it
+     * back inside the month it is being selected by, so the scan keeps meeting its own output
+     * for a further month. It is cheap to skip -- a rewritten answer carries its location or
+     * an explicit null, so it costs no S3 read -- but it is not free to page through, which
+     * is a large part of why the busiest instances are the ones that ran out of memory.
+     */
+    int extractImageFileGeotags(int maxPages, int pageSize) {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.MONTH, ONE_MONTH_AGO);
         log.info("Starting scan for image answers, newer than: " + deadline.getTime());
@@ -257,12 +297,16 @@ public class CronCommanderServlet extends HttpServlet {
         String cursor = "";
         int json = 0;
         int nonjson = 0;
+        int examined = 0;
+        int pages = 0;
         Media media;
 
         do {
-            List<QuestionAnswerStore> qaList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
+            List<QuestionAnswerStore> qaList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, pageSize);
             if (qaList == null || qaList.size() == 0) break; //no more answers
             cursor = QuestionAnswerStoreDao.getCursor(qaList);
+            examined += qaList.size();
+            pages++;
 
             //loop over this batch
             for (QuestionAnswerStore item : qaList) {
@@ -313,10 +357,18 @@ public class CronCommanderServlet extends HttpServlet {
                 }
 
             }
+
+            if (pages >= maxPages) {
+                log.info(String.format(
+                        "Stopping after %d pages (%d answers); the rest resume on the next run.",
+                        pages, examined));
+                break;
+            }
         } while (true);
 
         log.fine("Found " + json + " JSON answers.");
         log.fine("Found " + nonjson + " Non-JSON answers.");
+        return examined;
     }
 
 
