@@ -96,4 +96,14 @@
             <job-retry-limit>2</job-retry-limit>
         </retry-parameters>
     </cron>
+    <cron>
+        <url>/cron/croncommander?action=reapStalledReports</url>
+        <description>Fail reports the report engine never finished</description>
+        <schedule>every 24 hours</schedule>
+        <!-- Bounded so a job that cannot succeed stops asking. See the
+             comment at the top of this file. -->
+        <retry-parameters>
+            <job-retry-limit>2</job-retry-limit>
+        </retry-parameters>
+    </cron>
 </cronentries>

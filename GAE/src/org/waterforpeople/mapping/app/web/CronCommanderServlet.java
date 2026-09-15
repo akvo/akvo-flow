@@ -67,6 +67,9 @@ public class CronCommanderServlet extends HttpServlet {
     private static final int ONE_YEAR_AGO = -1;
     private static final int ONE_MONTH_AGO = -1;
     private static final int TWO_YEARS_AGO = -2;
+    // Comfortably longer than any real export, so a slow but live report is
+    // never failed out from under the person waiting for it.
+    private static final int SIX_HOURS_AGO = -6;
     private static final long serialVersionUID = 2287175129835274533L;
     private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
 
@@ -97,6 +100,8 @@ public class CronCommanderServlet extends HttpServlet {
             purgeReportRecords();
         } else if ("purgeOldMessages".equals(action)) {
             purgeOldMessages();
+        } else if ("reapStalledReports".equals(action)) {
+            reapStalledReports();
         }
     }
 
@@ -146,6 +151,42 @@ public class CronCommanderServlet extends HttpServlet {
         List<Report> reportList = reportDao.listAllCreatedBefore(deadline.getTime());
         log.fine("Deleting " + reportList.size() + " old Report entries");
         reportDao.delete(reportList);
+    }
+
+    /**
+     * fails the reports that the report engine accepted but never finished
+     *
+     * Once Flow Services answers 200 to the start request it owns the report,
+     * and Flow never looks again: ReportServlet retries only the start
+     * handshake. Flow Services runs its jobs in an in-memory Quartz store, so
+     * when its pod dies mid-report the job dies with it and no FINISHED_ state
+     * is ever sent back. Nothing else times these out, so without this the row
+     * reads "Generating" until it is a year old and purgeReportRecords deletes
+     * it.
+     *
+     * Failing them is the whole fix. Re-running them is not: the person who
+     * asked has long since gone, the parameters are still on the row, and a
+     * cron job that quietly regenerates stale reports would hand the engine a
+     * burst of work every time it came back from an outage.
+     */
+    private void reapStalledReports() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.HOUR_OF_DAY, SIX_HOURS_AGO);
+        reapStalledReports(deadline.getTime());
+    }
+
+    // Package-private so a test can name its own deadline instead of
+    // manufacturing entities six hours in the past.
+    void reapStalledReports(Date deadline) {
+        log.info("Starting scan for Reports not heard from since: " + deadline);
+        ReportDao reportDao = new ReportDao();
+        List<Report> stalled = reportDao.listStalledBefore(deadline);
+        log.fine("Failing " + stalled.size() + " stalled Report entries");
+        for (Report report : stalled) {
+            report.setState(Report.FINISHED_ERROR);
+            report.setMessage("Report generation stopped before it finished. Please try again.");
+        }
+        reportDao.save(stalled);
     }
 
     /**
