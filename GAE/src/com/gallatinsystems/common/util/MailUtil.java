@@ -43,6 +43,15 @@ public class MailUtil {
     public static final String EMAIL_PASSWORD = "emailPassword";
     private static final Logger log = Logger.getLogger(MailUtil.class.getName());
 
+    // Both senders below use SMTPS -- implicit TLS, the relay speaks TLS from the
+    // first byte -- because that is what emailPort 465 means. STARTTLS (SMTP_TLS,
+    // used while mail went through Mailjet on 587) is a different handshake, and
+    // the port alone does not select between them: pointing STARTTLS at 465 opens
+    // a plaintext socket against a TLS-only port and blocks until the session
+    // timeout rather than failing outright. Changing emailPort without changing
+    // this is therefore a silent hang, not a configuration error. akvo-flow-services
+    // and akvo-lumen carry the same warning over their own SMTP settings.
+
     /**
      * conviencence method for sending email to a single recipient. In this case, the email address
      * is used as the recipient name
@@ -95,7 +104,7 @@ public class MailUtil {
 
             Mailer mailer = MailerBuilder
                     .withSMTPServer(host, port, username, password)
-                    .withTransportStrategy(TransportStrategy.SMTP_TLS)
+                    .withTransportStrategy(TransportStrategy.SMTPS)
                     .buildMailer();
 
             mailer.sendMail(email);
@@ -139,7 +148,7 @@ public class MailUtil {
 
         Mailer mailer = MailerBuilder
                 .withSMTPServer(host, port, username, password)
-                .withTransportStrategy(TransportStrategy.SMTP_TLS)
+                .withTransportStrategy(TransportStrategy.SMTPS)
                 .buildMailer();
 
         try {

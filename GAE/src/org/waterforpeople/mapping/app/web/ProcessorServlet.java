@@ -61,6 +61,7 @@ public class ProcessorServlet extends HttpServlet {
     private static final long serialVersionUID = -7062679258542909086L;
     private static final Logger log = Logger.getLogger(ProcessorServlet.class.getName());
 
+    private static final String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
     private static final String ACTION_PARAM = "action";
     private static final String SUBMIT_ACTION = "submit";
     private static final String IMAGE_ACTION = "image";
@@ -265,7 +266,12 @@ public class ProcessorServlet extends HttpServlet {
         TreeMap<String, String> recip = new TreeMap<>();
         recip.put("support@akvo.org", "support@akvo.org");
         recip.put(user.getEmailAddress(), user.getEmailAddress());
-        MailUtil.sendMail("noreply@akvo.org", null, recip, subject,
+        // The sender has to be the configured one, not a literal. An SMTP relay
+        // authenticates the account in emailUser and commonly rejects a From that
+        // does not belong to it, so a hardcoded address here would make this the
+        // one notification the relay drops while the other senders -- all of which
+        // read emailFromAddress -- get through.
+        MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY), null, recip, subject,
                 (count >= limiter.getHardLimit()) ? body_2 : body_1);
     }
 
