@@ -9,9 +9,9 @@ list=$(find ../../../akvo-flow-server-config -type f -name appengine-web.xml \
     -exec echo {} \; 2>/dev/null)
 for word in ${list};
 do
-    service=$(grep "<application>" "${word}"\
-        | sed 's/<.*>\(.*\)<.*>/\1/' \
-        | sed 's/\ //g')
+    # The directory holding the descriptor is the instance id; <application>
+    # no longer exists in any descriptor, gen2 App Engine forbids it.
+    service=$(basename "$(dirname "${word}")")
     alias=$(grep "alias" "${word}"\
         | sed 's/.*value="\([^"]*\).*/\1/' \
         | cut -d '.' -f 1)
