@@ -40,9 +40,9 @@ if [ "$1" == "--all" ]; then
         -exec echo {} \; 2>/dev/null)
         for APP_LINE in ${list};
         do
-        APP_ID=$(grep "<application>" "${APP_LINE}"\
-            | sed 's/<.*>\(.*\)<.*>/\1/' \
-            | sed 's/\ //g')
+        # The directory holding the descriptor is the instance id; <application>
+        # no longer exists in any descriptor, gen2 App Engine forbids it.
+        APP_ID=$(basename "$(dirname "${APP_LINE}")")
         getforminstancecount
         done;
         MERGED_CSV="/tmp/all-form-instance-counts.csv"
